@@ -15,6 +15,8 @@ public class MechController : MonoBehaviour {
 //	public float Friction = 1.0f;
 	public bool isBoosting = false;
 
+	public float Damage = 10f;
+
 	public float MaxFuel = 100.0f;
 	public float CurrentFuel;
 	public float FuelDrain = 1.0f;
@@ -25,6 +27,7 @@ public class MechController : MonoBehaviour {
 
 	public bool jumped = false;
 
+	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 	public float xAcc = 0f, yAcc = 0f, zAcc = 0f;
 
@@ -32,6 +35,9 @@ public class MechController : MonoBehaviour {
 	private bool startBoosting = false;
 
 	private Vector3 move = Vector3.zero;
+
+	private LayerMask layerMask = 1 << 8;
+	private float timestamp;
 
 	// Use this for initialization
 	void Awake () {
@@ -49,6 +55,18 @@ public class MechController : MonoBehaviour {
 
 		GetXZDirection();
 
+		if (Input.GetButton ("Fire1") && Time.time >= timestamp){
+			timestamp =  Time.time + TimeBetweenFire;
+			AudioSource audio = gameObject.GetComponent < AudioSource > ();
+			audio.Play();
+			RaycastHit hit;
+			if (Physics.Raycast(transform.GetChild(0).position, transform.GetChild (0).forward, out hit, Mathf.Infinity, layerMask)) {
+				HitInfo hitInfo = new HitInfo();
+				hitInfo.damage = Damage;
+				hitInfo.raycastHit = hit;
+				hit.collider.SendMessage ("OnHit", hitInfo, SendMessageOptions.DontRequireReceiver);
+			}
+		}
 		//MechMotor.Instance.UpdateMotor ();
 	}
 
