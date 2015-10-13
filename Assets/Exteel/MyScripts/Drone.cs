@@ -12,7 +12,7 @@ public class Drone : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
@@ -24,5 +24,6 @@ public class Drone : MonoBehaviour {
 
 	void OnHit(HitInfo hitInfo){
 		Health -= hitInfo.damage;
+		AudioSource.PlayClipAtPoint (gameObject.GetComponent<AudioSource> ().clip, transform.position);
 	}
 }
