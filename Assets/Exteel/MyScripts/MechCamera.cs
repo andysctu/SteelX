@@ -21,15 +21,12 @@ namespace UnityStandardAssets.Utility
 		public bool autoZeroVerticalOnMobile = true;
 		public bool autoZeroHorizontalOnMobile = false;
 		public bool relative = true;
-
-		public float mouseYSensitivity = 5f;
 		
 		private Vector3 m_TargetAngles;
 		private Vector3 m_FollowAngles;
 		private Vector3 m_FollowVelocity;
 		private Quaternion m_OriginalRotation;
 
-		private float mouseY = 0f;
 		private float behind;
 
 		private void Start()
@@ -102,8 +99,8 @@ namespace UnityStandardAssets.Utility
 				m_TargetAngles.x = Mathf.Lerp (-rotationRange.x * 0.5f, rotationRange.x * 0.5f, inputV / Screen.height);
 			}
 			
-			// smoothly interpolate current values to target angles
-			//m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
+			 //smoothly interpolate current values to target angles
+			m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
 			
 			// update the actual gameobject's rotation
 			//transform.localRotation = m_OriginalRotation*Quaternion.Euler(-m_FollowAngles.x, m_FollowAngles.y, 0);
@@ -122,11 +119,12 @@ namespace UnityStandardAssets.Utility
 //			transform.LookAt (lookTarget);
 			//transform.rotation = m_OriginalRotation * Quaternion.Euler (m_TargetAngles.x, 0, 0);
 			//Debug.DrawLine
+			float outerRotate = ( - inputV) * rotationSpeed;
+			transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
 			transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_TargetAngles.y, 0);
 			transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
 
-			float outerRotate = ( - inputV) * rotationSpeed;
-			transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
+
 
 //			float clampedRotation = transform.rotation.x;
 ////			if (clampedRotation > 0.36) {
