@@ -3,20 +3,18 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Crosshair : MonoBehaviour {
-
-	public Camera playerSight;
+	
 	public Sprite CrosshairNormal;
 	public Sprite CrosshairTarget;
 
+	private Camera playerSight;
 	private Image currentCrosshair;
 	private LayerMask layerMask = 1 << 8;
 
 	// Use this for initialization
 	void Start () {
-		if (playerSight == null) {
-			playerSight = Camera.main;
-		}
-		currentCrosshair = GetComponent<Image> ();
+		playerSight = GetComponent<Camera> ();
+		currentCrosshair = GetComponentInChildren<Image> ();
 	}
 	
 	// Update is called once per frame
