@@ -22,8 +22,8 @@ public class Drone : MonoBehaviour {
 		}
 	}
 
-	void OnHit(HitInfo hitInfo){
-		Health -= hitInfo.damage;
-		AudioSource.PlayClipAtPoint (gameObject.GetComponent<AudioSource> ().clip, transform.position);
-	}
+//	void OnHit(HitInfo hitInfo){
+//		Health -= hitInfo.damage;
+//		AudioSource.PlayClipAtPoint (gameObject.GetComponent<AudioSource> ().clip, transform.position);
+//	}
 }

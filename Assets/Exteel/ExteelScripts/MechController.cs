@@ -52,13 +52,13 @@ public class MechController : MonoBehaviour {
 			timestamp =  Time.time + TimeBetweenFire;
 			AudioSource audio = gameObject.GetComponent < AudioSource > ();
 			audio.Play();
-			RaycastHit hit;
-			if (Physics.Raycast(transform.GetChild(0).position, transform.GetChild (0).forward, out hit, Mathf.Infinity, layerMask)) {
-				HitInfo hitInfo = new HitInfo();
-				hitInfo.damage = Damage;
-				hitInfo.raycastHit = hit;
-				hit.collider.SendMessage ("OnHit", hitInfo, SendMessageOptions.DontRequireReceiver);
-			}
+//			RaycastHit hit;
+//			if (Physics.Raycast(transform.GetChild(0).position, transform.GetChild (0).forward, out hit, Mathf.Infinity, layerMask)) {
+//				HitInfo hitInfo = new HitInfo();
+//				hitInfo.damage = Damage;
+//				hitInfo.raycastHit = hit;
+//				hit.collider.SendMessage ("OnHit", hitInfo, SendMessageOptions.DontRequireReceiver);
+//			}
 		}
 		//MechMotor.Instance.UpdateMotor ();
 	}
