@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections;
+
+public class PlayerNetworkSetup : NetworkBehaviour {
+	
+	// Use this for initialization
+	public override void OnStartLocalPlayer () {
+		GameObject.Find ("Scene").SetActive(false);
+		//GetComponent<CharacterController>().enabled = true;
+		GetComponent<MechController>().enabled = true;
+	
+		GetComponentInChildren<Camera>().enabled = true;
+		GetComponentInChildren<AudioListener>().enabled = true;
+		GetComponentInChildren<Crosshair>().enabled = true;
+		GetComponentInChildren<MechCamera>().enabled = true;
+	}
+
+}

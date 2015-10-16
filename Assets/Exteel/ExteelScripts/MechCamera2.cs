@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MechCamera : MonoBehaviour {
+public class MechCamera2 : MonoBehaviour {
 
-	public static MechCamera Instance;
+	public static MechCamera2 Instance;
 	public Transform TargetLookAt;
 	public float CameraDistance = 5f;
 	public float CameraMinDistance = 3f;
@@ -105,7 +105,7 @@ public class MechCamera : MonoBehaviour {
 	public static void UseMainCamera(){
 		GameObject tempCamera;
 		GameObject targetLookAt;
-		MechCamera myCamera; 
+		MechCamera2 myCamera; 
 
 		if (Camera.main != null) {
 			tempCamera = Camera.main.gameObject;
@@ -115,8 +115,8 @@ public class MechCamera : MonoBehaviour {
 			tempCamera.tag = "Main Camera";
 		}
 		 
-		tempCamera.AddComponent <MechCamera>();
-		myCamera = tempCamera.GetComponent ("MechCamera") as MechCamera;
+		tempCamera.AddComponent <MechCamera2>();
+		myCamera = tempCamera.GetComponent ("MechCamera2") as MechCamera2;
 
 		targetLookAt = GameObject.Find ("targetLookAt") as GameObject;
 

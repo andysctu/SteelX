@@ -5,7 +5,6 @@ using System.Collections;
 public class MechController : MonoBehaviour {
 
 	public static CharacterController CharacterController;
-	public static MechController Instance;
 
 	public float Gravity = 1.0f;
 	public float JumpPower = 20.0f;
@@ -29,7 +28,6 @@ public class MechController : MonoBehaviour {
 
 	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
-	public float xAcc = 0f, yAcc = 0f, zAcc = 0f;
 
 	//private bool isBoosting = false;
 	private bool startBoosting = false;
@@ -40,19 +38,14 @@ public class MechController : MonoBehaviour {
 	private float timestamp;
 
 	// Use this for initialization
-	void Awake () {
-		CharacterController = GetComponent ("CharacterController") as CharacterController;
-		Instance = this;
+	void Start () {
+		CharacterController = GetComponent<CharacterController> ();
 		CurrentFuel = MaxFuel;
 		BoostSpeed = MoveSpeed + 20;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Camera.main == null) {
-			return;
-		}
-
 		GetXZDirection();
 
 		if (Input.GetButton ("Fire1") && Time.time >= timestamp){
@@ -70,28 +63,15 @@ public class MechController : MonoBehaviour {
 		//MechMotor.Instance.UpdateMotor ();
 	}
 
-	void LateUpdate() {
-
+	void FixedUpdate() {
+		if (CharacterController == null) {
+			CharacterController = GetComponent<CharacterController>();
+			if (CharacterController == null) {
+				Debug.Log ("char contr is null");
+				return;
+			}
+		}
 		move = transform.TransformDirection(move);
-
-//		xSpeed += xAcc;
-//		zSpeed += zAcc;
-//
-//		if (xSpeed > 0 && xSpeed > Friction) {
-//			xSpeed -= Friction;
-//		}
-//
-//		if (xSpeed < 0 && xSpeed < -Friction) {
-//			xSpeed += Friction;
-//		}
-//
-//		if (zSpeed > 0 && zSpeed > Friction) {
-//			zSpeed -= Friction;
-//		}
-//		
-//		if (zSpeed < 0 && zSpeed < -Friction) {
-//			zSpeed += Friction;
-//		}
 		move.y = 0;
 
 		if (!CharacterController.isGrounded) {
@@ -138,9 +118,6 @@ public class MechController : MonoBehaviour {
 
 	void GetXZDirection(){
 		move = Vector3.zero;
-//		xAcc = 0;
-//		yAcc = 0;
-//		zAcc = 0;
 
 		if (Input.GetAxis ("Vertical") > marginOfError || Input.GetAxis ("Vertical") < -marginOfError) {
 			move += new Vector3(0, 0, Input.GetAxis ("Vertical"));
