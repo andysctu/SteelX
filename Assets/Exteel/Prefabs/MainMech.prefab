@@ -676,8 +676,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Gravity: 1
-  JumpPower: 20
-  MoveSpeed: 20
+  JumpPower: 40
+  MoveSpeed: 40
   BoostSpeed: 0
   VerticalBoostSpeed: 1
   isBoosting: 0
@@ -901,6 +901,14 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: useHistoricalInterpolation
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: MoveSpeed
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: JumpPower
+      value: 40
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
