@@ -7,15 +7,18 @@ public class PlayerDeath : NetworkBehaviour {
 
 	private PlayerHealth healthScript;
 	private Image crosshairImage;
-	// Use this for initialization
-	void Start () {
-		crosshairImage = GetComponentInChildren<Image> (); //("Crosshair Image").GetComponent<Image> ();
+
+	public override void PreStartClient ()
+	{
 		healthScript = GetComponent<PlayerHealth> ();
 		healthScript.EventDie += DisablePlayer;
-
 	}
 
-	void OnDisable(){
+	public override void OnStartLocalPlayer(){
+		crosshairImage = GetComponentInChildren<Image> (); //("Crosshair Image").GetComponent<Image> ();
+	}
+	
+	public override void OnNetworkDestroy(){
 		healthScript.EventDie -= DisablePlayer;
 	}
 
@@ -31,7 +34,7 @@ public class PlayerDeath : NetworkBehaviour {
 		if (isLocalPlayer) {
 			crosshairImage.enabled = false;
 			GetComponent<MechController> ().enabled = false;
-			//Respawn button
+			GameObject.Find ("GameManager").GetComponent<GameManagerReferences>().RespawnButton.SetActive (true);
 		}
 	}
 }

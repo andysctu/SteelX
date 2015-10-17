@@ -7798,6 +7798,11 @@ Sometimes it is not possible to project (for example when the joints form a cycl
         <para>Forward facing side (+z).</para>
       </summary>
     </member>
+    <member name="F:UnityEngine.CubemapFace.Unknown">
+      <summary>
+        <para>Cubemap face is unknown or unspecified.</para>
+      </summary>
+    </member>
     <member name="T:UnityEngine.CullingGroup">
       <summary>
         <para>Describes a set of bounding spheres that should have their visibility and distances maintained.</para>
@@ -30954,6 +30959,30 @@ SA: [[ReflectionProbeTimeSlicingMode]].</para>
       <param name="color">Render target to set as a color buffer.</param>
       <param name="colors">Render targets to set as color buffers (MRT).</param>
       <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
+    </member>
+    <member name="M:UnityEngine.Rendering.CommandBuffer.SetRenderTarget(UnityEngine.Rendering.RenderTargetIdentifier,System.Int32)">
+      <summary>
+        <para>Add a "set active render target" command.</para>
+      </summary>
+      <param name="rt">Render target to set for both color &amp; depth buffers.</param>
+      <param name="color">Render target to set as a color buffer.</param>
+      <param name="colors">Render targets to set as color buffers (MRT).</param>
+      <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
+    </member>
+    <member name="M:UnityEngine.Rendering.CommandBuffer.SetRenderTarget(UnityEngine.Rendering.RenderTargetIdentifier,System.Int32,UnityEngine.CubemapFace)">
+      <summary>
+        <para>Add a "set active render target" command.</para>
+      </summary>
+      <param name="rt">Render target to set for both color &amp; depth buffers.</param>
+      <param name="color">Render target to set as a color buffer.</param>
+      <param name="colors">Render targets to set as color buffers (MRT).</param>
+      <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
     </member>
     <member name="M:UnityEngine.Rendering.CommandBuffer.SetRenderTarget(UnityEngine.Rendering.RenderTargetIdentifier,UnityEngine.Rendering.RenderTargetIdentifier)">
       <summary>
@@ -30963,6 +30992,30 @@ SA: [[ReflectionProbeTimeSlicingMode]].</para>
       <param name="color">Render target to set as a color buffer.</param>
       <param name="colors">Render targets to set as color buffers (MRT).</param>
       <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
+    </member>
+    <member name="M:UnityEngine.Rendering.CommandBuffer.SetRenderTarget(UnityEngine.Rendering.RenderTargetIdentifier,UnityEngine.Rendering.RenderTargetIdentifier,System.Int32)">
+      <summary>
+        <para>Add a "set active render target" command.</para>
+      </summary>
+      <param name="rt">Render target to set for both color &amp; depth buffers.</param>
+      <param name="color">Render target to set as a color buffer.</param>
+      <param name="colors">Render targets to set as color buffers (MRT).</param>
+      <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
+    </member>
+    <member name="M:UnityEngine.Rendering.CommandBuffer.SetRenderTarget(UnityEngine.Rendering.RenderTargetIdentifier,UnityEngine.Rendering.RenderTargetIdentifier,System.Int32,UnityEngine.CubemapFace)">
+      <summary>
+        <para>Add a "set active render target" command.</para>
+      </summary>
+      <param name="rt">Render target to set for both color &amp; depth buffers.</param>
+      <param name="color">Render target to set as a color buffer.</param>
+      <param name="colors">Render targets to set as color buffers (MRT).</param>
+      <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
     </member>
     <member name="M:UnityEngine.Rendering.CommandBuffer.SetRenderTarget(UnityEngine.Rendering.RenderTargetIdentifier[],UnityEngine.Rendering.RenderTargetIdentifier)">
       <summary>
@@ -30972,6 +31025,8 @@ SA: [[ReflectionProbeTimeSlicingMode]].</para>
       <param name="color">Render target to set as a color buffer.</param>
       <param name="colors">Render targets to set as color buffers (MRT).</param>
       <param name="depth">Render target to set as a depth buffer.</param>
+      <param name="mipLevel">The mip level of the render target to render into.</param>
+      <param name="cubemapFace">The cubemap face of a cubemap render target to render into.</param>
     </member>
     <member name="T:UnityEngine.Rendering.CompareFunction">
       <summary>

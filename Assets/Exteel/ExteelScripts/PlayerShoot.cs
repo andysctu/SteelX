@@ -35,6 +35,10 @@ public class PlayerShoot : NetworkBehaviour {
 				string uIdentity = hit.transform.name;
 				Debug.Log (uIdentity);
 				CmdTellServerWhoWasShot(uIdentity, damage);
+			} else if (hit.transform.tag == "Drone"){
+				string uIdentity = hit.transform.name;
+				Debug.Log (uIdentity);
+				CmdTellServerWhichDroneWasShot(uIdentity, damage);
 			}
 		}
 	}
@@ -43,6 +47,13 @@ public class PlayerShoot : NetworkBehaviour {
 	void CmdTellServerWhoWasShot(string uniqueID, int damage){
 		GameObject go = GameObject.Find (uniqueID);
 		go.GetComponent<PlayerHealth> ().OnHit(damage);
+		//Apply damage
+	}
+
+	[Command]
+	void CmdTellServerWhichDroneWasShot(string uniqueID, int damage){
+		GameObject go = GameObject.Find (uniqueID);
+		go.GetComponent<DroneHealth> ().OnHit(damage);
 		//Apply damage
 	}
 }

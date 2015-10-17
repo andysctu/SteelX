@@ -34,7 +34,7 @@ public class MechController : MonoBehaviour {
 
 	private Vector3 move = Vector3.zero;
 
-	private LayerMask layerMask = 1 << 8;
+	//private LayerMask layerMask = 1 << 8;
 	private float timestamp;
 
 	// Use this for initialization
@@ -48,7 +48,7 @@ public class MechController : MonoBehaviour {
 	void Update () {
 		GetXZDirection();
 
-		if (Input.GetButton ("Fire1") && Time.time >= timestamp){
+		if (Input.GetKeyDown (KeyCode.Mouse0) ){//&& Time.time >= timestamp){
 			timestamp =  Time.time + TimeBetweenFire;
 			AudioSource audio = gameObject.GetComponent < AudioSource > ();
 			audio.Play();
