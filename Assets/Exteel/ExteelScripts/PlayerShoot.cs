@@ -29,7 +29,7 @@ public class PlayerShoot : NetworkBehaviour {
 
 	void Shoot(){
 		if (Physics.Raycast (camTransform.TransformPoint(0,0,0.5f), camTransform.forward, out hit, range)){
-			//Debug.Log (hit.transform.tag);
+			Debug.Log (hit.transform.tag);
 
 			if (hit.transform.tag == "Player"){
 				string uIdentity = hit.transform.name;
@@ -53,7 +53,9 @@ public class PlayerShoot : NetworkBehaviour {
 	[Command]
 	void CmdTellServerWhichDroneWasShot(string uniqueID, int damage){
 		GameObject go = GameObject.Find (uniqueID);
-		go.GetComponent<DroneHealth> ().OnHit(damage);
+		if (go != null) {
+			go.GetComponent<DroneHealth> ().OnHit(damage);
+		}
 		//Apply damage
 	}
 }
