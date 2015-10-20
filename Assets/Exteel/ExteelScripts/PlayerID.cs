@@ -19,7 +19,7 @@ public class PlayerID : NetworkBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-		if (myTransform.name == "MainMech(Clone)" || myTransform.name == "") {
+		if (myTransform.name == "RushnikOnlyMesh(Clone)" || myTransform.name == "") {
 			SetIdentity ();
 		}
 	}

@@ -65,12 +65,11 @@ public class MechController : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (CharacterController == null) {
-			CharacterController = GetComponent<CharacterController>();
-			if (CharacterController == null) {
-				Debug.Log ("char contr is null");
-				return;
-			}
+			Debug.Log ("char contr is null");
+			return;
 		}
+
+		bool isWalkingBackwards = (Input.GetAxis ("Vertical") < 0) && !isBoosting;
 		move = transform.TransformDirection(move);
 		move.y = 0;
 
@@ -98,6 +97,7 @@ public class MechController : MonoBehaviour {
 			isBoosting = startBoosting;
 		}
 
+//		Debug.Log ("Walking backwards?: " + isWalkingBackwards);
 		if (isBoosting && CurrentFuel > 0 && Input.GetKey ("left shift")) {
 			CurrentFuel -= FuelDrain;
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
@@ -108,7 +108,7 @@ public class MechController : MonoBehaviour {
 			CurrentFuel += FuelGain;
 			if (CurrentFuel > MaxFuel) CurrentFuel = MaxFuel;
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
-			move.z *= MoveSpeed * Time.fixedDeltaTime;
+			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
 		}
 		CharacterController.Move (move);

@@ -471,6 +471,7 @@ GameObject:
   - 114: {fileID: 11487078}
   - 114: {fileID: 11440590}
   - 114: {fileID: 11494786}
+  - 114: {fileID: 11493038}
   m_Layer: 8
   m_Name: RushnikOnlyMesh
   m_TagString: Player
@@ -1057,7 +1058,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: fdbfdfaafad09453ea58a947565c0b4b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -1164,7 +1165,7 @@ MonoBehaviour:
   m_RotationSyncCompression: 0
   m_SyncSpin: 0
   m_MovementTheshold: .00100000005
-  m_SnapThreshold: 20
+  m_SnapThreshold: 50
   m_InterpolateRotation: 10
   m_InterpolateMovement: 1
 --- !u!114 &11465626
@@ -1261,6 +1262,25 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11493038
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 186952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1590678366, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 9530784}
+  m_ParameterSendBits: 0
+  param0: 
+  param1: 
+  param2: 
+  param3: 
+  param4: 
+  param5: 
 --- !u!114 &11493372
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1593,7 +1613,15 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Animator
+      value: 
+      objectReference: {fileID: 9530784}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 186952}

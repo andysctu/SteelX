@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class NetworkManagerCustom : NetworkManager {
 
+	private bool first = true;
 	public void StartupHost(){
 		SetPort ();
 		NetworkManager.singleton.StartHost ();
@@ -26,11 +27,14 @@ public class NetworkManagerCustom : NetworkManager {
 	}
 
 	void OnLevelWasLoaded(int level){
-		if (level == 0) {
+		if (level == 1 && !first)  {
+//			Debug.Log ("lvl 1");
 			StartCoroutine(SetupMenuSceneButtons());
-		} else {
+		} else if (level == 2) {
+//			Debug.Log ("lvl 2");
 			SetupOtherSceneButtons ();
 		}
+		first = false;
 	}
 
 	IEnumerator SetupMenuSceneButtons(){

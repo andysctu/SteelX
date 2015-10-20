@@ -7,7 +7,7 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 	// Use this for initialization
 	public override void OnStartLocalPlayer () {
 		GameObject.Find ("Scene").SetActive(false);
-		//GetComponent<CharacterController>().enabled = true;
+		//GetComponent<Animator>().enabled = true;
 		GetComponent<MechController>().enabled = true;
 	
 		GetComponentInChildren<Camera>().enabled = true;
