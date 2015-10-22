@@ -25,23 +25,30 @@ public class Matchmaking : MonoBehaviour
 			create.size = 4;
 			create.advertise = true;
 			create.password = "";
-			
+
+			Debug.Log ("Creating room ... ");
 			networkMatch.CreateMatch(create, OnMatchCreate);
 		}
 		
 		if (GUILayout.Button("List rooms"))
 		{
+			Debug.Log ("Listing rooms ... ");
 			networkMatch.ListMatches(0, 20, "", OnMatchList);
 		}
 		
 		if (matchList.Count > 0)
 		{
+			Debug.Log ("Count > 0");
 			GUILayout.Label("Current rooms");
 		}
+
+		int i = 0;
 		foreach (var match in matchList)
 		{
+			Debug.Log ("match " + i);
 			if (GUILayout.Button(match.name))
-			{
+			{	
+				Debug.Log ("match " + i + " clicked");
 				networkMatch.JoinMatch(match.networkId, "", OnMatchJoined);
 			}
 		}
@@ -63,10 +70,13 @@ public class Matchmaking : MonoBehaviour
 	}
 	
 	public void OnMatchList(ListMatchResponse matchListResponse)
-	{
+	{	
+		matchList = matchListResponse.matches;
+		Debug.Log ("OnMatchList");
 		if (matchListResponse.success && matchListResponse.matches != null)
 		{
-			networkMatch.JoinMatch(matchListResponse.matches[0].networkId, "", OnMatchJoined);
+			Debug.Log ("success && matches != null");
+			//networkMatch.JoinMatch(matchListResponse.matches[0].networkId, "", OnMatchJoined);
 		}
 	}
 	

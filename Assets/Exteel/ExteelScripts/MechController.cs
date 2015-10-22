@@ -69,6 +69,11 @@ public class MechController : MonoBehaviour {
 			return;
 		}
 
+		if (!CharacterController.enabled){
+			Debug.Log ("Char contr is disabled");
+			return;
+		}
+
 		bool isWalkingBackwards = (Input.GetAxis ("Vertical") < 0) && !isBoosting;
 		move = transform.TransformDirection(move);
 		move.y = 0;

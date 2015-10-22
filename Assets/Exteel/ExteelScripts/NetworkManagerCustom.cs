@@ -27,10 +27,10 @@ public class NetworkManagerCustom : NetworkManager {
 	}
 
 	void OnLevelWasLoaded(int level){
-		if (level == 1 && !first)  {
+		if (level == 1 && !first)  { // Home
 //			Debug.Log ("lvl 1");
 			StartCoroutine(SetupMenuSceneButtons());
-		} else if (level == 2) {
+		} else if (level == 3) { // Game
 //			Debug.Log ("lvl 2");
 			SetupOtherSceneButtons ();
 		}
