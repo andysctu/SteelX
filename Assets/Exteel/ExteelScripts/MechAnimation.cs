@@ -104,6 +104,12 @@ public class MechAnimation : NetworkBehaviour {
 			Debug.Log ("Already in jump state");
 			animator.SetBool ("Jump", false);
 		}
+
+		if (Input.GetButton ("Fire1")){
+			animator.SetBool ("Shoot", true);
+		} else {
+			animator.SetBool ("Shoot", false);
+		}
 //		currentBaseState = animator.GetCurrentAnimatorStateInfo(0);	// set our currentState variable to the current state of the Base Layer (0) of animation
 //
 //		// if we are currently in a state called Locomotion, then allow Jump input (Space) to set the Jump bool parameter in the Animator to true
