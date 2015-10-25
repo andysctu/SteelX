@@ -1055,7 +1055,7 @@ Animator:
   m_GameObject: {fileID: 186952}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 039907b37f46849e08227df91ff1919e, type: 3}
-  m_Controller: {fileID: 9100000, guid: fdbfdfaafad09453ea58a947565c0b4b, type: 2}
+  m_Controller: {fileID: 9100000, guid: 1754fc03e00604ed3b45cd6521a1c318, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1091,8 +1091,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e508e353a284fa3a328505cd4742a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Gravity: 1
-  JumpPower: 40
+  Gravity: 2
+  JumpPower: 50
   MoveSpeed: 40
   BoostSpeed: 0
   VerticalBoostSpeed: 1
@@ -1336,6 +1336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a193593bc0a43b1ba0bcd65d207ca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  error: .100000001
 --- !u!114 &11496878
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1622,6 +1623,14 @@ Prefab:
       propertyPath: m_Animator
       value: 
       objectReference: {fileID: 9530784}
+    - target: {fileID: 0}
+      propertyPath: JumpPower
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: Gravity
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 186952}

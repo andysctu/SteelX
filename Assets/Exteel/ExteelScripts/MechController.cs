@@ -13,6 +13,7 @@ public class MechController : MonoBehaviour {
 	public float VerticalBoostSpeed;
 //	public float Friction = 1.0f;
 	public bool isBoosting = false;
+	//public bool isFalling = false;
 
 	public float Damage = 10f;
 
@@ -23,6 +24,7 @@ public class MechController : MonoBehaviour {
 	public float MinFuelRequired;
 
 	private float marginOfError = 0.1f;
+	private float minDownSpeed = 0.0f;
 
 	public bool jumped = false;
 
@@ -37,11 +39,13 @@ public class MechController : MonoBehaviour {
 	//private LayerMask layerMask = 1 << 8;
 	private float timestamp;
 
+	private MechAnimation mechAnimation;
 	// Use this for initialization
 	void Start () {
 		CharacterController = GetComponent<CharacterController> ();
 		CurrentFuel = MaxFuel;
 		BoostSpeed = MoveSpeed + 20;
+		mechAnimation = GetComponent<MechAnimation>();
 	}
 	
 	// Update is called once per frame
@@ -76,7 +80,7 @@ public class MechController : MonoBehaviour {
 
 		bool isWalkingBackwards = (Input.GetAxis ("Vertical") < 0) && !isBoosting;
 		move = transform.TransformDirection(move);
-		move.y = 0;
+		move.y = minDownSpeed;
 
 		if (!CharacterController.isGrounded) {
 			if (!isBoosting) {
@@ -90,8 +94,14 @@ public class MechController : MonoBehaviour {
 			ySpeed = 0;
 			jumped = false;
 		}
+
+//		if (ySpeed < -2.5f){
+//			isFalling = true;
+//		} else {
+//			isFalling = false;
+//		}
 		
-		if (Input.GetKeyDown ("space") && !jumped) {
+		if (Input.GetButton ("Jump") && !jumped && !mechAnimation.isAnimatingJump ) {
 			ySpeed = JumpPower;
 			jumped = true;
 		}

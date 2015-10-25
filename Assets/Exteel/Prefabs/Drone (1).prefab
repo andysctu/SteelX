@@ -459,7 +459,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 465328}
-  - 95: {fileID: 9544084}
   - 54: {fileID: 5476756}
   - 136: {fileID: 13681796}
   - 82: {fileID: 8229060}
@@ -1015,23 +1014,6 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
---- !u!95 &9544084
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 198016}
-  m_Enabled: 0
-  m_Avatar: {fileID: 9000000, guid: b98222eb180e64f65bf351e6d4eb747c, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &11474390
 MonoBehaviour:
   m_ObjectHideFlags: 1
