@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerHealth : NetworkBehaviour {
 
-	[SyncVar (hook = "OnHealthChanged")] private int health = 100;
+	public int MaxHealth = 100;
+	[SyncVar (hook = "OnHealthChanged")] public int health;
 	private Text healthText;
 	private bool shouldDie = false;
 	public bool isDead = false;
@@ -18,7 +19,11 @@ public class PlayerHealth : NetworkBehaviour {
 
 	// Use this for initialization
 	public override void OnStartLocalPlayer () {
+		Debug.Log ("Running");
+		health = MaxHealth;
+		Debug.Log ("Running.");
 		healthText = GameObject.Find ("Health Text").GetComponent<Text> ();
+		Debug.Log ("Running..");
 		SetHealthText ();
 	}
 	
@@ -49,12 +54,14 @@ public class PlayerHealth : NetworkBehaviour {
 	}
 
 	public void ResetHealth(){
-		health = 100;
+		health = MaxHealth;
 	}
 
 	void SetHealthText(){
 		if (isLocalPlayer) {
-			healthText.text = "Health " + health.ToString();
+			if (healthText != null){
+				healthText.text = "Health " + health.ToString();
+			}
 		}
 	}
 

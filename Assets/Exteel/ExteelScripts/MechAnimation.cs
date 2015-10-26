@@ -5,13 +5,15 @@ using UnityEngine.Networking;
 public class MechAnimation : NetworkBehaviour {
 
 	[SyncVar (hook = "OnJumpChanged")] bool jump;
+	[SyncVar (hook = "OnHorizChanged")] float horiz;
+	[SyncVar (hook = "OnVertChanged")] float vert;
 
 	private Animator animator;
 	// Use this for initialization
 
 	public bool isAnimatingJump = false;
-	static int idleState = Animator.StringToHash("Base Layer.Idle");	
-	static int locoState = Animator.StringToHash("Base Layer.Locomotion");			// these integers are references to our animator's states
+//	static int idleState = Animator.StringToHash("Base Layer.Idle");	
+//	static int locoState = Animator.StringToHash("Base Layer.Locomotion");			// these integers are references to our animator's states
 	static int beginJumpState = Animator.StringToHash("Base Layer.BeginJump");				// and are used to check state for various actions to occur
 	static int endJumpState = Animator.StringToHash("Base Layer.EndJump");				// and are used to check state for various actions to occur
 	static int fallingState = Animator.StringToHash("Base Layer.Falling");				// and are used to check state for various actions to occur
@@ -39,7 +41,7 @@ public class MechAnimation : NetworkBehaviour {
 		mechController = GetComponent<MechController>();
 		netAnimator = GetComponent<NetworkAnimator>();
 
-		for (int i = 0; i < 6; i++){
+		for (int i = 0; i < 7; i++){
 			netAnimator.SetParameterAutoSend(i, true);
 		}
 	
@@ -55,6 +57,9 @@ public class MechAnimation : NetworkBehaviour {
 		float v = Input.GetAxis("Vertical");				// setup v variables as our vertical input axis
 //		Debug.Log ("Speed is : " + v.ToString());
 //		Debug.Log ("Direction is : " + h.ToString());
+
+		horiz = h;
+		vert = v;
 		animator.SetFloat("Speed", v);							// set our animator's float parameter 'Speed' equal to the vertical input axis				
 		animator.SetFloat("Direction", h); 						// set our animator's float parameter 'Direction' equal to the horizontal input axis		
 		//animator.SetLayerWeight(0,1);
@@ -92,8 +97,8 @@ public class MechAnimation : NetworkBehaviour {
 			if (Input.GetButton("Jump") && Time.time - lastTimeJumped > jumpTime) {
 				lastTimeJumped = Time.time;
 			 	Debug.Log ("Jumping");
-				animator.SetBool("Jump", true);
 				jump = true;
+				animator.SetBool("Jump", true);
 				animator.SetBool("AlreadyFalling", true);
 			} else {
 				animator.SetBool("Jump", false);
@@ -101,8 +106,9 @@ public class MechAnimation : NetworkBehaviour {
 				//Invoke ("DisableJump",1);
 			}
 		} else {
-			Debug.Log ("Already in jump state");
+			//Debug.Log ("Already in jump state");
 			animator.SetBool ("Jump", false);
+			jump = false;
 		}
 
 		if (Input.GetButton ("Fire1")){
@@ -110,6 +116,8 @@ public class MechAnimation : NetworkBehaviour {
 		} else {
 			animator.SetBool ("Shoot", false);
 		}
+
+		animator.SetBool ("Boost", mechController.isBoosting);
 //		currentBaseState = animator.GetCurrentAnimatorStateInfo(0);	// set our currentState variable to the current state of the Base Layer (0) of animation
 //
 //		// if we are currently in a state called Locomotion, then allow Jump input (Space) to set the Jump bool parameter in the Animator to true
@@ -141,5 +149,15 @@ public class MechAnimation : NetworkBehaviour {
 	void OnJumpChanged(bool isJump){
 		jump = isJump;
 		animator.SetBool ("Jump", jump);
+	}
+
+	void OnHorizChanged(float h){
+		horiz = h;
+		animator.SetFloat("Direction", horiz);
+	}
+
+	void OnVertChanged(float v){
+		vert = v;
+		animator.SetFloat("Speed", vert);
 	}
 }

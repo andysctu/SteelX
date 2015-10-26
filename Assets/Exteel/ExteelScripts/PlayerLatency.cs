@@ -10,7 +10,7 @@ public class PlayerLatency : NetworkBehaviour {
 	private Text latencyText;
 
 	public override void OnStartLocalPlayer(){
-		nClient = GameObject.Find ("NetworkManager").GetComponent<NetworkManager> ().client;
+		nClient = GameObject.Find ("NetworkManager").GetComponent<NetworkManagerCustom> ().client;
 		latencyText = GameObject.Find ("Latency Text").GetComponent<Text> ();
 	}
 		
