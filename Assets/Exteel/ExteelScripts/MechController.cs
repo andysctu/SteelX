@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
@@ -31,6 +32,8 @@ public class MechController : MonoBehaviour {
 	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 
+	public Slider fuelBar;
+
 	//private bool isBoosting = false;
 	private bool startBoosting = false;
 
@@ -46,6 +49,7 @@ public class MechController : MonoBehaviour {
 		CurrentFuel = MaxFuel;
 		BoostSpeed = MoveSpeed + 20;
 		mechAnimation = GetComponent<MechAnimation>();
+		//fuelBar = (Slider)GameObject.Find ("FuelBar");
 	}
 	
 	// Update is called once per frame
@@ -127,7 +131,14 @@ public class MechController : MonoBehaviour {
 			move.y += ySpeed * Time.fixedDeltaTime;
 		}
 		CharacterController.Move (move);
-
+		float currentPercent = fuelBar.value;
+		float targetPercent = CurrentFuel/(float)MaxFuel;
+		float err = 0.1f;
+		if (Mathf.Abs(currentPercent - targetPercent) > err) {
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.05f : 0.05f);
+		}
+		
+		fuelBar.value = currentPercent;
 
 	}
 

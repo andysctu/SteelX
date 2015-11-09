@@ -16,6 +16,8 @@ public class PlayerHealth : NetworkBehaviour {
 
 	public delegate void RespawnDelegate();
 	public event RespawnDelegate EventRespawn;
+	
+	private Slider healthBar;
 
 	// Use this for initialization
 	public override void OnStartLocalPlayer () {
@@ -23,6 +25,7 @@ public class PlayerHealth : NetworkBehaviour {
 		health = MaxHealth;
 		Debug.Log ("Running.");
 		healthText = GameObject.Find ("Health Text").GetComponent<Text> ();
+		//healthBar = GameObject.Find ("HealthBar");
 		Debug.Log ("Running..");
 		SetHealthText ();
 	}
@@ -30,6 +33,15 @@ public class PlayerHealth : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 		CheckCondition ();
+
+//		float currentPercent = healthBar.value;
+//		float targetPercent = health/(float)MaxHealth;
+//		float err = 0.1f;
+//		if (Mathf.Abs(currentPercent - targetPercent) > err) {
+//			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.05f : 0.05f);
+//		}
+//
+//		healthBar.value = currentPercent;
 	}
 
 	void CheckCondition(){
