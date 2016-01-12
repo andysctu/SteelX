@@ -25,7 +25,8 @@ public class PlayerHealth : NetworkBehaviour {
 		health = MaxHealth;
 		Debug.Log ("Running.");
 		healthText = GameObject.Find ("Health Text").GetComponent<Text> ();
-		//healthBar = GameObject.Find ("HealthBar");
+		Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
+		healthBar = slider[0];
 		Debug.Log ("Running..");
 		SetHealthText ();
 	}
@@ -34,14 +35,14 @@ public class PlayerHealth : NetworkBehaviour {
 	void Update () {
 		CheckCondition ();
 
-//		float currentPercent = healthBar.value;
-//		float targetPercent = health/(float)MaxHealth;
-//		float err = 0.1f;
-//		if (Mathf.Abs(currentPercent - targetPercent) > err) {
-//			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.05f : 0.05f);
-//		}
-//
-//		healthBar.value = currentPercent;
+		float currentPercent = healthBar.value;
+		float targetPercent = health/(float)MaxHealth;
+		float err = 0.1f;
+		if (Mathf.Abs(currentPercent - targetPercent) > err) {
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+		}
+
+		healthBar.value = currentPercent;
 	}
 
 	void CheckCondition(){

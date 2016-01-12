@@ -32,7 +32,7 @@ public class MechController : MonoBehaviour {
 	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 
-	public Slider fuelBar;
+	private Slider fuelBar;
 
 	//private bool isBoosting = false;
 	private bool startBoosting = false;
@@ -40,26 +40,37 @@ public class MechController : MonoBehaviour {
 	private Vector3 move = Vector3.zero;
 
 	//private LayerMask layerMask = 1 << 8;
-	private float timestamp;
+	//private float timestamp;
 
 	private MechAnimation mechAnimation;
+
+	private AudioSource audio;
+
 	// Use this for initialization
 	void Start () {
 		CharacterController = GetComponent<CharacterController> ();
 		CurrentFuel = MaxFuel;
 		BoostSpeed = MoveSpeed + 20;
 		mechAnimation = GetComponent<MechAnimation>();
-		//fuelBar = (Slider)GameObject.Find ("FuelBar");
+		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
+		fuelBar = sliders[1];
+		audio = gameObject.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		// This updates the private Vector3 move variable
 		GetXZDirection();
 
-		if (Input.GetKeyDown (KeyCode.Mouse0) ){//&& Time.time >= timestamp){
-			timestamp =  Time.time + TimeBetweenFire;
-			AudioSource audio = gameObject.GetComponent < AudioSource > ();
-			audio.Play();
+		// Play sound on fire
+		if (Input.GetKeyDown (KeyCode.Mouse0)) {
+
+			// no sound for now
+//			audio.Play();
+
+//			timestamp =  Time.time + TimeBetweenFire;
+
 //			RaycastHit hit;
 //			if (Physics.Raycast(transform.GetChild(0).position, transform.GetChild (0).forward, out hit, Mathf.Infinity, layerMask)) {
 //				HitInfo hitInfo = new HitInfo();
@@ -135,14 +146,14 @@ public class MechController : MonoBehaviour {
 		float targetPercent = CurrentFuel/(float)MaxFuel;
 		float err = 0.1f;
 		if (Mathf.Abs(currentPercent - targetPercent) > err) {
-			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.05f : 0.05f);
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
 		}
 		
 		fuelBar.value = currentPercent;
 
 	}
 
-	void GetXZDirection(){
+	void GetXZDirection() {
 		move = Vector3.zero;
 
 		if (Input.GetAxis ("Vertical") > marginOfError || Input.GetAxis ("Vertical") < -marginOfError) {

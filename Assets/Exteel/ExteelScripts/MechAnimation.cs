@@ -44,7 +44,7 @@ public class MechAnimation : NetworkBehaviour {
 		for (int i = 0; i < 7; i++){
 			netAnimator.SetParameterAutoSend(i, true);
 		}
-	
+		lastTimeJumped = Time.time;
 //		if(animator.layerCount ==2)
 //			animator.SetLayerWeight(1, 1);
 	}
@@ -101,8 +101,8 @@ public class MechAnimation : NetworkBehaviour {
 				animator.SetBool("Jump", true);
 				animator.SetBool("AlreadyFalling", true);
 			} else {
-				animator.SetBool("Jump", false);
 				jump = false;
+				animator.SetBool("Jump", false);
 				//Invoke ("DisableJump",1);
 			}
 		} else {
@@ -142,6 +142,7 @@ public class MechAnimation : NetworkBehaviour {
 //		}
 	}
 
+	// not used
 	void DisableJump(){
 		animator.SetBool("Jump", false);
 		jump = false;

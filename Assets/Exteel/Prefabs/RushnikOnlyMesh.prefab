@@ -1178,8 +1178,8 @@ Animator:
   m_GameObject: {fileID: 186952}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 039907b37f46849e08227df91ff1919e, type: 3}
-  m_Controller: {fileID: 9100000, guid: 1754fc03e00604ed3b45cd6521a1c318, type: 2}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: d5ef38c1143364a358f4df7b42b2979f, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -1231,7 +1231,6 @@ MonoBehaviour:
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
-  fuelBar: {fileID: 0}
 --- !u!114 &11440590
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1481,7 +1480,6 @@ MonoBehaviour:
   MaxHealth: 100
   health: 100
   isDead: 0
-  healthBar: {fileID: 0}
 --- !u!114 &11491300
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1877,7 +1875,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 0}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Animator
@@ -1894,6 +1892,14 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_SnapThreshold
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: isAnimatingJump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_CullingMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
