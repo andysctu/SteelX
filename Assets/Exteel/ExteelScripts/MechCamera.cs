@@ -97,29 +97,14 @@ public class MechCamera : MonoBehaviour
 		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
 
 		float outerRotate = ( - inputV) * rotationSpeed;
-		transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
+// Clamping
+//		if (-transform.localRotation.eulerAngles.x > -34 || (transform.localRotation.eulerAngles.x > 326)) {
+//			Debug.Log("x: " + transform.eulerAngles.x);
+//			Debug.Log("y: " + transform.eulerAngles.y);
+//			Debug.Log("z: " + transform.eulerAngles.z);
+			transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
+//		}
 		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_TargetAngles.y, 0);
 		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
-
-		// TODO clamp
-//			Vector3 euler = transform.eulerAngles;
-//			Debug.Log ("euler.x: " + euler.x);
-//	
-//			float eulerAngle = euler.x;
-//			if (eulerAngle > 180){
-//				eulerAngle -= 360;
-//			}
-//			
-//			if (eulerAngle > 60) {
-//				eulerAngle = 60f;
-//			}
-//			
-//			if (eulerAngle < -60) {
-//				eulerAngle = -60f;
-//			}
-//
-//			euler.x = eulerAngle;
-//			transform.eulerAngles = euler;
-
 	}
 }
