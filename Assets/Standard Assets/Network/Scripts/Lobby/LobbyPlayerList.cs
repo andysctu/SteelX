@@ -12,10 +12,15 @@ namespace UnityStandardAssets.Network
 
         public RectTransform playerListContentTransform;
         public GameObject warningDirectPlayServer;
+        public Transform addButtonRow;
 
-        public void Awake()
+        protected VerticalLayoutGroup _layout;
+        protected List<LobbyPlayer> _players = new List<LobbyPlayer>();
+
+        public void OnEnable()
         {
             _instance = this;
+            _layout = playerListContentTransform.GetComponent<VerticalLayoutGroup>();
         }
 
         public void DisplayDirectServerWarning(bool enabled)
@@ -28,14 +33,35 @@ namespace UnityStandardAssets.Network
         {
             //this dirty the layout to force it to recompute evryframe (a sync problem between client/server
             //sometime to child being assigned before layout was enabled/init, leading to broken layouting)
-            VerticalLayoutGroup layout = playerListContentTransform.GetComponent<VerticalLayoutGroup>();
-            if(layout)
-                layout.childAlignment = Time.frameCount%2 == 0 ? TextAnchor.UpperCenter : TextAnchor.UpperLeft;
+            
+            if(_layout)
+                _layout.childAlignment = Time.frameCount%2 == 0 ? TextAnchor.UpperCenter : TextAnchor.UpperLeft;
         }
 
         public void AddPlayer(LobbyPlayer player)
         {
+            _players.Add(player);
+
             player.transform.SetParent(playerListContentTransform, false);
+            addButtonRow.transform.SetAsLastSibling();
+
+            PlayerListModified();
+        }
+
+        public void RemovePlayer(LobbyPlayer player)
+        {
+            _players.Remove(player);
+            PlayerListModified();
+        }
+
+        public void PlayerListModified()
+        {
+            int i = 0;
+            foreach (LobbyPlayer p in _players)
+            {
+                p.OnPlayerListChanged(i);
+                ++i;
+            }
         }
     }
 }

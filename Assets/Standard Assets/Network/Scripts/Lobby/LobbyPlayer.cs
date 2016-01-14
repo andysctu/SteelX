@@ -11,12 +11,18 @@ namespace UnityStandardAssets.Network
     //Any LobbyHook can then grab it and pass those value to the game player prefab (see the Pong Example in the Samples Scenes)
     public class LobbyPlayer : NetworkLobbyPlayer
     {
-        static Color[] Colors = new Color[] { Color.red, Color.magenta, Color.cyan, Color.blue, Color.green, Color.yellow };
+        static Color[] Colors = new Color[] { Color.magenta, Color.red, Color.cyan, Color.blue, Color.green, Color.yellow };
+        //used on server to avoid assigning the same color to two player
+        static List<int> _colorInUse = new List<int>();
 
         public Button colorButton;
         public InputField nameInput;
         public Button readyButton;
         public Button waitingPlayerButton;
+        public Button removePlayerButton;
+
+        public GameObject localIcone;
+        public GameObject remoteIcone;
 
         //OnMyName function will be invoked on clients when server change the value of playerName
         [SyncVar(hook = "OnMyName")]
@@ -24,36 +30,26 @@ namespace UnityStandardAssets.Network
         [SyncVar(hook = "OnMyColor")]
         public Color playerColor = Color.white;
 
+        public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
+        public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
+
         static Color JoinColor = new Color(255.0f/255.0f, 0.0f, 101.0f/255.0f,1.0f);
         static Color NotReadyColor = new Color(34.0f / 255.0f, 44 / 255.0f, 55.0f / 255.0f, 1.0f);
         static Color ReadyColor = new Color(0.0f, 204.0f / 255.0f, 204.0f / 255.0f, 1.0f);
         static Color TransparentColor = new Color(0, 0, 0, 0);
 
-        static Color OtherPlayerColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
-        static Color LocalPlayerColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
+        //static Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
+        //static Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
 
-
-        public override void OnStartClient()
-        {
-            //All networkbehaviour base function don't do anything
-            //but NetworkLobbyPlayer redefine OnStartClient, so we need to call it here
-            base.OnStartClient();
-
-            //setup the player data on UI. The value are SyncVar so the player
-            //will be created with the right value currently on server
-            OnMyName(playerName);
-            OnMyColor(playerColor);
-        }
 
         public override void OnClientEnterLobby()
         {
             base.OnClientEnterLobby();
 
+            if (LobbyManager.s_Singleton != null) LobbyManager.s_Singleton.OnPlayersNumberModified(1);
+
             LobbyPlayerList._instance.AddPlayer(this);
             LobbyPlayerList._instance.DisplayDirectServerWarning(isServer && LobbyManager.s_Singleton.matchMaker == null);
-
-            //if we return from a game, color of text can still be the one for "Ready"
-            readyButton.transform.GetChild(0).GetComponent<Text>().color = Color.white;
 
             if (isLocalPlayer)
             {
@@ -70,6 +66,16 @@ namespace UnityStandardAssets.Network
             OnMyColor(playerColor);
         }
 
+        public override void OnStartAuthority()
+        {
+            base.OnStartAuthority();
+
+            //if we return from a game, color of text can still be the one for "Ready"
+            readyButton.transform.GetChild(0).GetComponent<Text>().color = Color.white;
+
+           SetupLocalPlayer();
+        }
+
         void ChangeReadyButtonColor(Color c)
         {
             ColorBlock b = readyButton.colors;
@@ -83,11 +89,7 @@ namespace UnityStandardAssets.Network
         void SetupOtherPlayer()
         {
             nameInput.interactable = false;
-
-            GetComponent<Image>().color = OtherPlayerColor;
-
-            if (playerColor == Color.white)
-                CmdColorChange(slot);
+            removePlayerButton.interactable = NetworkServer.active;
 
             ChangeReadyButtonColor(NotReadyColor);
 
@@ -100,29 +102,27 @@ namespace UnityStandardAssets.Network
         void SetupLocalPlayer()
         {
             nameInput.interactable = true;
+            remoteIcone.gameObject.SetActive(false);
+            localIcone.gameObject.SetActive(true);
 
-            GetComponent<Image>().color = LocalPlayerColor;
+            CheckRemoveButton();
+
+            if (playerColor == Color.white)
+                CmdColorChange();
 
             ChangeReadyButtonColor(JoinColor);
 
             readyButton.transform.GetChild(0).GetComponent<Text>().text = "JOIN";
             readyButton.interactable = true;
-        }
-
-        public override void OnStartLocalPlayer()
-        {
-            //if( (isServer && !NetworkServer.active) || (isClient && !LobbyManager.s_Singleton.client.isConnected))
-            //{//the server isn't started, rogue player, just delete it
-            //    Destroy(gameObject);
-            //    return;
-            //}
 
             //have to use child count of player prefab already setup as "this.slot" is not set yet
-            if(playerName == "")
-                CmdNameChanged("Player" + LobbyPlayerList._instance.playerListContentTransform.childCount);
+            if (playerName == "")
+                CmdNameChanged("Player" + (LobbyPlayerList._instance.playerListContentTransform.childCount-1));
 
             //we switch from simple name display to name input
-           
+            colorButton.interactable = true;
+            nameInput.interactable = true;
+
             nameInput.onEndEdit.RemoveAllListeners();
             nameInput.onEndEdit.AddListener(OnNameChanged);
 
@@ -132,7 +132,22 @@ namespace UnityStandardAssets.Network
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(OnReadyClicked);
 
-            SetupLocalPlayer();
+            //when OnClientEnterLobby is called, the loval PlayerController is not yet created, so we need to redo that here to disable
+            //the add button if we reach maxLocalPlayer. We pass 0, as it was already counted on OnClientEnterLobby
+            if (LobbyManager.s_Singleton != null) LobbyManager.s_Singleton.OnPlayersNumberModified(0);
+        }
+
+        //This enable/disable the remove button depending on if that is the only local player or not
+        public void CheckRemoveButton()
+        {
+            if (!isLocalPlayer)
+                return;
+
+            int localPlayerCount = 0;
+            foreach (PlayerController p in ClientScene.localPlayers)
+                localPlayerCount += (p == null || p.playerControllerId == -1) ? 0 : 1;
+
+            removePlayerButton.interactable = localPlayerCount > 1;
         }
 
         public override void OnClientReady(bool readyState)
@@ -144,7 +159,9 @@ namespace UnityStandardAssets.Network
                 Text textComponent = readyButton.transform.GetChild(0).GetComponent<Text>();
                 textComponent.text = "READY";
                 textComponent.color = ReadyColor;
-                readyButton.interactable = isLocalPlayer;
+                readyButton.interactable = false;
+                colorButton.interactable = false;
+                nameInput.interactable = false;
             }
             else
             {
@@ -154,7 +171,14 @@ namespace UnityStandardAssets.Network
                 textComponent.text = isLocalPlayer ? "JOIN" : "...";
                 textComponent.color = Color.white;
                 readyButton.interactable = isLocalPlayer;
+                colorButton.interactable = isLocalPlayer;
+                nameInput.interactable = isLocalPlayer;
             }
+        }
+
+        public void OnPlayerListChanged(int idx)
+        { 
+            GetComponent<Image>().color = (idx % 2 == 0) ? EvenRowColor : OddRowColor;
         }
 
         ///===== callback from sync var
@@ -162,7 +186,6 @@ namespace UnityStandardAssets.Network
         public void OnMyName(string newName)
         {
             playerName = newName;
-            //nameDisp.text = playerName;
             nameInput.text = playerName;
         }
 
@@ -178,13 +201,7 @@ namespace UnityStandardAssets.Network
         //so that all client get the new value throught syncvar
         public void OnColorClicked()
         {
-            int idx = System.Array.IndexOf(Colors, this.playerColor);
-
-            if (idx < 0) idx = 0;
-
-            idx = (idx + 1) % Colors.Length;
-
-            CmdColorChange(idx);
+            CmdColorChange();
         }
 
         public void OnReadyClicked()
@@ -197,18 +214,74 @@ namespace UnityStandardAssets.Network
             CmdNameChanged(str);
         }
 
-        //====== Client RPC
-        public void RpcToggleJoinButton(bool enabled)
+        public void OnRemovePlayerClick()
+        {
+            if (isLocalPlayer)
+            {
+                RemovePlayer();
+            }
+            else if (isServer)
+                LobbyManager.s_Singleton.KickPlayer(connectionToClient);
+                
+        }
+
+        public void ToggleJoinButton(bool enabled)
         {
             readyButton.gameObject.SetActive(enabled);
             waitingPlayerButton.gameObject.SetActive(!enabled);
         }
 
+        [ClientRpc]
+        public void RpcUpdateCountdown(int countdown)
+        {
+            LobbyManager.s_Singleton.countdownPanel.UIText.text = "Match Starting in " + countdown;
+            LobbyManager.s_Singleton.countdownPanel.gameObject.SetActive(countdown != 0);
+        }
+
+        [ClientRpc]
+        public void RpcUpdateRemoveButton()
+        {
+            CheckRemoveButton();
+        }
+
         //====== Server Command
 
         [Command]
-        public void CmdColorChange(int idx)
+        public void CmdColorChange()
         {
+            int idx = System.Array.IndexOf(Colors, playerColor);
+
+            int inUseIdx = _colorInUse.IndexOf(idx);
+
+            if (idx < 0) idx = 0;
+
+            idx = (idx + 1) % Colors.Length;
+
+            bool alreadyInUse = false;
+
+            do
+            {
+                alreadyInUse = false;
+                for (int i = 0; i < _colorInUse.Count; ++i)
+                {
+                    if (_colorInUse[i] == idx)
+                    {//that color is already in use
+                        alreadyInUse = true;
+                        idx = (idx + 1) % Colors.Length;
+                    }
+                }
+            }
+            while (alreadyInUse);
+
+            if (inUseIdx >= 0)
+            {//if we already add an entry in the colorTabs, we change it
+                _colorInUse[inUseIdx] = idx;
+            }
+            else
+            {//else we add it
+                _colorInUse.Add(idx);
+            }
+
             playerColor = Colors[idx];
         }
 
@@ -216,6 +289,27 @@ namespace UnityStandardAssets.Network
         public void CmdNameChanged(string name)
         {
             playerName = name;
+        }
+
+        //Cleanup thing when get destroy (which happen when client kick or disconnect)
+        public void OnDestroy()
+        {
+            int idx = System.Array.IndexOf(Colors, playerColor);
+
+            if (idx < 0)
+                return;
+
+            for (int i = 0; i < _colorInUse.Count; ++i)
+            {
+                if (_colorInUse[i] == idx)
+                {//that color is already in use
+                    _colorInUse.RemoveAt(i);
+                    break;
+                }
+            }
+
+            LobbyPlayerList._instance.RemovePlayer(this);
+            if (LobbyManager.s_Singleton != null) LobbyManager.s_Singleton.OnPlayersNumberModified(-1);
         }
     }
 }

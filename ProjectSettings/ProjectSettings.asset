@@ -9,8 +9,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Unity
-  productName: UNET Sample
+  companyName: DefaultCompany
+  productName: 2013_10 - Sample Assets
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_ShowUnitySplashScreen: 1
@@ -439,6 +439,7 @@ PlayerSettings:
   XboxOnePersistentLocalStorageSize: 0
   intPropertyNames:
   - Android::ScriptingBackend
+  - CloudNetworkingId::CloudNetworkingId
   - Metro::ScriptingBackend
   - Standalone::ScriptingBackend
   - WP8::ScriptingBackend
@@ -450,6 +451,7 @@ PlayerSettings:
   - iOS::EnableIncrementalBuildSupportForIl2cpp
   - iOS::ScriptingBackend
   Android::ScriptingBackend: 0
+  CloudNetworkingId::CloudNetworkingId: 49052
   Metro::ScriptingBackend: 2
   Standalone::ScriptingBackend: 0
   WP8::ScriptingBackend: 2

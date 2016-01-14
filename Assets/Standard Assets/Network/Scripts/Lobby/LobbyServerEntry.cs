@@ -31,7 +31,7 @@ namespace UnityStandardAssets.Network
         {
             lobbyManager.matchMaker.JoinMatch(networkID, "", lobbyManager.OnMatchJoined);
             lobbyManager.backDelegate = lobbyManager.StopClientClbk;
-            lobbyManager.isMatchmaking = true;
+            lobbyManager._isMatchmaking = true;
             lobbyManager.DisplayIsConnecting();
         }
     }

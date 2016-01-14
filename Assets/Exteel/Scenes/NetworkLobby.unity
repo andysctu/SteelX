@@ -8,25 +8,25 @@ SceneSettings:
   m_PVSPortalsArray: []
   m_OcclusionBakeSettings:
     smallestOccluder: 5
-    smallestHole: .25
+    smallestHole: 0.25
     backfaceThreshold: 100
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 6
   m_Fog: 0
-  m_FogColor: {r: .5, g: .5, b: .5, a: 1}
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: .00999999978
+  m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: .211999997, g: .226999998, b: .259000003, a: 1}
-  m_AmbientEquatorColor: {r: .114, g: .125, b: .133000001, a: 1}
-  m_AmbientGroundColor: {r: .0469999984, g: .0430000015, b: .0350000001, a: 1}
+  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
-  m_HaloStrength: .5
+  m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
@@ -40,7 +40,7 @@ RenderSettings:
 --- !u!157 &4
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 5
+  serializedVersion: 6
   m_GIWorkflowMode: 0
   m_LightmapsMode: 1
   m_GISettings:
@@ -66,7 +66,7 @@ LightmapSettings:
     m_FinalGather: 0
     m_FinalGatherRayCount: 1024
     m_ReflectionCompression: 2
-  m_LightmapSnapshot: {fileID: 0}
+  m_LightingDataAsset: {fileID: 0}
   m_RuntimeCPUUsage: 25
 --- !u!196 &5
 NavMeshSettings:
@@ -74,15 +74,15 @@ NavMeshSettings:
   m_ObjectHideFlags: 0
   m_BuildSettings:
     serializedVersion: 2
-    agentRadius: .5
+    agentRadius: 0.5
     agentHeight: 2
     agentSlope: 45
-    agentClimb: .400000006
+    agentClimb: 0.4
     ledgeDropHeight: 0
     maxJumpAcrossDistance: 0
     accuratePlacement: 0
     minRegionArea: 2
-    cellSize: .166666672
+    cellSize: 0.16666667
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
 --- !u!1 &370445943
@@ -134,14 +134,14 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 1, g: 1, b: 1, a: .0196078438}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0.019607844}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
     y: 0
     width: 1
     height: 1
-  near clip plane: .300000012
+  near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -157,7 +157,7 @@ Camera:
   m_HDR: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
-  m_StereoSeparation: .0219999999
+  m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
 --- !u!4 &370445948
 Transform:
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_SubmitButton: Submit
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10
-  m_RepeatDelay: .5
+  m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
 --- !u!114 &1166589156
 MonoBehaviour:
@@ -245,7 +245,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
---- !u!1001 &1539639520
+--- !u!1001 &1517214951
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -324,6 +324,26 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11465630, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
+      propertyPath: m_Text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
+      propertyPath: isMatchmaking
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
+      propertyPath: m_GamePlayerPrefab
+      value: 
+      objectReference: {fileID: 186952, guid: 1c4b27dcbb7414b7e97fc2b1e367729d, type: 2}
+    - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
+      propertyPath: prematchCountdown
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
+      propertyPath: m_MinPlayers
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
       propertyPath: m_OfflineScene
       value: NetworkLobby
@@ -337,106 +357,25 @@ Prefab:
       value: Game
       objectReference: {fileID: 0}
     - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_GamePlayerPrefab
-      value: 
-      objectReference: {fileID: 186952, guid: 1c4b27dcbb7414b7e97fc2b1e367729d, type: 2}
+      propertyPath: m_MaxPlayers
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: minPlayer
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 22409970, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_SizeDelta.x
-      value: 840.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 140634, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 148054, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_IsActive
+      propertyPath: m_MaxPlayersPerConnection
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 101042, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 22453414, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: -440.000122
-      objectReference: {fileID: 0}
-    - target: {fileID: 22453414, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 22463094, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: -9.15527344e-05
-      objectReference: {fileID: 0}
-    - target: {fileID: 22463094, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11405198, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Color.r
-      value: .941176534
-      objectReference: {fileID: 0}
-    - target: {fileID: 11405198, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Color.g
-      value: .941176534
-      objectReference: {fileID: 0}
-    - target: {fileID: 11405198, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Color.b
-      value: .941176534
-      objectReference: {fileID: 0}
-    - target: {fileID: 11471648, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11471648, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11471648, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 22463094, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 22453414, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11413196, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11447752, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Text
-      value: 127.0.0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 22312876, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11406550, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-      propertyPath: m_Text
-      value: 'This is a direct play server, it is not listed in "List servers"
-
-        Other players have to connect using your IP address'
       objectReference: {fileID: 0}
     - target: {fileID: 11475086, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
       propertyPath: m_PlayerPrefab
       value: 
-      objectReference: {fileID: 186952, guid: 1c4b27dcbb7414b7e97fc2b1e367729d, type: 2}
-    m_RemovedComponents: []
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 11415508, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1539639521 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 155310, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
-  m_PrefabInternal: {fileID: 1539639520}
+  m_PrefabInternal: {fileID: 1517214951}
 --- !u!114 &1539639522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,6 +384,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1539639521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f498c909c01a21f45b9a4a83a18dd590, type: 3}
+  m_Script: {fileID: 11500000, guid: a5d15f2051d09644ebccdef0f54b7bbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

@@ -13,9 +13,6 @@ namespace UnityStandardAssets.Network
 
         void Start()
         {
-            //We keep it in game to be able to disconnect/have info on server
-            DontDestroyOnLoad(gameObject);
-
             panelImage = GetComponent<Image>();
         }
 
