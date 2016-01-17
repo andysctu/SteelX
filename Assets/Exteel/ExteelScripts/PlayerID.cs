@@ -1,33 +1,44 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class PlayerID : NetworkBehaviour {
 
 	[SyncVar] public string uniquePlayerIdentity;
+//	[SyncVar] public List<string> players;
 	private NetworkInstanceId playerNetID;
 	private Transform myTransform;
+
+	private bool nameSet = false;
 
 	public override void OnStartLocalPlayer ()
 	{
 		GetNetIdentity ();
-		SetIdentity ();
+		if (myTransform.name == "RushnikOnlyMesh(Clone)" || myTransform.name == "") {
+			
+			SetIdentity ();
+		}
 	}
 
 	void Awake(){
 		myTransform = transform;
 	}
-	// Update is called once per frame
-	void Update () {
-		if (myTransform.name == "RushnikOnlyMesh(Clone)" || myTransform.name == "") {
-			SetIdentity ();
-		}
-	}
+//	// Update is called once per frame
+//	void Update () {
+//		if (nameSet) return;
+//		if (myTransform.name == "RushnikOnlyMesh(Clone)" || myTransform.name == "") {
+//			SetIdentity ();
+//			nameSet = true;
+//		}
+//	}
 
 	[Client]
 	void GetNetIdentity(){
 		playerNetID = GetComponent<NetworkIdentity> ().netId;
+		Debug.Log("Player Net ID is: " + playerNetID);
 		CmdTellServerMyIdentity (MakeUniqueIdentity());
+//		CmdAddNewPlayer(uniquePlayerIdentity);
 	}
 
 	void SetIdentity(){
@@ -47,4 +58,9 @@ public class PlayerID : NetworkBehaviour {
 	void CmdTellServerMyIdentity(string id){
 		uniquePlayerIdentity = id;
 	}
+
+//	[Command]
+//	void CmdAddNewPlayer(string playerName){
+//		players.Add(playerName);
+//	}
 }

@@ -53,7 +53,12 @@ public class MechController : MonoBehaviour {
 		BoostSpeed = MoveSpeed + 20;
 		mechAnimation = GetComponent<MechAnimation>();
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
-		fuelBar = sliders[1];
+		if (sliders.Length > 1) {
+			fuelBar = sliders[1];
+			Debug.Log("Sliders length > 1");
+		} else {
+			Debug.Log("Fuel bar null");
+		}
 		audio = gameObject.GetComponent<AudioSource>();
 	}
 	
@@ -142,6 +147,16 @@ public class MechController : MonoBehaviour {
 			move.y += ySpeed * Time.fixedDeltaTime;
 		}
 		CharacterController.Move (move);
+
+		if (fuelBar == null) {
+			Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
+			if (sliders.Length > 1) {
+				fuelBar = sliders[1];
+				Debug.Log("2Sliders length > 1");
+			} else {
+				Debug.Log("2Fuel bar null");
+			}
+		}
 		float currentPercent = fuelBar.value;
 		float targetPercent = CurrentFuel/(float)MaxFuel;
 		float err = 0.1f;

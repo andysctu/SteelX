@@ -21,18 +21,30 @@ public class PlayerHealth : NetworkBehaviour {
 
 	// Use this for initialization
 	public override void OnStartLocalPlayer () {
-		Debug.Log ("Running");
 		health = MaxHealth;
-		Debug.Log ("Running.");
 		healthText = GameObject.Find ("Health Text").GetComponent<Text> ();
 		Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
-		healthBar = slider[0];
-		Debug.Log ("Running..");
+		if (slider.Length > 0) {
+			Debug.Log("Healthbar is non-empty");
+			healthBar = slider[0];
+		} else {
+			Debug.Log("Healthbar is empty");
+		}
 		SetHealthText ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (healthBar == null){
+			Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
+			if (slider.Length > 0) {
+				Debug.Log("Healthbar is non-empty2");
+				healthBar = slider[0];
+			} else {
+				Debug.Log("Healthbar is empty2");
+			}
+		}
 		CheckCondition ();
 
 		float currentPercent = healthBar.value;
