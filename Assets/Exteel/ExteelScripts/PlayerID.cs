@@ -10,19 +10,24 @@ public class PlayerID : NetworkBehaviour {
 	private NetworkInstanceId playerNetID;
 	private Transform myTransform;
 
-	private bool nameSet = false;
+//	private bool nameSet = false;
 
-	public override void OnStartLocalPlayer ()
-	{
+//	public override void OnStartLocalPlayer ()
+//	{
+//		GetNetIdentity ();
+//		if (myTransform.tag == "Player") {
+//			
+//			SetIdentity ();
+//		}
+//	}
+
+	void Start(){
+		myTransform = transform;
 		GetNetIdentity ();
-		if (myTransform.name == "RushnikOnlyMesh(Clone)" || myTransform.name == "") {
-			
+		if (myTransform.tag == "Player") {
+
 			SetIdentity ();
 		}
-	}
-
-	void Awake(){
-		myTransform = transform;
 	}
 //	// Update is called once per frame
 //	void Update () {

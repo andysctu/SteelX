@@ -33,7 +33,7 @@ public class PlayerShoot : NetworkBehaviour {
 
 			if (hit.transform.tag == "Player"){
 				string uIdentity = hit.transform.name;
-				Debug.Log (uIdentity);
+				Debug.Log ("uID is: " + uIdentity);
 				CmdTellServerWhoWasShot(uIdentity, damage);
 			} else if (hit.transform.tag == "Drone"){
 				string uIdentity = hit.transform.name;
