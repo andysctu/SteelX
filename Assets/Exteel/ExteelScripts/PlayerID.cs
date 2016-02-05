@@ -41,7 +41,6 @@ public class PlayerID : NetworkBehaviour {
 	[Client]
 	void GetNetIdentity(){
 		playerNetID = GetComponent<NetworkIdentity> ().netId;
-		Debug.Log("Player Net ID is: " + playerNetID);
 		CmdTellServerMyIdentity (MakeUniqueIdentity());
 //		CmdAddNewPlayer(uniquePlayerIdentity);
 	}
