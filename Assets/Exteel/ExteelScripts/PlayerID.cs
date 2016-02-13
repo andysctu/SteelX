@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class PlayerID : NetworkBehaviour {
-
+//	SyncListString players;
 	[SyncVar] public string uniquePlayerIdentity;
 //	[SyncVar] public List<string> players;
 	private NetworkInstanceId playerNetID;

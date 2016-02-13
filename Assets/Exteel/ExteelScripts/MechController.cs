@@ -55,7 +55,7 @@ public class MechController : MonoBehaviour {
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 1) {
 			fuelBar = sliders[1];
-			Debug.Log("Sliders length > 1");
+//			Debug.Log("Sliders length > 1");
 		} else {
 			Debug.Log("Fuel bar null");
 		}

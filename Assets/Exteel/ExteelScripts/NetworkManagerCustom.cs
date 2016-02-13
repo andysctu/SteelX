@@ -5,6 +5,18 @@ using UnityEngine.UI;
 
 public class NetworkManagerCustom : NetworkManager {
 
+//	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader extraMessageReader)
+//	{
+//		Debug.Log("HI");
+//		OnServerAddPlayer(conn, playerControllerId, extraMessageReader);
+//	}
+
+
+	public override void OnServerConnect(NetworkConnection conn){
+		Debug.Log("2");
+
+	}
+
 	private bool first = true;
 	public void StartupHost(){
 		SetPort ();

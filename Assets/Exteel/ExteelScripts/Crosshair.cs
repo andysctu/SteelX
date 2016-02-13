@@ -9,7 +9,7 @@ public class Crosshair : MonoBehaviour {
 
 	private Camera playerSight;
 	private Image currentCrosshair;
-	private LayerMask layerMask = (1 << 8) | (1 << 10);
+	private LayerMask layerMask = (1 << 8);
 
 	// Use this for initialization
 	void Start () {

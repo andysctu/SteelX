@@ -37,7 +37,6 @@ public class PlayerShoot : NetworkBehaviour {
 				CmdTellServerWhoWasShot(uIdentity, damage);
 			} else if (hit.transform.tag == "Drone"){
 				string uIdentity = hit.transform.name;
-				Debug.Log (uIdentity);
 				CmdTellServerWhichDroneWasShot(uIdentity, damage);
 			}
 		}

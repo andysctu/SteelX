@@ -25,7 +25,7 @@ public class PlayerHealth : NetworkBehaviour {
 		healthText = GameObject.Find ("Health Text").GetComponent<Text> ();
 		Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
 		if (slider.Length > 0) {
-			Debug.Log("Healthbar is non-empty");
+//			Debug.Log("Healthbar is non-empty");
 			healthBar = slider[0];
 		} else {
 			Debug.Log("Healthbar is empty");
@@ -39,7 +39,7 @@ public class PlayerHealth : NetworkBehaviour {
 		if (healthBar == null){
 			Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
 			if (slider.Length > 0) {
-				Debug.Log("Healthbar is non-empty2");
+//				Debug.Log("Healthbar is non-empty2");
 				healthBar = slider[0];
 			} else {
 				Debug.Log("Healthbar is empty2");
