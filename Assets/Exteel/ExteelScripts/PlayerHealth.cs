@@ -36,7 +36,8 @@ public class PlayerHealth : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-//		if (!isLocalPlayer) return;
+		CheckCondition ();
+		if (!isLocalPlayer) return;
 		if (healthBar == null){
 			Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
 			if (slider.Length > 0) {
@@ -46,7 +47,6 @@ public class PlayerHealth : NetworkBehaviour {
 				Debug.Log("Healthbar is empty2");
 			}
 		}
-		CheckCondition ();
 
 		float currentPercent = healthBar.value;
 		float targetPercent = health/(float)MaxHealth;
@@ -76,6 +76,7 @@ public class PlayerHealth : NetworkBehaviour {
 				EventRespawn();
 			}	
 			isDead = false;
+			shouldDie = false;
 		}
 	}
 

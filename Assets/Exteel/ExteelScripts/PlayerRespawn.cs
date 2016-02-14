@@ -40,11 +40,11 @@ public class PlayerRespawn : NetworkBehaviour {
 	}
 
 	void SetRespawnButton(){
-//		if (isLocalPlayer) {
+		if (isLocalPlayer) {
 			respawnButton = GameObject.Find ("GameManager").GetComponent<GameManagerReferences>().RespawnButton;
 			respawnButton.GetComponent<Button>().onClick.AddListener(CommenceRespawn);
 			respawnButton.SetActive (false);
-		//}
+		}
 	}
 
 	void CommenceRespawn(){

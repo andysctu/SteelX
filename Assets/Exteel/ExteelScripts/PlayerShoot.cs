@@ -33,7 +33,7 @@ public class PlayerShoot : NetworkBehaviour {
 
 			if (hit.transform.tag == "Player"){
 				string uIdentity = hit.transform.name;
-				Debug.Log ("uID is: " + uIdentity);
+				Debug.Log (uIdentity + " was shot");
 				CmdTellServerWhoWasShot(uIdentity, damage);
 			} else if (hit.transform.tag == "Drone"){
 				string uIdentity = hit.transform.name;
@@ -44,6 +44,7 @@ public class PlayerShoot : NetworkBehaviour {
 
 	[Command]
 	void CmdTellServerWhoWasShot(string uniqueID, int damage){
+		Debug.Log (uniqueID + " was shot");
 		GameObject go = GameObject.Find (uniqueID);
 		go.GetComponent<PlayerHealth> ().OnHit(damage);
 		//Apply damage
