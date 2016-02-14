@@ -24,24 +24,17 @@ public class SwitchWeapon : NetworkBehaviour {
 	void Update () {
 		if (!isLocalPlayer) return;
 		if (Input.GetKeyDown(KeyCode.R)){
-			if (!isServer) {
-				Debug.Log("here");
+			if (!isServer) { // Client
 				CmdToggleWeapon();
-				for (int i = 0; i < weapons.Length; i++) {
-					weapons[i].gameObject.SetActive(!weapons[i].gameObject.activeSelf);
-				}
 			} else {
 				RpcToggleWeapon();
 			}
-
 		}
 	}
 
 	[Command]
 	void CmdToggleWeapon(){
-		for (int i = 0; i < weapons.Length; i++) {
-			weapons[i].gameObject.SetActive(!weapons[i].gameObject.activeSelf);
-		}
+		RpcToggleWeapon();
 	}
 
 	[ClientRpc]
