@@ -22,7 +22,7 @@ public class MechController : MonoBehaviour {
 	public float CurrentFuel;
 	public float FuelDrain = 1.0f;
 	public float FuelGain = 1.0f;
-	public float MinFuelRequired;
+	public float MinFuelRequired = 10f;
 
 	private float marginOfError = 0.1f;
 	private float minDownSpeed = 0.0f;
@@ -55,6 +55,7 @@ public class MechController : MonoBehaviour {
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 1) {
 			fuelBar = sliders[1];
+			fuelBar.value = 1;
 //			Debug.Log("Sliders length > 1");
 		} else {
 			Debug.Log("Fuel bar null");
@@ -159,7 +160,7 @@ public class MechController : MonoBehaviour {
 		}
 		float currentPercent = fuelBar.value;
 		float targetPercent = CurrentFuel/(float)MaxFuel;
-		float err = 0.1f;
+		float err = 0.01f;
 		if (Mathf.Abs(currentPercent - targetPercent) > err) {
 			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
 		}

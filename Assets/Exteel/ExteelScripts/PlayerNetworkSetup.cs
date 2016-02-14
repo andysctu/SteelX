@@ -17,7 +17,8 @@ public class PlayerNetworkSetup : NetworkBehaviour {
 		GetComponentInChildren<AudioListener>().enabled = true;
 		GetComponentInChildren<Crosshair>().enabled = true;
 		GetComponentInChildren<MechCamera>().enabled = true;
-
+//		GetComponentInChildren<SwitchWeapon>().enabled = true;
+		transform.Find("Cube").gameObject.SetActive(false);
 	}
 
 }

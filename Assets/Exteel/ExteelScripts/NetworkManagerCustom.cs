@@ -13,7 +13,7 @@ public class NetworkManagerCustom : NetworkManager {
 
 
 	public override void OnServerConnect(NetworkConnection conn){
-		Debug.Log("2");
+		Debug.Log("PlayerConnected");
 
 	}
 

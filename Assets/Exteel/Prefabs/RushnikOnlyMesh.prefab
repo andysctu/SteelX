@@ -1236,16 +1236,16 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 186952}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e438794ffe4bf434c91890de7baead3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Weapons:
-  - {fileID: 433922, guid: d2bb5d7ff0bda43e8af9cfcd91851b9e, type: 2}
-  - {fileID: 456306, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
-  - {fileID: 456306, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
-  - {fileID: 456306, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
+  - {fileID: 154968, guid: d2bb5d7ff0bda43e8af9cfcd91851b9e, type: 2}
+  - {fileID: 189902, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
+  - {fileID: 189902, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
+  - {fileID: 189902, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
 --- !u!114 &11414916
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1800,7 +1800,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Animator
@@ -1897,19 +1897,19 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: Weapons.Array.data[0]
       value: 
-      objectReference: {fileID: 433922, guid: d2bb5d7ff0bda43e8af9cfcd91851b9e, type: 2}
+      objectReference: {fileID: 154968, guid: d2bb5d7ff0bda43e8af9cfcd91851b9e, type: 2}
     - target: {fileID: 0}
       propertyPath: Weapons.Array.data[1]
       value: 
-      objectReference: {fileID: 456306, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
+      objectReference: {fileID: 189902, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
     - target: {fileID: 0}
       propertyPath: Weapons.Array.data[2]
       value: 
-      objectReference: {fileID: 456306, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
+      objectReference: {fileID: 189902, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
     - target: {fileID: 0}
       propertyPath: Weapons.Array.data[3]
       value: 
-      objectReference: {fileID: 456306, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
+      objectReference: {fileID: 189902, guid: 8ac910129155f45efbec0751d3a89519, type: 2}
     - target: {fileID: 0}
       propertyPath: m_UseGravity
       value: 0

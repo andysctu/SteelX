@@ -27,6 +27,7 @@ public class PlayerHealth : NetworkBehaviour {
 		if (slider.Length > 0) {
 //			Debug.Log("Healthbar is non-empty");
 			healthBar = slider[0];
+			healthBar.value = 1;
 		} else {
 			Debug.Log("Healthbar is empty");
 		}
@@ -35,7 +36,7 @@ public class PlayerHealth : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!isLocalPlayer) return;
+//		if (!isLocalPlayer) return;
 		if (healthBar == null){
 			Slider[] slider = GameObject.Find ("Canvas").GetComponentsInChildren<Slider>();
 			if (slider.Length > 0) {
@@ -49,7 +50,7 @@ public class PlayerHealth : NetworkBehaviour {
 
 		float currentPercent = healthBar.value;
 		float targetPercent = health/(float)MaxHealth;
-		float err = 0.1f;
+		float err = 0.01f;
 		if (Mathf.Abs(currentPercent - targetPercent) > err) {
 			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
 		}
