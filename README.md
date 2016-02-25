@@ -4,7 +4,7 @@ Third-person mech shooter made with Unity.
 
 Combine and customize different parts of your mech to fit your playstyle. 
 
-Shoot me a message if you wanna help! andysctu@gmail.com
+Shoot me a message if you wanna help @ andysctu@gmail.com
 
 ![alt tag](https://raw.github.com/andysctu/SteelX/master/Screenshots/Screen Shot 2016-02-14 at 2.28.42 AM.png)
 ![alt tag](https://raw.github.com/andysctu/SteelX/master/Screenshots/Screen Shot 2016-02-14 at 2.29.20 AM.png)
