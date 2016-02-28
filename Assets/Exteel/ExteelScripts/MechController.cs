@@ -7,11 +7,11 @@ public class MechController : MonoBehaviour {
 
 	public static CharacterController CharacterController;
 
-	public float Gravity = 1.0f;
-	public float JumpPower = 20.0f;
-	public float MoveSpeed = 20.0f;
+	public float Gravity = 2.0f;
+	public float JumpPower = 50.0f;
+	public float MoveSpeed = 40.0f;
 	public float BoostSpeed;
-	public float VerticalBoostSpeed;
+	public float VerticalBoostSpeed = 1f;
 //	public float Friction = 1.0f;
 	public bool isBoosting = false;
 	//public bool isFalling = false;
@@ -22,7 +22,7 @@ public class MechController : MonoBehaviour {
 	public float CurrentFuel;
 	public float FuelDrain = 1.0f;
 	public float FuelGain = 1.0f;
-	public float MinFuelRequired = 10f;
+	public float MinFuelRequired = 75f;
 
 	private float marginOfError = 0.1f;
 	private float minDownSpeed = 0.0f;
@@ -51,12 +51,11 @@ public class MechController : MonoBehaviour {
 		CharacterController = GetComponent<CharacterController> ();
 		CurrentFuel = MaxFuel;
 		BoostSpeed = MoveSpeed + 20;
-		mechAnimation = GetComponent<MechAnimation>();
+		mechAnimation = GetComponentInChildren<MechAnimation>();
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 1) {
 			fuelBar = sliders[1];
 			fuelBar.value = 1;
-//			Debug.Log("Sliders length > 1");
 		} else {
 			Debug.Log("Fuel bar null");
 		}
@@ -85,7 +84,6 @@ public class MechController : MonoBehaviour {
 //				hit.collider.SendMessage ("OnHit", hitInfo, SendMessageOptions.DontRequireReceiver);
 //			}
 		}
-		//MechMotor.Instance.UpdateMotor ();
 	}
 
 	void FixedUpdate() {
@@ -115,12 +113,6 @@ public class MechController : MonoBehaviour {
 			ySpeed = 0;
 			jumped = false;
 		}
-
-//		if (ySpeed < -2.5f){
-//			isFalling = true;
-//		} else {
-//			isFalling = false;
-//		}
 		
 		if (Input.GetButton ("Jump") && !jumped && !mechAnimation.isAnimatingJump ) {
 			ySpeed = JumpPower;
@@ -132,8 +124,7 @@ public class MechController : MonoBehaviour {
 			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
 			isBoosting = startBoosting;
 		}
-
-//		Debug.Log ("Walking backwards?: " + isWalkingBackwards);
+			
 		if (isBoosting && CurrentFuel > 0 && Input.GetKey ("left shift")) {
 			CurrentFuel -= FuelDrain;
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
@@ -147,6 +138,7 @@ public class MechController : MonoBehaviour {
 			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
 		}
+
 		CharacterController.Move (move);
 
 		if (fuelBar == null) {
@@ -174,12 +166,10 @@ public class MechController : MonoBehaviour {
 
 		if (Input.GetAxis ("Vertical") > marginOfError || Input.GetAxis ("Vertical") < -marginOfError) {
 			move += new Vector3(0, 0, Input.GetAxis ("Vertical"));
-			//zAcc = Input.GetAxis ("Vertical");
 		}
 
 		if (Input.GetAxis ("Horizontal") > marginOfError || Input.GetAxis ("Horizontal") < -marginOfError) {
 			move += new Vector3(Input.GetAxis ("Horizontal"), 0, 0);
-			//xAcc = Input.GetAxis ("Horizontal");
 		}
 
 		if (move.magnitude > 1) {

@@ -24,8 +24,12 @@ public class MechCamera : MonoBehaviour
 	private Vector3 m_FollowAngles;
 	private Vector3 m_FollowVelocity;
 	private Quaternion m_OriginalRotation;	
+
+	private CharacterController parentCtrl;
+
 	private void Start()
 	{
+		parentCtrl = transform.parent.GetComponent<CharacterController>();
 		m_OriginalRotation = transform.localRotation;
 	}
 	
@@ -104,7 +108,14 @@ public class MechCamera : MonoBehaviour
 //			Debug.Log("z: " + transform.eulerAngles.z);
 			transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
 //		}
+//		if (parentCtrl.enabled) 
 		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_TargetAngles.y, 0);
 		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
+
+//		if (parentCtrl.enabled) {
+		Vector3 rot = transform.parent.eulerAngles;
+		rot.z = 0;
+		transform.parent.eulerAngles = rot;
+//		}
 	}
 }

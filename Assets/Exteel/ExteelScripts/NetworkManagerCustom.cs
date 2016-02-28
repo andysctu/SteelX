@@ -1,10 +1,90 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class NetworkManagerCustom : NetworkManager {
+	/*public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId) {
+//		if (playerPrefab == null)
+//		{
+//			if (LogFilter.logError) { Debug.LogError("The PlayerPrefab is empty on the NetworkManager. Please setup a PlayerPrefab object."); }
+//			return;
+//		}
+//
+//		if (playerPrefab.GetComponent<NetworkIdentity>() == null)
+//		{
+//			if (LogFilter.logError) { Debug.LogError("The PlayerPrefab does not have a NetworkIdentity. Please add a NetworkIdentity to the player prefab."); }
+//			return;
+//		}
 
+		if (playerControllerId < conn.playerControllers.Count  && conn.playerControllers[playerControllerId].IsValid && conn.playerControllers[playerControllerId].gameObject != null)
+		{
+			if (LogFilter.logError) { Debug.LogError("There is already a player at that playerControllerId for this connections."); }
+			return;
+		}
+			
+		Mech mech = UserData.data.Mech;
+		List<string> parts = new List<string>();
+		parts.Add(mech.Arms);
+		parts.Add(mech.Legs);
+		parts.Add(mech.Head);
+		MechCreator mc = new MechCreator(mech.Core, parts);
+
+		GameObject player;
+		GameObject model;
+		Transform startPos = GetStartPosition();
+		model = mc.CreatePlayerMech();
+
+		if (startPos != null)
+		{
+			
+			player = (GameObject)Instantiate(playerPrefab, startPos.position, startPos.rotation);
+			Debug.Log(player.transform.rotation.x + ", " + player.transform.rotation.y + ", " + player.transform.rotation.z);
+		}
+		else
+		{
+			player = (GameObject)Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+		}
+
+		model.transform.parent = player.transform;
+		player.GetComponent<NetworkAnimator>().animator = model.GetComponent<Animator>();
+
+		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);//, NetworkHash128.Parse("This is a text string string"));
+
+	}*/
+
+//	public GameObject SpawnPlayerObject(Vector3 position, NetworkHash128 hash){
+//		Mech mech = UserData.data.Mech;
+//		List<string> parts = new List<string>();
+//		parts.Add(mech.Arms);
+//		parts.Add(mech.Legs);
+//		parts.Add(mech.Head);
+//		MechCreator mc = new MechCreator(mech.Core, parts);
+//
+//		GameObject player;
+//		return mc.CreatePlayerMech();
+//	}
+//
+//	public void UnspawnPlayerObject(GameObject unspawnObject)
+//	{
+//		Debug.Log("Custom player unspawn!");
+//		Destroy(unspawnObject);
+//	}
+//
+//	public override void OnClientConnect(NetworkConnection conn)
+//	{
+//		Debug.Log("New player connected!");
+//		// ClientScene.RegisterPrefab(testPrefab);
+//		ClientScene.RegisterSpawnHandler(NetworkHash128.Parse("This is a text string string"), SpawnPlayerObject, UnspawnPlayerObject);
+//		base.OnClientConnect(conn);
+//	}
+
+//	public override void OnStartClient(NetworkClient client){
+//		if (playerPrefab == null) {
+//			playerPrefab = GameObject.Find("Lobby Main Camera").GetComponent<MechCreator>().mechToSpawn;
+//		}
+//	}
 //	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader extraMessageReader)
 //	{
 //		Debug.Log("HI");
@@ -12,10 +92,10 @@ public class NetworkManagerCustom : NetworkManager {
 //	}
 
 
-	public override void OnServerConnect(NetworkConnection conn){
-		Debug.Log("PlayerConnected");
-
-	}
+//	public override void OnServerConnect(NetworkConnection conn){
+//		Debug.Log("PlayerConnected");
+//
+//	}
 
 //	private bool first = true;
 //	public void StartupHost(){

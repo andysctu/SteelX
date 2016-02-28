@@ -6,7 +6,7 @@ public class PlayerShoot : NetworkBehaviour {
 
 	private int damage = 25;
 	private float range = Mathf.Infinity;
-	[SerializeField] Transform camTransform;
+	public Transform camTransform;
 	private RaycastHit hit;
 
 	// Use this for initialization

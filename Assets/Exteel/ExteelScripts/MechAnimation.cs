@@ -8,7 +8,7 @@ public class MechAnimation : NetworkBehaviour {
 	[SyncVar (hook = "OnHorizChanged")] float horiz;
 	[SyncVar (hook = "OnVertChanged")] float vert;
 
-	private Animator animator;
+	public Animator animator;
 	// Use this for initialization
 
 	public bool isAnimatingJump = false;
@@ -36,7 +36,9 @@ public class MechAnimation : NetworkBehaviour {
 	private float jumpTime = 0.5f;
 
 	void Start () {
-		animator = GetComponent<Animator>();
+		Animator[] ans = GetComponentsInChildren<Animator>();
+		if (ans.Length > 1) animator = ans[0];
+		else animator = ans[0];
 		charController = GetComponent<CharacterController>();
 		mechController = GetComponent<MechController>();
 		netAnimator = GetComponent<NetworkAnimator>();

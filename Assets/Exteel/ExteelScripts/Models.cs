@@ -1,0 +1,32 @@
+﻿using System.Collections;
+
+[System.Serializable]
+public struct User {
+	public int Uid;
+	public string Username;
+	public string PilotName;
+	public int Level;
+	public string Rank;
+	public int Credits;
+}
+
+[System.Serializable]
+public struct Mech {
+	public int Uid;
+	public string Arms;
+	public string Legs;
+	public string Core;
+	public string Head;
+	public int Weapon1L;
+	public int Weapon1R;
+	public int Weapon2L;
+	public int Weapon2R;
+	public int Booster;
+	public bool isPrimary;
+}
+
+[System.Serializable]
+public struct Data {
+	public Mech Mech;
+	public User User;
+}

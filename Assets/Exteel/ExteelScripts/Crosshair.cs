@@ -19,7 +19,8 @@ public class Crosshair : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Debug.DrawLine (playerSight.transform.position, playerSight.transform.forward * 3);
+//		Debug.DrawLine (playerSight.transform.position, playerSight.transform.forward * 3);
+//		Debug.Log("ps: " + playerSight.transform.position.x + ", " + playerSight.transform.position.y + ", " + playerSight.transform.position.z);
 		RaycastHit hit;
 		if (Physics.Raycast(playerSight.transform.position, playerSight.transform.forward, out hit, Mathf.Infinity, layerMask)){
 			currentCrosshair.sprite = CrosshairTarget;

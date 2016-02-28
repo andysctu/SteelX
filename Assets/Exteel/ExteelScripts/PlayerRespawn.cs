@@ -41,6 +41,7 @@ public class PlayerRespawn : NetworkBehaviour {
 
 	void SetRespawnButton(){
 		if (isLocalPlayer) {
+			Debug.Log("resp");
 			respawnButton = GameObject.Find ("GameManager").GetComponent<GameManagerReferences>().RespawnButton;
 			respawnButton.GetComponent<Button>().onClick.AddListener(CommenceRespawn);
 			respawnButton.SetActive (false);
@@ -48,6 +49,7 @@ public class PlayerRespawn : NetworkBehaviour {
 	}
 
 	void CommenceRespawn(){
+		Debug.Log("Commencing resp");
 		CmdRespawnOnServer ();
 	}
 
