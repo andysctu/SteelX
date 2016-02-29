@@ -10,6 +10,7 @@ public class MechCreator
 	#region Fields
 	private List<GameObject> parts;
 	private GameObject core;
+	private string coreName;
 	private Stitcher stitcher;
 	private RuntimeAnimatorController animator;
 	private GameObject mechCam, radar;
@@ -20,11 +21,17 @@ public class MechCreator
 	private string[] defaultParts = {"AES104","LTN411","HDS003"};
 
 	public MechCreator(string c, List<string> p) {
+		coreName = c;
 		core = Resources.Load(c, typeof(GameObject)) as GameObject;
-		if (core == null ) core = Resources.Load(defaultCore, typeof(GameObject)) as GameObject;
+		if (core == null ) {
+			Debug.Log("null core, using default");
+			core = Resources.Load(defaultCore, typeof(GameObject)) as GameObject;
+			coreName = defaultCore;
+		}
 		parts = new List<GameObject>();
 
 		if (p == null || p.Capacity == 0) {
+			Debug.Log("null parts, using default");
 			for (int i = 0; i < defaultParts.Length; i++) {
 				GameObject part = Resources.Load(defaultParts[i], typeof(GameObject)) as GameObject;
 				parts.Add(part);
@@ -57,10 +64,13 @@ public class MechCreator
 		core.tag = "Player";
 
 		SkinnedMeshRenderer[] smr = core.GetComponentsInChildren<SkinnedMeshRenderer>();
-
+		Material coreMat = Resources.Load(coreName+"mat", typeof(Material)) as Material;
 		for (int i = 0; i < smr.Length; i++){
 			string name = smr[i].name;
+			Debug.Log("name: " + name);
 			if (name.IndexOf("(Clone)") == -1) {
+				smr[i].material = coreMat;
+				smr[i].enabled = true;
 				continue;
 			}
 
