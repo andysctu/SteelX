@@ -4,7 +4,8 @@ using System.Collections;
 
 public class NewMechController : MonoBehaviour {
 
-	public static CharacterController CharacterController;
+	public CharacterController CharacterController;
+	public Animator animator;
 
 	public float Gravity = 2.0f;
 	public float JumpPower = 50.0f;
@@ -12,6 +13,7 @@ public class NewMechController : MonoBehaviour {
 	public float BoostSpeed;
 	public float VerticalBoostSpeed = 1f;
 	public bool isBoosting = false;
+//	public bool testGrounded;
 
 	public float MaxFuel = 100.0f;
 	public float CurrentFuel;
@@ -44,6 +46,7 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			Debug.Log("Fuel bar null");
 		}
+//		animator = GetComponentsInChildren<Animator>()[1];
 	}
 
 	// Update is called once per frame
@@ -53,6 +56,7 @@ public class NewMechController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
+//		testGrounded = CharacterController.isGrounded;
 		if (CharacterController == null) {
 			Debug.Log ("char contr is null");
 			return;
@@ -78,15 +82,21 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			ySpeed = 0;
 			jumped = false;
+			if (animator != null) animator.SetBool("Grounded", true);
 		}
 
 		if (Input.GetButton ("Jump") && !jumped) {
+			if (animator != null) {
+				animator.SetBool("Jump", true);
+				animator.SetBool("Grounded", false);
+			}
 			ySpeed = JumpPower;
 			jumped = true;
+		} else {
+			if (animator != null) animator.SetBool("Jump", false);
 		}
 
 		if (!isBoosting) {
-
 			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
 			isBoosting = startBoosting;
 		}
@@ -129,17 +139,23 @@ public class NewMechController : MonoBehaviour {
 
 	void GetXZDirection() {
 		move = Vector3.zero;
+		float h = Input.GetAxis("Horizontal");
+		float v = Input.GetAxis("Vertical");
 
-		if (Input.GetAxis ("Vertical") > marginOfError || Input.GetAxis ("Vertical") < -marginOfError) {
-			move += new Vector3(0, 0, Input.GetAxis ("Vertical"));
+		if (v > marginOfError || v < -marginOfError) {
+			move += new Vector3(0, 0, v);
 		}
 
-		if (Input.GetAxis ("Horizontal") > marginOfError || Input.GetAxis ("Horizontal") < -marginOfError) {
-			move += new Vector3(Input.GetAxis ("Horizontal"), 0, 0);
+		if (h > marginOfError || h < -marginOfError) {
+			move += new Vector3(h, 	0, 0);
 		}
 
 		if (move.magnitude > 1) {
 			move = Vector3.Normalize (move);
+		}
+		if (animator != null) {
+			animator.SetFloat("Speed", v);
+			animator.SetFloat("Direction", h);
 		}
 	}
 }
