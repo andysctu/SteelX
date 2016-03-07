@@ -34,7 +34,7 @@ public class PlayerDeath : NetworkBehaviour {
 		if (isLocalPlayer) {
 			crosshairImage.enabled = false;
 			GetComponent<MechController> ().enabled = false;
-			GameObject.Find ("GameManager").GetComponent<GameManagerReferences>().RespawnButton.SetActive (true);
+//			GameObject.Find ("GameManager").GetComponent<GameManagerReferences>().RespawnButton.SetActive (true);
 		}
 	}
 }

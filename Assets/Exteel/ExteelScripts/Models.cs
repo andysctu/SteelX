@@ -17,11 +17,11 @@ public struct Mech {
 	public string Legs;
 	public string Core;
 	public string Head;
-	public int Weapon1L;
-	public int Weapon1R;
-	public int Weapon2L;
-	public int Weapon2R;
-	public int Booster;
+	public string Weapon1L;
+	public string Weapon1R;
+	public string Weapon2L;
+	public string Weapon2R;
+	public string Booster;
 	public bool isPrimary;
 }
 

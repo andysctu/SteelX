@@ -46,7 +46,6 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			Debug.Log("Fuel bar null");
 		}
-//		animator = GetComponentsInChildren<Animator>()[1];
 	}
 
 	// Update is called once per frame
@@ -77,7 +76,6 @@ public class NewMechController : MonoBehaviour {
 			} else {
 				if (jumped) ySpeed += VerticalBoostSpeed;
 				if (ySpeed > MoveSpeed/2) ySpeed = MoveSpeed/2;
-				//jumped = true;
 			}
 		} else {
 			ySpeed = 0;
@@ -95,18 +93,20 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			if (animator != null) animator.SetBool("Jump", false);
 		}
-
+		// maybe move this before setting ySpeed?
 		if (!isBoosting) {
 			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
 			isBoosting = startBoosting;
 		}
 
-		if (isBoosting && CurrentFuel > 0 && Input.GetKey ("left shift")) {
+		if (isBoosting && Input.GetKey ("left shift") && CurrentFuel > 0) {
+			if (animator != null) animator.SetBool("Boost", true);
 			CurrentFuel -= FuelDrain;
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
 			move.y += ySpeed * Time.fixedDeltaTime;
 		} else {
+			if (animator != null) animator.SetBool("Boost", false);
 			isBoosting = false;
 			CurrentFuel += FuelGain;
 			if (CurrentFuel > MaxFuel) CurrentFuel = MaxFuel;
