@@ -3,5 +3,5 @@ using UnityEngine.Networking;
 using System.Collections;
 
 public class NetworkLobbyPlayerCustom : NetworkLobbyPlayer {
-//	public string core, arms, legs, head;
+	
 }

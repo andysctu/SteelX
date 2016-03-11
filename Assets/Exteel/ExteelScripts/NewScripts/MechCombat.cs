@@ -48,7 +48,19 @@ public class MechCombat : NetworkBehaviour {
 		if (CurrentHP <= 0) {
 			RpcDisablePlayer();
 			isDead = true;
-			gm.RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
+			if (gm == null) {
+				Debug.Log("gm is null 27");
+				gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+				if (gm == null) {
+					Debug.Log("gm still null 27");
+				} else {
+					Debug.Log("gm not null 27 2nd time");
+					RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
+				}
+			} else {
+				Debug.Log("gm not null 27 first time");
+				RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
+			}
 		}
 	}
 
@@ -96,5 +108,34 @@ public class MechCombat : NetworkBehaviour {
 				Debug.Log("Drone was shot");
 			}
 		}
+	}
+
+
+
+	[Server]
+	public void RegisterKill(uint shooterId, uint victimId){
+		int kills = gm.playerScores[shooterId].IncrKill();
+		int deaths = gm.playerScores[victimId].IncrDeaths();
+		Debug.Log(string.Format("Server: Registering a kill {0}, {1}, {2}, {3} ", shooterId, victimId, kills, deaths));
+		if (isServer) {
+			RpcUpdateScore(shooterId, victimId, kills, deaths);
+		} else {
+			Debug.Log("not serverr");
+		}
+	}
+		
+	[ClientRpc]
+	void RpcUpdateScore(uint shooterId, uint victimId, int kills, int deaths){
+		Debug.Log( string.Format("Client: Updating score {0}, {1}, {2}, {3} ", shooterId, victimId, kills, deaths)); 
+		Score shooterScore = gm.playerScores[shooterId];
+		Score victimScore = gm.playerScores[victimId];
+		Score newShooterScore = new Score();
+		Score newVictimScore = new Score();
+		newShooterScore.Kills = kills;
+		newShooterScore.Deaths = shooterScore.Deaths;
+		newVictimScore.Deaths = deaths;
+		newVictimScore.Kills = victimScore.Kills;
+		gm.playerScores[shooterId] = newShooterScore;
+		gm.playerScores[victimId] = newVictimScore;
 	}
 }

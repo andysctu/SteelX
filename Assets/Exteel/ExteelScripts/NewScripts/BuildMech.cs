@@ -28,26 +28,43 @@ public class BuildMech : NetworkBehaviour {
 	[Command]
 	void CmdRegister(uint id, Data d) {
 		gameObject.name = "Player" + id;
-		if (gm != null) {
-			gm.RegisterPlayer(gameObject, d);
-		} else {
-			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-			Debug.Log("gm is null, trying to find it...");
-			if (gm == null) {
-				Debug.Log("gm is still null");
-			} else {
-				gm.RegisterPlayer(gameObject, d);
+		findGameManager();
+		gm.playerInfo.Add(gameObject, d);
+		gm.playerScores.Add(GetComponent<NetworkIdentity>().netId.Value, new Score());
+		int registeredPlayers = gm.playerInfo.Count;
+		int connectedPlayers = GameObject.Find("LobbyManager").GetComponent<NetworkLobbyManagerCustom>().numPlayers;
+		Debug.Log("registered players so far: " + gm.playerInfo.Count);
+		Debug.Log("connected players: " + connectedPlayers);
+		if (registeredPlayers == connectedPlayers){
+//			uint[] ids = new uint[gm.playerInfo.Count];
+
+			Debug.Log("All players registered, building mechs now");
+//			int i = 0;
+			foreach (KeyValuePair<GameObject, Data> entry in gm.playerInfo){
+//				ids[i] = entry.Key.GetComponent<NetworkIdentity>().netId.Value;
+				Mech m = entry.Value.Mech;
+				BuildMech mechBuilder = entry.Key.GetComponent<BuildMech>();
+				Debug.Log("For player: " + entry.Key.name);
+				Debug.Log("Has: " + m.Core + ", " + m.Arms + ", " + m.Legs + ", " + m.Head);
+				mechBuilder.RpcBuildMech(m.Core, m.Arms, m.Legs, m.Head);
+				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head);
+//				i++;
 			}
-		}
+
+//			foreach (KeyValuePair<GameObject, Data> entry in gm.playerInfo){
+//				Mech m = entry.Value.Mech;
+//				BuildMech mechBuilder = entry.Key.GetComponent<BuildMech>();
+//				mechBuilder.RpcInitScores(ids);
+//			}
+
+			Debug.Log("Initializing scores");
+			Debug.Log("Score count: " + gm.playerScores.Count);
+			uint[] ids = new uint[gm.playerInfo.Count];
+			gm.playerScores.Keys.CopyTo(ids,0);
+			RpcInitScores(ids);
+		} 
 	}
-
-//	[Command]
-//	void CmdBuildMech(string c, string a, string l, string h){
-//		buildMech(c,a,l,h);
-//		Debug.Log("CmdBuildMech");
-//		RpcBuildMech(c,a,l,h);
-//	}
-
+		
 	[ClientRpc]
 	public void RpcBuildMech(string c, string a, string l, string h){
 //		if (isServer) {
@@ -86,29 +103,40 @@ public class BuildMech : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	public void RpcInitScores(uint[] ids){
+	void RpcInitScores(uint[] ids){
 		if (isServer) {
 			Debug.Log("Is server2");
 			return;
 		}
-		Debug.Log("Client Score count: " + ids.Length);
-		for (int i = 0; i < ids.Length; i++){
-			if (gm == null) {
-				Debug.Log("gm is null in rpc");
-				gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-				if (gm == null) {
-					Debug.Log("gm still null!");
-				}
-			}
-			if (gm.playerScores == null) {
-				gm.playerScores = new Dictionary<uint, Score>();
-			}
+//		Debug.Log("Client Score count: " + ids.Length);
+//		for (int i = 0; i < ids.Length; i++){
+//			if (gm == null) {
+//				Debug.Log("gm is null in rpc");
+//				gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+//				if (gm == null) {
+//					Debug.Log("gm still null!");
+//				}
+//			}
+//			if (gm.playerScores == null) {
+//				gm.playerScores = new Dictionary<uint, Score>();
+//			}
+//
+//			if (gm.playerScores.ContainsKey(ids[i])) {
+//				gm.playerScores[ids[i]] = new Score();
+//			} else {
+//				gm.playerScores.Add(ids[i], new Score());
+//			}
+//		}
+		findGameManager();
+		gm.playerScores = new Dictionary<uint, Score>();
+		foreach (uint id in ids) {
+			gm.playerScores.Add(id, new Score());
+		}
+	}
 
-			if (gm.playerScores.ContainsKey(ids[i])) {
-				gm.playerScores[ids[i]] = new Score();
-			} else {
-				gm.playerScores.Add(ids[i], new Score());
-			}
+	private void findGameManager() {
+		if (gm == null) {
+			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 		}
 	}
 }
