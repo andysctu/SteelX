@@ -18,7 +18,7 @@ public class MechCreator
 
 	//testing
 	private string defaultCore = "CES301";
-	private string[] defaultParts = {"AES104","LTN411","HDS003"};
+	private string[] defaultParts = {"AES104","LTN411","HDS003", "PBS000"};
 
 	public MechCreator(string c, List<string> p) {
 		coreName = c;

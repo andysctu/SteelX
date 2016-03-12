@@ -26,7 +26,7 @@ public class MechCombat : NetworkBehaviour {
 
 	void Start() {
 		CurrentHP = MaxHP;
-		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+		findGameManager();
 	}
 	
 	// Update is called once per frame
@@ -48,19 +48,7 @@ public class MechCombat : NetworkBehaviour {
 		if (CurrentHP <= 0) {
 			RpcDisablePlayer();
 			isDead = true;
-			if (gm == null) {
-				Debug.Log("gm is null 27");
-				gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-				if (gm == null) {
-					Debug.Log("gm still null 27");
-				} else {
-					Debug.Log("gm not null 27 2nd time");
-					RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
-				}
-			} else {
-				Debug.Log("gm not null 27 first time");
-				RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
-			}
+			RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
 		}
 	}
 
@@ -96,16 +84,17 @@ public class MechCombat : NetworkBehaviour {
 
 	[Command]
 	void CmdFireRaycast(Vector3 start, Vector3 direction){
-		Debug.Log("fired");
+		Debug.Log("Shot fired");
 		if (Physics.Raycast (start, direction, out hit, range)){
-			Debug.Log (hit.transform.tag);
+			Debug.Log ("Hit tag: " + hit.transform.tag);
+			Debug.Log("Hit name: " + hit.transform.name);
+			Debug.Log("Parent name: " + hit.transform.parent.name);
+			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
+//			Debug.Log ("Collider name: "	);
 			if (hit.transform.tag == "Player"){
-				string uIdentity = hit.transform.name;
-				Debug.Log (uIdentity + " was shot");
-				hit.transform.gameObject.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
+				hit.transform.parent.parent.gameObject.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
 			} else if (hit.transform.tag == "Drone"){
-				string uIdentity = hit.transform.name;
-				Debug.Log("Drone was shot");
+
 			}
 		}
 	}
@@ -119,8 +108,6 @@ public class MechCombat : NetworkBehaviour {
 		Debug.Log(string.Format("Server: Registering a kill {0}, {1}, {2}, {3} ", shooterId, victimId, kills, deaths));
 		if (isServer) {
 			RpcUpdateScore(shooterId, victimId, kills, deaths);
-		} else {
-			Debug.Log("not serverr");
 		}
 	}
 		
@@ -135,7 +122,15 @@ public class MechCombat : NetworkBehaviour {
 		newShooterScore.Deaths = shooterScore.Deaths;
 		newVictimScore.Deaths = deaths;
 		newVictimScore.Kills = victimScore.Kills;
+
+		if (kills > gm.CurrentMaxKills) gm.CurrentMaxKills = kills;
 		gm.playerScores[shooterId] = newShooterScore;
 		gm.playerScores[victimId] = newVictimScore;
+	}
+
+	private void findGameManager() {
+		if (gm == null) {
+			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+		}
 	}
 }

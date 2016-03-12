@@ -6,7 +6,11 @@ public class GameManager : MonoBehaviour {
 //	[SyncVar] public float TimeLeft;
 
 	public float MaxTime = 10f;
+	public int MaxKills = 3;
+	public int CurrentMaxKills = 0;
+
 	private bool showboard = false;
+
 
 	public Dictionary<GameObject, Data> playerInfo;// = new Dictionary<GameObject, Data>();
 	public Dictionary<uint, Score> playerScores;// = new Dictionary<uint, Score>();
@@ -29,5 +33,9 @@ public class GameManager : MonoBehaviour {
 			}
 			GUILayout.EndArea();
 		}
+	}
+
+	public bool GameOver(){
+		return CurrentMaxKills >= MaxKills;
 	}
 }

@@ -6,5 +6,8 @@ using System;
 
 
 public class NetworkLobbyManagerCustom : NetworkLobbyManager {
-	
+	void Start() {
+//		MechCreator mc = new MechCreator("", null);
+//		mc.CreateLobbyMech();
+	}
 }
