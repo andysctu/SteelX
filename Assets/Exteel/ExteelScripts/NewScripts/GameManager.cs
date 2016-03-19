@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour {
 //	[SyncVar] public float TimeLeft;
 
 	public float MaxTime = 10f;
-	public int MaxKills = 3;
+	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
 
 	private bool showboard = false;
@@ -25,8 +25,8 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		if (showboard) {
-			GUILayout.BeginArea(new Rect(Screen.width/4, Screen.height/4, Screen.width/2, Screen.height/2), "scoreboard");
+		if (showboard || GameOver()) {
+			GUILayout.BeginArea(new Rect(Screen.width/4, Screen.height/4, Screen.width/2, Screen.height/2));
 			foreach (KeyValuePair<uint, Score> entry in playerScores)
 			{
 				GUILayout.Label("Player " + entry.Key + ": kills = " + entry.Value.Kills + ", deaths = " + entry.Value.Deaths);

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 public class MechCombat : NetworkBehaviour {
@@ -32,11 +33,11 @@ public class MechCombat : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer) return;
-		if (Input.GetKeyDown(KeyCode.Mouse0)){
+		if (Input.GetKeyDown(KeyCode.Mouse0) && !gm.GameOver()){
 			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
 		}
 
-		if (isDead && Input.GetKeyDown(KeyCode.R)) {
+		if (isDead && Input.GetKeyDown(KeyCode.R) && !gm.GameOver()) {
 			CmdEnablePlayer();
 		}
 	}
@@ -85,14 +86,14 @@ public class MechCombat : NetworkBehaviour {
 	[Command]
 	void CmdFireRaycast(Vector3 start, Vector3 direction){
 		Debug.Log("Shot fired");
-		if (Physics.Raycast (start, direction, out hit, range)){
+		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
-			Debug.Log("Parent name: " + hit.transform.parent.name);
-			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
-//			Debug.Log ("Collider name: "	);
+//			Debug.Log("Parent name: " + hit.transform.parent.name);
+//			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
+
 			if (hit.transform.tag == "Player"){
-				hit.transform.parent.parent.gameObject.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
+				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
 			} else if (hit.transform.tag == "Drone"){
 
 			}
@@ -108,6 +109,15 @@ public class MechCombat : NetworkBehaviour {
 		Debug.Log(string.Format("Server: Registering a kill {0}, {1}, {2}, {3} ", shooterId, victimId, kills, deaths));
 		if (isServer) {
 			RpcUpdateScore(shooterId, victimId, kills, deaths);
+		}
+	}
+
+	[Server]
+	public void EndGame() {
+		Debug.Log("Ending game");
+		RpcDisablePlayer();
+		foreach (KeyValuePair<GameObject, Data> entry in gm.playerInfo) {
+			entry.Key.GetComponent<MechCombat>().RpcDisablePlayer();
 		}
 	}
 		

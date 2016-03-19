@@ -303,10 +303,10 @@ MonoBehaviour:
     m_ReactorMaximumReceivedMessages: 1024
     m_ReactorMaximumSentMessages: 1024
     m_MaxPacketSize: 2000
-  m_Channels: 
+  m_Channels: 0500000000000000
   m_UseWebSockets: 0
   m_UseSimulator: 0
-  m_SimulatedLatency: 1
+  m_SimulatedLatency: 30
   m_PacketLossPercentage: 0
   m_MatchHost: mm.unet.unity3d.com
   m_MatchPort: 443
