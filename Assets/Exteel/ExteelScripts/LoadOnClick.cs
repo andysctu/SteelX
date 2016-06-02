@@ -11,6 +11,7 @@ public class LoadOnClick : MonoBehaviour {
 
 	public void Login(){
 		WWWForm form = new WWWForm();
+//		if (user.text.Length == 0)
 		form.AddField("username", user.text);
 		form.AddField("password", pass.text);
 

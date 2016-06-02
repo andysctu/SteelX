@@ -72,7 +72,7 @@ public class BuildMech : NetworkBehaviour {
 		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[3] = headGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[5] = w1lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[6] = w1rGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[7] = w2lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
