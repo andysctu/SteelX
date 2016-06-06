@@ -34,6 +34,8 @@ public class NewMechController : MonoBehaviour {
 
 	private Vector3 move = Vector3.zero;
 
+	private GameObject boostFlame;
+
 	// Use this for initialization
 	void Start () {
 		CharacterController = GetComponent<CharacterController> ();
