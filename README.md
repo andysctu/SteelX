@@ -1,8 +1,10 @@
 # SteelX
 
-Third-person mech shooter made with Unity.
+SteelX is a third-person mech shooter made with Unity.
 
-Combine and customize different parts of your mech to fit your playstyle. 
+Combine and customize different parts of your mech to fit your playstyle.
+Speed or Power?
+Melee or Long-range assault?
 
 Shoot me a message if you wanna help @ andysctu@gmail.com
 
@@ -17,21 +19,33 @@ To see current progress:
 
 for Windows:
 
-download, unzip and run Demo/SteelXBeta.zip
+  1. download, unzip and run Demo/SteelXBeta_VERSION_Windows.zip
 
 for Mac:
 
-download and run Demo/SteelXBeta
+  1. download, unzip and run Demo/SteelXBeta_VERSION_OSX.zip
 
 Use guest login credentials for now (user: guest, password: guest).
 
-To start a game on localhost, click LAN Host(H). 
+To start a game on localhost:
+  1. click LAN Host(H). 
 
-To start a game online, click Enable Match Maker (M). Fill in the room name and click Create Internet Match.
-To join an online game, click Enable Match Maker (M) -> Find Internet Match -> Click the room you want to join.
+To start a game online:
+  1. click Enable Match Maker (M)
+  2. fill in the room name
+  3. click Create Internet Match
 
-WASD for movement, space to jump, shift to boost, R to switch between Sword/Gun to Gun/Gun.
-Left clicking will shoot in front of you, regardless of your weapon (melee not implemented yet...)
+To join an online game:
+  1. click Enable Match Maker (M)
+  2. Find Internet Match
+  3. Click the room you want to join.
+
+# Controls
+  * WASD for movement
+  * Space to jump
+  * Shift to boost
+  * R to switch weapons
+  * Left clicking will attack
 
 See the Issues page for upcoming features and known bugs. Feel free to report any issues.
 
