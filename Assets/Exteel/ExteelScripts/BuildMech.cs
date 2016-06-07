@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class BuildMech : NetworkBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS001", "APS403", "APS403", "APS403", "SHL009"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "APS403", "APS403", "SHL009"};
 	private GameManager gm;
 	// Use this for initialization
 	void Start () {
@@ -66,13 +66,12 @@ public class BuildMech : NetworkBehaviour {
 		GameObject w1rGO = Resources.Load(w1r, typeof(GameObject)) as GameObject;
 		GameObject w2lGO = Resources.Load(w2l, typeof(GameObject)) as GameObject;
 		GameObject w2rGO = Resources.Load(w2r, typeof(GameObject)) as GameObject;
-
 		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[9];
 		newSMR[0] = coreGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[3] = headGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-//		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[5] = w1lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[6] = w1rGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[7] = w2lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
