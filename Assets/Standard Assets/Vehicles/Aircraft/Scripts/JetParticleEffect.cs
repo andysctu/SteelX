@@ -44,27 +44,28 @@ namespace UnityStandardAssets.Vehicles.Aeroplane
 
         private AeroplaneController FindAeroplaneParent()
         {
-            // get reference to the object transform
-            var t = transform;
-
-            // traverse the object hierarchy upwards to find the AeroplaneController
-            // (since this is placed on a child object)
-            while (t != null)
-            {
-                var aero = t.GetComponent<AeroplaneController>();
-                if (aero == null)
-                {
-                    // try next parent
-                    t = t.parent;
-                }
-                else
-                {
-                    return aero;
-                }
-            }
-
-            // controller not found!
-            throw new Exception(" AeroplaneContoller not found in object hierarchy");
+			return null;
+//            // get reference to the object transform
+//            var t = transform;
+//
+//            // traverse the object hierarchy upwards to find the AeroplaneController
+//            // (since this is placed on a child object)
+//            while (t != null)
+//            {
+//                var aero = t.GetComponent<AeroplaneController>();
+//                if (aero == null)
+//                {
+//                    // try next parent
+//                    t = t.parent;
+//                }
+//                else
+//                {
+//                    return aero;
+//                }
+//            }
+//
+//            // controller not found!
+//            throw new Exception(" AeroplaneContoller not found in object hierarchy");
         }
     }
 }
