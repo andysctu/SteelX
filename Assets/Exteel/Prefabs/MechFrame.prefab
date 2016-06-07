@@ -1641,7 +1641,7 @@ Transform:
   m_LocalRotation: {x: -0.02143987, y: -2.6324363e-14, z: 0.000000005111666, w: 0.99977016}
   m_LocalPosition: {x: 2.6645352e-17, y: 0.002564108, z: 7.4505804e-11}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -2.457, y: 0, z: 0}
   m_Children:
   - {fileID: 459510}
   - {fileID: 466094}
@@ -2197,7 +2197,7 @@ Transform:
   m_LocalRotation: {x: 0.99653465, y: -0.061154988, z: 0.0103552, w: 0.055421796}
   m_LocalPosition: {x: -0.001745137, y: 0.0017557538, z: 0.00011440395}
   m_LocalScale: {x: 1.0000045, y: 1.0000001, z: 1.0000036}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 6.4147997, y: 179.20079, z: -173.0214}
   m_Children:
   - {fileID: 458156}
   m_Father: {fileID: 428374}
@@ -2292,7 +2292,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106728}
   m_LocalRotation: {x: -0.000000058228242, y: 0.8725897, z: -0.488454, w: -0.00000010402081}
-  m_LocalPosition: {x: -0.00007, y: 0.00123, z: -0.00433}
+  m_LocalPosition: {x: -0, y: 0.00102, z: -0.00408}
   m_LocalScale: {x: 0.0021975844, y: 0.0021975853, z: 0.002197585}
   m_LocalEulerAnglesHint: {x: 58.477997, y: -180, z: 0}
   m_Children:
@@ -2776,7 +2776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camTransform: {fileID: 0}
+  camTransform: {fileID: 430028}
   range: Infinity
   damage: 25
   MaxHP: 100
@@ -2822,6 +2822,7 @@ MonoBehaviour:
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
+  boostFlame: {fileID: 106728}
 --- !u!114 &11424038
 MonoBehaviour:
   m_ObjectHideFlags: 1

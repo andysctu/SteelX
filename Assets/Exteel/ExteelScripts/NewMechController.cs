@@ -34,7 +34,7 @@ public class NewMechController : MonoBehaviour {
 
 	private Vector3 move = Vector3.zero;
 
-	private GameObject boostFlame;
+	public GameObject boostFlame;
 
 	// Use this for initialization
 	void Start () {
@@ -47,6 +47,10 @@ public class NewMechController : MonoBehaviour {
 			fuelBar.value = 1;
 		} else {
 			Debug.Log("Fuel bar null");
+		}
+			
+		if (boostFlame != null) {
+			boostFlame.SetActive(false);
 		}
 	}
 
@@ -107,6 +111,7 @@ public class NewMechController : MonoBehaviour {
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
 			move.y += ySpeed * Time.fixedDeltaTime;
+			boostFlame.SetActive(true);
 		} else {
 			if (animator != null) animator.SetBool("Boost", false);
 			isBoosting = false;
@@ -115,6 +120,7 @@ public class NewMechController : MonoBehaviour {
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
 			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
+			boostFlame.SetActive(false);
 		}
 
 		CharacterController.Move (move);
