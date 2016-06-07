@@ -7,6 +7,8 @@ public class BuildMech : NetworkBehaviour {
 
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "APS403", "APS403", "SHL009"};
 	private GameManager gm;
+
+//	public Transform[] Hands =
 	// Use this for initialization
 	void Start () {
 		findGameManager();
