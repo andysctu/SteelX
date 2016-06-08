@@ -31,7 +31,7 @@ public class BuildMech : NetworkBehaviour {
 	[Command]
 	void CmdRegister(uint id, Data d) {
 		// Set player name based on network ID
-		gameObject.name = "Player" + id;
+//		gameObject.name = "Player" + id;
 
 		// Add player to GameManager
 		gm.playerInfo.Add(gameObject, d);
@@ -107,6 +107,9 @@ public class BuildMech : NetworkBehaviour {
 
 		weapons[2].SetActive(false);
 		weapons[3].SetActive(false);
+
+		Debug.Log ("curSMR.Length = " + curSMR.Length);
+		Debug.Log ("newSMR.Length = " + newSMR.Length);
 
 		for (int i = 0; i < curSMR.Length; i++){
 			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
