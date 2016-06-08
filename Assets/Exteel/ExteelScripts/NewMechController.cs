@@ -108,7 +108,7 @@ public class NewMechController : MonoBehaviour {
 			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && CurrentFuel >= MinFuelRequired;
 		}
 
-		if ((startBoosting && Input.GetKey ("left shift") && CurrentFuel > 0) || (ableToVertBoost && Input.GetKey("space"))) {
+		if ((startBoosting && Input.GetKey ("left shift") && CurrentFuel > 0) || (ableToVertBoost && Input.GetKey("space") && CurrentFuel > 0)) {
 			isHorizBoosting = true;
 			if (animator != null) animator.SetBool("Boost", true);
 			CurrentFuel -= FuelDrain;

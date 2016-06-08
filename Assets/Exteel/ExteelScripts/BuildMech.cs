@@ -70,7 +70,7 @@ public class BuildMech : NetworkBehaviour {
 //		GameObject w1rGO = Resources.Load(w1r, typeof(GameObject)) as GameObject;
 //		GameObject w2lGO = Resources.Load(w2l, typeof(GameObject)) as GameObject;
 //		GameObject w2rGO = Resources.Load(w2r, typeof(GameObject)) as GameObject;
-		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[9];
+		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
 		newSMR[0] = coreGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
@@ -94,29 +94,32 @@ public class BuildMech : NetworkBehaviour {
 //		materials[7] = Resources.Load(w2l+"mat", typeof(Material)) as Material;
 //		materials[8] = Resources.Load(w2r+"mat", typeof(Material)) as Material;
 
-//		MeshCollider[] curMC = GetComponentsInChildren<MeshCollider>();
-		weapons = new GameObject[4];
-		weapons[0] = Instantiate(Resources.Load(w1l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
-		weapons[1] = Instantiate(Resources.Load(w1r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
-		weapons[2] = Instantiate(Resources.Load(w2l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
-		weapons[3] = Instantiate(Resources.Load(w2r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
-
-		for (int i = 0; i < 4; i++) {
-			weapons[i].transform.parent = Hands[i%2];
-		}
-
-		weapons[2].SetActive(false);
-		weapons[3].SetActive(false);
-
 		Debug.Log ("curSMR.Length = " + curSMR.Length);
 		Debug.Log ("newSMR.Length = " + newSMR.Length);
 
 		for (int i = 0; i < curSMR.Length; i++){
+			Debug.Log (i);
+			Debug.Log (curSMR [i].name);
+			Debug.Log (newSMR [i].name);
 			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-//			curMC[i].sharedMesh = newSMR[i].sharedMesh;
+			//			curMC[i].sharedMesh = newSMR[i].sharedMesh;
 			curSMR[i].material = materials[i];
 			curSMR[i].enabled = true;
 		}
+
+//		MeshCollider[] curMC = GetComponentsInChildren<MeshCollider>();
+//		weapons = new GameObject[4];
+//		weapons[0] = Instantiate(Resources.Load(w1l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
+//		weapons[1] = Instantiate(Resources.Load(w1r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
+//		weapons[2] = Instantiate(Resources.Load(w2l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
+//		weapons[3] = Instantiate(Resources.Load(w2r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
+//
+//		for (int i = 0; i < 4; i++) {
+//			weapons[i].transform.parent = Hands[i%2];
+//		}
+//
+//		weapons[2].SetActive(false);
+//		weapons[3].SetActive(false);
 	}
 
 	[ClientRpc]
