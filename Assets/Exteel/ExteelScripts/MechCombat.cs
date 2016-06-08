@@ -8,6 +8,7 @@ public class MechCombat : NetworkBehaviour {
 	public Transform camTransform;
 	public float range = Mathf.Infinity;
 	public int damage = 25;
+//	public Animator animator;
 
 	[SyncVar]
 	public float MaxHP = 100.0f;
@@ -24,22 +25,86 @@ public class MechCombat : NetworkBehaviour {
 	private RaycastHit hit;
 	private GameManager gm;
 
+	private bool fireL = false;
+	private bool shootingL = false;
+
+	private bool fireR = false;
+	private bool shootingR = false;
+
+	private Transform shoulderL;
+	private Transform shoulderR;
 
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
+		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer) return;
-		if (Input.GetKeyDown(KeyCode.Mouse0) && !gm.GameOver()){
+		if (Input.GetKey(KeyCode.Mouse0) && !gm.GameOver()){
 			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
+			fireL = true;
+		} else {
+			fireL = false;
+		}
+
+		if (Input.GetKey(KeyCode.Mouse1) && !gm.GameOver()){
+			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
+			fireR = true;
+		} else {
+			fireR = false;
 		}
 
 		if (isDead && Input.GetKeyDown(KeyCode.R) && !gm.GameOver()) {
 			CmdEnablePlayer();
 		}
+	}
+
+	void LateUpdate() {
+		if (fireL) {
+			playShootAnimationL();
+			shootingL = true;
+		} else if (shootingL) {
+			stopShootAnimationL();
+			shootingL = false;
+		}
+
+		if (fireR) {
+			playShootAnimationR();
+			shootingR = true;
+		} else if (shootingR) {
+			stopShootAnimationR();
+			shootingR = false;
+		}
+	}
+
+	void playShootAnimationL() {
+		if (shoulderL == null) {
+			Debug.Log("Could not find shoulderL");
+		}
+		Debug.Log("Rotating");
+		shoulderL.Rotate(0,90,0);
+	}
+
+	void stopShootAnimationL() {
+		Debug.Log("Rotating back");
+		shoulderL.Rotate(0,-90,0);
+	}
+
+	void playShootAnimationR() {
+		if (shoulderR == null) {
+			Debug.Log("Could not find shoulderL");
+		}
+		Debug.Log("Rotating");
+		shoulderR.Rotate(0,-90,0);
+	}
+
+	void stopShootAnimationR() {
+		Debug.Log("Rotating back");
+		shoulderR.Rotate(0,90,0);
 	}
 
 	[Server]

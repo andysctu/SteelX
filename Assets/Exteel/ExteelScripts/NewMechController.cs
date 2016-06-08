@@ -97,7 +97,8 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			if (animator != null) animator.SetBool("Jump", false);
 		}
-		// maybe move this before setting ySpeed?
+
+		// Need this to prevent starting a boost when below min fuel
 		if (!isHorizBoosting) {
 			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
 			isHorizBoosting = startBoosting;
