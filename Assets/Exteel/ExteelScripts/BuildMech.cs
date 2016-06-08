@@ -7,8 +7,10 @@ public class BuildMech : NetworkBehaviour {
 
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "APS403", "APS403", "SHL009"};
 	private GameManager gm;
+	private GameObject[] weapons;
 
-//	public Transform[] Hands =
+	public Transform[] Hands;
+
 	// Use this for initialization
 	void Start () {
 		findGameManager();
@@ -64,20 +66,20 @@ public class BuildMech : NetworkBehaviour {
 		GameObject legsGO = Resources.Load(l, typeof(GameObject)) as GameObject;
 		GameObject headGO = Resources.Load(h, typeof(GameObject)) as GameObject;
 		GameObject bstrGO = Resources.Load(b, typeof(GameObject)) as GameObject;
-		GameObject w1lGO = Resources.Load(w1l, typeof(GameObject)) as GameObject;
-		GameObject w1rGO = Resources.Load(w1r, typeof(GameObject)) as GameObject;
-		GameObject w2lGO = Resources.Load(w2l, typeof(GameObject)) as GameObject;
-		GameObject w2rGO = Resources.Load(w2r, typeof(GameObject)) as GameObject;
+//		GameObject w1lGO = Resources.Load(w1l, typeof(GameObject)) as GameObject;
+//		GameObject w1rGO = Resources.Load(w1r, typeof(GameObject)) as GameObject;
+//		GameObject w2lGO = Resources.Load(w2l, typeof(GameObject)) as GameObject;
+//		GameObject w2rGO = Resources.Load(w2r, typeof(GameObject)) as GameObject;
 		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[9];
 		newSMR[0] = coreGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[3] = headGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[5] = w1lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[6] = w1rGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[7] = w2lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[8] = w2rGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[5] = w1lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[6] = w1rGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[7] = w2lGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[8] = w2rGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 
 		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer>();
 
@@ -87,12 +89,24 @@ public class BuildMech : NetworkBehaviour {
 		materials[2] = Resources.Load(l+"mat", typeof(Material)) as Material;
 		materials[3] = Resources.Load(h+"mat", typeof(Material)) as Material;
 		materials[4] = Resources.Load(b+"mat", typeof(Material)) as Material;
-		materials[5] = Resources.Load(w1l+"mat", typeof(Material)) as Material;
-		materials[6] = Resources.Load(w1r+"mat", typeof(Material)) as Material;
-		materials[7] = Resources.Load(w2l+"mat", typeof(Material)) as Material;
-		materials[8] = Resources.Load(w2r+"mat", typeof(Material)) as Material;
+//		materials[5] = Resources.Load(w1l+"mat", typeof(Material)) as Material;
+//		materials[6] = Resources.Load(w1r+"mat", typeof(Material)) as Material;
+//		materials[7] = Resources.Load(w2l+"mat", typeof(Material)) as Material;
+//		materials[8] = Resources.Load(w2r+"mat", typeof(Material)) as Material;
 
 //		MeshCollider[] curMC = GetComponentsInChildren<MeshCollider>();
+		weapons = new GameObject[4];
+		weapons[0] = Instantiate(Resources.Load(w1l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
+		weapons[1] = Instantiate(Resources.Load(w1r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
+		weapons[2] = Instantiate(Resources.Load(w2l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
+		weapons[3] = Instantiate(Resources.Load(w2r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
+
+		for (int i = 0; i < 4; i++) {
+			weapons[i].transform.parent = Hands[i%2];
+		}
+
+		weapons[2].SetActive(false);
+		weapons[3].SetActive(false);
 
 		for (int i = 0; i < curSMR.Length; i++){
 			curSMR[i].sharedMesh = newSMR[i].sharedMesh;

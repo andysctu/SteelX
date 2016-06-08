@@ -84,26 +84,24 @@ public class MechCombat : NetworkBehaviour {
 	void playShootAnimationL() {
 		if (shoulderL == null) {
 			Debug.Log("Could not find shoulderL");
+			return;
 		}
-		Debug.Log("Rotating");
 		shoulderL.Rotate(0,90,0);
 	}
 
 	void stopShootAnimationL() {
-		Debug.Log("Rotating back");
 		shoulderL.Rotate(0,-90,0);
 	}
 
 	void playShootAnimationR() {
 		if (shoulderR == null) {
-			Debug.Log("Could not find shoulderL");
+			Debug.Log("Could not find shoulderR");
+			return;
 		}
-		Debug.Log("Rotating");
 		shoulderR.Rotate(0,-90,0);
 	}
 
 	void stopShootAnimationR() {
-		Debug.Log("Rotating back");
 		shoulderR.Rotate(0,90,0);
 	}
 
@@ -150,7 +148,6 @@ public class MechCombat : NetworkBehaviour {
 
 	[Command]
 	void CmdFireRaycast(Vector3 start, Vector3 direction){
-		Debug.Log("Shot fired");
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
