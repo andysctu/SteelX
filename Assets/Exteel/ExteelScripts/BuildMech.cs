@@ -108,18 +108,18 @@ public class BuildMech : NetworkBehaviour {
 		}
 
 //		MeshCollider[] curMC = GetComponentsInChildren<MeshCollider>();
-//		weapons = new GameObject[4];
-//		weapons[0] = Instantiate(Resources.Load(w1l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
-//		weapons[1] = Instantiate(Resources.Load(w1r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
-//		weapons[2] = Instantiate(Resources.Load(w2l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
-//		weapons[3] = Instantiate(Resources.Load(w2r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
-//
-//		for (int i = 0; i < 4; i++) {
-//			weapons[i].transform.parent = Hands[i%2];
-//		}
-//
-//		weapons[2].SetActive(false);
-//		weapons[3].SetActive(false);
+		weapons = new GameObject[4];
+		weapons[0] = Instantiate(Resources.Load(w1l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
+		weapons[1] = Instantiate(Resources.Load(w1r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
+		weapons[2] = Instantiate(Resources.Load(w2l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
+		weapons[3] = Instantiate(Resources.Load(w2r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
+
+		for (int i = 0; i < 4; i++) {
+			weapons[i].transform.parent = Hands[i%2];
+		}
+
+		weapons[2].SetActive(false);
+		weapons[3].SetActive(false);
 	}
 
 	[ClientRpc]
