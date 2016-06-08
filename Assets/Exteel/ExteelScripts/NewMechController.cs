@@ -12,7 +12,7 @@ public class NewMechController : MonoBehaviour {
 	public float MoveSpeed = 40.0f;
 	public float BoostSpeed;
 	public float VerticalBoostSpeed = 1f;
-	public bool isBoosting = false;
+	public bool isHorizBoosting = false;
 //	public bool testGrounded;
 
 	public float MaxFuel = 100.0f;
@@ -31,8 +31,12 @@ public class NewMechController : MonoBehaviour {
 
 	private Slider fuelBar;
 	private bool startBoosting = false;
+	private bool startVertBoosting = false;
 
 	private Vector3 move = Vector3.zero;
+//	private bool isVertBoosting = false;
+
+	bool ableToVertBoost = false;
 
 	public GameObject boostFlame;
 
@@ -61,23 +65,16 @@ public class NewMechController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-//		testGrounded = CharacterController.isGrounded;
-		if (CharacterController == null) {
-			Debug.Log ("char contr is null");
+		if (CharacterController == null || !CharacterController.enabled){
 			return;
 		}
 
-		if (!CharacterController.enabled){
-			Debug.Log ("Char contr is disabled");
-			return;
-		}
-
-		bool isWalkingBackwards = (Input.GetAxis ("Vertical") < 0) && !isBoosting;
+		bool isWalkingBackwards = (Input.GetAxis ("Vertical") < 0) && !isHorizBoosting;
 		move = transform.TransformDirection(move);
 		move.y = minDownSpeed;
 
 		if (!CharacterController.isGrounded) {
-			if (!isBoosting) {
+			if (!isHorizBoosting) {
 				ySpeed -= Gravity;
 			} else {
 				if (jumped) ySpeed += VerticalBoostSpeed;
@@ -86,6 +83,7 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			ySpeed = 0;
 			jumped = false;
+			ableToVertBoost = false;
 			if (animator != null) animator.SetBool("Grounded", true);
 		}
 
@@ -100,12 +98,17 @@ public class NewMechController : MonoBehaviour {
 			if (animator != null) animator.SetBool("Jump", false);
 		}
 		// maybe move this before setting ySpeed?
-		if (!isBoosting) {
+		if (!isHorizBoosting) {
 			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
-			isBoosting = startBoosting;
+			isHorizBoosting = startBoosting;
 		}
 
-		if (isBoosting && Input.GetKey ("left shift") && CurrentFuel > 0) {
+		if (!ableToVertBoost) {
+			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space"));
+		}
+
+		if ((Input.GetKey ("left shift") && CurrentFuel > 0) || (ableToVertBoost && Input.GetKey("space"))) {
+			isHorizBoosting = true;
 			if (animator != null) animator.SetBool("Boost", true);
 			CurrentFuel -= FuelDrain;
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
@@ -114,7 +117,7 @@ public class NewMechController : MonoBehaviour {
 			boostFlame.SetActive(true);
 		} else {
 			if (animator != null) animator.SetBool("Boost", false);
-			isBoosting = false;
+			isHorizBoosting = false;
 			CurrentFuel += FuelGain;
 			if (CurrentFuel > MaxFuel) CurrentFuel = MaxFuel;
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
