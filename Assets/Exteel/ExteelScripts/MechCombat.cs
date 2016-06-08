@@ -34,13 +34,49 @@ public class MechCombat : NetworkBehaviour {
 	private Transform shoulderL;
 	private Transform shoulderR;
 
+	private GameObject[] weapons;
+	private Transform[] Hands;
+
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
 		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+
+		Hands = new Transform[2];
+		Hands [0] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.L/upper_arm.L/forearm.L/hand.L");
+		Hands [1] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.R/upper_arm.R/forearm.R/hand.R");
 	}
-	
+
+	public void Arm (string[] weaponNames) {
+		weapons = new GameObject[4];
+		for (int i = 0; i < weaponNames.Length; i++) {
+			weapons [i] = Instantiate (Resources.Load (weaponNames [i], typeof(GameObject)) as GameObject, Hands [i%2].position, Quaternion.identity) as GameObject;
+			weapons [i].transform.parent = Hands [i % 2];
+		}
+		Debug.Log ("Running");
+		weapons [2].SetActive (false);
+		weapons [3].SetActive (false);
+	}
+
+	[Command]
+	private void CmdSwitchWeapons() {
+//		for (int i = 0; i < weapons.Length; i++) {
+//			weapons[i].SetActive(!weapons[i].activeSelf);
+//		}
+		RpcSwitchWeapons ();
+	}
+
+	[ClientRpc]
+	private void RpcSwitchWeapons() {
+//		if (isServer)
+//			return;
+		Debug.Log("Running");
+		for (int i = 0; i < weapons.Length; i++) {
+			weapons[i].SetActive(!weapons[i].activeSelf);
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer) return;
@@ -56,6 +92,10 @@ public class MechCombat : NetworkBehaviour {
 			fireR = true;
 		} else {
 			fireR = false;
+		}
+
+		if (Input.GetKeyDown (KeyCode.R)) {
+			CmdSwitchWeapons ();
 		}
 
 		if (isDead && Input.GetKeyDown(KeyCode.R) && !gm.GameOver()) {

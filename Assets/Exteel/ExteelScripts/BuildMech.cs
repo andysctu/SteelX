@@ -31,7 +31,7 @@ public class BuildMech : NetworkBehaviour {
 	[Command]
 	void CmdRegister(uint id, Data d) {
 		// Set player name based on network ID
-//		gameObject.name = "Player" + id;
+		gameObject.name = d.User.PilotName;
 
 		// Add player to GameManager
 		gm.playerInfo.Add(gameObject, d);
@@ -94,32 +94,15 @@ public class BuildMech : NetworkBehaviour {
 //		materials[7] = Resources.Load(w2l+"mat", typeof(Material)) as Material;
 //		materials[8] = Resources.Load(w2r+"mat", typeof(Material)) as Material;
 
-		Debug.Log ("curSMR.Length = " + curSMR.Length);
-		Debug.Log ("newSMR.Length = " + newSMR.Length);
-
 		for (int i = 0; i < curSMR.Length; i++){
-			Debug.Log (i);
-			Debug.Log (curSMR [i].name);
-			Debug.Log (newSMR [i].name);
 			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
 			//			curMC[i].sharedMesh = newSMR[i].sharedMesh;
 			curSMR[i].material = materials[i];
 			curSMR[i].enabled = true;
 		}
 
+		GetComponent<MechCombat> ().Arm (new string[4]{w1l, w1r, w2l, w2r});
 //		MeshCollider[] curMC = GetComponentsInChildren<MeshCollider>();
-		weapons = new GameObject[4];
-		weapons[0] = Instantiate(Resources.Load(w1l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
-		weapons[1] = Instantiate(Resources.Load(w1r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
-		weapons[2] = Instantiate(Resources.Load(w2l, typeof(GameObject)) as GameObject, Hands[0].position, Quaternion.identity) as GameObject;
-		weapons[3] = Instantiate(Resources.Load(w2r, typeof(GameObject)) as GameObject, Hands[1].position, Quaternion.identity) as GameObject;
-
-		for (int i = 0; i < 4; i++) {
-			weapons[i].transform.parent = Hands[i%2];
-		}
-
-		weapons[2].SetActive(false);
-		weapons[3].SetActive(false);
 	}
 
 	[ClientRpc]
