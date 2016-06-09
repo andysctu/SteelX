@@ -9,7 +9,7 @@ public class NameTags : MonoBehaviour {
 	GameObject drone;
 	Camera cam;
 
-	void Start () 
+	/*void Start () 
     {	
 		// Try to find the drone
 		drone = GameObject.Find ("Drone");
@@ -32,7 +32,29 @@ public class NameTags : MonoBehaviour {
 			// Draw its name there
 			GUI.Label (new Rect (pos.x, Screen.height - pos.y, 100, 100), "Drone");
 		}
-	}
+	}*/
+    void Start()
+    {
+        // Try to find the drone
+        gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        Dictionary<GameObject, Data> playerdata = gm.playerInfo;
+        if (gm == null)
+        {
+            // if we can't find it, it probably did not load yet, we will find it later
+            Debug.Log("No Players");
+        }
+        cam = GameObject.Find("Camera").GetComponent<Camera>();
+    }
+
+    // OnGUI runs every frame, like Update, but just for GUI stuff like labels and scoreboard, etc
+    void OnGUI()
+    {
+        Dictionary<GameObject, Data>.KeyCollection playerlist = (gm.playerInfo).Keys;
+        foreach (GameObject player in playerlist)
+        {
+            Vector3 pos = cam.WorldToScreenPoint(player.transform.position + new Vector3(0, 10));
+            GUI.Label (new Rect(pos.x, Screen.height - pos.y, 100, 100), "Player");
+        }
+    }
  
 }
-
