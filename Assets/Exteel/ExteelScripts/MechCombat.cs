@@ -37,6 +37,8 @@ public class MechCombat : NetworkBehaviour {
 	private GameObject[] weapons;
 	private Transform[] Hands;
 
+	public GameObject boostFlame;
+
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
@@ -54,13 +56,21 @@ public class MechCombat : NetworkBehaviour {
 			weapons [i] = Instantiate (Resources.Load (weaponNames [i], typeof(GameObject)) as GameObject, Hands [i%2].position, Quaternion.identity) as GameObject;
 			weapons [i].transform.parent = Hands [i % 2];
 		}
-		Debug.Log ("Running");
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
 	}
 
+	private void switchWeapons() {
+		if (isServer) {
+			RpcSwitchWeapons();
+		} else {
+			CmdSwitchWeapons();
+		}
+	}
+
 	[Command]
 	private void CmdSwitchWeapons() {
+//		Debug.Log("Cmd: isServer: " + isServer + ", isClient: " + isClient);
 //		for (int i = 0; i < weapons.Length; i++) {
 //			weapons[i].SetActive(!weapons[i].activeSelf);
 //		}
@@ -69,25 +79,42 @@ public class MechCombat : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcSwitchWeapons() {
-//		if (isServer)
-//			return;
-		Debug.Log("Running");
+//		Debug.Log("Rpc: isServer: " + isServer + ", isClient: " + isClient);
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
 	}
 
+	public void SetBoost(bool boost) {
+		if (isServer) {
+//			boostFlame.SetActive(boost);
+			RpcSetBoost(boost);
+		} else {
+			CmdSetBoost(boost);
+		}
+	}
+
+	[Command]
+	public void CmdSetBoost(bool boost) {
+		RpcSetBoost(boost);
+	}
+
+	[ClientRpc]
+	private void RpcSetBoost(bool boost){
+		boostFlame.SetActive(boost);
+	}
+
 	// Update is called once per frame
 	void Update () {
-		if (!isLocalPlayer) return;
-		if (Input.GetKey(KeyCode.Mouse0) && !gm.GameOver()){
+		if (!isLocalPlayer || gm.GameOver()) return;
+		if (Input.GetKey(KeyCode.Mouse0)){
 			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
 			fireL = true;
 		} else {
 			fireL = false;
 		}
 
-		if (Input.GetKey(KeyCode.Mouse1) && !gm.GameOver()){
+		if (Input.GetKey(KeyCode.Mouse1)){
 			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
 			fireR = true;
 		} else {
@@ -95,10 +122,10 @@ public class MechCombat : NetworkBehaviour {
 		}
 
 		if (Input.GetKeyDown (KeyCode.R)) {
-			CmdSwitchWeapons ();
+			switchWeapons ();
 		}
 
-		if (isDead && Input.GetKeyDown(KeyCode.R) && !gm.GameOver()) {
+		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			CmdEnablePlayer();
 		}
 	}
@@ -122,10 +149,6 @@ public class MechCombat : NetworkBehaviour {
 	}
 
 	void playShootAnimationL() {
-		if (shoulderL == null) {
-			Debug.Log("Could not find shoulderL");
-			return;
-		}
 		shoulderL.Rotate(0,90,0);
 	}
 
@@ -134,10 +157,6 @@ public class MechCombat : NetworkBehaviour {
 	}
 
 	void playShootAnimationR() {
-		if (shoulderR == null) {
-			Debug.Log("Could not find shoulderR");
-			return;
-		}
 		shoulderR.Rotate(0,-90,0);
 	}
 
