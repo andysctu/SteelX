@@ -9,38 +9,19 @@ public class NameTags : MonoBehaviour {
 	GameObject drone;
 	Camera cam;
 
-	/*void Start () 
-    {	
-		// Try to find the drone
-		drone = GameObject.Find ("Drone");
-		if (drone == null) {
-			// if we can't find it, it probably did not load yet, we will find it later
-			Debug.Log ("Drone is null");
-		}
-		cam = GameObject.Find("Camera").GetComponent<Camera>();
-	}
 
-	// OnGUI runs every frame, like Update, but just for GUI stuff like labels and scoreboard, etc
-	void OnGUI() {
-		// If we didn't find the drone yet, try to find it
-		if (drone == null) {
-			drone = GameObject.Find ("Drone");
-		} else {
-			// Once we've found it, transform the drone's 3D position to a 2D position corresponding to its position on your 2D screen
-			Vector3 pos = cam.WorldToScreenPoint (drone.transform.position + new Vector3(0, 10));
-
-			// Draw its name there
-			GUI.Label (new Rect (pos.x, Screen.height - pos.y, 100, 100), "Drone");
-		}
-	}*/
     void Start()
     {
         // Try to find the drone
-        gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        Dictionary<GameObject, Data> playerdata = gm.playerInfo;
-        if (gm == null)
+        drone = GameObject.Find("Drone");
+        if (drone == null)
         {
             // if we can't find it, it probably did not load yet, we will find it later
+            Debug.Log("Drone is null");
+        }
+        gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        if (gm == null)
+        {
             Debug.Log("No Players");
         }
         cam = GameObject.Find("Camera").GetComponent<Camera>();
@@ -49,12 +30,35 @@ public class NameTags : MonoBehaviour {
     // OnGUI runs every frame, like Update, but just for GUI stuff like labels and scoreboard, etc
     void OnGUI()
     {
-        Dictionary<GameObject, Data>.KeyCollection playerlist = (gm.playerInfo).Keys;
-        foreach (GameObject player in playerlist)
+        if (drone == null)
         {
-            Vector3 pos = cam.WorldToScreenPoint(player.transform.position + new Vector3(0, 10));
-            GUI.Label (new Rect(pos.x, Screen.height - pos.y, 100, 100), "Player");
+            drone = GameObject.Find("Drone");
+        }
+        if (cam == null)
+        {
+            GameObject.Find("Camera").GetComponent<Camera>();
+        }
+        else
+        {
+            // Once we've found it, transform the drone's 3D position to a 2D position corresponding to its position on your 2D screen
+            Vector3 pos = cam.WorldToScreenPoint(drone.transform.position + new Vector3(0, 10));
+
+            // Draw its name there
+            GUI.Label(new Rect(pos.x, Screen.height - pos.y, 100, 100), "Drone");
+        }
+        if (gm == null)
+        {
+            GameObject.Find("Game Manager").GetComponent<GameManager>();
+        }
+        else
+        {
+            Dictionary<GameObject, Data>.KeyCollection playerlist = (gm.playerInfo).Keys;
+            foreach (GameObject entry in playerlist)
+            {
+                 Vector3 pos = cam.WorldToScreenPoint(entry.transform.position + new Vector3(0, 10));
+                 string name = entry.name;
+                 GUI.Label(new Rect(pos.x, Screen.height - pos.y, 100, 100), name);
+            }
         }
     }
- 
 }
