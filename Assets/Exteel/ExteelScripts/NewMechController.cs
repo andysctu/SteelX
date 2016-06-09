@@ -38,7 +38,8 @@ public class NewMechController : MonoBehaviour {
 
 	bool ableToVertBoost = false;
 
-	public GameObject boostFlame;
+//	public GameObject boostFlame;
+	private MechCombat mechCombat;
 
 	// Use this for initialization
 	void Start () {
@@ -52,10 +53,8 @@ public class NewMechController : MonoBehaviour {
 		} else {
 			Debug.Log("Fuel bar null");
 		}
-			
-		if (boostFlame != null) {
-			boostFlame.SetActive(false);
-		}
+
+		mechCombat = GetComponent<MechCombat>();
 	}
 
 	// Update is called once per frame
@@ -115,7 +114,7 @@ public class NewMechController : MonoBehaviour {
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
 			move.y += ySpeed * Time.fixedDeltaTime;
-			boostFlame.SetActive(true);
+			mechCombat.SetBoost(true);
 		} else {
 			if (animator != null) animator.SetBool("Boost", false);
 			isHorizBoosting = false;
@@ -124,7 +123,7 @@ public class NewMechController : MonoBehaviour {
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
 			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
-			boostFlame.SetActive(false);
+			mechCombat.SetBoost(false);
 		}
 
 		CharacterController.Move (move);

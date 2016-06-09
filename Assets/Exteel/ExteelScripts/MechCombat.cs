@@ -37,6 +37,8 @@ public class MechCombat : NetworkBehaviour {
 	private GameObject[] weapons;
 	private Transform[] Hands;
 
+	public GameObject boostFlame;
+
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
@@ -61,20 +63,42 @@ public class MechCombat : NetworkBehaviour {
 
 	[Command]
 	private void CmdSwitchWeapons() {
-//		for (int i = 0; i < weapons.Length; i++) {
-//			weapons[i].SetActive(!weapons[i].activeSelf);
-//		}
+		Debug.Log("Cmd: isServer: " + isServer + ", isClient: " + isClient);
+		for (int i = 0; i < weapons.Length; i++) {
+			weapons[i].SetActive(!weapons[i].activeSelf);
+		}
 		RpcSwitchWeapons ();
 	}
 
 	[ClientRpc]
 	private void RpcSwitchWeapons() {
-//		if (isServer)
-//			return;
-		Debug.Log("Running");
+		Debug.Log("Rpc: isServer: " + isServer + ", isClient: " + isClient);
+		if (isServer) {
+			Debug.Log("Not switching again on server");
+			return;
+		}
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
+	}
+
+	public void SetBoost(bool boost) {
+		if (isServer) {
+//			boostFlame.SetActive(boost);
+			RpcSetBoost(boost);
+		} else {
+			CmdSetBoost(boost);
+		}
+	}
+
+	[Command]
+	public void CmdSetBoost(bool boost) {
+		RpcSetBoost(boost);
+	}
+
+	[ClientRpc]
+	private void RpcSetBoost(bool boost){
+		boostFlame.SetActive(boost);
 	}
 
 	// Update is called once per frame

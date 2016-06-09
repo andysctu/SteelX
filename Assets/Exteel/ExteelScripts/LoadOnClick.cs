@@ -6,14 +6,21 @@ using System.Collections.Generic;
 public class LoadOnClick : MonoBehaviour {
 
 	public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
-	public InputField user, pass;
+	public InputField[] fields;
 	public Text error;
+
+	private int focus = 0;
+
+	void Start() {
+		fields[0].Select();
+		fields[0].ActivateInputField();
+	}
 
 	public void Login(){
 		WWWForm form = new WWWForm();
-//		if (user.text.Length == 0)
-		form.AddField("username", user.text);
-		form.AddField("password", pass.text);
+
+		form.AddField("username", fields[0].text);
+		form.AddField("password", fields[1].text);
 
 		WWW www = new WWW(LoginURL, form);
 
@@ -28,12 +35,22 @@ public class LoadOnClick : MonoBehaviour {
 			string json = www.text;
 			Data d = JsonUtility.FromJson<Data>(json);
 			UserData.myData = d;
-//			Debug.Log(UserData.data.User.Username);
-//			Debug.Log(UserData.data.Mech.Core);
 			Application.LoadLevel (1);
 		}
 		else {
 			error.gameObject.SetActive(true);
+		}
+	}
+
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.Tab)) {
+			focus = (focus+1)%2;
+			fields[focus].Select();
+			fields[focus].ActivateInputField();
+		}
+
+		if (Input.GetKeyDown(KeyCode.Return)) {
+			Login();
 		}
 	}
 }

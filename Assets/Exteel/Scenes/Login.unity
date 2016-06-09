@@ -196,8 +196,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LoginURL: https://afternoon-temple-1885.herokuapp.com/login
-  user: {fileID: 894130959}
-  pass: {fileID: 1507411308}
+  fields:
+  - {fileID: 894130959}
+  - {fileID: 1507411308}
   error: {fileID: 1572624800}
 --- !u!1 &593875856
 GameObject:

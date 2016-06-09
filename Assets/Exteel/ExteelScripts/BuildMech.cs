@@ -25,6 +25,7 @@ public class BuildMech : NetworkBehaviour {
 		data.Mech.Weapon1R = data.Mech.Weapon1R == null ? defaultParts[6] : data.Mech.Weapon1R;
 		data.Mech.Weapon2L = data.Mech.Weapon2L == null ? defaultParts[7] : data.Mech.Weapon2L;
 		data.Mech.Weapon2R = data.Mech.Weapon2R == null ? defaultParts[8] : data.Mech.Weapon2R;
+		data.User.PilotName = data.User.PilotName == null ? "Default Pilot" : data.User.PilotName;
 		CmdRegister(GetComponent<NetworkIdentity>().netId.Value, data);
 	}
 
@@ -47,7 +48,7 @@ public class BuildMech : NetworkBehaviour {
 				Mech m = entry.Value.Mech;
 				BuildMech mechBuilder = entry.Key.GetComponent<BuildMech>();
 				mechBuilder.RpcBuildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
-				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+//				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 			}
 			uint[] ids = new uint[gm.playerInfo.Count];
 			gm.playerScores.Keys.CopyTo(ids,0);
