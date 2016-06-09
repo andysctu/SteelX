@@ -61,22 +61,26 @@ public class MechCombat : NetworkBehaviour {
 		weapons [3].SetActive (false);
 	}
 
+	private void switchWeapons() {
+		if (isServer) {
+			RpcSwitchWeapons();
+		} else {
+			CmdSwitchWeapons();
+		}
+	}
+
 	[Command]
 	private void CmdSwitchWeapons() {
 		Debug.Log("Cmd: isServer: " + isServer + ", isClient: " + isClient);
-		for (int i = 0; i < weapons.Length; i++) {
-			weapons[i].SetActive(!weapons[i].activeSelf);
-		}
+//		for (int i = 0; i < weapons.Length; i++) {
+//			weapons[i].SetActive(!weapons[i].activeSelf);
+//		}
 		RpcSwitchWeapons ();
 	}
 
 	[ClientRpc]
 	private void RpcSwitchWeapons() {
 		Debug.Log("Rpc: isServer: " + isServer + ", isClient: " + isClient);
-		if (isServer) {
-			Debug.Log("Not switching again on server");
-			return;
-		}
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
@@ -119,7 +123,7 @@ public class MechCombat : NetworkBehaviour {
 		}
 
 		if (Input.GetKeyDown (KeyCode.R)) {
-			CmdSwitchWeapons ();
+			switchWeapons ();
 		}
 
 		if (isDead && Input.GetKeyDown(KeyCode.R) && !gm.GameOver()) {
