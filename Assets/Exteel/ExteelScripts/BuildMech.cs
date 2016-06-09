@@ -48,7 +48,7 @@ public class BuildMech : NetworkBehaviour {
 				Mech m = entry.Value.Mech;
 				BuildMech mechBuilder = entry.Key.GetComponent<BuildMech>();
 				mechBuilder.RpcBuildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
-//				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 			}
 			uint[] ids = new uint[gm.playerInfo.Count];
 			gm.playerScores.Keys.CopyTo(ids,0);
@@ -58,6 +58,8 @@ public class BuildMech : NetworkBehaviour {
 		
 	[ClientRpc]
 	public void RpcBuildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r){
+		if (isServer)
+			return;
 		buildMech(c,a,l,h,b,w1l,w1r,w2l,w2r);
 	}
 
@@ -101,7 +103,7 @@ public class BuildMech : NetworkBehaviour {
 			curSMR[i].material = materials[i];
 			curSMR[i].enabled = true;
 		}
-
+//		Debug.Log ("Arming with: " + w1l + ", " + w1r + ", " + w2l + ", " + w2r);
 		GetComponent<MechCombat> ().Arm (new string[4]{w1l, w1r, w2l, w2r});
 //		MeshCollider[] curMC = GetComponentsInChildren<MeshCollider>();
 	}

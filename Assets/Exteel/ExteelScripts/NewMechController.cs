@@ -31,14 +31,11 @@ public class NewMechController : MonoBehaviour {
 
 	private Slider fuelBar;
 	private bool startBoosting = false;
-	private bool startVertBoosting = false;
 
 	private Vector3 move = Vector3.zero;
-//	private bool isVertBoosting = false;
 
 	bool ableToVertBoost = false;
 
-//	public GameObject boostFlame;
 	private MechCombat mechCombat;
 
 	// Use this for initialization
