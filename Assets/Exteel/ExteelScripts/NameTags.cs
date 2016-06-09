@@ -8,27 +8,14 @@ public class NameTags : MonoBehaviour {
 	GameManager gm;
 	GameObject drone;
 	Camera cam;
-	// Use this for initialization
+
 	void Start () 
     {
-//        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 		drone = GameObject.Find ("Drone");
 		if (drone == null) {
 			Debug.Log ("Drone is null");
 		}
-//		foreach (KeyValuePair<GameObject, Data> entry in gm.playerInfo)
-//		{
-////			aList.Add (GetComponent<GUIText> ().text = entry.Key.name);
-//		}
 		cam = GameObject.Find("Camera").GetComponent<Camera>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-//        List<GameObject> aList = new List<GameObject> ();
-
-
 	}
 
 	void OnGUI() {
