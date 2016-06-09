@@ -19,7 +19,7 @@ public class NameTags : MonoBehaviour {
             // if we can't find it, it probably did not load yet, we will find it later
             Debug.Log("Drone is null");
         }
-        gm = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         if (gm == null)
         {
             Debug.Log("No Players");
@@ -30,13 +30,11 @@ public class NameTags : MonoBehaviour {
     // OnGUI runs every frame, like Update, but just for GUI stuff like labels and scoreboard, etc
     void OnGUI()
     {
-        if (drone == null)
+        if (drone == null || cam == null || gm == null)
         {
             drone = GameObject.Find("Drone");
-        }
-        if (cam == null)
-        {
-            GameObject.Find("Camera").GetComponent<Camera>();
+            cam = GameObject.Find("Camera").GetComponent<Camera>();
+            gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         }
         else
         {
@@ -45,19 +43,13 @@ public class NameTags : MonoBehaviour {
 
             // Draw its name there
             GUI.Label(new Rect(pos.x, Screen.height - pos.y, 100, 100), "Drone");
-        }
-        if (gm == null)
-        {
-            GameObject.Find("Game Manager").GetComponent<GameManager>();
-        }
-        else
-        {
+
             Dictionary<GameObject, Data>.KeyCollection playerlist = (gm.playerInfo).Keys;
             foreach (GameObject entry in playerlist)
             {
-                 Vector3 pos = cam.WorldToScreenPoint(entry.transform.position + new Vector3(0, 10));
-                 string name = entry.name;
-                 GUI.Label(new Rect(pos.x, Screen.height - pos.y, 100, 100), name);
+                Vector3 posi = cam.WorldToScreenPoint(entry.transform.position + new Vector3(0, 10));
+                string name = entry.name;
+                GUI.Label(new Rect(posi.x, Screen.height - posi.y, 100, 100), name);
             }
         }
     }
