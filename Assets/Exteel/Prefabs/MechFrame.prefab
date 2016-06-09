@@ -693,6 +693,7 @@ GameObject:
   - 114: {fileID: 11498424}
   - 114: {fileID: 11464234}
   - 114: {fileID: 11454382}
+  - 114: {fileID: 11470286}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -2818,6 +2819,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ca87e29fb2ce47b3be85f2139582c1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LastSendTime: 0
+  m_SyncVarGuard: 0
+  m_MyView: {fileID: 0}
 --- !u!114 &11407556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2831,6 +2835,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CrosshairNormal: {fileID: 21300000, guid: 1f92ba6d5378743f1952734eac27eb17, type: 3}
   CrosshairTarget: {fileID: 21300000, guid: c401fef18ce45494080583c10b628b82, type: 3}
+  playerSight: {fileID: 0}
+  currentCrosshair: {fileID: 0}
+  layerMask: {}
 --- !u!114 &11408272
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2858,11 +2865,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LastSendTime: 0
+  m_SyncVarGuard: 0
+  m_MyView: {fileID: 0}
   camTransform: {fileID: 430028}
   range: Infinity
   damage: 25
   MaxHP: 100
   CurrentHP: 0
+  isDead: 0
+  gm: {fileID: 0}
+  fireL: 0
+  shootingL: 0
+  fireR: 0
+  shootingR: 0
+  shoulderL: {fileID: 0}
+  shoulderR: {fileID: 0}
+  weapons: []
+  Hands: []
 --- !u!114 &11416644
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2899,11 +2919,18 @@ MonoBehaviour:
   FuelDrain: 1
   FuelGain: 1
   MinFuelRequired: 75
+  marginOfError: 0.1
+  minDownSpeed: 0
   jumped: 0
   TimeBetweenFire: 0.25
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
+  fuelBar: {fileID: 0}
+  startBoosting: 0
+  startVertBoosting: 0
+  move: {x: 0, y: 0, z: 0}
+  ableToVertBoost: 0
   boostFlame: {fileID: 106728}
 --- !u!114 &11424038
 MonoBehaviour:
@@ -2981,6 +3008,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radar: {fileID: 2084814}
+  rect:
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+  texture: {fileID: 0}
 --- !u!114 &11456992
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2998,6 +3031,11 @@ MonoBehaviour:
   autoZeroVerticalOnMobile: 1
   autoZeroHorizontalOnMobile: 0
   relative: 1
+  m_TargetAngles: {x: 0, y: 0, z: 0}
+  m_FollowAngles: {x: 0, y: 0, z: 0}
+  m_FollowVelocity: {x: 0, y: 0, z: 0}
+  m_OriginalRotation: {x: 0, y: 0, z: 0, w: 0}
+  parentCtrl: {fileID: 0}
 --- !u!114 &11464234
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3009,6 +3047,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LastSendTime: 0
+  m_SyncVarGuard: 0
+  m_MyView: {fileID: 0}
+  defaultParts:
+  - 434553333031
+  - 414553313034
+  - 4c544e343131
+  - 484453303033
+  - 504253303030
+  - 415053343033
+  - 415053343033
+  - 415053343033
+  - 53484c303039
+  gm: {fileID: 0}
+  weapons: []
   Hands:
   - {fileID: 454328}
   - {fileID: 452094}
@@ -3039,6 +3092,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11470286
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34872c3f124d29e48967f88c26a5b679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11488360
 MonoBehaviour:
   m_ObjectHideFlags: 1

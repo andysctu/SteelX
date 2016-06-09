@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8a861cc4fd04b5d9ca986dc5633ccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoginURL: https://afternoon-temple-1885.herokuapp.com/login
+  LoginURL: 68747470733a2f2f61667465726e6f6f6e2d74656d706c652d313838352e6865726f6b756170702e636f6d2f6c6f67696e
   user: {fileID: 894130959}
   pass: {fileID: 1507411308}
   error: {fileID: 1572624800}
@@ -1260,6 +1260,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2843be0ea93d480b800f568e299241f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_LastSendTime: 0
+  m_SyncVarGuard: 0
+  m_MyView: {fileID: 0}
 --- !u!4 &1555425246
 Transform:
   m_ObjectHideFlags: 0
