@@ -693,6 +693,7 @@ GameObject:
   - 114: {fileID: 11498424}
   - 114: {fileID: 11464234}
   - 114: {fileID: 11454382}
+  - 114: {fileID: 11434368}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -2925,6 +2926,17 @@ MonoBehaviour:
   m_SnapThreshold: 50
   m_InterpolateRotation: 10
   m_InterpolateMovement: 1
+--- !u!114 &11434368
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34872c3f124d29e48967f88c26a5b679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11439002
 MonoBehaviour:
   m_ObjectHideFlags: 1
