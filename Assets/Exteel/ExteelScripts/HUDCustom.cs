@@ -16,6 +16,8 @@ public class HUDCustom : MonoBehaviour
 	void Awake()
 	{
 		manager = GetComponent<NetworkManager>();
+		manager.StartMatchMaker();
+		manager.matchMaker.ListMatches(0, 20, "", manager.OnMatchList);
 	}
 
 //	void Update()
@@ -62,92 +64,93 @@ public class HUDCustom : MonoBehaviour
 		bool noConnection = (manager.client == null || manager.client.connection == null ||
 			manager.client.connection.connectionId == -1);
 
-		if (!manager.IsClientConnected() && !NetworkServer.active && manager.matchMaker == null)
-		{
-			if (noConnection)
-			{
-				if (UnityEngine.Application.platform != RuntimePlatform.WebGLPlayer)
-				{
-					if (GUI.Button(new Rect(xpos, ypos, 200, 20), "LAN Host(H)"))
-					{
-						manager.StartHost();
-					}
-					ypos += spacing;
-				}
-
-				if (GUI.Button(new Rect(xpos, ypos, 105, 20), "LAN Client(C)"))
-				{
-					manager.StartClient();
-				}
-
-				manager.networkAddress = GUI.TextField(new Rect(xpos + 100, ypos, 95, 20), manager.networkAddress);
-				ypos += spacing;
-
-				if (UnityEngine.Application.platform == RuntimePlatform.WebGLPlayer)
-				{
-					// cant be a server in webgl build
-					GUI.Box(new Rect(xpos, ypos, 200, 25), "(  WebGL cannot be server  )");
-					ypos += spacing;
-				}
-				else
-				{
-					if (GUI.Button(new Rect(xpos, ypos, 200, 20), "LAN Server Only(S)"))
-					{
-						manager.StartServer();
-					}
-					ypos += spacing;
-				}
-			}
-			else
-			{
-				GUI.Label(new Rect(xpos, ypos, 200, 20), "Connecting to " + manager.networkAddress + ":" + manager.networkPort + "..");
-				ypos += spacing;
-
-
-				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Cancel Connection Attempt"))
-				{
-					manager.StopClient();
-				}
-			}
-		}
-		else
-		{
-			if (NetworkServer.active)
-			{
-				string serverMsg = "Server: port=" + manager.networkPort;
-				if (manager.useWebSockets)
-				{
-					serverMsg += " (Using WebSockets)";
-				}
-				GUI.Label(new Rect(xpos, ypos, 300, 20), serverMsg);
-				ypos += spacing;
-			}
-			if (manager.IsClientConnected())
-			{
-				GUI.Label(new Rect(xpos, ypos, 300, 20), "Client: address=" + manager.networkAddress + " port=" + manager.networkPort);
-				ypos += spacing;
-			}
-		}
-
-		if (manager.IsClientConnected() && !ClientScene.ready)
-		{
-			if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Client Ready"))
-			{
-				ClientScene.Ready(manager.client.connection);
-
-				if (ClientScene.localPlayers.Count == 0)
-				{
-					ClientScene.AddPlayer(0);
-				}
-			}
-			ypos += spacing;
-		}
-
+//		if (!manager.IsClientConnected() && !NetworkServer.active && manager.matchMaker == null)
+//		{
+//			if (noConnection)
+//			{
+//				if (UnityEngine.Application.platform != RuntimePlatform.WebGLPlayer)
+//				{
+//					if (GUI.Button(new Rect(xpos, ypos, 200, 20), "LAN Host(H)"))
+//					{
+//						manager.StartHost();
+//					}
+//					ypos += spacing;
+//				}
+//
+//				if (GUI.Button(new Rect(xpos, ypos, 105, 20), "LAN Client(C)"))
+//				{
+//					manager.StartClient();
+//				}
+//
+//				manager.networkAddress = GUI.TextField(new Rect(xpos + 100, ypos, 95, 20), manager.networkAddress);
+//				ypos += spacing;
+//
+//				if (UnityEngine.Application.platform == RuntimePlatform.WebGLPlayer)
+//				{
+//					// cant be a server in webgl build
+//					GUI.Box(new Rect(xpos, ypos, 200, 25), "(  WebGL cannot be server  )");
+//					ypos += spacing;
+//				}
+//				else
+//				{
+//					if (GUI.Button(new Rect(xpos, ypos, 200, 20), "LAN Server Only(S)"))
+//					{
+//						manager.StartServer();
+//					}
+//					ypos += spacing;
+//				}
+//			}
+//			else
+//			{
+//				GUI.Label(new Rect(xpos, ypos, 200, 20), "Connecting to " + manager.networkAddress + ":" + manager.networkPort + "..");
+//				ypos += spacing;
+//
+//
+//				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Cancel Connection Attempt"))
+//				{
+//					manager.StopClient();
+//				}
+//			}
+//		}
+//		else
+//		{
+//			if (NetworkServer.active)
+//			{
+//				string serverMsg = "Server: port=" + manager.networkPort;
+//				if (manager.useWebSockets)
+//				{
+//					serverMsg += " (Using WebSockets)";
+//				}
+//				GUI.Label(new Rect(xpos, ypos, 300, 20), serverMsg);
+//				ypos += spacing;
+//			}
+//			if (manager.IsClientConnected())
+//			{
+//				GUI.Label(new Rect(xpos, ypos, 300, 20), "Client: address=" + manager.networkAddress + " port=" + manager.networkPort);
+//				ypos += spacing;
+//			}
+//		}
+//
+//		if (manager.IsClientConnected() && !ClientScene.ready)
+//		{
+//			if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Client Ready"))
+//			{
+//				ClientScene.Ready(manager.client.connection);
+//
+//				if (ClientScene.localPlayers.Count == 0)
+//				{
+//					ClientScene.AddPlayer(0);
+//				}
+//			}
+//			ypos += spacing;
+//		}
+//
 		if (NetworkServer.active || manager.IsClientConnected())
 		{
 			if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Stop (X)"))
 			{
 				manager.StopHost();
+				manager.StartMatchMaker ();
 			}
 			ypos += spacing;
 		}
@@ -156,26 +159,28 @@ public class HUDCustom : MonoBehaviour
 		{
 			ypos += 10;
 
-			if (UnityEngine.Application.platform == RuntimePlatform.WebGLPlayer)
-			{
-				GUI.Box(new Rect(xpos - 5, ypos, 220, 25), "(WebGL cannot use Match Maker)");
-				return;
-			}
+//			if (UnityEngine.Application.platform == RuntimePlatform.WebGLPlayer)
+//			{
+//				GUI.Box(new Rect(xpos - 5, ypos, 220, 25), "(WebGL cannot use Match Maker)");
+//				return;
+//			}
 
-			if (manager.matchMaker == null)
-			{
-				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Enable Match Maker (M)"))
-				{
-					manager.StartMatchMaker();
-				}
-				ypos += spacing;
-			}
-			else
-			{
+//			if (manager.matchMaker == null)
+//			{
+//				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Enable Match Maker (M)"))
+//				{
+//					manager.StartMatchMaker();
+//				}
+//				ypos += spacing;
+//			}
+//			else
+//			{
+
+
 				if (manager.matchInfo == null)
 				{
-					if (manager.matches == null)
-					{
+//					if (manager.matches == null)
+//					{
 						if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Create Internet Match"))
 						{
 							manager.matchMaker.CreateMatch(manager.matchName, manager.matchSize, true, "", manager.OnMatchCreate);
@@ -188,64 +193,70 @@ public class HUDCustom : MonoBehaviour
 
 						ypos += 10;
 
-						if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Find Internet Match"))
-						{
-							manager.matchMaker.ListMatches(0, 20, "", manager.OnMatchList);
+//						if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Find Internet Match"))
+//						{
+							
+//						}
+						ypos += spacing;
+//					}
+//					else
+//					{
+				if (GUI.Button (new Rect (xpos, ypos, 200, 20), "Refresh")) {
+					manager.matchMaker.ListMatches(0, 20, "", manager.OnMatchList);
+					Debug.Log ("Match Num: " + manager.matches.Count);
+				}
+				ypos += spacing;
+
+				if (manager.matches != null) {
+					foreach (var match in manager.matches) {
+						if (GUI.Button (new Rect (xpos, ypos, 200, 20), "Join Match:" + match.name)) {
+							manager.matchName = match.name;
+							manager.matchSize = (uint)match.currentSize;
+							manager.matchMaker.JoinMatch (match.networkId, "", manager.OnMatchJoined);
 						}
 						ypos += spacing;
 					}
-					else
-					{
-						foreach (var match in manager.matches)
-						{
-							if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Join Match:" + match.name))
-							{
-								manager.matchName = match.name;
-								manager.matchSize = (uint)match.currentSize;
-								manager.matchMaker.JoinMatch(match.networkId, "", manager.OnMatchJoined);
-							}
-							ypos += spacing;
-						}
-					}
+				}
+//					}
 				}
 
-				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Change MM server"))
-				{
-					m_ShowServer = !m_ShowServer;
-				}
-				if (m_ShowServer)
-				{
-					ypos += spacing;
-					if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Local"))
-					{
-						manager.SetMatchHost("localhost", 1337, false);
-						m_ShowServer = false;
-					}
-					ypos += spacing;
-					if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Internet"))
-					{
-						manager.SetMatchHost("mm.unet.unity3d.com", 443, true);
-						m_ShowServer = false;
-					}
-					ypos += spacing;
-					if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Staging"))
-					{
-						manager.SetMatchHost("staging-mm.unet.unity3d.com", 443, true);
-						m_ShowServer = false;
-					}
-				}
-
-				ypos += spacing;
-
-				GUI.Label(new Rect(xpos, ypos, 300, 20), "MM Uri: " + manager.matchMaker.baseUri);
-				ypos += spacing;
-
-				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Disable Match Maker"))
-				{
-					manager.StopMatchMaker();
-				}
-				ypos += spacing;
-			}
+//				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Change MM server"))
+//				{
+//					m_ShowServer = !m_ShowServer;
+//				}
+//				if (m_ShowServer)
+//				{
+//					ypos += spacing;
+//					if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Local"))
+//					{
+//						manager.SetMatchHost("localhost", 1337, false);
+//						m_ShowServer = false;
+//					}
+//					ypos += spacing;
+//					if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Internet"))
+//					{
+//						manager.SetMatchHost("mm.unet.unity3d.com", 443, true);
+//						m_ShowServer = false;
+//					}
+//					ypos += spacing;
+//					if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Staging"))
+//					{
+//						manager.SetMatchHost("staging-mm.unet.unity3d.com", 443, true);
+//						m_ShowServer = false;
+//					}
+//				}
+//
+//				ypos += spacing;
+//
+//				GUI.Label(new Rect(xpos, ypos, 300, 20), "MM Uri: " + manager.matchMaker.baseUri);
+//				ypos += spacing;
+//
+//				if (GUI.Button(new Rect(xpos, ypos, 200, 20), "Disable Match Maker"))
+//				{
+//					manager.StopMatchMaker();
+//				}
+//				ypos += spacing;
+//			}
 		}
 	}
 }
