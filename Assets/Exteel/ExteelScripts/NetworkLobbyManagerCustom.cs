@@ -16,4 +16,10 @@ public class NetworkLobbyManagerCustom : NetworkLobbyManager {
 //		gamePlayer.name = lobbyPlayer.GetComponent<NetworkLobbyPlayerCustom> ().name;
 //		return base.OnLobbyServerSceneLoadedForPlayer (lobbyPlayer, gamePlayer);
 //	}
+
+//	public override void OnLobbyClientEnter ()
+//	{
+////		base.OnLobbyClientExit ();
+//		Debug.Log("He");
+//	}
 }
