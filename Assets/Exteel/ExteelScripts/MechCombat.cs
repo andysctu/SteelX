@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class MechCombat : NetworkBehaviour {
 
 	public Transform camTransform;
-	public float range = Mathf.Infinity;
+//	public float range = Mathf.Infinity;
 	public int damage = 25;
 //	public Animator animator;
 
@@ -22,28 +22,29 @@ public class MechCombat : NetworkBehaviour {
 	public Score score;
 
 
-	private RaycastHit hit;
+//	private RaycastHit hit;
 	private GameManager gm;
 
-	private bool fireL = false;
-	private bool shootingL = false;
-
-	private bool fireR = false;
-	private bool shootingR = false;
-
-	private Transform shoulderL;
-	private Transform shoulderR;
+//	private bool fireL = false;
+//	private bool shootingL = false;
+//
+//	private bool fireR = false;
+//	private bool shootingR = false;
+//
+//	private Transform shoulderL;
+//	private Transform shoulderR;
 
 	private GameObject[] weapons;
 	private Transform[] Hands;
+	private Weapon[] weaponScripts;
 
 	public GameObject boostFlame;
 
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
-		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+//		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+//		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
 		Hands = new Transform[2];
 		Hands [0] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.L/upper_arm.L/forearm.L/hand.L");
@@ -52,12 +53,15 @@ public class MechCombat : NetworkBehaviour {
 
 	public void Arm (string[] weaponNames) {
 		weapons = new GameObject[4];
+		weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {
 			weapons [i] = Instantiate (Resources.Load (weaponNames [i], typeof(GameObject)) as GameObject, Hands [i%2].position, Quaternion.identity) as GameObject;
 			weapons [i].transform.parent = Hands [i % 2];
 		}
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
+
+		gameObject.AddComponent<APS403>().SetCam(camTransform);
 	}
 
 	private void switchWeapons() {
@@ -107,19 +111,19 @@ public class MechCombat : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer || gm.GameOver()) return;
-		if (Input.GetKey(KeyCode.Mouse0)){
-			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
-			fireL = true;
-		} else {
-			fireL = false;
-		}
-
-		if (Input.GetKey(KeyCode.Mouse1)){
-			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
-			fireR = true;
-		} else {
-			fireR = false;
-		}
+//		if (Input.GetKey(KeyCode.Mouse0)){
+//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
+//			fireL = true;
+//		} else {
+//			fireL = false;
+//		}
+//
+//		if (Input.GetKey(KeyCode.Mouse1)){
+//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
+//			fireR = true;
+//		} else {
+//			fireR = false;
+//		}
 
 		if (Input.GetKeyDown (KeyCode.R)) {
 			switchWeapons ();
@@ -130,42 +134,42 @@ public class MechCombat : NetworkBehaviour {
 		}
 	}
 
-	void LateUpdate() {
-		if (fireL) {
-			playShootAnimationL();
-			shootingL = true;
-		} else if (shootingL) {
-			stopShootAnimationL();
-			shootingL = false;
-		}
-
-		if (fireR) {
-			playShootAnimationR();
-			shootingR = true;
-		} else if (shootingR) {
-			stopShootAnimationR();
-			shootingR = false;
-		}
-	}
-
-	void playShootAnimationL() {
-		shoulderL.Rotate(0,90,0);
-	}
-
-	void stopShootAnimationL() {
-		shoulderL.Rotate(0,-90,0);
-	}
-
-	void playShootAnimationR() {
-		shoulderR.Rotate(0,-90,0);
-	}
-
-	void stopShootAnimationR() {
-		shoulderR.Rotate(0,90,0);
-	}
+//	void LateUpdate() {
+//		if (fireL) {
+//			playShootAnimationL();
+//			shootingL = true;
+//		} else if (shootingL) {
+//			stopShootAnimationL();
+//			shootingL = false;
+//		}
+//
+//		if (fireR) {
+//			playShootAnimationR();
+//			shootingR = true;
+//		} else if (shootingR) {
+//			stopShootAnimationR();
+//			shootingR = false;
+//		}
+//	}
+//
+//	void playShootAnimationL() {
+//		shoulderL.Rotate(0,90,0);
+//	}
+//
+//	void stopShootAnimationL() {
+//		shoulderL.Rotate(0,-90,0);
+//	}
+//
+//	void playShootAnimationR() {
+//		shoulderR.Rotate(0,-90,0);
+//	}
+//
+//	void stopShootAnimationR() {
+//		shoulderR.Rotate(0,90,0);
+//	}
 
 	[Server]
-	void OnHit(uint shooterId, float d) {
+	public void OnHit(uint shooterId, float d) {
 		if (isDead) return;
 		CurrentHP -= d;
 		if (CurrentHP <= 0) {
@@ -205,23 +209,21 @@ public class MechCombat : NetworkBehaviour {
 		RpcEnablePlayer();
 	}
 
-	[Command]
-	void CmdFireRaycast(Vector3 start, Vector3 direction){
-		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
-			Debug.Log ("Hit tag: " + hit.transform.tag);
-			Debug.Log("Hit name: " + hit.transform.name);
-//			Debug.Log("Parent name: " + hit.transform.parent.name);
-//			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
-
-			if (hit.transform.tag == "Player"){
-				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
-			} else if (hit.transform.tag == "Drone"){
-
-			}
-		}
-	}
-
-
+//	[Command]
+//	void CmdFireRaycast(Vector3 start, Vector3 direction){
+//		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
+//			Debug.Log ("Hit tag: " + hit.transform.tag);
+//			Debug.Log("Hit name: " + hit.transform.name);
+////			Debug.Log("Parent name: " + hit.transform.parent.name);
+////			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
+//
+//			if (hit.transform.tag == "Player"){
+//				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
+//			} else if (hit.transform.tag == "Drone"){
+//
+//			}
+//		}
+//	}
 
 	[Server]
 	public void RegisterKill(uint shooterId, uint victimId){
