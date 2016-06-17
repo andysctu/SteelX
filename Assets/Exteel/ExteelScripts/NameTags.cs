@@ -7,7 +7,7 @@ public class NameTags : MonoBehaviour {
 
 	GameManager gm;
 	GameObject drone;
-	Camera cam;
+	public Camera cam;
 
 
     void Start()
@@ -24,16 +24,17 @@ public class NameTags : MonoBehaviour {
         {
             Debug.Log("No Players");
         }
-        cam = GameObject.Find("Camera").GetComponent<Camera>();
+//        cam = GameObject.Find("Camera").GetComponent<Camera>();
     }
 
     // OnGUI runs every frame, like Update, but just for GUI stuff like labels and scoreboard, etc
     void OnGUI()
-    {
-        if (drone == null || cam == null || gm == null)
+    {	
+		if (drone == null || cam == null || gm == null)
         {
+			Debug.Log(gameObject.name);
             drone = GameObject.Find("Drone");
-            cam = GameObject.Find("Camera").GetComponent<Camera>();
+//			cam = GameObject.Find(gameObject.name + "/Camera").GetComponent<Camera>();
             gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         }
         else

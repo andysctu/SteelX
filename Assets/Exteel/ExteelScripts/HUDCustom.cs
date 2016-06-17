@@ -59,7 +59,7 @@ public class HUDCustom : MonoBehaviour
 
 	void OnGUI()
 	{	
-		if (manager == null) {
+		if (manager.matchMaker == null) {
 			manager.StartMatchMaker();
 		}
 		xpos = 10 + offsetX;

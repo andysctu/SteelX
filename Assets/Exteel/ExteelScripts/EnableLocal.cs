@@ -15,7 +15,7 @@ public class EnableLocal : NetworkBehaviour {
 			c.enabled = true;
 		}
 		GetComponentInChildren<MechCamera>().enabled = true;
-
+		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;
 
 		// Enable crosshair

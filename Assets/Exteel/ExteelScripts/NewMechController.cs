@@ -126,22 +126,23 @@ public class NewMechController : MonoBehaviour {
 		CharacterController.Move (move);
 
 		if (fuelBar == null) {
-			Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
+			Slider[] sliders = GameObject.Find("Canvas/HUDPanel/HUD").GetComponentsInChildren<Slider>();
 			if (sliders.Length > 1) {
 				fuelBar = sliders[1];
 				Debug.Log("2Sliders length > 1");
 			} else {
 				Debug.Log("2Fuel bar null");
 			}
-		}
-		float currentPercent = fuelBar.value;
-		float targetPercent = CurrentFuel/(float)MaxFuel;
-		float err = 0.01f;
-		if (Mathf.Abs(currentPercent - targetPercent) > err) {
-			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
-		}
+		} else {
+			float currentPercent = fuelBar.value;
+			float targetPercent = CurrentFuel/(float)MaxFuel;
+			float err = 0.01f;
+			if (Mathf.Abs(currentPercent - targetPercent) > err) {
+				currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+			}
 
-		fuelBar.value = currentPercent;
+			fuelBar.value = currentPercent;
+		}
 
 	}
 

@@ -42,24 +42,30 @@ public class BuildMech : NetworkBehaviour {
 		int registeredPlayers = gm.playerInfo.Count;
 		int connectedPlayers = GameObject.Find("LobbyManager").GetComponent<NetworkLobbyManagerCustom>().numPlayers;
 
-		// Once all players are registered, build all players' mechs and initialize scores
+		// After the last player is registered, build all players' mechs and initialize scores
 		if (registeredPlayers == connectedPlayers){
 			foreach (KeyValuePair<GameObject, Data> entry in gm.playerInfo){
 				Mech m = entry.Value.Mech;
 				BuildMech mechBuilder = entry.Key.GetComponent<BuildMech>();
 				mechBuilder.RpcBuildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+				RpcInitInfo(entry.Key, entry.Value);
 			}
 			uint[] ids = new uint[gm.playerInfo.Count];
 			gm.playerScores.Keys.CopyTo(ids,0);
 			RpcInitScores(ids);
 		} 
 	}
+
+	[ClientRpc]
+	public void RpcInitInfo(GameObject key, Data value) {
+		key.name = value.User.PilotName;
+		gm.playerInfo.Add(key, value);
+	}
 		
 	[ClientRpc]
 	public void RpcBuildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r){
-		if (isServer)
-			return;
+		if (isServer) return;
 		buildMech(c,a,l,h,b,w1l,w1r,w2l,w2r);
 	}
 
