@@ -10,6 +10,8 @@ GameObject:
   - 4: {fileID: 456306}
   - 33: {fileID: 3381600}
   - 23: {fileID: 2378908}
+  - 114: {fileID: 11406024}
+  - 114: {fileID: 11413324}
   m_Layer: 0
   m_Name: APS403
   m_TagString: Untagged
@@ -63,6 +65,51 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 189902}
   m_Mesh: {fileID: 4300000, guid: 1a520d3bf1d27438fa5eb297c4e548c4, type: 3}
+--- !u!114 &11406024
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 189902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 138
+    i1: 201
+    i2: 16
+    i3: 18
+    i4: 145
+    i5: 85
+    i6: 244
+    i7: 94
+    i8: 251
+    i9: 236
+    i10: 7
+    i11: 81
+    i12: 211
+    i13: 168
+    i14: 149
+    i15: 25
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
+--- !u!114 &11413324
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 189902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b64878333574391bfe8150263aa3df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Damage: 0
+  Range: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

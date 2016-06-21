@@ -21,6 +21,7 @@ public class MechCombat : NetworkBehaviour {
 	[SyncVar]
 	public Score score;
 
+	private RaycastHit hit;
 
 //	private RaycastHit hit;
 	private GameManager gm;
@@ -50,7 +51,7 @@ public class MechCombat : NetworkBehaviour {
 		Hands [0] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.L/upper_arm.L/forearm.L/hand.L");
 		Hands [1] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.R/upper_arm.R/forearm.R/hand.R");
 	}
-
+		
 	public void Arm (string[] weaponNames) {
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
@@ -58,10 +59,17 @@ public class MechCombat : NetworkBehaviour {
 			weapons [i] = Instantiate (Resources.Load (weaponNames [i], typeof(GameObject)) as GameObject, Hands [i%2].position, Quaternion.identity) as GameObject;
 			weapons [i].transform.parent = Hands [i % 2];
 		}
+
+		weaponScripts = gameObject.GetComponentsInChildren<Weapon>();
+		for (int i = 0; i < weaponScripts.Length; i++){
+			weaponScripts[i].SetCam(camTransform);
+			weaponScripts[i].SetRoot(gameObject);
+		}
+		Debug.Log("weapon size: " + weaponScripts.Length);
+
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
-
-		gameObject.AddComponent<APS403>().SetCam(camTransform);
+//		gameObject.AddComponent<APS403>().SetCam(camTransform);
 	}
 
 	private void switchWeapons() {
@@ -209,21 +217,21 @@ public class MechCombat : NetworkBehaviour {
 		RpcEnablePlayer();
 	}
 
-//	[Command]
-//	void CmdFireRaycast(Vector3 start, Vector3 direction){
-//		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
-//			Debug.Log ("Hit tag: " + hit.transform.tag);
-//			Debug.Log("Hit name: " + hit.transform.name);
-////			Debug.Log("Parent name: " + hit.transform.parent.name);
-////			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
-//
-//			if (hit.transform.tag == "Player"){
-//				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
-//			} else if (hit.transform.tag == "Drone"){
-//
-//			}
-//		}
-//	}
+	[Command]
+	public void CmdFireRaycast(Vector3 start, Vector3 direction, float range){
+		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
+			Debug.Log ("Hit tag: " + hit.transform.tag);
+			Debug.Log("Hit name: " + hit.transform.name);
+//			Debug.Log("Parent name: " + hit.transform.parent.name);
+//			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
+
+			if (hit.transform.tag == "Player"){
+				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
+			} else if (hit.transform.tag == "Drone"){
+
+			}
+		}
+	}
 
 	[Server]
 	public void RegisterKill(uint shooterId, uint victimId){
