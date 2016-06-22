@@ -7,7 +7,7 @@ public class MechCombat : NetworkBehaviour {
 
 	public Transform camTransform;
 //	public float range = Mathf.Infinity;
-	public int damage = 25;
+//	public int damage = 25;
 //	public Animator animator;
 
 	[SyncVar]
@@ -22,34 +22,33 @@ public class MechCombat : NetworkBehaviour {
 	public Score score;
 
 	private RaycastHit hit;
+	private bool fireL = false;
+	private bool shootingL = false;
 
-//	private RaycastHit hit;
+	private bool fireR = false;
+	private bool shootingR = false;
+
+	private Transform shoulderL;
+	private Transform shoulderR;
+
 	private GameManager gm;
-
-//	private bool fireL = false;
-//	private bool shootingL = false;
-//
-//	private bool fireR = false;
-//	private bool shootingR = false;
-//
-//	private Transform shoulderL;
-//	private Transform shoulderR;
-
 	private GameObject[] weapons;
 	private Transform[] Hands;
 	private Weapon[] weaponScripts;
+
+	private int weaponOffset = 0;
 
 	public GameObject boostFlame;
 
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
-//		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-//		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
 		Hands = new Transform[2];
-		Hands [0] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.L/upper_arm.L/forearm.L/hand.L");
-		Hands [1] = transform.FindChild ("CurrentMech/metarig/hips/spine/chest/shoulder.R/upper_arm.R/forearm.R/hand.R");
+		Hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
+		Hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
 	}
 		
 	public void Arm (string[] weaponNames) {
@@ -58,15 +57,22 @@ public class MechCombat : NetworkBehaviour {
 		for (int i = 0; i < weaponNames.Length; i++) {
 			weapons [i] = Instantiate (Resources.Load (weaponNames [i], typeof(GameObject)) as GameObject, Hands [i%2].position, Quaternion.identity) as GameObject;
 			weapons [i].transform.parent = Hands [i % 2];
+
+			switch (weaponNames[i]) {
+				case "APS403": {
+					weaponScripts[i] = new APS403();
+					Debug.Log("Added APS403");
+					break;
+				}
+				case "SHL009": {
+						weaponScripts[i] = new SHL009();
+						Debug.Log("Added SHL009");
+						break;
+				}
+			}
 		}
 
-		weaponScripts = gameObject.GetComponentsInChildren<Weapon>();
-		for (int i = 0; i < weaponScripts.Length; i++){
-			weaponScripts[i].SetCam(camTransform);
-			weaponScripts[i].SetRoot(gameObject);
-		}
-		Debug.Log("weapon size: " + weaponScripts.Length);
-
+		weaponOffset = 0;
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
 //		gameObject.AddComponent<APS403>().SetCam(camTransform);
@@ -95,6 +101,7 @@ public class MechCombat : NetworkBehaviour {
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
+		weaponOffset = (weaponOffset + 2) % 4;
 	}
 
 	public void SetBoost(bool boost) {
@@ -119,19 +126,19 @@ public class MechCombat : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (!isLocalPlayer || gm.GameOver()) return;
-//		if (Input.GetKey(KeyCode.Mouse0)){
-//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
-//			fireL = true;
-//		} else {
-//			fireL = false;
-//		}
-//
-//		if (Input.GetKey(KeyCode.Mouse1)){
-//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward);
-//			fireR = true;
-//		} else {
-//			fireR = false;
-//		}
+		if (Input.GetKey(KeyCode.Mouse0)){
+			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
+			fireL = true;
+		} else {
+			fireL = false;
+		}
+
+		if (Input.GetKey(KeyCode.Mouse1)){
+			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, weaponScripts[weaponOffset+1].Damage, weaponScripts[weaponOffset+1].Range);
+			fireR = true;
+		} else {
+			fireR = false;
+		}
 
 		if (Input.GetKeyDown (KeyCode.R)) {
 			switchWeapons ();
@@ -142,42 +149,42 @@ public class MechCombat : NetworkBehaviour {
 		}
 	}
 
-//	void LateUpdate() {
-//		if (fireL) {
-//			playShootAnimationL();
-//			shootingL = true;
-//		} else if (shootingL) {
-//			stopShootAnimationL();
-//			shootingL = false;
-//		}
-//
-//		if (fireR) {
-//			playShootAnimationR();
-//			shootingR = true;
-//		} else if (shootingR) {
-//			stopShootAnimationR();
-//			shootingR = false;
-//		}
-//	}
-//
-//	void playShootAnimationL() {
-//		shoulderL.Rotate(0,90,0);
-//	}
-//
-//	void stopShootAnimationL() {
-//		shoulderL.Rotate(0,-90,0);
-//	}
-//
-//	void playShootAnimationR() {
-//		shoulderR.Rotate(0,-90,0);
-//	}
-//
-//	void stopShootAnimationR() {
-//		shoulderR.Rotate(0,90,0);
-//	}
+	void LateUpdate() {
+		if (fireL) {
+			playShootAnimationL();
+			shootingL = true;
+		} else if (shootingL) {
+			stopShootAnimationL();
+			shootingL = false;
+		}
+
+		if (fireR) {
+			playShootAnimationR();
+			shootingR = true;
+		} else if (shootingR) {
+			stopShootAnimationR();
+			shootingR = false;
+		}
+	}
+
+	void playShootAnimationL() {
+		shoulderL.Rotate(0,90,0);
+	}
+
+	void stopShootAnimationL() {
+		shoulderL.Rotate(0,-90,0);
+	}
+
+	void playShootAnimationR() {
+		shoulderR.Rotate(0,-90,0);
+	}
+
+	void stopShootAnimationR() {
+		shoulderR.Rotate(0,90,0);
+	}
 
 	[Server]
-	public void OnHit(uint shooterId, float d) {
+	void OnHit(uint shooterId, float d) {
 		if (isDead) return;
 		CurrentHP -= d;
 		if (CurrentHP <= 0) {
@@ -218,13 +225,13 @@ public class MechCombat : NetworkBehaviour {
 	}
 
 	[Command]
-	public void CmdFireRaycast(Vector3 start, Vector3 direction, float range){
+	public void CmdFireRaycast(Vector3 start, Vector3 direction, int damage, float range){
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
 //			Debug.Log("Parent name: " + hit.transform.parent.name);
 //			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
-
+			Debug.Log("Damage: " + damage + ", Range: " + range);
 			if (hit.transform.tag == "Player"){
 				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
 			} else if (hit.transform.tag == "Drone"){
