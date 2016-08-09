@@ -22,4 +22,7 @@ public class NetworkLobbyManagerCustom : NetworkLobbyManager {
 ////		base.OnLobbyClientExit ();
 //		Debug.Log("He");
 //	}
+	void OnGUI() {
+//		Debug.Log ("hi");
+	}
 }
