@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.ComponentModel;
 
@@ -18,11 +19,40 @@ public class HUDCustom : MonoBehaviour
 	int ypos;
 	const int spacing = 24;
 
+	int roomHeight = 50;
+
+	[SerializeField] GameObject panel;
+	[SerializeField] Transform content;
+
 	void Awake()
 	{
 		manager = GetComponent<NetworkManager>();
 		manager.StartMatchMaker();
 		manager.matchMaker.ListMatches(0, 20, "", manager.OnMatchList);
+	}
+
+	void Start() {
+		if (manager.matches != null) {
+			foreach (var match in manager.matches) {
+				GameObject roomPanel = Instantiate (panel);
+				roomPanel.transform.parent = content;
+				//				if (GUI.Button (new Rect (xpos, ypos, 200, 20), "Join Match:" + match.name)) {
+				//					manager.matchName = match.name;
+				//					manager.matchSize = (uint)match.currentSize;
+				//					manager.matchMaker.JoinMatch (match.networkId, "", manager.OnMatchJoined);
+				//				}
+				//				ypos += spacing;
+
+			}
+		}
+
+		for (int i = 0; i < 3; i++) {
+			GameObject roomPanel = Instantiate (panel);
+			roomPanel.transform.SetParent(content);
+			RectTransform rt = roomPanel.GetComponent<RectTransform> ();
+			rt.localPosition = new Vector3(0, -1*roomHeight*i, 0);
+			rt.localScale = new Vector3 (1, 1, 1);
+		}
 	}
 
 //	void Update()
