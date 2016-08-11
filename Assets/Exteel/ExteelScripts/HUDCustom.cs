@@ -11,7 +11,8 @@ public class HUDCustom : MonoBehaviour
 	[SerializeField] public int offsetX;
 	[SerializeField] public int offsetY;
 	[SerializeField] GameObject CreateRoomModal;
-	[SerializeField] Button[] buttons;
+	[SerializeField] Button[] lobbyButtons;
+	[SerializeField] Button[] createRoomButtons;
 
 	// Runtime variable
 	bool m_ShowServer;
@@ -22,6 +23,8 @@ public class HUDCustom : MonoBehaviour
 	const int spacing = 24;
 
 	int roomHeight = 50;
+
+	private Boolean showCreateRoom;
 
 	[SerializeField] GameObject panel;
 	[SerializeField] Transform content;
@@ -34,8 +37,13 @@ public class HUDCustom : MonoBehaviour
 		manager.StartMatchMaker();
 		manager.matchMaker.ListMatches(0, 20, "", manager.OnMatchList);
 
-		buttons [0].onClick.AddListener (ShowCreateRoom);
-		buttons[2].onClick.AddListener(refresh);
+		showCreateRoom = false;
+
+		lobbyButtons [0].onClick.AddListener (toggleCreateRoom);
+
+		lobbyButtons[2].onClick.AddListener(refresh);
+		createRoomButtons [0].onClick.AddListener (toggleCreateRoom);
+		createRoomButtons [1].onClick.AddListener (createRoom);
 	}
 
 	void Start() {
@@ -68,6 +76,17 @@ public class HUDCustom : MonoBehaviour
 		content.GetComponent<RectTransform> ().sizeDelta = new Vector2 (600, 50 * manager.matches.Count);
 	}
 
+	public void toggleCreateRoom() {
+		showCreateRoom = !showCreateRoom;
+		CreateRoomModal.SetActive (showCreateRoom);
+		for (int i = 0; i < 3; i++) {
+			lobbyButtons [i].interactable = !showCreateRoom;
+		}
+	}
+
+	public void createRoom() {
+		manager.matchMaker.CreateMatch(manager.matchName, manager.matchSize, true, "", manager.OnMatchCreate);
+	}
 //	void Update()
 //	{
 //		if (!showGUI)
@@ -171,16 +190,5 @@ public class HUDCustom : MonoBehaviour
 		if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Cancel")) {
 			creatingRoom = false;
 		}
-	}
-
-	public void ShowCreateRoom() {
-		CreateRoomModal.SetActive (true);
-		for (int i = 0; i < buttons.Length; i++) {
-			buttons [i].interactable = false;
-		}
-	}
-
-	public void CreateRoom() {
-		manager.matchMaker.CreateMatch(manager.matchName, manager.matchSize, true, "", manager.OnMatchCreate);
 	}
 }

@@ -1781,10 +1781,13 @@ MonoBehaviour:
   offsetX: 0
   offsetY: 0
   CreateRoomModal: {fileID: 1941349727}
-  buttons:
+  lobbyButtons:
   - {fileID: 532765177}
   - {fileID: 1733056672}
   - {fileID: 516110569}
+  createRoomButtons:
+  - {fileID: 608201924}
+  - {fileID: 1120744189}
   panel: {fileID: 159554, guid: 0b9a6166d24c945e7997a92d511577b0, type: 2}
   content: {fileID: 1801927821}
 --- !u!114 &1561732991
