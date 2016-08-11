@@ -14,6 +14,8 @@ public class HUDCustom : MonoBehaviour
 	[SerializeField] GameObject CreateRoomModal;
 	[SerializeField] Button[] lobbyButtons;
 	[SerializeField] Button[] createRoomButtons;
+	[SerializeField] GameObject gameLobby;
+	[SerializeField] GameObject roomsPanel;
 
 	// Runtime variable
 	bool m_ShowServer;
@@ -94,12 +96,22 @@ public class HUDCustom : MonoBehaviour
 
 	void createRoom() {
 		manager.matchMaker.CreateMatch(manager.matchName, manager.matchSize, true, "", manager.OnMatchCreate);
+		goToGameLobby();
 	}
 		
+	void goToGameLobby() {
+		roomsPanel.SetActive(false);
+		CreateRoomModal.SetActive(false);
+		gameLobby.SetActive(true);
+	}
+
 	void joinRoom() {
-		manager.matchName = selectedMatch.name;
-		manager.matchSize = (uint)selectedMatch.currentSize;
-		manager.matchMaker.JoinMatch (selectedMatch.networkId, "", manager.OnMatchJoined);
+		if (selectedMatch != null) {
+			manager.matchName = selectedMatch.name;
+			manager.matchSize = (uint)selectedMatch.currentSize;
+			manager.matchMaker.JoinMatch (selectedMatch.networkId, "", manager.OnMatchJoined);
+			goToGameLobby();
+		}
 	}
 
 //	void Update()

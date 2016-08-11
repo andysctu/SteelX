@@ -481,7 +481,6 @@ GameObject:
   - 136: {fileID: 13681796}
   - 82: {fileID: 8229060}
   - 114: {fileID: 11474390}
-  - 114: {fileID: 11480372}
   m_Layer: 8
   m_Name: Drone
   m_TagString: Drone
@@ -863,7 +862,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 198016}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 11.111946, y: 3.4, z: 2.415615}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -1162,17 +1161,6 @@ MonoBehaviour:
     i15: 63
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
---- !u!114 &11480372
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 198016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 711bd62e4c7cd4928af9c5e241cbf826, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!136 &13681796
 CapsuleCollider:
   m_ObjectHideFlags: 1

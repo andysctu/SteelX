@@ -8,6 +8,18 @@ public class NetworkLobbyPlayerCustom : NetworkLobbyPlayer {
 //		name = UserData.myData.User.PilotName;
 //		base.OnClientEnterLobby ();
 //	}
+
+	[SerializeField] GameObject playerCard;
+	private Transform team1, team2;
+
+	void Start() {
+		team1 = GameObject.Find("Canvas/GameLobby/Team1").transform;
+		team2 = GameObject.Find("Canvas/GameLobby/Team2").transform;
+		GameObject pc = Instantiate(playerCard);
+		pc.transform.SetParent(team1);
+		pc.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+	}
+
 	void OnGUI()
 	{
 //		if (!ShowLobbyGUI)
