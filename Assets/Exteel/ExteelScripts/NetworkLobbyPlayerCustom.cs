@@ -13,11 +13,17 @@ public class NetworkLobbyPlayerCustom : NetworkLobbyPlayer {
 	private Transform team1, team2;
 
 	void Start() {
-		team1 = GameObject.Find("Canvas/GameLobby/Team1").transform;
-		team2 = GameObject.Find("Canvas/GameLobby/Team2").transform;
-		GameObject pc = Instantiate(playerCard);
-		pc.transform.SetParent(team1);
-		pc.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+		GameObject t1 = GameObject.Find ("Canvas/GameLobby/Team1");
+		GameObject t2 = GameObject.Find ("Canvas/GameLobby/Team1");
+		if (t1 != null) {
+			team1 = t1.transform;
+			GameObject pc = Instantiate(playerCard);
+			pc.transform.SetParent(team1);
+			pc.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+		}
+		if (t2 != null) {
+			team2 = t2.transform;
+		}
 	}
 
 	void OnGUI()
