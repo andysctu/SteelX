@@ -10,6 +10,8 @@ public class HUDCustom : MonoBehaviour
 	[SerializeField] public bool showGUI = true;
 	[SerializeField] public int offsetX;
 	[SerializeField] public int offsetY;
+	[SerializeField] GameObject CreateRoomModal;
+	[SerializeField] Button[] buttons;
 
 	// Runtime variable
 	bool m_ShowServer;
@@ -24,35 +26,46 @@ public class HUDCustom : MonoBehaviour
 	[SerializeField] GameObject panel;
 	[SerializeField] Transform content;
 
+	GameObject[] rooms;
+
 	void Awake()
 	{
 		manager = GetComponent<NetworkManager>();
 		manager.StartMatchMaker();
 		manager.matchMaker.ListMatches(0, 20, "", manager.OnMatchList);
+
+		buttons [0].onClick.AddListener (ShowCreateRoom);
+		buttons[2].onClick.AddListener(refresh);
 	}
 
 	void Start() {
 		if (manager.matches != null) {
-			foreach (var match in manager.matches) {
-				GameObject roomPanel = Instantiate (panel);
-				roomPanel.transform.parent = content;
-				//				if (GUI.Button (new Rect (xpos, ypos, 200, 20), "Join Match:" + match.name)) {
-				//					manager.matchName = match.name;
-				//					manager.matchSize = (uint)match.currentSize;
-				//					manager.matchMaker.JoinMatch (match.networkId, "", manager.OnMatchJoined);
-				//				}
-				//				ypos += spacing;
+			updateRooms ();
+		}
+	}
+		
+	void refresh() {
+		manager.matchMaker.ListMatches (0, 20, "", manager.OnMatchList);
+		updateRooms ();
+	}
 
+	void updateRooms() {
+		Debug.Log ("Updating Rooms");
+		if (rooms != null) {
+			for (int i = 0; i < rooms.Length; i++) {
+				Destroy (rooms [i]);
 			}
 		}
-
-		for (int i = 0; i < 3; i++) {
+		rooms = new GameObject[manager.matches.Count];
+		for (int i = 0; i < manager.matches.Count; i++) {
 			GameObject roomPanel = Instantiate (panel);
 			roomPanel.transform.SetParent(content);
 			RectTransform rt = roomPanel.GetComponent<RectTransform> ();
 			rt.localPosition = new Vector3(0, -1*roomHeight*i, 0);
 			rt.localScale = new Vector3 (1, 1, 1);
+			rooms [i] = roomPanel;
 		}
+		content.GetComponent<RectTransform> ().sizeDelta = new Vector2 (600, 50 * manager.matches.Count);
 	}
 
 //	void Update()
@@ -158,5 +171,16 @@ public class HUDCustom : MonoBehaviour
 		if (GUI.Button(new Rect(xpos, ypos, 100, 20), "Cancel")) {
 			creatingRoom = false;
 		}
+	}
+
+	public void ShowCreateRoom() {
+		CreateRoomModal.SetActive (true);
+		for (int i = 0; i < buttons.Length; i++) {
+			buttons [i].interactable = false;
+		}
+	}
+
+	public void CreateRoom() {
+		manager.matchMaker.CreateMatch(manager.matchName, manager.matchSize, true, "", manager.OnMatchCreate);
 	}
 }
