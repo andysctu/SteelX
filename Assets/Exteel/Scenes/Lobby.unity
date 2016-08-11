@@ -934,7 +934,7 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -120, y: 10}
+  m_AnchoredPosition: {x: -10, y: 10}
   m_SizeDelta: {x: 100, y: 30}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &608201924
@@ -1195,7 +1195,7 @@ RectTransform:
   m_RootOrder: 3
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -10, y: 10}
+  m_AnchoredPosition: {x: -120, y: 10}
   m_SizeDelta: {x: 100, y: 30}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1120744189
@@ -1786,8 +1786,8 @@ MonoBehaviour:
   - {fileID: 1733056672}
   - {fileID: 516110569}
   createRoomButtons:
-  - {fileID: 608201924}
   - {fileID: 1120744189}
+  - {fileID: 608201924}
   panel: {fileID: 159554, guid: 0b9a6166d24c945e7997a92d511577b0, type: 2}
   content: {fileID: 1801927821}
 --- !u!114 &1561732991

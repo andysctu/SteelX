@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using UnityEngine.Networking.Match;
 using System.ComponentModel;
 
 public class HUDCustom : MonoBehaviour
@@ -25,6 +26,7 @@ public class HUDCustom : MonoBehaviour
 	int roomHeight = 50;
 
 	private Boolean showCreateRoom;
+	private MatchDesc selectedMatch;
 
 	[SerializeField] GameObject panel;
 	[SerializeField] Transform content;
@@ -40,8 +42,8 @@ public class HUDCustom : MonoBehaviour
 		showCreateRoom = false;
 
 		lobbyButtons [0].onClick.AddListener (toggleCreateRoom);
-
-		lobbyButtons[2].onClick.AddListener(refresh);
+		lobbyButtons [1].onClick.AddListener (joinRoom);
+		lobbyButtons [2].onClick.AddListener(refresh);
 		createRoomButtons [0].onClick.AddListener (toggleCreateRoom);
 		createRoomButtons [1].onClick.AddListener (createRoom);
 	}
@@ -71,12 +73,18 @@ public class HUDCustom : MonoBehaviour
 			RectTransform rt = roomPanel.GetComponent<RectTransform> ();
 			rt.localPosition = new Vector3(0, -1*roomHeight*i, 0);
 			rt.localScale = new Vector3 (1, 1, 1);
+			int index = i;
+			roomPanel.GetComponent<Button> ().onClick.AddListener (() => {
+				Debug.Log("Room selected");
+				selectedMatch = manager.matches[index];
+			});
+
 			rooms [i] = roomPanel;
 		}
 		content.GetComponent<RectTransform> ().sizeDelta = new Vector2 (600, 50 * manager.matches.Count);
 	}
 
-	public void toggleCreateRoom() {
+	void toggleCreateRoom() {
 		showCreateRoom = !showCreateRoom;
 		CreateRoomModal.SetActive (showCreateRoom);
 		for (int i = 0; i < 3; i++) {
@@ -84,9 +92,16 @@ public class HUDCustom : MonoBehaviour
 		}
 	}
 
-	public void createRoom() {
+	void createRoom() {
 		manager.matchMaker.CreateMatch(manager.matchName, manager.matchSize, true, "", manager.OnMatchCreate);
 	}
+		
+	void joinRoom() {
+		manager.matchName = selectedMatch.name;
+		manager.matchSize = (uint)selectedMatch.currentSize;
+		manager.matchMaker.JoinMatch (selectedMatch.networkId, "", manager.OnMatchJoined);
+	}
+
 //	void Update()
 //	{
 //		if (!showGUI)
