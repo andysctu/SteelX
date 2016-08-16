@@ -2683,7 +2683,7 @@ Camera:
     width: 1
     height: 0.25
   near clip plane: 0.3
-  far clip plane: 150
+  far clip plane: 300
   field of view: 60
   orthographic: 1
   orthographic size: 100
@@ -2759,9 +2759,6 @@ MonoBehaviour:
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
-  autoZeroVerticalOnMobile: 1
-  autoZeroHorizontalOnMobile: 0
-  relative: 1
 --- !u!114 &11416644
 MonoBehaviour:
   m_ObjectHideFlags: 1

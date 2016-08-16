@@ -197,7 +197,7 @@ public class MechCombat : NetworkBehaviour {
 	[ClientRpc]
 	void RpcDisablePlayer() {
 		gameObject.layer = 0;
-		GetComponent<NewMechController>().enabled = false;
+		GetComponent<MechController>().enabled = false;
 		GetComponentInChildren<Crosshair>().enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
@@ -213,7 +213,7 @@ public class MechCombat : NetworkBehaviour {
 			renderer.enabled = true;
 		}
 		if (!isLocalPlayer) return;
-		GetComponent<NewMechController>().enabled = true;
+		GetComponent<MechController>().enabled = true;
 		GetComponentInChildren<Crosshair>().enabled = true;
 	}
 

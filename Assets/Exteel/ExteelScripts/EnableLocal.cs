@@ -8,7 +8,7 @@ public class EnableLocal : NetworkBehaviour {
 	public override void OnStartLocalPlayer () {
 
 		// Enable mech controller
-		GetComponent<NewMechController>().enabled = true;
+		GetComponent<MechController>().enabled = true;
 
 		// Enable camera/radar
 		foreach (Camera c in GetComponentsInChildren<Camera>()){

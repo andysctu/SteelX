@@ -124,7 +124,7 @@ public class MechCreator
 		cc.radius = 2;
 		cc.height = 8;
 
-		wrapper.AddComponent<NewMechController>().enabled = false;
+		wrapper.AddComponent<MechController>().enabled = false;
 		wrapper.AddComponent<NetworkIdentity>().localPlayerAuthority = true;
 		wrapper.AddComponent<EnableLocal>();
 		NetworkTransform nt = wrapper.AddComponent<NetworkTransform>();
