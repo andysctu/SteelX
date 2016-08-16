@@ -263,6 +263,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &113264
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 405268}
+  - 20: {fileID: 2087740}
+  - 124: {fileID: 12423242}
+  - 92: {fileID: 9292408}
+  - 81: {fileID: 8174502}
+  - 114: {fileID: 11415780}
+  m_Layer: 8
+  m_Name: Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &115200
 GameObject:
   m_ObjectHideFlags: 1
@@ -648,6 +668,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400766}
   - 143: {fileID: 14356836}
+  - 114: {fileID: 11462782}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -1378,6 +1399,7 @@ Transform:
   m_Children:
   - {fileID: 437684}
   - {fileID: 431462}
+  - {fileID: 405268}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &401194
@@ -1463,6 +1485,19 @@ Transform:
   - {fileID: 440020}
   m_Father: {fileID: 488630}
   m_RootOrder: 0
+--- !u!4 &405268
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113264}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 9.12, z: -13.62}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 400766}
+  m_RootOrder: 2
 --- !u!4 &407092
 Transform:
   m_ObjectHideFlags: 1
@@ -2597,6 +2632,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 480284}
   m_RootOrder: 0
+--- !u!20 &2087740
+Camera:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113264}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0.019607844}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+  m_StereoMirrorMode: 0
 --- !u!20 &2093468
 Camera:
   m_ObjectHideFlags: 1
@@ -2638,6 +2707,13 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 183748}
   m_Enabled: 0
+--- !u!81 &8174502
+AudioListener:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113264}
+  m_Enabled: 1
 --- !u!92 &9283992
 Behaviour:
   m_ObjectHideFlags: 1
@@ -2645,6 +2721,13 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 183748}
   m_Enabled: 0
+--- !u!92 &9292408
+Behaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113264}
+  m_Enabled: 1
 --- !u!95 &9563454
 Animator:
   serializedVersion: 3
@@ -2662,6 +2745,23 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &11415780
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e209798f836304cfabd478f5db070121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationRange: {x: 70, y: 70}
+  rotationSpeed: 5
+  dampingTime: 0.2
+  autoZeroVerticalOnMobile: 1
+  autoZeroHorizontalOnMobile: 0
+  relative: 1
 --- !u!114 &11416644
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2686,6 +2786,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minColour: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &11462782
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CharacterController: {fileID: 14356836}
+  animator: {fileID: 9563454}
+  Gravity: 2
+  JumpPower: 50
+  MoveSpeed: 40
+  BoostSpeed: 0
+  VerticalBoostSpeed: 1
+  isHorizBoosting: 0
+  MaxFuel: 100
+  CurrentFuel: 0
+  FuelDrain: 1
+  FuelGain: 1
+  MinFuelRequired: 75
+  jumped: 0
+  TimeBetweenFire: 0.25
+  xSpeed: 0
+  ySpeed: 0
+  zSpeed: 0
+--- !u!124 &12423242
+Behaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 113264}
+  m_Enabled: 1
 --- !u!124 &12494616
 Behaviour:
   m_ObjectHideFlags: 1

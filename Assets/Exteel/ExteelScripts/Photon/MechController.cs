@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class NewMechController : MonoBehaviour {
+public class MechController : MonoBehaviour {
 
 	public CharacterController CharacterController;
 	public Animator animator;
@@ -13,7 +13,7 @@ public class NewMechController : MonoBehaviour {
 	public float BoostSpeed;
 	public float VerticalBoostSpeed = 1f;
 	public bool isHorizBoosting = false;
-//	public bool testGrounded;
+	//	public bool testGrounded;
 
 	public float MaxFuel = 100.0f;
 	public float CurrentFuel;
@@ -36,7 +36,7 @@ public class NewMechController : MonoBehaviour {
 
 	bool ableToVertBoost = false;
 
-	private MechCombat mechCombat;
+//	private MechCombat mechCombat;
 
 	// Use this for initialization
 	void Start () {
@@ -51,7 +51,7 @@ public class NewMechController : MonoBehaviour {
 			Debug.Log("Fuel bar null");
 		}
 
-		mechCombat = GetComponent<MechCombat>();
+//		mechCombat = GetComponent<MechCombat>();
 	}
 
 	// Update is called once per frame
@@ -111,7 +111,7 @@ public class NewMechController : MonoBehaviour {
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
 			move.y += ySpeed * Time.fixedDeltaTime;
-			mechCombat.SetBoost(true);
+//			mechCombat.SetBoost(true);
 		} else {
 			if (animator != null) animator.SetBool("Boost", false);
 			isHorizBoosting = false;
@@ -120,7 +120,7 @@ public class NewMechController : MonoBehaviour {
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
 			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
-			mechCombat.SetBoost(false);
+//			mechCombat.SetBoost(false);
 		}
 
 		CharacterController.Move (move);
