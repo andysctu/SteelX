@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class LobbyManager : MonoBehaviour {
 
 	[SerializeField] GameObject LobbyPlayer;
 	[SerializeField] GameObject Team1, Team2;
+
+	private List<GameObject> players;
 
 	// Use this for initialization
 	void Start () {
@@ -33,10 +37,33 @@ public class LobbyManager : MonoBehaviour {
 			PhotonNetwork.LoadLevel ("Lobby");
 		}
 
+//		GameObject lobbyPlayer = PhotonNetwork.Instantiate (LobbyPlayer.name, transform.position, Quaternion.identity, 0);
+//		lobbyPlayer.transform.SetParent (Team1.transform);
+//		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+
+		players = new List<GameObject> ();
+		Debug.Log(PhotonNetwork.playerList.Length);
+		for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
+			PhotonPlayer player = PhotonNetwork.playerList[i];
+			Debug.Log (player.name);
+			addPlayer (player.name);
+		}
+
+		PhotonNetwork.automaticallySyncScene = true;
+
+		if (PhotonNetwork.isMasterClient) {
+			GameObject startButton = GameObject.Find ("Canvas/GameLobby/MenuBar/Start");
+			startButton.GetComponent<Button> ().interactable = true;
+		}
+	}
+
+	private void addPlayer(string name) {
 		GameObject lobbyPlayer = PhotonNetwork.Instantiate (LobbyPlayer.name, transform.position, Quaternion.identity, 0);
 		lobbyPlayer.transform.SetParent (Team1.transform);
 		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
-//		PhotonNetwork.LoadLevel ("Game");
+		lobbyPlayer.name = name;
+		lobbyPlayer.GetComponentInChildren<Text> ().text = name;
+		players.Add(lobbyPlayer);
 	}
 
 	// Update is called once per frame
@@ -46,11 +73,28 @@ public class LobbyManager : MonoBehaviour {
 
 	public void StartGame() {
 		Debug.Log ("Starting game");
+		PhotonNetwork.room.open = false;
 		PhotonNetwork.LoadLevel ("Game");
 	}
 
 	public void LeaveGame() {
 		Debug.Log("Leaving game");
+		PhotonNetwork.LeaveRoom ();
 		PhotonNetwork.LoadLevel ("Lobby");
+	}
+
+	public void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
+		Debug.Log ("Player connected: " + newPlayer.name);
+		addPlayer (newPlayer.name);
+	}
+
+	public void OnPhotonPlayerDisconnected(PhotonPlayer disconnectedPlayer) {
+		Debug.Log ("Player disconnected: " + disconnectedPlayer.name);
+		foreach (GameObject lobbyPlayer in players) {
+			if (lobbyPlayer.name == disconnectedPlayer.name) {
+				PhotonNetwork.Destroy (lobbyPlayer);
+				players.Remove (lobbyPlayer);
+			}
+		}
 	}
 }

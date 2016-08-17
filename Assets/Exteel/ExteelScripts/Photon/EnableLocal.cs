@@ -2,11 +2,13 @@
 using UnityEngine.Networking;
 using System.Collections;
 
-public class EnableLocal : NetworkBehaviour {
+public class EnableLocal : MonoBehaviour {
 
 	// Use this for initialization
-	public override void OnStartLocalPlayer () {
+	void Start () {
 
+		if (!GetComponent<PhotonView> ().isMine)
+			return;
 		// Enable mech controller
 		GetComponent<MechController>().enabled = true;
 
@@ -15,11 +17,11 @@ public class EnableLocal : NetworkBehaviour {
 			c.enabled = true;
 		}
 		GetComponentInChildren<MechCamera>().enabled = true;
-		GetComponent<NameTags>().enabled = true;
+//		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;
 
 		// Enable crosshair
-		GetComponentInChildren<Crosshair>().enabled = true;
+//		GetComponentInChildren<Crosshair>().enabled = true;
 
 		// Disable your own cube
 //		transform.Find("Cube").gameObject.SetActive(false);
