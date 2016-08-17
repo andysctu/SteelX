@@ -26,6 +26,7 @@ public class PhotonNetworkManager : MonoBehaviour {
 				PhotonNetwork.playerName = "Guest" + Random.Range(1, 9999);
 			}
 		}
+		PhotonNetwork.autoJoinLobby = true;
 	}
 	
 	// Update is called once per frame
@@ -36,11 +37,6 @@ public class PhotonNetworkManager : MonoBehaviour {
 	public void CreateRoom() {
 		Debug.Log ("Creating room: " + RoomName.text);
 		PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() { MaxPlayers = 10 }, null);
-	}
-
-	public void OnJoinedRoom()
-	{
-		Debug.Log("OnJoinedRoom");
 	}
 
 	public void OnPhotonCreateRoomFailed()

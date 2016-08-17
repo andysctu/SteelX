@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour {
 
 	private GameObject[] rooms;
 	private float roomHeight = 50;
+	private string selectedRoom = "";
 
 	// Use this for initialization
 	void Start () {
@@ -38,13 +39,17 @@ public class UIManager : MonoBehaviour {
 		rooms = new GameObject[roomsInfo.Length];
 		for (int i = 0; i < roomsInfo.Length; i++) {
 			GameObject roomPanel = Instantiate (RoomPanel);
+			Text[] info = roomPanel.GetComponentsInChildren<Text> ();
+			Debug.Log (roomsInfo [i].name);
+			info [0].text = "Room Name: " + roomsInfo [i].name;
+			info [1].text = "Players: " + roomsInfo [i].playerCount + "/" + roomsInfo [i].maxPlayers;
 			roomPanel.transform.SetParent(RoomsWrapper);
 			RectTransform rt = roomPanel.GetComponent<RectTransform> ();
 			rt.localPosition = new Vector3(0, -1*roomHeight*i, 0);
 			rt.localScale = new Vector3 (1, 1, 1);
 			int index = i;
 			roomPanel.GetComponent<Button> ().onClick.AddListener (() => {
-				Debug.Log("Room selected");
+				selectedRoom = roomsInfo[index].name;
 			});
 			rooms [i] = roomPanel;
 		}
@@ -53,5 +58,18 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowCreateRoomModal() {
 		CreateRoomModal.SetActive (true);
+	}
+
+	public void JoinRoom() {
+		if (!string.IsNullOrEmpty (selectedRoom)) {
+			Debug.Log ("Joining Room " + selectedRoom);
+			PhotonNetwork.JoinRoom (selectedRoom);
+		}
+	}
+
+	public void OnJoinedRoom()
+	{
+		Debug.Log("OnJoinedRoom");
+		PhotonNetwork.LoadLevel ("GameLobby");
 	}
 }
