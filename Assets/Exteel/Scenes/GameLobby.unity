@@ -96,7 +96,6 @@ GameObject:
   - 223: {fileID: 141993680}
   - 114: {fileID: 141993679}
   - 114: {fileID: 141993678}
-  - 114: {fileID: 141993677}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -104,18 +103,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &141993677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 141993676}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e4d87b66418c4735893b111d43811aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CreateRoomModal: {fileID: 0}
 --- !u!114 &141993678
 MonoBehaviour:
   m_ObjectHideFlags: 0

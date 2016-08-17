@@ -13,12 +13,17 @@ public class UIManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Refresh ();
+//		Refresh ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public void OnReceivedRoomListUpdate() {
+		Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);
+		Refresh();
 	}
 
 	public void Refresh() {
