@@ -25,7 +25,6 @@ public class PhotonNetworkManager : MonoBehaviour {
 			{
 				PhotonNetwork.playerName = "Guest" + Random.Range(1, 9999);
 			}
-				
 		}
 	}
 	

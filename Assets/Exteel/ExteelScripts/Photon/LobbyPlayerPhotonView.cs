@@ -2,32 +2,32 @@
 using UnityEngine.Networking;
 using System.Collections;
 
-public class NetworkLobbyPlayerCustom : NetworkLobbyPlayer {
+public class LobbyPlayerPhotonView : PhotonView {
 //	public override void OnClientEnterLobby ()
 //	{	
 //		name = UserData.myData.User.PilotName;
 //		base.OnClientEnterLobby ();
 //	}
 
-	[SerializeField] GameObject playerCard;
-	private Transform team1, team2;
+//	[SerializeField] GameObject playerCard;
+//	private Transform team1, team2;
 //
-	public override void OnClientEnterLobby() {
-		Debug.Log("start");
-		GameObject t1 = GameObject.Find ("Canvas/GameLobby/Team1");
-		GameObject t2 = GameObject.Find ("Canvas/GameLobby/Team2");
-		if (t1 != null) {
-			Debug.Log ("t1");
-			team1 = t1.transform;
-			GameObject pc = Instantiate(playerCard);
-			pc.transform.SetParent(team1);
-			pc.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
-		}
-		if (t2 != null) {
-			Debug.Log ("t2");
-//			team2 = t2.transform;
-		}
-	}
+//	public override void OnClientEnterLobby() {
+//		Debug.Log("start");
+//		GameObject t1 = GameObject.Find ("Canvas/GameLobby/Team1");
+//		GameObject t2 = GameObject.Find ("Canvas/GameLobby/Team2");
+//		if (t1 != null) {
+//			Debug.Log ("t1");
+//			team1 = t1.transform;
+//			GameObject pc = Instantiate(playerCard);
+//			pc.transform.SetParent(team1);
+//			pc.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+//		}
+//		if (t2 != null) {
+//			Debug.Log ("t2");
+////			team2 = t2.transform;
+//		}
+//	}
 //
 //	void OnGUI()
 //	{

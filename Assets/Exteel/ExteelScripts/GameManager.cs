@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
 //	[SyncVar] public float TimeLeft;
 
+	[SerializeField] GameObject PlayerPrefab;
+
 	public float MaxTime = 10f;
 	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
@@ -18,6 +20,10 @@ public class GameManager : MonoBehaviour {
 	void Awake() {
 		playerInfo = new Dictionary<GameObject, Data>();
 		playerScores = new Dictionary<uint, Score>();
+	}
+
+	void Start() {
+		PhotonNetwork.Instantiate (PlayerPrefab.name, new Vector3 (0, 0, 0), Quaternion.identity, 0);
 	}
 
 	void Update() {

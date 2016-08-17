@@ -71,7 +71,7 @@ public class NetworkGameManager : NetworkBehaviour
     {
         _running = false;
         yield return new WaitForSeconds(3.0f);
-        LobbyManager.s_Singleton.ServerReturnToLobby();
+//        LobbyManager.s_Singleton.ServerReturnToLobby();
     }
 
     IEnumerator AsteroidCoroutine()
