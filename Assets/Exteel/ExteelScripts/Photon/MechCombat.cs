@@ -11,9 +11,9 @@ public class MechCombat : Photon.MonoBehaviour {
 //	public Animator animator;
 
 //	[SyncVar]
-	public float MaxHP = 100.0f;
+	public int MaxHP = 100;
 //	[SyncVar]
-	public float CurrentHP;
+	public int CurrentHP;
 
 //	[SyncVar]
 	private bool isDead;
@@ -66,7 +66,7 @@ public class MechCombat : Photon.MonoBehaviour {
 			Debug.Log("Hit name: " + hit.transform.name);
 			if (hit.transform.tag == "Player"){
 				Debug.Log("Damage: " + damage + ", Range: " + range);
-				hit.transform.gameObject.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage);
+				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage);
 			} else if (hit.transform.tag == "Drone"){
 
 			}
@@ -74,20 +74,19 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 
 	[PunRPC]
-	void OnHit(float d) {
+	void OnHit(int d) {
 		if (isDead) return;
 		CurrentHP -= d;
 		Debug.Log ("HP: " + CurrentHP);
 		if (CurrentHP <= 0) {
 			Debug.Log ("Dead");
 //			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
-			DisablePlayer();
-			isDead = true;
+
 //			RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
 		}
 	}
 
-//	[PunRPC]
+	[PunRPC]
 	void DisablePlayer() {
 		gameObject.layer = 0;
 		GetComponent<MechController>().enabled = false;
@@ -114,6 +113,13 @@ public class MechCombat : Photon.MonoBehaviour {
 	void Update () {
 //		if (!isLocalPlayer || gm.GameOver()) return;
 		if (!photonView.isMine) return;
+		if (isDead && Input.GetKeyDown(KeyCode.R)) {
+			isDead = false;
+			photonView.RPC ("EnablePlayer", PhotonTargets.All, null);
+		}
+
+		if (isDead) return;
+
 		if (Input.GetKey(KeyCode.Mouse0)){
 			Debug.Log ("Fire");
 			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, bm.weaponScripts[weaponOffset].Range);
@@ -133,9 +139,11 @@ public class MechCombat : Photon.MonoBehaviour {
 //			switchWeapons ();
 //		}
 //
-//		if (isDead && Input.GetKeyDown(KeyCode.R)) {
-//			CmdEnablePlayer();
-//		}
+
+		if (CurrentHP <= 0) {
+			isDead = true;
+			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
+		}
 	}
 		
 //	public void Arm (string[] weaponNames) {
