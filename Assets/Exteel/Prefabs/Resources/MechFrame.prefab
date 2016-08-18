@@ -2806,7 +2806,7 @@ MonoBehaviour:
     TeleportEnabled: 1
     TeleportIfDistanceGreaterThan: 10
     InterpolateOption: 2
-    InterpolateMoveTowardsSpeed: 100
+    InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 1
     InterpolateMoveTowardsAcceleration: 2
     InterpolateMoveTowardsDeceleration: 2
@@ -2885,10 +2885,10 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 11412120}
+  - {fileID: 400766}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 2
-  instantiationId: 2
+  viewIdField: 0
+  instantiationId: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11416644
 MonoBehaviour:
@@ -2966,6 +2966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weapons: []
 --- !u!114 &11433544
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3030,7 +3031,6 @@ MonoBehaviour:
   camTransform: {fileID: 405268}
   MaxHP: 100
   CurrentHP: 0
-  boostFlame: {fileID: 100000, guid: cdf901dfb9b0045c0898cc8fc12f8238, type: 2}
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3044,6 +3044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterController: {fileID: 14356836}
   animator: {fileID: 9563454}
+  boostFlame: {fileID: 106728}
   Gravity: 2
   JumpPower: 50
   MoveSpeed: 40
@@ -3119,8 +3120,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 1
-  instantiationId: 1
+  viewIdField: 0
+  instantiationId: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
 Behaviour:

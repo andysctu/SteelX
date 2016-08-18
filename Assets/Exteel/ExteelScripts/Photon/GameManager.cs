@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : Photon.MonoBehaviour {
 //	[SyncVar] public float TimeLeft;
 
 	[SerializeField] GameObject PlayerPrefab;
@@ -14,12 +14,12 @@ public class GameManager : MonoBehaviour {
 	private bool showboard = false;
 
 
-	public Dictionary<GameObject, Data> playerInfo;// = new Dictionary<GameObject, Data>();
-	public Dictionary<uint, Score> playerScores;// = new Dictionary<uint, Score>();
+//	public Dictionary<GameObject, Data> playerInfo;// = new Dictionary<GameObject, Data>();
+	public Dictionary<string, Score> playerScores;// = new Dictionary<uint, Score>();
 
 	void Awake() {
-		playerInfo = new Dictionary<GameObject, Data>();
-		playerScores = new Dictionary<uint, Score>();
+//		playerInfo = new Dictionary<GameObject, Data>();
+		playerScores = new Dictionary<string, Score>();
 	}
 
 	void Start() {
@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour {
 		BuildMech mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
 		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		player.name = PhotonNetwork.playerName;
+
+		playerScores.Add (PhotonNetwork.playerName, new Score ());
 	}
 
 	void Update() {
@@ -36,12 +39,17 @@ public class GameManager : MonoBehaviour {
 	void OnGUI() {
 		if (showboard || GameOver()) {
 			GUILayout.BeginArea(new Rect(Screen.width/4, Screen.height/4, Screen.width/2, Screen.height/2));
-			foreach (KeyValuePair<uint, Score> entry in playerScores)
+			foreach (KeyValuePair<string, Score> entry in playerScores)
 			{
-				GUILayout.Label("Player " + entry.Key + ": kills = " + entry.Value.Kills + ", deaths = " + entry.Value.Deaths);
+				GUILayout.Label(entry.Key + ": kills = " + entry.Value.Kills + ", deaths = " + entry.Value.Deaths);
 			}
 			GUILayout.EndArea();
 		}
+	}
+
+	public void RegisterKill (string shooter, string victim) {
+//		playerScores[shooter]
+		Debug.Log(shooter + " killed " + victim);
 	}
 
 	public bool GameOver(){

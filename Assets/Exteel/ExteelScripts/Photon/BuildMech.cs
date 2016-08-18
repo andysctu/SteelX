@@ -8,7 +8,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "APS403", "APS403", "SHL009"};
 	private GameManager gm;
-	private GameObject[] weapons;
+	public GameObject[] weapons;
 
 	private Transform shoulderL;
 	private Transform shoulderR;

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class LobbyManager : MonoBehaviour {
 
 	[SerializeField] GameObject LobbyPlayer;
-	[SerializeField] GameObject Team1, Team2;
+	[SerializeField] GameObject Team1, Team2, MenuBar, MapInfo;
 
 	private List<GameObject> players;
 
@@ -35,8 +35,13 @@ public class LobbyManager : MonoBehaviour {
 
 		if (!PhotonNetwork.connected) {
 			PhotonNetwork.LoadLevel ("Lobby");
+			return;
 		}
 
+		Team1.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
+		Team2.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
+		MenuBar.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.2f);
+		MapInfo.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.4f, Screen.height);
 //		GameObject lobbyPlayer = PhotonNetwork.Instantiate (LobbyPlayer.name, transform.position, Quaternion.identity, 0);
 //		lobbyPlayer.transform.SetParent (Team1.transform);
 //		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
@@ -51,7 +56,7 @@ public class LobbyManager : MonoBehaviour {
 		PhotonNetwork.automaticallySyncScene = true;
 
 		if (PhotonNetwork.isMasterClient) {
-			GameObject startButton = GameObject.Find ("Canvas/GameLobby/MenuBar/Start");
+			GameObject startButton = GameObject.Find ("Canvas/MenuBar/Start");
 			startButton.GetComponent<Button> ().interactable = true;
 		}
 	}

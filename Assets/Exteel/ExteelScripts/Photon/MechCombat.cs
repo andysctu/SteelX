@@ -5,20 +5,12 @@ using UnityEngine.Networking;
 
 public class MechCombat : Photon.MonoBehaviour {
 
-	public Transform camTransform;
-//	public float range = Mathf.Infinity;
-//	public int damage = 25;
-//	public Animator animator;
-
-//	[SyncVar]
+	[SerializeField] Transform camTransform;
 	public int MaxHP = 100;
-//	[SyncVar]
 	public int CurrentHP;
 
-//	[SyncVar]
 	private bool isDead;
 
-//	[SyncVar]
 	public Score score;
 
 	private RaycastHit hit;
@@ -34,17 +26,15 @@ public class MechCombat : Photon.MonoBehaviour {
 	private GameManager gm;
 	private GameObject[] weapons;
 	private Transform[] Hands;
-//	private Weapon[] weaponScripts;
+	private Weapon[] weaponScripts;
 
 	private int weaponOffset = 0;
 
 	private BuildMech bm;
 
-	public GameObject boostFlame;
-
 	void Start() {
 		CurrentHP = MaxHP;
-//		findGameManager();
+		findGameManager();
 		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
@@ -53,11 +43,8 @@ public class MechCombat : Photon.MonoBehaviour {
 		Hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
 
 		bm = GetComponent<BuildMech> ();
-	}
-
-	[PunRPC]
-	public void Boost(bool b) {
-		boostFlame.SetActive (b);
+		weapons = bm.weapons;
+		weaponScripts = bm.weaponScripts;
 	}
 		
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
@@ -66,7 +53,7 @@ public class MechCombat : Photon.MonoBehaviour {
 			Debug.Log("Hit name: " + hit.transform.name);
 			if (hit.transform.tag == "Player"){
 				Debug.Log("Damage: " + damage + ", Range: " + range);
-				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage);
+				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 			} else if (hit.transform.tag == "Drone"){
 
 			}
@@ -74,15 +61,13 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 
 	[PunRPC]
-	void OnHit(int d) {
+	void OnHit(int d, string shooter) {
 		if (isDead) return;
 		CurrentHP -= d;
 		Debug.Log ("HP: " + CurrentHP);
 		if (CurrentHP <= 0) {
 			Debug.Log ("Dead");
-//			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
-
-//			RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
+			gm.RegisterKill(shooter, PhotonNetwork.playerName);
 		}
 	}
 
@@ -123,23 +108,22 @@ public class MechCombat : Photon.MonoBehaviour {
 
 		if (Input.GetKey(KeyCode.Mouse0)){
 			Debug.Log ("Fire");
-			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, bm.weaponScripts[weaponOffset].Range);
+			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
 			fireL = true;
 		} else {
 			fireL = false;
 		}
 
 		if (Input.GetKey(KeyCode.Mouse1)){
-			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset+1].Damage, bm.weaponScripts[weaponOffset+1].Range);
+			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset+1].Damage, weaponScripts[weaponOffset+1].Range);
 			fireR = true;
 		} else {
 			fireR = false;
 		}
 
-//		if (Input.GetKeyDown (KeyCode.R)) {
-//			switchWeapons ();
-//		}
-//
+		if (!isDead && Input.GetKeyDown (KeyCode.R)) {
+			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
+		}
 
 		if (CurrentHP <= 0) {
 			isDead = true;
@@ -181,19 +165,13 @@ public class MechCombat : Photon.MonoBehaviour {
 		shoulderR.Rotate(0,90,0);
 	}
 		
-//	[Command]
-//	private void CmdSwitchWeapons() {
-////		Debug.Log("Cmd: isServer: " + isServer + ", isClient: " + isClient);
-////		for (int i = 0; i < weapons.Length; i++) {
-////			weapons[i].SetActive(!weapons[i].activeSelf);
-////		}
-//		RpcSwitchWeapons ();
-//	}
-//
-//	[ClientRpc]
-//	private void RpcSetBoost(bool boost){
-//		boostFlame.SetActive(boost);
-//	}
+	[PunRPC]
+	void SwitchWeapons() {
+		for (int i = 0; i < weapons.Length; i++) {
+			weapons[i].SetActive(!weapons[i].activeSelf);
+		}
+	}
+
 //
 //	// Update is called once per frame
 //	void Update () {
@@ -257,9 +235,9 @@ public class MechCombat : Photon.MonoBehaviour {
 //		gm.playerScores[victimId] = newVictimScore;
 //	}
 //
-//	private void findGameManager() {
-//		if (gm == null) {
-//			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-//		}
-//	}
+	private void findGameManager() {
+		if (gm == null) {
+			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+		}
+	}
 }

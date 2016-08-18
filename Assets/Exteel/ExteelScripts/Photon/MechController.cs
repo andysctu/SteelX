@@ -2,10 +2,12 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class MechController : MonoBehaviour {
+public class MechController : Photon.MonoBehaviour {
 
 	public CharacterController CharacterController;
 	public Animator animator;
+
+	[SerializeField] GameObject boostFlame;
 
 	public float Gravity = 2.0f;
 	public float JumpPower = 50.0f;
@@ -36,7 +38,7 @@ public class MechController : MonoBehaviour {
 
 	bool ableToVertBoost = false;
 
-//	private MechCombat mechCombat;
+	private MechCombat mechCombat;
 
 	// Use this for initialization
 	void Start () {
@@ -51,7 +53,7 @@ public class MechController : MonoBehaviour {
 			Debug.Log("Fuel bar null");
 		}
 
-//		mechCombat = GetComponent<MechCombat>();
+		mechCombat = GetComponent<MechCombat>();
 	}
 
 	// Update is called once per frame
@@ -111,7 +113,7 @@ public class MechController : MonoBehaviour {
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
 			move.y += ySpeed * Time.fixedDeltaTime;
-//			mechCombat.SetBoost(true);
+			photonView.RPC ("Boost", PhotonTargets.All, true);
 		} else {
 			if (animator != null) animator.SetBool("Boost", false);
 			isHorizBoosting = false;
@@ -120,7 +122,7 @@ public class MechController : MonoBehaviour {
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
 			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
-//			mechCombat.SetBoost(false);
+			photonView.RPC ("Boost", PhotonTargets.All, false);
 		}
 
 		CharacterController.Move (move);
@@ -144,6 +146,11 @@ public class MechController : MonoBehaviour {
 			fuelBar.value = currentPercent;
 		}
 
+	}
+
+	[PunRPC]
+	void Boost(bool boost) {
+		boostFlame.SetActive(boost);
 	}
 
 	void GetXZDirection() {

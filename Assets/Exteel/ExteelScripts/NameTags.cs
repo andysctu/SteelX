@@ -45,11 +45,15 @@ public class NameTags : MonoBehaviour {
             // Draw its name there
             GUI.Label(new Rect(pos.x, Screen.height - pos.y, 100, 100), "Drone");
 
-            Dictionary<GameObject, Data>.KeyCollection playerlist = (gm.playerInfo).Keys;
-            foreach (GameObject entry in playerlist)
+			Dictionary<string, Score>.KeyCollection playerlist = (gm.playerScores).Keys;
+            foreach (string name in playerlist)
             {
-                Vector3 posi = cam.WorldToScreenPoint(entry.transform.position + new Vector3(0, 10));
-                string name = entry.name;
+				GameObject player = GameObject.Find (name);
+				if (player == null) {
+					Debug.Log ("player is null");
+					continue;
+				}
+                Vector3 posi = cam.WorldToScreenPoint(player.transform.position + new Vector3(0, 10));
                 GUI.Label(new Rect(posi.x, Screen.height - posi.y, 100, 100), name);
             }
         }

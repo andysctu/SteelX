@@ -12,9 +12,12 @@ public class UIManager : MonoBehaviour {
 	private float roomHeight = 50;
 	private string selectedRoom = "";
 
+	private GameObject roomsPanel;
+
 	// Use this for initialization
 	void Start () {
-//		Refresh ();
+		roomsPanel = GameObject.Find ("Canvas/RoomsPanel");
+		roomsPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.7f, Screen.height * 0.7f);
 	}
 	
 	// Update is called once per frame
