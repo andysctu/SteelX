@@ -24,7 +24,7 @@ public class EnableLocal : MonoBehaviour {
 //		GetComponentInChildren<AudioListener>().enabled = true;
 
 		// Enable crosshair
-//		GetComponentInChildren<Crosshair>().enabled = true;
+		GetComponentInChildren<Crosshair>().enabled = true;
 
 		// Disable your own cube
 //		transform.Find("Cube").gameObject.SetActive(false);

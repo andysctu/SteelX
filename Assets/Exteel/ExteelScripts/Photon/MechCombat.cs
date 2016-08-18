@@ -90,7 +90,7 @@ public class MechCombat : Photon.MonoBehaviour {
 	void DisablePlayer() {
 		gameObject.layer = 0;
 		GetComponent<MechController>().enabled = false;
-//		GetComponentInChildren<Crosshair>().enabled = false;
+		GetComponentInChildren<Crosshair>().enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;
@@ -104,9 +104,10 @@ public class MechCombat : Photon.MonoBehaviour {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
+		CurrentHP = MaxHP;
 		if (!photonView.isMine) return;
 		GetComponent<MechController>().enabled = true;
-//		GetComponentInChildren<Crosshair>().enabled = true;
+		GetComponentInChildren<Crosshair>().enabled = true;
 	}
 
 	// Update is called once per frame
