@@ -62,17 +62,22 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	[PunRPC]
 	void OnHit(int d, string shooter) {
+		Debug.Log ("Got shot");
+		Debug.Log ("isDead: " + isDead);
 		if (isDead) return;
 		CurrentHP -= d;
 		Debug.Log ("HP: " + CurrentHP);
 		if (CurrentHP <= 0) {
+			isDead = true;
 			Debug.Log ("Dead");
-			gm.RegisterKill(shooter, PhotonNetwork.playerName);
+			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
+			DisablePlayer ();
 		}
 	}
 
 	[PunRPC]
 	void DisablePlayer() {
+		Debug.Log ("DisablePlayer()");
 		gameObject.layer = 0;
 		GetComponent<MechController>().enabled = false;
 		GetComponentInChildren<Crosshair>().enabled = false;
@@ -90,6 +95,7 @@ public class MechCombat : Photon.MonoBehaviour {
 			renderer.enabled = true;
 		}
 		CurrentHP = MaxHP;
+		isDead = false;
 		if (!photonView.isMine) return;
 		GetComponent<MechController>().enabled = true;
 		GetComponentInChildren<Crosshair>().enabled = true;
@@ -125,10 +131,10 @@ public class MechCombat : Photon.MonoBehaviour {
 			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
 		}
 
-		if (CurrentHP <= 0) {
-			isDead = true;
-			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
-		}
+//		if (CurrentHP <= 0 && !isDead) {
+//			isDead = true;
+//			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
+//		}
 	}
 
 	void LateUpdate() {

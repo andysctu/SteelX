@@ -19,8 +19,10 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-//		findGameManager();
 		if (!photonView.isMine) return;
+
+		photonView.RPC ("SetName", PhotonTargets.All, PhotonNetwork.playerName);
+
 		Data data = UserData.myData;
 		data.Mech.Core = data.Mech.Core == null ? defaultParts[0] : data.Mech.Core;
 		data.Mech.Arms = data.Mech.Arms == null ? defaultParts[1] : data.Mech.Arms;
@@ -33,8 +35,13 @@ public class BuildMech : Photon.MonoBehaviour {
 		data.Mech.Weapon2R = data.Mech.Weapon2R == null ? defaultParts[8] : data.Mech.Weapon2R;
 		data.User.PilotName = data.User.PilotName == null ? "Default Pilot" : data.User.PilotName;
 //		CmdRegister(GetComponent<NetworkIdentity>().netId.Value, data);
+	}
 
-
+	[PunRPC]
+	void SetName(string name) {
+		gameObject.name = name;
+		findGameManager();
+		gm.RegisterPlayer (name);
 	}
 
 //	[Command]
@@ -107,26 +114,6 @@ public class BuildMech : Photon.MonoBehaviour {
 			newSMR [i] = partsGO [i].GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
 			materials [i] = Resources.Load (parts [i] + "mat", typeof(Material)) as Material;
 		}
-//		GameObject coreGO = Resources.Load(c, typeof(GameObject)) as GameObject;
-//		GameObject armsGO = Resources.Load(a, typeof(GameObject)) as GameObject;
-//		GameObject legsGO = Resources.Load(l, typeof(GameObject)) as GameObject;
-//		GameObject headGO = Resources.Load(h, typeof(GameObject)) as GameObject;
-//		GameObject bstrGO = Resources.Load(b, typeof(GameObject)) as GameObject;
-//
-//		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
-//		newSMR[0] = coreGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-//		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-//		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-//		newSMR[3] = headGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-//		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-//
-//		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer>();
-//		Material[] materials = new Material[9];
-//		materials[0] = Resources.Load(c+"mat", typeof(Material)) as Material;
-//		materials[1] = Resources.Load(a+"mat", typeof(Material)) as Material;
-//		materials[2] = Resources.Load(l+"mat", typeof(Material)) as Material;
-//		materials[3] = Resources.Load(h+"mat", typeof(Material)) as Material;
-//		materials[4] = Resources.Load(b+"mat", typeof(Material)) as Material;
 
 		for (int i = 0; i < curSMR.Length; i++){
 			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
@@ -140,19 +127,16 @@ public class BuildMech : Photon.MonoBehaviour {
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {
-			Debug.Log (weaponNames [i]);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, hands [i % 2].position, Quaternion.identity) as GameObject;
 			weapons [i].transform.SetParent (hands [i % 2]);
 
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
-					Debug.Log("Added APS403");
 					break;
 				}
 			case "SHL009": {
 					weaponScripts[i] = new SHL009();
-					Debug.Log("Added SHL009");
 					break;
 				}
 			}
@@ -175,9 +159,9 @@ public class BuildMech : Photon.MonoBehaviour {
 //		}
 //	}
 //
-//	private void findGameManager() {
-//		if (gm == null) {
-//			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-//		}
-//	}
+	private void findGameManager() {
+		if (gm == null) {
+			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+		}
+	}
 }

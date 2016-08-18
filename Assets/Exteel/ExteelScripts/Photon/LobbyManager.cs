@@ -38,18 +38,14 @@ public class LobbyManager : MonoBehaviour {
 			return;
 		}
 
-		Team1.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
-		Team2.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
-		MenuBar.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.2f);
-		MapInfo.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.4f, Screen.height);
-//		GameObject lobbyPlayer = PhotonNetwork.Instantiate (LobbyPlayer.name, transform.position, Quaternion.identity, 0);
-//		lobbyPlayer.transform.SetParent (Team1.transform);
-//		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
+//		Team1.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
+//		Team2.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
+//		MenuBar.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.2f);
+//		MapInfo.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.4f, Screen.height);
 
 		players = new List<GameObject> ();
 		for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
 			PhotonPlayer player = PhotonNetwork.playerList[i];
-			Debug.Log (player.name);
 			addPlayer (player.name);
 		}
 
