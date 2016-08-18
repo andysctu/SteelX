@@ -16,7 +16,10 @@ public class EnableLocal : MonoBehaviour {
 		foreach (Camera c in GetComponentsInChildren<Camera>()){
 			c.enabled = true;
 		}
+
 		GetComponentInChildren<MechCamera>().enabled = true;
+
+		GetComponentInChildren<AudioListener> ().enabled = true;
 //		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;
 

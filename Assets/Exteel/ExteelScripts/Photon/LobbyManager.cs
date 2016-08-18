@@ -42,7 +42,6 @@ public class LobbyManager : MonoBehaviour {
 //		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
 
 		players = new List<GameObject> ();
-		Debug.Log(PhotonNetwork.playerList.Length);
 		for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
 			PhotonPlayer player = PhotonNetwork.playerList[i];
 			Debug.Log (player.name);

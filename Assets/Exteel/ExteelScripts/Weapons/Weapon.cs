@@ -1,4 +1,4 @@
-﻿abstract class Weapon {
+﻿public abstract class Weapon {
 
 	public int Damage;
 	public float Range;

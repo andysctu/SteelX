@@ -672,6 +672,8 @@ GameObject:
   - 114: {fileID: 11416036}
   - 114: {fileID: 11436158}
   - 114: {fileID: 11412120}
+  - 114: {fileID: 11422958}
+  - 114: {fileID: 11445986}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -1250,7 +1252,6 @@ GameObject:
   - 20: {fileID: 2093468}
   - 124: {fileID: 12494616}
   - 92: {fileID: 9283992}
-  - 81: {fileID: 8104614}
   m_Layer: 8
   m_Name: Radar
   m_TagString: Untagged
@@ -2705,20 +2706,13 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
---- !u!81 &8104614
-AudioListener:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 183748}
-  m_Enabled: 0
 --- !u!81 &8174502
 AudioListener:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!92 &9283992
 Behaviour:
   m_ObjectHideFlags: 1
@@ -2902,6 +2896,17 @@ MonoBehaviour:
     LayerIndex: 0
   - SynchronizeType: 1
     LayerIndex: 1
+--- !u!114 &11422958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &11436158
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2925,6 +2930,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minColour: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &11445986
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camTransform: {fileID: 405268}
+  MaxHP: 100
+  CurrentHP: 0
+  boostFlame: {fileID: 100000, guid: cdf901dfb9b0045c0898cc8fc12f8238, type: 2}
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1

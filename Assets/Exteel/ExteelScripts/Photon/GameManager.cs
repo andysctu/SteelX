@@ -23,7 +23,10 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Start() {
-		PhotonNetwork.Instantiate (PlayerPrefab.name, new Vector3 (0, 0, 0), Quaternion.identity, 0);
+		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, new Vector3 (0, 0, 0), Quaternion.identity, 0);
+		BuildMech mechBuilder = player.GetComponent<BuildMech>();
+		Mech m = UserData.myData.Mech;
+		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 	}
 
 	void Update() {

@@ -18,7 +18,7 @@ MonoBehaviour:
   AppID: 93ea7c36-d395-4fa3-af3e-ff942f3bcc6d
   PreferredRegion: 0
   EnabledRegions: -1
-  JoinLobby: 0
+  JoinLobby: 1
   EnableLobbyStatistics: 0
   RpcList:
   - Chat
@@ -31,4 +31,10 @@ MonoBehaviour:
   - PunRespawn
   - RequestForPickupItems
   - RequestForPickupTimes
+  - buildMech
+  - Boost
+  - FireRaycast
+  - DisablePlayer
+  - EnablePlayer
+  - OnHit
   DisableAutoOpenWizard: 1
