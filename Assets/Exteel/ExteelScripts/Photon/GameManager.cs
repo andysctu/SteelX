@@ -6,6 +6,7 @@ public class GameManager : Photon.MonoBehaviour {
 //	[SyncVar] public float TimeLeft;
 
 	[SerializeField] GameObject PlayerPrefab;
+	[SerializeField] GameObject[] SpawnPoints;
 
 	public float MaxTime = 10f;
 	public int MaxKills = 2;
