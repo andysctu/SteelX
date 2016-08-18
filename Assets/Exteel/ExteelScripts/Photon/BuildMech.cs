@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
@@ -92,33 +93,47 @@ public class BuildMech : Photon.MonoBehaviour {
 	[PunRPC]
 	public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
 		init ();
-		GameObject coreGO = Resources.Load(c, typeof(GameObject)) as GameObject;
-		GameObject armsGO = Resources.Load(a, typeof(GameObject)) as GameObject;
-		GameObject legsGO = Resources.Load(l, typeof(GameObject)) as GameObject;
-		GameObject headGO = Resources.Load(h, typeof(GameObject)) as GameObject;
-		GameObject bstrGO = Resources.Load(b, typeof(GameObject)) as GameObject;
+		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
+		for (int i = 0; i < parts.Length; i++) {
+			parts [i] = parts [i] == null ? defaultParts [i] : parts [i];
+		}
 
+		GameObject[] partsGO = new GameObject[5];
 		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
-		newSMR[0] = coreGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[3] = headGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-
-		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer>();
-		Material[] materials = new Material[9];
-		materials[0] = Resources.Load(c+"mat", typeof(Material)) as Material;
-		materials[1] = Resources.Load(a+"mat", typeof(Material)) as Material;
-		materials[2] = Resources.Load(l+"mat", typeof(Material)) as Material;
-		materials[3] = Resources.Load(h+"mat", typeof(Material)) as Material;
-		materials[4] = Resources.Load(b+"mat", typeof(Material)) as Material;
+		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
+		Material[] materials = new Material[5];
+		for (int i = 0; i < 5; i++) {
+			partsGO[i] = Resources.Load (parts [i], typeof(GameObject)) as GameObject;
+			newSMR [i] = partsGO [i].GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
+			materials [i] = Resources.Load (parts [i] + "mat", typeof(Material)) as Material;
+		}
+//		GameObject coreGO = Resources.Load(c, typeof(GameObject)) as GameObject;
+//		GameObject armsGO = Resources.Load(a, typeof(GameObject)) as GameObject;
+//		GameObject legsGO = Resources.Load(l, typeof(GameObject)) as GameObject;
+//		GameObject headGO = Resources.Load(h, typeof(GameObject)) as GameObject;
+//		GameObject bstrGO = Resources.Load(b, typeof(GameObject)) as GameObject;
+//
+//		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
+//		newSMR[0] = coreGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[1] = armsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[2] = legsGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[3] = headGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//		newSMR[4] = bstrGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+//
+//		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer>();
+//		Material[] materials = new Material[9];
+//		materials[0] = Resources.Load(c+"mat", typeof(Material)) as Material;
+//		materials[1] = Resources.Load(a+"mat", typeof(Material)) as Material;
+//		materials[2] = Resources.Load(l+"mat", typeof(Material)) as Material;
+//		materials[3] = Resources.Load(h+"mat", typeof(Material)) as Material;
+//		materials[4] = Resources.Load(b+"mat", typeof(Material)) as Material;
 
 		for (int i = 0; i < curSMR.Length; i++){
 			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
 			curSMR[i].material = materials[i];
 			curSMR[i].enabled = true;
 		}
-		arm (new string[4]{w1l,w1r,w2l,w2r});
+		arm (new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
 
 	private void arm (string[] weaponNames) {

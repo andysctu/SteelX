@@ -146,43 +146,41 @@ public class MechCombat : Photon.MonoBehaviour {
 			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
 		}
 	}
+
+	void LateUpdate() {
+		if (fireL) {
+			playShootAnimationL();
+			shootingL = true;
+		} else if (shootingL) {
+			stopShootAnimationL();
+			shootingL = false;
+		}
+
+		if (fireR) {
+			playShootAnimationR();
+			shootingR = true;
+		} else if (shootingR) {
+			stopShootAnimationR();
+			shootingR = false;
+		}
+	}
+
+	void playShootAnimationL() {
+		shoulderL.Rotate(0,90,0);
+	}
+
+	void stopShootAnimationL() {
+		shoulderL.Rotate(0,-90,0);
+	}
+
+	void playShootAnimationR() {
+		shoulderR.Rotate(0,-90,0);
+	}
+
+	void stopShootAnimationR() {
+		shoulderR.Rotate(0,90,0);
+	}
 		
-//	public void Arm (string[] weaponNames) {
-//		weapons = new GameObject[4];
-//		weaponScripts = new Weapon[4];
-//		for (int i = 0; i < weaponNames.Length; i++) {
-//			Debug.Log (weaponNames [i]);
-//			weapons [i] = PhotonNetwork.Instantiate(weaponNames [i], Hands [i % 2].position, Quaternion.identity, 0);
-//			weapons [i].transform.parent = Hands [i % 2];
-//
-//			switch (weaponNames[i]) {
-//				case "APS403": {
-//					weaponScripts[i] = new APS403();
-//					Debug.Log("Added APS403");
-//					break;
-//				}
-//				case "SHL009": {
-//						weaponScripts[i] = new SHL009();
-//						Debug.Log("Added SHL009");
-//						break;
-//				}
-//			}
-//		}
-//
-//		weaponOffset = 0;
-//		weapons [2].SetActive (false);
-//		weapons [3].SetActive (false);
-////		gameObject.AddComponent<APS403>().SetCam(camTransform);
-//	}
-//	private void switchWeapons() {
-//		
-//		if (photonView.isMine) {
-//			RpcSwitchWeapons();
-//		} else {
-//			CmdSwitchWeapons();
-//		}
-//	}
-//
 //	[Command]
 //	private void CmdSwitchWeapons() {
 ////		Debug.Log("Cmd: isServer: " + isServer + ", isClient: " + isClient);
@@ -190,29 +188,6 @@ public class MechCombat : Photon.MonoBehaviour {
 ////			weapons[i].SetActive(!weapons[i].activeSelf);
 ////		}
 //		RpcSwitchWeapons ();
-//	}
-//
-//	[ClientRpc]
-//	private void RpcSwitchWeapons() {
-////		Debug.Log("Rpc: isServer: " + isServer + ", isClient: " + isClient);
-//		for (int i = 0; i < weapons.Length; i++) {
-//			weapons[i].SetActive(!weapons[i].activeSelf);
-//		}
-//		weaponOffset = (weaponOffset + 2) % 4;
-//	}
-//
-//	public void SetBoost(bool boost) {
-//		if (isServer) {
-////			boostFlame.SetActive(boost);
-//			RpcSetBoost(boost);
-//		} else {
-//			CmdSetBoost(boost);
-//		}
-//	}
-//
-//	[Command]
-//	public void CmdSetBoost(bool boost) {
-//		RpcSetBoost(boost);
 //	}
 //
 //	[ClientRpc]
@@ -243,97 +218,6 @@ public class MechCombat : Photon.MonoBehaviour {
 //
 //		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 //			CmdEnablePlayer();
-//		}
-//	}
-//
-//	void LateUpdate() {
-//		if (fireL) {
-//			playShootAnimationL();
-//			shootingL = true;
-//		} else if (shootingL) {
-//			stopShootAnimationL();
-//			shootingL = false;
-//		}
-//
-//		if (fireR) {
-//			playShootAnimationR();
-//			shootingR = true;
-//		} else if (shootingR) {
-//			stopShootAnimationR();
-//			shootingR = false;
-//		}
-//	}
-//
-//	void playShootAnimationL() {
-//		shoulderL.Rotate(0,90,0);
-//	}
-//
-//	void stopShootAnimationL() {
-//		shoulderL.Rotate(0,-90,0);
-//	}
-//
-//	void playShootAnimationR() {
-//		shoulderR.Rotate(0,-90,0);
-//	}
-//
-//	void stopShootAnimationR() {
-//		shoulderR.Rotate(0,90,0);
-//	}
-//
-//	[Server]
-//	void OnHit(uint shooterId, float d) {
-//		if (isDead) return;
-//		CurrentHP -= d;
-//		if (CurrentHP <= 0) {
-//			RpcDisablePlayer();
-//			isDead = true;
-//			RegisterKill(shooterId, gameObject.GetComponent<NetworkIdentity>().netId.Value);
-//		}
-//	}
-//
-//	[ClientRpc]
-//	void RpcDisablePlayer() {
-//		gameObject.layer = 0;
-//		GetComponent<MechController>().enabled = false;
-//		GetComponentInChildren<Crosshair>().enabled = false;
-//		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-//		foreach (Renderer renderer in renderers) {
-//			renderer.enabled = false;
-//		}
-//	}
-//
-//	[ClientRpc]
-//	void RpcEnablePlayer() {
-//		gameObject.layer = 8;
-//		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-//		foreach (Renderer renderer in renderers) {
-//			renderer.enabled = true;
-//		}
-//		if (!isLocalPlayer) return;
-//		GetComponent<MechController>().enabled = true;
-//		GetComponentInChildren<Crosshair>().enabled = true;
-//	}
-//
-//	[Command]
-//	void CmdEnablePlayer() {
-//		isDead = false;
-//		CurrentHP = MaxHP;
-//		RpcEnablePlayer();
-//	}
-//
-//	[Command]
-//	public void CmdFireRaycast(Vector3 start, Vector3 direction, int damage, float range){
-//		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
-//			Debug.Log ("Hit tag: " + hit.transform.tag);
-//			Debug.Log("Hit name: " + hit.transform.name);
-////			Debug.Log("Parent name: " + hit.transform.parent.name);
-////			Debug.Log("Parent parent name: " + hit.transform.parent.parent.name);
-//			Debug.Log("Damage: " + damage + ", Range: " + range);
-//			if (hit.transform.tag == "Player"){
-//				hit.transform.GetComponent<MechCombat>().OnHit(gameObject.GetComponent<NetworkIdentity>().netId.Value, damage);
-//			} else if (hit.transform.tag == "Drone"){
-//
-//			}
 //		}
 //	}
 //
