@@ -127,7 +127,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {
-			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, hands [i % 2].position, Quaternion.identity) as GameObject;
+			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, hands [i % 2].position, transform.rotation) as GameObject;
 			weapons [i].transform.SetParent (hands [i % 2]);
 
 			switch (weaponNames[i]) {

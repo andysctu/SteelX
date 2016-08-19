@@ -89,6 +89,7 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	[PunRPC]
 	void EnablePlayer() {
+		transform.position = gm.SpawnPoints [0].position;
 		gameObject.layer = 8;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
