@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -75,5 +76,9 @@ public class UIManager : MonoBehaviour {
 	{
 		Debug.Log("OnJoinedRoom");
 		PhotonNetwork.LoadLevel ("GameLobby");
+	}
+
+	public void GoToHangar() {
+		SceneManager.LoadScene ("Hangar");
 	}
 }

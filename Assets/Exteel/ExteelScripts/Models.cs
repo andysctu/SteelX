@@ -29,4 +29,5 @@ public struct Mech {
 public struct Data {
 	public Mech Mech;
 	public User User;
+	public string[] Owns;
 }

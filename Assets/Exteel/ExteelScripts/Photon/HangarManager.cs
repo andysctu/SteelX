@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 
 public class HangarManager : MonoBehaviour {
 
 	[SerializeField] GameObject[] Tabs;
+
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000" };
 
 	// Use this for initialization
 	void Start () {
@@ -17,7 +20,16 @@ public class HangarManager : MonoBehaviour {
 			smallTab.GetComponent<Button> ().onClick.AddListener (() => activateTab(index));
 			tabTransform.FindChild ("Pane").gameObject.SetActive (i == 0);
 		}
-		Debug.Log (UserData.myData.Mech.Arms);
+		foreach (string part in testParts) {
+			switch (part [0]) {
+			case 'H':
+				Debug.Log ("Head");
+				break;
+			}
+
+
+		}
+
 	}
 
 	private void activateTab(int index) {
@@ -28,5 +40,9 @@ public class HangarManager : MonoBehaviour {
 			smallTab.GetComponent<Image> ().color = c;
 			tabTransform.FindChild ("Pane").gameObject.SetActive (i == index);
 		}
+	}
+
+	public void Back() {
+		SceneManager.LoadScene ("Lobby");
 	}
 }
