@@ -5,15 +5,16 @@ using System.IO;
 
 public class Thumbnails : MonoBehaviour {
 
-	private string[] parts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000" };
+	private string[] parts = {"SHL009", "APS403"};//, "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000" };
 
 	// Use this for initialization
 	void Start () {
 		for (int i = 0; i < parts.Length; i++) {
+			Debug.Log(parts[i]);
 			string part = parts[i];
 			GameObject o = Resources.Load (part) as GameObject;
-			Material material = Resources.Load (part + "mat", typeof(Material)) as Material;
-			o.GetComponentInChildren<SkinnedMeshRenderer> ().material = material;
+//			Material material = Resources.Load (part + "mat", typeof(Material)) as Material;
+//			o.GetComponentInChildren<SkinnedMeshRenderer> ().material = material;
 
 			Instantiate (o, new Vector3 (0, 0, 0), Quaternion.identity);
 			Texture2D t2d = AssetPreview.GetAssetPreview (o);
