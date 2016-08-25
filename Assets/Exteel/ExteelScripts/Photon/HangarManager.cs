@@ -8,7 +8,7 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject[] Tabs;
 	[SerializeField] GameObject UIPart;
 
-	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000" };
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403" };
 
 	private Transform[] contents;
 
@@ -39,7 +39,10 @@ public class HangarManager : MonoBehaviour {
 				parent = 1;
 				break;
 			case 'A':
-				parent = 2;
+				if (part[1] == 'E')
+					parent = 2;
+				else
+					parent = 5;
 				break;
 			case 'L':
 				parent = 3;
