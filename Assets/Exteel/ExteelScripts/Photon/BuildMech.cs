@@ -31,7 +31,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		data.Mech.Weapon2L = data.Mech.Weapon2L == null ? defaultParts[7] : data.Mech.Weapon2L;
 		data.Mech.Weapon2R = data.Mech.Weapon2R == null ? defaultParts[8] : data.Mech.Weapon2R;
 		data.User.PilotName = data.User.PilotName == null ? "Default Pilot" : data.User.PilotName;
-		if (SceneManager.GetActiveScene().name == "Lobby") {
+		if (SceneManager.GetActiveScene().name  == "Lobby" || SceneManager.GetActiveScene().name == "Hangar") {
 			Debug.Log(data.Mech.Arms);
 			buildMech(data.Mech.Core, data.Mech.Arms, data.Mech.Legs, data.Mech.Head, data.Mech.Booster, data.Mech.Weapon1L, data.Mech.Weapon1R, data.Mech.Weapon2L, data.Mech.Weapon2R);
 		}
@@ -92,27 +92,30 @@ public class BuildMech : Photon.MonoBehaviour {
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {
-			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.5f, hands[i%2].position.z);
+			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.2f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
-			weapons [i].transform.SetParent (hands [i % 2]);
 
+			if (SceneManager.GetActiveScene ().name == "Lobby" || SceneManager.GetActiveScene ().name == "Hangar") {
+				weapons [i].transform.localScale = new Vector3 (0.7f, 0.7f, 0.7f);
+			}
+				
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
-//					Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.5f, hands[i%2].position.z);
-//					weapons[i].transform.position = p;
+					weapons [i].transform.localScale = new Vector3 (7, 7, 7);
 					break;
 				}
 			case "SHL009": {
 					weaponScripts[i] = new SHL009();
-					float rot = -165;
-					if (SceneManager.GetActiveScene().name == "Lobby") {
-						rot = -135;
+					float rot = -135;
+					if (SceneManager.GetActiveScene().name == "Game") {
+						rot = -165;
 					}
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,rot,0));
 					break;
 				}
 			}
+			weapons [i].transform.SetParent (hands [i % 2]);
 		}
 		weaponOffset = 0;
 		weapons [2].SetActive (false);

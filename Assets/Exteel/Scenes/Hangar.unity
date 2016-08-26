@@ -717,6 +717,7 @@ MonoBehaviour:
   - {fileID: 1211613026}
   - {fileID: 75030983}
   UIPart: {fileID: 160776, guid: f616ccb79d871466e849d70d816af37d, type: 2}
+  Mech: {fileID: 1323358508}
 --- !u!1001 &1211613024
 Prefab:
   m_ObjectHideFlags: 0
@@ -1040,7 +1041,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: viewIdField
@@ -1213,6 +1214,10 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1323358508 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+  m_PrefabInternal: {fileID: 1323358507}
 --- !u!1 &1419568004
 GameObject:
   m_ObjectHideFlags: 0
