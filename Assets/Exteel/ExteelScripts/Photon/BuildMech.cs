@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using UnityEngine.Networking;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "APS403", "APS403", "SHL009"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "SHL009", "SHL009", "SHL009"};
 	private GameManager gm;
 	public GameObject[] weapons;
 
@@ -19,10 +20,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if (!photonView.isMine) return;
-
-		photonView.RPC ("SetName", PhotonTargets.All, PhotonNetwork.playerName);
-
 		Data data = UserData.myData;
 		data.Mech.Core = data.Mech.Core == null ? defaultParts[0] : data.Mech.Core;
 		data.Mech.Arms = data.Mech.Arms == null ? defaultParts[1] : data.Mech.Arms;
@@ -34,7 +31,15 @@ public class BuildMech : Photon.MonoBehaviour {
 		data.Mech.Weapon2L = data.Mech.Weapon2L == null ? defaultParts[7] : data.Mech.Weapon2L;
 		data.Mech.Weapon2R = data.Mech.Weapon2R == null ? defaultParts[8] : data.Mech.Weapon2R;
 		data.User.PilotName = data.User.PilotName == null ? "Default Pilot" : data.User.PilotName;
-//		CmdRegister(GetComponent<NetworkIdentity>().netId.Value, data);
+		if (SceneManager.GetActiveScene().name == "Lobby") {
+			Debug.Log(data.Mech.Arms);
+			buildMech(data.Mech.Core, data.Mech.Arms, data.Mech.Legs, data.Mech.Head, data.Mech.Booster, data.Mech.Weapon1L, data.Mech.Weapon1R, data.Mech.Weapon2L, data.Mech.Weapon2R);
+		}
+		if (!photonView.isMine) return;
+
+		photonView.RPC ("SetName", PhotonTargets.All, PhotonNetwork.playerName);
+
+
 	}
 
 	[PunRPC]
@@ -43,46 +48,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		findGameManager();
 		gm.RegisterPlayer (name);
 	}
-
-//	[Command]
-//	void CmdRegister(uint id, Data d) {
-//		// Set player name based on network ID
-//		gameObject.name = d.User.PilotName;
-//
-//		// Add player to GameManager
-//		gm.playerInfo.Add(gameObject, d);
-//		gm.playerScores.Add(GetComponent<NetworkIdentity>().netId.Value, new Score());
-//
-//		// Check if all players have registered themselves yet
-//		int registeredPlayers = gm.playerInfo.Count;
-//		int connectedPlayers = GameObject.Find("LobbyManager").GetComponent<NetworkLobbyManagerCustom>().numPlayers;
-//
-//		// After the last player is registered, build all players' mechs and initialize scores
-//		if (registeredPlayers == connectedPlayers){
-//			foreach (KeyValuePair<GameObject, Data> entry in gm.playerInfo){
-//				Mech m = entry.Value.Mech;
-//				BuildMech mechBuilder = entry.Key.GetComponent<BuildMech>();
-//				mechBuilder.RpcBuildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
-//				mechBuilder.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
-//				RpcInitInfo(entry.Key, entry.Value);
-//			}
-//			uint[] ids = new uint[gm.playerInfo.Count];
-//			gm.playerScores.Keys.CopyTo(ids,0);
-//			RpcInitScores(ids);
-//		} 
-//	}
-//
-//	[ClientRpc]
-//	public void RpcInitInfo(GameObject key, Data value) {
-//		key.name = value.User.PilotName;
-//		gm.playerInfo.Add(key, value);
-//	}
-//		
-//	[ClientRpc]
-//	public void RpcBuildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r){
-//		if (isServer) return;
-//		buildMech(c,a,l,h,b,w1l,w1r,w2l,w2r);
-//	}
 
 	public void Build (string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
 		photonView.RPC("buildMech", PhotonTargets.All, c, a, l, h, b, w1l, w1r, w2l, w2r);
@@ -127,38 +92,33 @@ public class BuildMech : Photon.MonoBehaviour {
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {
-			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, hands [i % 2].position, transform.rotation) as GameObject;
+			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.5f, hands[i%2].position.z);
+			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
 			weapons [i].transform.SetParent (hands [i % 2]);
 
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
+//					Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.5f, hands[i%2].position.z);
+//					weapons[i].transform.position = p;
 					break;
 				}
 			case "SHL009": {
 					weaponScripts[i] = new SHL009();
+					float rot = -165;
+					if (SceneManager.GetActiveScene().name == "Lobby") {
+						rot = -135;
+					}
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,rot,0));
 					break;
 				}
 			}
 		}
-
 		weaponOffset = 0;
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
 	}
-
-//	[ClientRpc]
-//	void RpcInitScores(uint[] ids){
-//		// Server already has scores initialized
-//		if (isServer) {
-//			return;
-//		}
-//		gm.playerScores = new Dictionary<uint, Score>();
-//		foreach (uint id in ids) {
-//			gm.playerScores.Add(id, new Score());
-//		}
-//	}
-//
+		
 	private void findGameManager() {
 		if (gm == null) {
 			gm = GameObject.Find("GameManager").GetComponent<GameManager>();

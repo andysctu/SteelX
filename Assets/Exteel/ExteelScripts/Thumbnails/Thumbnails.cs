@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using System.Collections;
 using System.IO;
 
@@ -9,6 +11,7 @@ public class Thumbnails : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		#if UNITY_EDITOR
 		for (int i = 0; i < parts.Length; i++) {
 			Debug.Log(parts[i]);
 			string part = parts[i];
@@ -22,5 +25,6 @@ public class Thumbnails : MonoBehaviour {
 			Debug.Log ("Path: " + Application.dataPath + "/Exteel/ExteelScripts/Thumbnails/" + parts [i] + ".png");
 			File.WriteAllBytes(Application.dataPath + "/Exteel/ExteelScripts/Thumbnails/" + parts[i]+".png", bytes);
 		}
+		#endif
 	}
 }
