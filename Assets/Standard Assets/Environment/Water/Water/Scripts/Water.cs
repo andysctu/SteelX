@@ -101,13 +101,14 @@ namespace UnityStandardAssets.Water
 
                 reflectionCamera.cullingMask = ~(1 << 4) & reflectLayers.value; // never render water layer
                 reflectionCamera.targetTexture = m_ReflectionTexture;
-                GL.invertCulling = true;
+                bool oldCulling = GL.invertCulling;
+                GL.invertCulling = !oldCulling;
                 reflectionCamera.transform.position = newpos;
                 Vector3 euler = cam.transform.eulerAngles;
                 reflectionCamera.transform.eulerAngles = new Vector3(-euler.x, euler.y, euler.z);
                 reflectionCamera.Render();
                 reflectionCamera.transform.position = oldpos;
-                GL.invertCulling = false;
+                GL.invertCulling = oldCulling;
                 GetComponent<Renderer>().sharedMaterial.SetTexture("_ReflectionTex", m_ReflectionTexture);
             }
 
