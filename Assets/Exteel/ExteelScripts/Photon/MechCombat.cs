@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public class MechCombat : Photon.MonoBehaviour {
 
 	[SerializeField] Transform camTransform;
+	[SerializeField] Animator animator;
 	public int MaxHP = 100;
 	public int CurrentHP;
 
@@ -139,9 +140,16 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		
 		if (fireL) {
-			playShootAnimationL();
-			shootingL = true;
+			bool melee = bm.weaponScripts[weaponOffset].Range <= 50;
+
+			if (melee) {
+				animator.SetBool("Slash", true);
+			} else {
+				playShootAnimationL();
+				shootingL = true;
+			}
 		} else if (shootingL) {
 			stopShootAnimationL();
 			shootingL = false;
@@ -176,6 +184,7 @@ public class MechCombat : Photon.MonoBehaviour {
 	void SwitchWeapons() {
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
+			weaponOffset = (weaponOffset + 2) % 2;
 		}
 	}
 

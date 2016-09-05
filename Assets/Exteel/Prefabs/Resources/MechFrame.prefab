@@ -774,6 +774,7 @@ GameObject:
   - 95: {fileID: 9563454}
   - 114: {fileID: 11496946}
   - 114: {fileID: 11418256}
+  - 114: {fileID: 11465704}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -2937,6 +2938,9 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: Shoot
+  - Type: 4
+    SynchronizeType: 1
+    Name: Slash
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -3029,6 +3033,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camTransform: {fileID: 405268}
+  animator: {fileID: 9563454}
   MaxHP: 100
   CurrentHP: 0
 --- !u!114 &11462782
@@ -3082,6 +3087,18 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &11465704
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ee075c276e2d41689c69ad32c268c68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 9563454}
 --- !u!114 &11493298
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -40,6 +40,8 @@ public class MechController : Photon.MonoBehaviour {
 
 	private MechCombat mechCombat;
 
+	[SerializeField] Transform[] Legs;
+
 	// Use this for initialization
 	void Start () {
 		CharacterController = GetComponent<CharacterController> ();
@@ -173,5 +175,19 @@ public class MechController : Photon.MonoBehaviour {
 			animator.SetFloat("Speed", v);
 			animator.SetFloat("Direction", h);
 		}
+
+		Debug.Log("Speed: " + v);
+		Debug.Log("Direc: " + h);
+//		Debug.Log(h);
+//		if (h < 0) {
+//			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, -90,0));
+//			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, -90,0));
+//		} else if (h > 0) {
+//			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, 90,0));
+//			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 90,0));
+//		} else {
+//			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
+//			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
+//		}
 	}
 }

@@ -7,7 +7,7 @@ public class LoginManager : MonoBehaviour {
 
 	public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
 	public InputField[] fields;
-	public Text error;
+	public GameObject error;
 
 	private int focus = 0;
 
@@ -59,7 +59,7 @@ public class LoginManager : MonoBehaviour {
 			Application.LoadLevel (1);
 		}
 		else {
-			error.gameObject.SetActive(true);
+			error.SetActive(true);
 		}
 	}
 

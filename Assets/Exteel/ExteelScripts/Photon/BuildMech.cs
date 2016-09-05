@@ -96,6 +96,9 @@ public class BuildMech : Photon.MonoBehaviour {
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
 			weapons [i].transform.SetParent (hands [i % 2]);
 
+//			if (SceneManager.GetActiveScene().name == "Lobby") {
+//				weapons[i].transform.localScale -= new Vector3(0.7f,0.7f,0.7f);
+//			}
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
