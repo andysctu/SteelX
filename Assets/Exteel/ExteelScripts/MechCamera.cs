@@ -28,6 +28,8 @@ public class MechCamera : MonoBehaviour
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
 		m_OriginalRotation = transform.localRotation;
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 	}
 	
 	
