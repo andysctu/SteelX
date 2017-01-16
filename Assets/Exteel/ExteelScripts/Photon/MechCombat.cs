@@ -7,6 +7,9 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	[SerializeField] Transform camTransform;
 	[SerializeField] Animator animator;
+
+//	private Transform legs;
+
 	public int MaxHP = 100;
 	public int CurrentHP;
 
@@ -38,6 +41,8 @@ public class MechCombat : Photon.MonoBehaviour {
 		findGameManager();
 		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+
+//		legs = transform.FindChild("CurrentMech/metarig/hips");
 
 		Hands = new Transform[2];
 		Hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
@@ -132,6 +137,14 @@ public class MechCombat : Photon.MonoBehaviour {
 		if (!isDead && Input.GetKeyDown (KeyCode.R)) {
 			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
 		}
+
+//		if (Input.GetKeyDown(KeyCode.A)) {
+//			legs.Rotate(0f, 90f, 0f);
+//		}
+//
+//		if (Input.GetKeyUp(KeyCode.A)) {
+//			legs.Rotate(0f, -90f, 0f);
+//		}
 
 //		if (CurrentHP <= 0 && !isDead) {
 //			isDead = true;

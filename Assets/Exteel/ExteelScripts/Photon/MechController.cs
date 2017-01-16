@@ -176,8 +176,8 @@ public class MechController : Photon.MonoBehaviour {
 			animator.SetFloat("Direction", h);
 		}
 
-		Debug.Log("Speed: " + v);
-		Debug.Log("Direc: " + h);
+//		Debug.Log("Speed: " + v);
+//		Debug.Log("Direc: " + h);
 //		Debug.Log(h);
 //		if (h < 0) {
 //			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, -90,0));

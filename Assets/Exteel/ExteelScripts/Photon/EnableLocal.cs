@@ -12,6 +12,8 @@ public class EnableLocal : MonoBehaviour {
 		// Enable mech controller
 		GetComponent<MechController>().enabled = true;
 
+		GetComponent<CharacterController>().enabled = true;
+
 		// Enable camera/radar
 		foreach (Camera c in GetComponentsInChildren<Camera>()){
 			c.enabled = true;
