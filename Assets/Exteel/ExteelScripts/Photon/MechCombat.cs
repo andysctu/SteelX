@@ -66,7 +66,7 @@ public class MechCombat : Photon.MonoBehaviour {
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 			} else if (hit.transform.tag == "Drone"){
-
+				Debug.Log("Ouch");
 			}
 		}
 	}
