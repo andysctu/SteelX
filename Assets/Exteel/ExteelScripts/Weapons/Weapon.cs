@@ -2,6 +2,7 @@
 
 	public int Damage;
 	public float Range;
+	public float Rate;
 //	protected Transform camTransform;
 //	protected GameObject root;
 

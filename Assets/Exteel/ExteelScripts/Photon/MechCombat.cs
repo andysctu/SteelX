@@ -36,6 +36,9 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	private BuildMech bm;
 
+	// Control rate of fire
+	float timeOfLastShot;
+
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
@@ -51,6 +54,8 @@ public class MechCombat : Photon.MonoBehaviour {
 		bm = GetComponent<BuildMech> ();
 		weapons = bm.weapons;
 		weaponScripts = bm.weaponScripts;
+
+		timeOfLastShot = Time.time;
 	}
 		
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
@@ -119,8 +124,9 @@ public class MechCombat : Photon.MonoBehaviour {
 
 		if (isDead) return;
 
-		if (Input.GetKey(KeyCode.Mouse0)){
+		if (Input.GetKey(KeyCode.Mouse0) && Time.time - timeOfLastShot >= 1/bm.weaponScripts[weaponOffset].Rate){
 			Debug.Log ("Fire");
+			timeOfLastShot = Time.time;
 			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
 			fireL = true;
 		} else {
@@ -153,20 +159,32 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 
 	void LateUpdate() {
-		
-		if (fireL) {
-			bool melee = bm.weaponScripts[weaponOffset].Range <= 50;
 
-			if (melee) {
-				animator.SetBool("Slash", true);
-			} else {
-				playShootAnimationL();
-				shootingL = true;
-			}
-		} else if (shootingL) {
-			stopShootAnimationL();
-			shootingL = false;
+		// Only 1 shot for now
+		if (fireL) {
+//			animator.SetBool("ShootL", true);
+//			shootingL = true;
+//			Debug.Log("ShootL true in animator");
 		}
+			//		} else {
+//			animator.SetBool("ShootL", false);
+//			Debug.Log("ShootL false in animator");
+//		}
+//		if (fireL) {
+//			playShootAnimationL();
+//			shootingL = true;
+////			bool melee = bm.weaponScripts[weaponOffset].Range <= 50;
+////
+////			if (melee) {
+////				animator.SetBool("Slash", true);
+////			} else {
+////				playShootAnimationL();
+////				shootingL = true;
+////			}
+//		} else if (shootingL) {
+//			stopShootAnimationL();
+//			shootingL = false;
+//		}
 
 		if (fireR) {
 			playShootAnimationR();
