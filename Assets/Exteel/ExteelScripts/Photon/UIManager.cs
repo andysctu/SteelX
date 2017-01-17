@@ -22,11 +22,6 @@ public class UIManager : MonoBehaviour {
 //		RoomsWrapper.GetComponent<RectTransform>().sizeDelta = new Vector2 (Screen.width * 0.7f - 100, Screen.height * 0.7f);
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
 	public void OnReceivedRoomListUpdate() {
 		Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);

@@ -104,6 +104,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
+					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
 					break;
 				}
 			case "SHL009": {
