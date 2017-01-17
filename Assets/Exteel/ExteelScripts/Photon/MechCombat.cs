@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class MechCombat : Photon.MonoBehaviour {
 
@@ -36,6 +37,8 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	private BuildMech bm;
 
+	private Slider healthBar;
+
 	// Control rate of fire
 	float timeOfLastShotL;
 	float timeOfLastShotR;
@@ -46,7 +49,13 @@ public class MechCombat : Photon.MonoBehaviour {
 		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
-//		legs = transform.FindChild("CurrentMech/metarig/hips");
+		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
+		if (sliders.Length > 0) {
+			healthBar = sliders[0];
+			healthBar.value = 1;
+		} else {
+			Debug.Log("Health bar null");
+		}
 
 		Hands = new Transform[2];
 		Hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
@@ -124,14 +133,15 @@ public class MechCombat : Photon.MonoBehaviour {
 			photonView.RPC ("EnablePlayer", PhotonTargets.All, null);
 		}
 
-		if (isDead) return;
+		if (isDead) {
+			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
+			return;
+		}
 
 		if (Input.GetKey(KeyCode.Mouse0)){
-			Debug.Log ("Want to FireL");
 			fireL = true;
 
 			if (Time.time - timeOfLastShotL >= 1/bm.weaponScripts[weaponOffset].Rate) {
-				Debug.Log("FiredL");
 				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
 				timeOfLastShotL = Time.time;
 			}
@@ -141,11 +151,9 @@ public class MechCombat : Photon.MonoBehaviour {
 		}
 
 		if (Input.GetKey(KeyCode.Mouse1)){
-			Debug.Log ("Want to FireR");
 			fireR = true;
 
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + 1].Rate) {
-				Debug.Log("FiredR");
 				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset + 1].Damage, weaponScripts[weaponOffset + 1].Range);
 				timeOfLastShotR = Time.time;
 			}
@@ -158,13 +166,22 @@ public class MechCombat : Photon.MonoBehaviour {
 			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
 		}
 
-//		if (Input.GetKeyDown(KeyCode.A)) {
-//			legs.Rotate(0f, 90f, 0f);
-//		}
-//
-//		if (Input.GetKeyUp(KeyCode.A)) {
-//			legs.Rotate(0f, -90f, 0f);
-//		}
+		// Update Health bar
+		if (healthBar == null) {
+			Slider[] sliders = GameObject.Find("Canvas/HUDPanel/HUD").GetComponentsInChildren<Slider>();
+			if (sliders.Length > 0) {
+				healthBar = sliders[0];
+			}
+		} else {
+			float currentPercent = healthBar.value;
+			float targetPercent = CurrentHP/(float)MaxHP;
+			float err = 0.01f;
+			if (Mathf.Abs(currentPercent - targetPercent) > err) {
+				currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+			}
+
+			healthBar.value = currentPercent;
+		}
 
 //		if (CurrentHP <= 0 && !isDead) {
 //			isDead = true;
@@ -184,37 +201,6 @@ public class MechCombat : Photon.MonoBehaviour {
 		} else {
 			animator.SetBool("ShootR", false);
 		}
-//		if (fireL) {
-//			playShootAnimationL();
-//			shootingL = true;
-////			bool melee = bm.weaponScripts[weaponOffset].Range <= 50;
-////
-////			if (melee) {
-////				animator.SetBool("Slash", true);
-////			} else {
-////				playShootAnimationL();
-////				shootingL = true;
-////			}
-//		} else if (shootingL) {
-//			stopShootAnimationL();
-//			shootingL = false;
-//		}
-	}
-
-	void playShootAnimationL() {
-		shoulderL.Rotate(0,90,0);
-	}
-
-	void stopShootAnimationL() {
-		shoulderL.Rotate(0,-90,0);
-	}
-
-	void playShootAnimationR() {
-		shoulderR.Rotate(0,-90,0);
-	}
-
-	void stopShootAnimationR() {
-		shoulderR.Rotate(0,90,0);
 	}
 		
 	[PunRPC]
@@ -224,33 +210,7 @@ public class MechCombat : Photon.MonoBehaviour {
 			weaponOffset = (weaponOffset + 2) % 2;
 		}
 	}
-
-//
-//	// Update is called once per frame
-//	void Update () {
-//		if (!isLocalPlayer || gm.GameOver()) return;
-//		if (Input.GetKey(KeyCode.Mouse0)){
-//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
-//			fireL = true;
-//		} else {
-//			fireL = false;
-//		}
-//
-//		if (Input.GetKey(KeyCode.Mouse1)){
-//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, weaponScripts[weaponOffset+1].Damage, weaponScripts[weaponOffset+1].Range);
-//			fireR = true;
-//		} else {
-//			fireR = false;
-//		}
-//
-//		if (Input.GetKeyDown (KeyCode.R)) {
-//			switchWeapons ();
-//		}
-//
-//		if (isDead && Input.GetKeyDown(KeyCode.R)) {
-//			CmdEnablePlayer();
-//		}
-//	}
+		
 //
 //	[Server]
 //	public void RegisterKill(uint shooterId, uint victimId){
