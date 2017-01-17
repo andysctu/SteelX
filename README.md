@@ -8,7 +8,7 @@ Melee or Long-range assault?
 
 This project is currently a work in progress. Shoot me a message if you wanna help @ andysctu@gmail.com
 
-![alt tag](https://raw.github.com/andysctu/SteelX/master/Screenshots/Screen Shot 2016-02-14 at 2.28.42 AM.png)
+![alt tag](https://raw.github.com/andysctu/SteelX/master/Screenshots/version_0.0.1/Screen Shot 2016-02-14 at 2.28.42 AM.png)
 ![alt tag](https://github.com/andysctu/SteelX/blob/master/Screenshots/version_0.0.2/Screen%20Shot%202017-01-17%20at%205.14.50%20PM.png)
 ![alt tag](https://github.com/andysctu/SteelX/blob/master/Screenshots/version_0.0.2/Screen%20Shot%202017-01-17%20at%205.15.08%20PM.png)
 ![alt tag](https://github.com/andysctu/SteelX/blob/master/Screenshots/version_0.0.2/Screen%20Shot%202017-01-17%20at%205.15.18%20PM.png)
