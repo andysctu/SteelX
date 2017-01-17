@@ -8,6 +8,8 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	[SerializeField] Transform camTransform;
 	[SerializeField] Animator animator;
+	[SerializeField] GameObject bulletTrace;
+	[SerializeField] GameObject bulletImpact;
 
 //	private Transform legs;
 
@@ -70,16 +72,29 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 		
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
+//		photonView.RPC("BulletTrace", PhotonTargets.All, start, direction);
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
 			if (hit.transform.tag == "Player"){
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
+				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 			} else if (hit.transform.tag == "Drone"){
 				Debug.Log("Ouch");
+				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 			}
 		}
+	}
+
+	[PunRPC]
+	void BulletTrace(Vector3 start, Vector3 direction) {
+		GameObject bulletTraceClone = Instantiate(bulletTrace, start, new Quaternion(direction.x, direction.y, direction.z, 1.0f)) as GameObject;
+	}
+
+	[PunRPC]
+	void BulletImpact(Vector3 point, Vector3 rot) {
+		GameObject bulletImpactClone = Instantiate(bulletImpact, point, new Quaternion(rot.x,rot.y,rot.z,1.0f)) as GameObject;
 	}
 
 	[PunRPC]
