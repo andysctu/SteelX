@@ -66,6 +66,10 @@ public class UIManager : MonoBehaviour {
 		CreateRoomModal.SetActive (true);
 	}
 
+	public void HideCreateRoomModel() {
+		CreateRoomModal.SetActive(false);
+	}
+
 	public void JoinRoom() {
 		if (!string.IsNullOrEmpty (selectedRoom)) {
 			Debug.Log ("Joining Room " + selectedRoom);

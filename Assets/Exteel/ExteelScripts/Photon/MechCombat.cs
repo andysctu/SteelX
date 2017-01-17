@@ -37,7 +37,8 @@ public class MechCombat : Photon.MonoBehaviour {
 	private BuildMech bm;
 
 	// Control rate of fire
-	float timeOfLastShot;
+	float timeOfLastShotL;
+	float timeOfLastShotR;
 
 	void Start() {
 		CurrentHP = MaxHP;
@@ -55,7 +56,8 @@ public class MechCombat : Photon.MonoBehaviour {
 		weapons = bm.weapons;
 		weaponScripts = bm.weaponScripts;
 
-		timeOfLastShot = Time.time;
+		timeOfLastShotL = Time.time;
+		timeOfLastShotR = Time.time;
 	}
 		
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
@@ -124,18 +126,30 @@ public class MechCombat : Photon.MonoBehaviour {
 
 		if (isDead) return;
 
-		if (Input.GetKey(KeyCode.Mouse0) && Time.time - timeOfLastShot >= 1/bm.weaponScripts[weaponOffset].Rate){
-			Debug.Log ("Fire");
-			timeOfLastShot = Time.time;
-			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
+		if (Input.GetKey(KeyCode.Mouse0)){
+			Debug.Log ("Want to FireL");
 			fireL = true;
+
+			if (Time.time - timeOfLastShotL >= 1/bm.weaponScripts[weaponOffset].Rate) {
+				Debug.Log("FiredL");
+				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
+				timeOfLastShotL = Time.time;
+			}
+
 		} else {
 			fireL = false;
 		}
 
 		if (Input.GetKey(KeyCode.Mouse1)){
-			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset+1].Damage, weaponScripts[weaponOffset+1].Range);
+			Debug.Log ("Want to FireR");
 			fireR = true;
+
+			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + 1].Rate) {
+				Debug.Log("FiredR");
+				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset + 1].Damage, weaponScripts[weaponOffset + 1].Range);
+				timeOfLastShotR = Time.time;
+			}
+
 		} else {
 			fireR = false;
 		}
@@ -159,17 +173,17 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 
 	void LateUpdate() {
-
-		// Only 1 shot for now
 		if (fireL) {
-//			animator.SetBool("ShootL", true);
-//			shootingL = true;
-//			Debug.Log("ShootL true in animator");
+			animator.SetBool("ShootL", true);
+		} else {
+			animator.SetBool("ShootL", false);
 		}
-			//		} else {
-//			animator.SetBool("ShootL", false);
-//			Debug.Log("ShootL false in animator");
-//		}
+
+		if (fireR) {
+			animator.SetBool("ShootR", true);
+		} else {
+			animator.SetBool("ShootR", false);
+		}
 //		if (fireL) {
 //			playShootAnimationL();
 //			shootingL = true;
@@ -185,14 +199,6 @@ public class MechCombat : Photon.MonoBehaviour {
 //			stopShootAnimationL();
 //			shootingL = false;
 //		}
-
-		if (fireR) {
-			playShootAnimationR();
-			shootingR = true;
-		} else if (shootingR) {
-			stopShootAnimationR();
-			shootingR = false;
-		}
 	}
 
 	void playShootAnimationL() {
