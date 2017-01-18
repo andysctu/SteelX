@@ -59,10 +59,10 @@ public class LoginManager : MonoBehaviour {
 			string json = www.text;
 			Data d = JsonUtility.FromJson<Data>(json);
 			UserData.myData = d;
+			UserData.myData.Mech.PopulateParts();
 			PhotonNetwork.playerName = fields [0].text;
 			Application.LoadLevel (1);
-		}
-		else {
+		} else {
 			error.SetActive(true);
 		}
 	}

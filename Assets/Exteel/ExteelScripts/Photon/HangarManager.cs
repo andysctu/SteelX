@@ -2,20 +2,42 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class HangarManager : MonoBehaviour {
 
 	[SerializeField] GameObject[] Tabs;
 	[SerializeField] GameObject UIPart;
 	[SerializeField] GameObject Mech;
+	[SerializeField] Sprite buttonTexture;
 
 	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403" };
 
 	private Transform[] contents;
 	private int activeTab;
+	private Dictionary<string, string> equipped;
+	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
 
 	// Use this for initialization
 	void Start () {
+		equipped = new Dictionary<string, string>();
+		Mech m = UserData.myData.Mech;
+		equipped.Add("head", m.Head);
+		equipped.Add("arms", m.Arms);
+		equipped.Add("legs", m.Legs);
+		equipped.Add("core", m.Core);
+		equipped.Add("weapon1l", m.Weapon1L);
+		equipped.Add("weapon1r", m.Weapon1R);
+		equipped.Add("weapon2l", m.Weapon2L);
+		equipped.Add("weapon2r", m.Weapon2R);
+		equipped.Add("booster", m.Booster);
+
+		Button[] buttons = GameObject.FindObjectsOfType<Button>();
+		foreach (Button b in buttons) {
+			b.image.overrideSprite = buttonTexture;
+			b.GetComponentInChildren<Text>().color = Color.white;
+		}
+
 		activeTab = 0;
 		contents = new Transform[Tabs.Length];
 		for (int i = 0; i < Tabs.Length; i++) {
@@ -30,7 +52,10 @@ public class HangarManager : MonoBehaviour {
 			contents[i] = pane.transform.FindChild("Viewport/Content");
 		}
 
-		foreach (string part in testParts) {
+		// Debug, take out
+//		foreach (string part in testParts) {
+
+		foreach (string part in UserData.myData.Owns) {
 			int parent = -1;
 			switch (part[0]) {
 			case 'H':
@@ -95,6 +120,25 @@ public class HangarManager : MonoBehaviour {
 	}
 
 	public void Back() {
+		// Save mech
+		WWWForm form = new WWWForm();
+
+		form.AddField("uid", UserData.myData.User.Uid);
+		foreach (KeyValuePair<string, string> entry in equipped) {
+			form.AddField(entry.Key, entry.Value);
+		}
+
+		WWW www = new WWW(MechHandlerURL, form);
+		while (!www.isDone) {}
+
+		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
+			string json = www.text;
+			Mech m = JsonUtility.FromJson<Mech>(json);
+			UserData.myData.Mech = m;
+			UserData.myData.Mech.PopulateParts();
+		}
+
+		// Return to lobby
 		SceneManager.LoadScene ("Lobby");
 	}
 
@@ -107,22 +151,24 @@ public class HangarManager : MonoBehaviour {
 		int parent = -1;
 		switch (part [0]) {
 		case 'C':
-			parent = 0;
+			parent = 0; equipped["core"] = part;
 			break;
 		case 'A':
-			if (part [1] == 'E')
-				parent = 1;
-			else
+			if (part [1] == 'E') {
+				parent = 1; equipped["arms"] = part;
+			}
+			else {
 				parent = 5;
+			}
 			break;
 		case 'L':
-			parent = 2;
+			parent = 2; equipped["legs"] = part;
 			break;
 		case 'H':
-			parent = 3;
+			parent = 3; equipped["head"] = part;
 			break;
 		case 'P':
-			parent = 4;
+			parent = 4; equipped["booster"] = part;
 			break;
 		default:
 			parent = 5;
