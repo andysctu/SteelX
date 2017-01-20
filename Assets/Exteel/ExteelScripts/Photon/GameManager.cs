@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -47,17 +48,6 @@ public class GameManager : Photon.MonoBehaviour {
 	void Update() {
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
 	}
-
-//	void OnGUI() {
-//		if (showboard || GameOver()) {
-//			GUILayout.BeginArea(new Rect(Screen.width/4, Screen.height/4, Screen.width/2, Screen.height/2));
-//			foreach (KeyValuePair<string, Score> entry in playerScores)
-//			{
-//				GUILayout.Label(entry.Key + ": kills = " + entry.Value.Kills + ", deaths = " + entry.Value.Deaths);
-//			}
-//			GUILayout.EndArea();
-//		}
-//	}
 
 	public void RegisterKill (string shooter, string victim) {
 		Debug.Log(shooter + " killed " + victim);

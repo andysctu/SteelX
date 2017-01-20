@@ -3,10 +3,11 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GameLobbyManager : MonoBehaviour {
+public class GameLobbyManager : Photon.MonoBehaviour {
 
 	[SerializeField] GameObject LobbyPlayer;
 	[SerializeField] GameObject Team1, Team2, MenuBar, MapInfo;
+	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers;
 
 	private List<GameObject> players;
 
@@ -55,6 +56,11 @@ public class GameLobbyManager : MonoBehaviour {
 			GameObject startButton = GameObject.Find ("Canvas/MenuBar/Start");
 			startButton.GetComponent<Button> ().interactable = true;
 		}
+
+		GameInfo.Map = Map.captionText.text;
+		GameInfo.GameMode = GameMode.captionText.text;
+		GameInfo.MaxPlayers = int.Parse(MaxPlayers.captionText.text);
+		GameInfo.MaxKills = int.Parse(MaxKills.captionText.text);
 	}
 
 	private void addPlayer(string name) {
@@ -74,7 +80,7 @@ public class GameLobbyManager : MonoBehaviour {
 	public void StartGame() {
 		Debug.Log ("Starting game");
 		PhotonNetwork.room.open = false;
-		PhotonNetwork.LoadLevel ("Game");
+		PhotonNetwork.LoadLevel (GameInfo.Map);
 	}
 
 	public void LeaveGame() {
@@ -96,5 +102,23 @@ public class GameLobbyManager : MonoBehaviour {
 				players.Remove (lobbyPlayer);
 			}
 		}
+	}
+
+	// Right now, just update values of host, and UI of clients
+	public void ChangeMap() {
+		Debug.Log("Changing map to: " + Map.captionText.text);
+		GameInfo.Map = Map.captionText.text;
+		photonView.RPC("ChangeMap", PhotonTargets.Others, Map.captionText.text);
+	}
+
+	public void ChangeGameMode() {
+		GameInfo.GameMode = GameMode.captionText.text;
+	}
+
+	// Right now, just update UI of the other clients
+	// If we need to update values, we can put them inside of the RPC
+	[PunRPC]
+	public void ChangeMap(string map) {
+		Map.captionText.text = map;
 	}
 }
