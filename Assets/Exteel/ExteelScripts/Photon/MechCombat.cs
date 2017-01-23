@@ -141,8 +141,7 @@ public class MechCombat : Photon.MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-//		if (!isLocalPlayer || gm.GameOver()) return;
-		if (!photonView.isMine) return;
+		if (!photonView.isMine || gm.GameOver()) return;
 		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			isDead = false;
 			photonView.RPC ("EnablePlayer", PhotonTargets.All, null);

@@ -67,6 +67,8 @@ public class GameManager : Photon.MonoBehaviour {
 		playerScorePanels [victim].transform.FindChild ("Deaths").GetComponent<Text> ().text = playerScores [victim].Deaths.ToString();
 		Debug.Log (shooter + " has " + playerScores [shooter].Kills + " kills.");
 		Debug.Log (victim + " has " + playerScores [victim].Deaths + " deaths.");
+
+		if (newShooterScore.Kills > CurrentMaxKills) CurrentMaxKills = newShooterScore.Kills;
 	}
 
 	public bool GameOver(){
