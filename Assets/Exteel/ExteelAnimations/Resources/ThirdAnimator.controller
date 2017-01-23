@@ -1446,9 +1446,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.14764333
+  m_TransitionDuration: 0.05
   m_TransitionOffset: 0
-  m_ExitTime: 1.2253035e-10
+  m_ExitTime: 0
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1518,9 +1518,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.1377151
+  m_TransitionDuration: 0.05
   m_TransitionOffset: 0
-  m_ExitTime: 0.0072666053
+  m_ExitTime: 0
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -1580,8 +1580,8 @@ AnimatorState:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: New State 0
-  m_Speed: 1
+  m_Name: ShootingR
+  m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101000010897272066}
@@ -1593,11 +1593,11 @@ AnimatorState:
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
-  m_Motion: {fileID: 7400008, guid: 533ee04c4919f4583af13551f7dbb012, type: 3}
+  m_Motion: {fileID: 7400028, guid: 533ee04c4919f4583af13551f7dbb012, type: 3}
   m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
+  m_SpeedParameter: Speed
+  m_MirrorParameter: Jump
+  m_CycleOffsetParameter: Speed
 --- !u!1102 &1102000011266601674
 AnimatorState:
   serializedVersion: 5
@@ -1605,7 +1605,7 @@ AnimatorState:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: ShootingL
-  m_Speed: 1
+  m_Speed: 3
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101000014188786098}
@@ -1619,7 +1619,7 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_Motion: {fileID: 7400008, guid: 533ee04c4919f4583af13551f7dbb012, type: 3}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: Speed
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
 --- !u!1102 &1102000011658720232
@@ -1731,7 +1731,7 @@ AnimatorStateMachine:
     m_Position: {x: 240, y: 48, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102000010502977698}
-    m_Position: {x: 356, y: 145, z: 0}
+    m_Position: {x: 360, y: 144, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

@@ -11,8 +11,6 @@ public class MechCombat : Photon.MonoBehaviour {
 	[SerializeField] GameObject bulletTrace;
 	[SerializeField] GameObject bulletImpact;
 
-//	private Transform legs;
-
 	public int MaxHP = 100;
 	public int CurrentHP;
 
