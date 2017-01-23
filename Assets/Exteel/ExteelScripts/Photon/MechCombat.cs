@@ -204,14 +204,17 @@ public class MechCombat : Photon.MonoBehaviour {
 	}
 
 	void LateUpdate() {
+		float x = camTransform.rotation.eulerAngles.x;
 		if (fireL) {
 			animator.SetBool("ShootL", true);
+			shoulderL.Rotate(0, -x, 0);
 		} else {
 			animator.SetBool("ShootL", false);
 		}
 
 		if (fireR) {
 			animator.SetBool("ShootR", true);
+			shoulderR.Rotate(0, x, 0);
 		} else {
 			animator.SetBool("ShootR", false);
 		}
