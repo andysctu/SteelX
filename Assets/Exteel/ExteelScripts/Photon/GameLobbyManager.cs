@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,9 +8,10 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	[SerializeField] GameObject LobbyPlayer;
 	[SerializeField] GameObject Team1, Team2, MenuBar, MapInfo;
-	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers;
+	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
 
 	private List<GameObject> players;
+	private string[] Maps = new string[3]{"Simulation", "V-Hill", "City"};
 
 	// Use this for initialization
 	void Start () {
@@ -55,12 +57,18 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		if (PhotonNetwork.isMasterClient) {
 			GameObject startButton = GameObject.Find ("Canvas/MenuBar/Start");
 			startButton.GetComponent<Button> ().interactable = true;
+			Map.interactable = true;
+			GameMode.interactable = true;
+			MaxKills.interactable = true;
+			MaxPlayers.interactable = true;
+			MaxTime.interactable = true;
 		}
 
 		GameInfo.Map = Map.captionText.text;
 		GameInfo.GameMode = GameMode.captionText.text;
 		GameInfo.MaxPlayers = int.Parse(MaxPlayers.captionText.text);
 		GameInfo.MaxKills = int.Parse(MaxKills.captionText.text);
+		GameInfo.MaxTime = int.Parse(MaxTime.captionText.text);
 	}
 
 	private void addPlayer(string name) {
@@ -103,22 +111,55 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 			}
 		}
 	}
-
-	// Right now, just update values of host, and UI of clients
+		
+	// Not actually updating dropdown values of clients yet, only host
 	public void ChangeMap() {
-		Debug.Log("Changing map to: " + Map.captionText.text);
-		GameInfo.Map = Map.captionText.text;
-		photonView.RPC("ChangeMap", PhotonTargets.Others, Map.captionText.text);
+		photonView.RPC("ChangeMap", PhotonTargets.All, Map.captionText.text);
 	}
 
 	public void ChangeGameMode() {
-		GameInfo.GameMode = GameMode.captionText.text;
+		photonView.RPC("ChangeGameMode", PhotonTargets.All, GameMode.captionText.text);
 	}
 
-	// Right now, just update UI of the other clients
-	// If we need to update values, we can put them inside of the RPC
+	public void ChangeMaxKills() {
+		photonView.RPC("ChangeMaxKills", PhotonTargets.All, MaxKills.captionText.text);
+	}
+
+	public void ChangeMaxPlayers() {
+		photonView.RPC("ChangeMaxPlayers", PhotonTargets.All, MaxPlayers.captionText.text);
+	}
+
+	public void ChangeMaxTime() {
+		photonView.RPC("ChangeMaxTime", PhotonTargets.All, MaxTime.captionText.text);
+	}
+
+	// RPCs
 	[PunRPC]
 	public void ChangeMap(string map) {
-		Map.captionText.text = map;
+		GameInfo.Map = map;
+		int i = Array.IndexOf(Maps, map);
+		Map.value = i;
+	}
+
+	[PunRPC]
+	public void ChangeMaxTime(string time) {
+		GameInfo.MaxTime = int.Parse(time);
+		MaxTime.captionText.text = time;
+	}
+
+	// Not implemented yet
+	[PunRPC]
+	public void ChangeGameMode(string gameMode) {
+		GameInfo.GameMode = gameMode;
+	}
+
+	[PunRPC]
+	public void ChangeMaxKills(string maxKills) {
+		GameInfo.MaxKills = int.Parse(maxKills);
+	}
+
+	[PunRPC]
+	public void ChangeMaxPlayers(string maxPlayers) {
+		GameInfo.MaxPlayers = int.Parse(maxPlayers);
 	}
 }

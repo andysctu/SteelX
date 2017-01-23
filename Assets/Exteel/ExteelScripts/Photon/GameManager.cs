@@ -13,7 +13,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public Transform[] SpawnPoints;
 
-	public float MaxTime = 10f;
+	public int MaxTime = 10;
 	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
 
@@ -23,6 +23,8 @@ public class GameManager : Photon.MonoBehaviour {
 	public Dictionary<string, Score> playerScores;
 
 	void Start() {
+		MaxKills = GameInfo.MaxKills;
+
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
 		BuildMech mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
