@@ -42,6 +42,9 @@ public class MechController : Photon.MonoBehaviour {
 
 	[SerializeField] Transform[] Legs;
 
+	private Transform camTransform;
+//	private Vector3 originalCamPos;
+
 	// Use this for initialization
 	void Start () {
 		CharacterController = GetComponent<CharacterController> ();
@@ -56,6 +59,8 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		mechCombat = GetComponent<MechCombat>();
+		camTransform = transform.FindChild("Camera");
+//		originalCamPos = camTransform.localPosition;
 	}
 
 	// Update is called once per frame
@@ -108,9 +113,20 @@ public class MechController : Photon.MonoBehaviour {
 			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && CurrentFuel >= MinFuelRequired;
 		}
 
+		Vector3 curPos = camTransform.localPosition;
 		if ((startBoosting && Input.GetKey ("left shift") && CurrentFuel > 0) || (ableToVertBoost && Input.GetKey("space") && CurrentFuel > 0)) {
 			isHorizBoosting = true;
 			if (animator != null) animator.SetBool("Boost", true);
+
+			Vector3 newPos = camTransform.localPosition;
+			float h = Input.GetAxis("Horizontal");
+			if (h > 0) {
+				newPos = new Vector3(-7, curPos.y, curPos.z);
+			} else if (h < 0) {
+				newPos = new Vector3(7, curPos.y, curPos.z);
+			}
+			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+
 			CurrentFuel -= FuelDrain;
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
@@ -118,6 +134,10 @@ public class MechController : Photon.MonoBehaviour {
 			photonView.RPC ("Boost", PhotonTargets.All, true);
 		} else {
 			if (animator != null) animator.SetBool("Boost", false);
+
+			Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
+			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+			
 			isHorizBoosting = false;
 			CurrentFuel += FuelGain;
 			if (CurrentFuel > MaxFuel) CurrentFuel = MaxFuel;
