@@ -14,9 +14,7 @@ public class Drone : Photon.MonoBehaviour {
 
 	[PunRPC]
 	void OnHit(int d, string shooter) {
-		Debug.Log ("Drone got shot");
 		CurrentHP -= d;
-		Debug.Log ("HP: " + CurrentHP);
 		if (CurrentHP <= 0) {
 			DisableDrone ();
 		}

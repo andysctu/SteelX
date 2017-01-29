@@ -79,15 +79,27 @@ public class MechCombat : Photon.MonoBehaviour {
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 			} else if (hit.transform.tag == "Drone"){
-				Debug.Log("Ouch");
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 			}
 		}
 	}
+		
+//	public void BulletTraceEvent() {
+//		photonView.RPC("BulletTraceRPC", PhotonTargets.All);
+//	}
+//
+//	[PunRPC]
+//	void BulletTraceRPC() {
+//		Camera cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+//		Vector3 worldPoint = cam.ScreenToWorldPoint(new Vector3(0.5f, 0.5f, 0f));
+//		Vector3 diff = worldPoint - Hands[0].position;
+//		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(diff.x, diff.y, diff.z, 1.0f)) as GameObject;
+//	}
+
 
 	[PunRPC]
 	void BulletTrace(Vector3 start, Vector3 direction) {
-		GameObject bulletTraceClone = Instantiate(bulletTrace, start, new Quaternion(direction.x, direction.y, direction.z, 1.0f)) as GameObject;
+		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(direction.x, direction.y, direction.z, 1.0f)) as GameObject;
 	}
 
 	[PunRPC]
