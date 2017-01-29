@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "SHS309", "SHL009", "SHL009"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "SHS309", "SHL009", "SHL009"};
 	private GameManager gm;
 	public GameObject[] weapons;
 
@@ -117,7 +117,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			case "SHS309": {
 					weaponScripts[i] = new SHS309();
 					weapons[i].transform.Rotate(0, 0, (i % 2 == 0 ? -1 : 0) * 180);
-					weapons[i].transform.position = new Vector3(p.x, p.y + 0.8f, p.z+0.5f);
+					weapons[i].transform.position = new Vector3(p.x, p.y + 0.8f, p.z + 0.5f);
 					break;
 				}
 			}

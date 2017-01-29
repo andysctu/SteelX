@@ -43,9 +43,16 @@ public class MechCombat : Photon.MonoBehaviour {
 	float timeOfLastShotL;
 	float timeOfLastShotR;
 
+	private HUD hud;
+	private Camera cam;
+
 	void Start() {
 		CurrentHP = MaxHP;
 		findGameManager();
+
+		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+		cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+
 		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
@@ -75,11 +82,10 @@ public class MechCombat : Photon.MonoBehaviour {
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
 			hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
-			if (hit.transform.tag == "Player"){
+			if (hit.transform.tag == "Player" || hit.transform.tag == "Drone"){
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
-			} else if (hit.transform.tag == "Drone"){
-				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
+				hud.ShowHit(cam, hit.point);//cam.WorldToScreenPoint(hit.point));
 			}
 		}
 	}
@@ -206,18 +212,13 @@ public class MechCombat : Photon.MonoBehaviour {
 
 			healthBar.value = currentPercent;
 		}
-
-//		if (CurrentHP <= 0 && !isDead) {
-//			isDead = true;
-//			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
-//		}
 	}
 
 	void LateUpdate() {
 		float x = camTransform.rotation.eulerAngles.x;
 		if (fireL) {
 			animator.SetBool(weaponScripts[0].Animation + "L", true);
-			shoulderL.Rotate(0, -x, 0);
+			if (weaponScripts[0].Animation == "Shoot") shoulderL.Rotate(0, -x, 0);
 		} else {
 			animator.SetBool(weaponScripts[0].Animation + "L", false);
 		}
