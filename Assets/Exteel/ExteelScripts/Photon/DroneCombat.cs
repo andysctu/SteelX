@@ -2,20 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Drone : Photon.MonoBehaviour {
+public class DroneCombat : Combat {
 
-	public int CurrentHP;
-	public int MaxHP = 100;
+	private HUD hud;
+	private Camera cam;
 
 	// Use this for initialization
 	void Start () {
+		MaxHP = 100;
 		CurrentHP = MaxHP;
+
+//		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+//		cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
 	}
 
 	[PunRPC]
 	void OnHit(int d, string shooter) {
 		CurrentHP -= d;
 		if (CurrentHP <= 0) {
+//			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
 		}
 	}

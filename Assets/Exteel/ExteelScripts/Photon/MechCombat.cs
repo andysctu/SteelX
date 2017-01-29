@@ -4,15 +4,12 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class MechCombat : Photon.MonoBehaviour {
+public class MechCombat : Combat {
 
 	[SerializeField] Transform camTransform;
 	[SerializeField] Animator animator;
 	[SerializeField] GameObject bulletTrace;
 	[SerializeField] GameObject bulletImpact;
-
-	public int MaxHP = 100;
-	public int CurrentHP;
 
 	private bool isDead;
 
@@ -47,6 +44,7 @@ public class MechCombat : Photon.MonoBehaviour {
 	private Camera cam;
 
 	void Start() {
+		MaxHP = 100;
 		CurrentHP = MaxHP;
 		findGameManager();
 
@@ -85,7 +83,8 @@ public class MechCombat : Photon.MonoBehaviour {
 			if (hit.transform.tag == "Player" || hit.transform.tag == "Drone"){
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
-				hud.ShowHit(cam, hit.point);//cam.WorldToScreenPoint(hit.point));
+				if (hit.transform.gameObject.GetComponent<Combat>().CurrentHP <= 0) hud.ShowText(cam, hit.point, "Kill");
+				else hud.ShowText(cam, hit.point, "Hit");
 			}
 		}
 	}
@@ -122,7 +121,7 @@ public class MechCombat : Photon.MonoBehaviour {
 		Debug.Log ("HP: " + CurrentHP);
 		if (CurrentHP <= 0) {
 			isDead = true;
-			Debug.Log ("Dead");
+			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
 			DisablePlayer ();
 		}

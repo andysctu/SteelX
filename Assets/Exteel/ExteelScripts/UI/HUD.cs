@@ -14,22 +14,21 @@ public class HUD : MonoBehaviour {
 		canvas = GameObject.Find("Canvas");
 	}
 
-	public void ShowHit(Camera cam, Vector3 p) {
-		Debug.Log("Showing hit");
+	public void ShowText(Camera cam, Vector3 p, string Text) {
 		GameObject i = Instantiate(Placeholder, cam.WorldToScreenPoint(p), Quaternion.identity) as GameObject;
 		i.GetComponent<HUDText>().Set(cam, p);
 		i.transform.SetParent(canvas.transform);
 		Image im = i.GetComponent<Image>();
-		im.sprite = Hit;
+
+		switch (Text) {
+		case "Hit": im.sprite = Hit; break;
+		case "Kill": im.sprite = Kill; break;
+		case "Defense": im.sprite = Defense; break;
+		}
+
 		im.preserveAspect = true;
 		im.SetNativeSize();
 		i.transform.localScale = new Vector3(1,1,1);
 		Destroy(i, 0.5f);
-	}
-
-	public void ShowKill(Vector3 p) {
-	}
-
-	public void ShowDefense(Vector3 p) {
 	}
 }
