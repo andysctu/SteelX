@@ -124,6 +124,8 @@ public class MechController : Photon.MonoBehaviour {
 				newPos = new Vector3(-7, curPos.y, curPos.z);
 			} else if (h < 0) {
 				newPos = new Vector3(7, curPos.y, curPos.z);
+			} else {
+				newPos = new Vector3(0, curPos.y, curPos.z);
 			}
 			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 
