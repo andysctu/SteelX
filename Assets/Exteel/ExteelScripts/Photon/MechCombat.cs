@@ -74,9 +74,9 @@ public class MechCombat : Photon.MonoBehaviour {
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
+			hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 			if (hit.transform.tag == "Player"){
 				Debug.Log("Damage: " + damage + ", Range: " + range);
-				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 			} else if (hit.transform.tag == "Drone"){
 				Debug.Log("Ouch");
