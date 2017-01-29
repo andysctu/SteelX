@@ -95,6 +95,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	private void buildWeapons (string[] weaponNames) {
+		Debug.Log("Building weaps");
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {

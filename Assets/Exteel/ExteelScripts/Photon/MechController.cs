@@ -43,7 +43,8 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField] Transform[] Legs;
 
 	private Transform camTransform;
-//	private Vector3 originalCamPos;
+
+//	[SerializeField] bool Offline;
 
 	// Use this for initialization
 	void Start () {
@@ -60,7 +61,6 @@ public class MechController : Photon.MonoBehaviour {
 
 		mechCombat = GetComponent<MechCombat>();
 		camTransform = transform.FindChild("Camera");
-//		originalCamPos = camTransform.localPosition;
 	}
 
 	// Update is called once per frame

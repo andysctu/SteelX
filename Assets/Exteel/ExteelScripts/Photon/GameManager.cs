@@ -10,6 +10,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject PlayerPrefab;
 	[SerializeField] GameObject Scoreboard;
 	[SerializeField] GameObject PlayerStat;
+	[SerializeField] bool Offline;
 
 	public Transform[] SpawnPoints;
 
@@ -23,6 +24,12 @@ public class GameManager : Photon.MonoBehaviour {
 	public Dictionary<string, Score> playerScores;
 
 	void Start() {
+		if (Offline) {
+			PhotonNetwork.offlineMode = true;
+			PhotonNetwork.CreateRoom("offline");
+			GameInfo.MaxKills = 10;
+		}
+
 		MaxKills = GameInfo.MaxKills;
 
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);

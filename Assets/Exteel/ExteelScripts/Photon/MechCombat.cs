@@ -149,10 +149,10 @@ public class MechCombat : Photon.MonoBehaviour {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
 			return;
 		}
-
+			
 		if (Input.GetKey(KeyCode.Mouse0)){
 			fireL = true;
-
+		
 			if (Time.time - timeOfLastShotL >= 1/bm.weaponScripts[weaponOffset].Rate) {
 				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
 				timeOfLastShotL = Time.time;
