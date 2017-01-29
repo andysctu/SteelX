@@ -79,12 +79,14 @@ public class MechCombat : Combat {
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
 			Debug.Log ("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
-			hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 			if (hit.transform.tag == "Player" || hit.transform.tag == "Drone"){
+				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 				if (hit.transform.gameObject.GetComponent<Combat>().CurrentHP <= 0) hud.ShowText(cam, hit.point, "Kill");
 				else hud.ShowText(cam, hit.point, "Hit");
+			} else if (hit.transform.tag == "Shield") {
+				hud.ShowText(cam, hit.point, "Defense");
 			}
 		}
 	}

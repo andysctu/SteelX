@@ -102,12 +102,14 @@ public class MechController : Photon.MonoBehaviour {
 		} else {
 			if (animator != null) animator.SetBool("Jump", false);
 		}
+			
+		Vector3 forwardPos = camTransform.localPosition;
 
 		// Need this to prevent starting a boost when below min fuel
 		if (!isHorizBoosting) {
 			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
 			isHorizBoosting = startBoosting;
-		}
+		} 
 
 		if (!ableToVertBoost) {
 			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && CurrentFuel >= MinFuelRequired;
