@@ -115,7 +115,7 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
-	void OnHit(int d, string shooter) {
+	public override void OnHit(int d, string shooter) {
 		Debug.Log ("Got shot");
 		Debug.Log ("isDead: " + isDead);
 		if (isDead) return;
@@ -218,17 +218,17 @@ public class MechCombat : Combat {
 	void LateUpdate() {
 		float x = camTransform.rotation.eulerAngles.x;
 		if (fireL) {
-			animator.SetBool(weaponScripts[0].Animation + "L", true);
-			if (weaponScripts[0].Animation == "Shoot") shoulderL.Rotate(0, -x, 0);
+			animator.SetBool(weaponScripts[weaponOffset].Animation + "L", true);
+			if (weaponScripts[weaponOffset].Animation == "Shoot") shoulderL.Rotate(0, -x, 0);
 		} else {
-			animator.SetBool(weaponScripts[0].Animation + "L", false);
+			animator.SetBool(weaponScripts[weaponOffset].Animation + "L", false);
 		}
 
 		if (fireR) {
-			animator.SetBool(weaponScripts[1].Animation + "R", true);
-			if (weaponScripts[1].Animation == "Shoot") shoulderR.Rotate(0, x, 0);
+			animator.SetBool(weaponScripts[weaponOffset+1].Animation + "R", true);
+			if (weaponScripts[weaponOffset+1].Animation == "Shoot") shoulderR.Rotate(0, x, 0);
 		} else {
-			animator.SetBool(weaponScripts[1].Animation + "R", false);
+			animator.SetBool(weaponScripts[weaponOffset+1].Animation + "R", false);
 		}
 	}
 		
@@ -236,8 +236,9 @@ public class MechCombat : Combat {
 	void SwitchWeapons() {
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
-			weaponOffset = (weaponOffset + 2) % 2;
 		}
+		weaponOffset = (weaponOffset + 2) % 4;
+		Debug.Log("weapon offset is now: " + weaponOffset);
 	}
 		
 //

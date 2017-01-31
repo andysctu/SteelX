@@ -17,7 +17,7 @@ public class DroneCombat : Combat {
 	}
 
 	[PunRPC]
-	public virtual void OnHit(int d, string shooter) {
+	public override void OnHit(int d, string shooter) {
 		CurrentHP -= d;
 		if (CurrentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");

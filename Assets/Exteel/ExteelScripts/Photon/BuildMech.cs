@@ -99,12 +99,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
 		// Replace weapons
-		Debug.Log("replace weapons");
 		buildWeapons (new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
 
 	private void buildWeapons (string[] weaponNames) {
-		Debug.Log("buildWeapons");
 		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
@@ -127,7 +125,6 @@ public class BuildMech : Photon.MonoBehaviour {
 				}
 			case "SHS309": {
 					weaponScripts[i] = new SHS309();
-					Debug.Log("i: " + i);
 					weapons[i].transform.Rotate(0, 0, (i % 2 == 0 ? -1 : 0) * 180);
 					weapons[i].transform.position = new Vector3(p.x + ((i % 2) == 0 ? 0 : 1) * 0.25f, p.y + 0.8f, p.z + 0.5f);
 					break;
