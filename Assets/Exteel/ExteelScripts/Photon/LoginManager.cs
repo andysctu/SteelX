@@ -41,8 +41,8 @@ public class LoginManager : MonoBehaviour {
 		WWWForm form = new WWWForm();
 
 		if (fields[0].text.Length == 0) {
-			fields[0].text = "guest";
-			fields[1].text = "guest";
+			fields[0].text = "andysctu";
+			fields[1].text = "password";
 		}
 		form.AddField("username", fields[0].text);
 		form.AddField("password", fields[1].text);

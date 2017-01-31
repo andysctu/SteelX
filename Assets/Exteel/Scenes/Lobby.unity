@@ -1732,7 +1732,13 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some transforms are animated by both a Humanoid
+    animation clip and a Generic animation clip. Only the Humanoid clip will be applied
+    on those transforms.\n\tTransform 'f_ring.01.R'\n\tTransform 'f_ring.01.L'\n\tTransform
+    'palm.03.R'\n\tTransform 'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tTransform
+    'f_pinky.03.L'\n\tTransform 'f_pinky.01.R'\n\tTransform 'f_ring.03.L'\n\tTransform
+    'f_pinky.02.L'\n\tTransform 'f_ring.02.R'\n\tand more ...\n\tFrom animation clip
+    'BlockR'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
 --- !u!1 &439895780
@@ -6336,6 +6342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1314102012}
   - component: {fileID: 1314102011}
+  - component: {fileID: 1314102013}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -6351,16 +6358,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1314102010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7527592a84cec4fe684bf257fa4cfc9f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weapons: []
 --- !u!4 &1314102012
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1314102010}
-  m_LocalRotation: {x: 0, y: 0.9571072, z: 0, w: -0.28973407}
+  m_LocalRotation: {x: 0, y: 0.94636774, z: -0, w: -0.32309163}
   m_LocalPosition: {x: 7, y: -3.84, z: 90}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -6369,7 +6377,32 @@ Transform:
   - {fileID: 475772434}
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 213.6841, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 217.7, z: 0}
+--- !u!114 &1314102013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1314102010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerId: 0
+  group: 0
+  prefixBackup: -1
+  observed: {fileID: 0}
+  synchronization: 0
+  onSerializeTransformOption: 3
+  onSerializeRigidBodyOption: 2
+  ownershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 0}
+  ObservedComponentsFoldoutOpen: 1
+  viewIdField: 2
+  instantiationId: 2
+  isRuntimeInstantiated: 0
 --- !u!1 &1318724492
 GameObject:
   m_ObjectHideFlags: 0

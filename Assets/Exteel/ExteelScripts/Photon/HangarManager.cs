@@ -8,10 +8,11 @@ public class HangarManager : MonoBehaviour {
 
 	[SerializeField] GameObject[] Tabs;
 	[SerializeField] GameObject UIPart;
+	[SerializeField] GameObject UIWeap;
 	[SerializeField] GameObject Mech;
 	[SerializeField] Sprite buttonTexture;
 
-	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403" };
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309" };
 
 	private Transform[] contents;
 	private int activeTab;
@@ -53,9 +54,8 @@ public class HangarManager : MonoBehaviour {
 		}
 
 		// Debug, take out
-//		foreach (string part in testParts) {
-
-		foreach (string part in UserData.myData.Owns) {
+		foreach (string part in testParts) {
+//		foreach (string part in UserData.myData.Owns) {
 			int parent = -1;
 			switch (part[0]) {
 			case 'H':
@@ -80,7 +80,9 @@ public class HangarManager : MonoBehaviour {
 				parent = 5;
 				break;
 			}
-			GameObject uiPart = Instantiate(UIPart, new Vector3(0,0,0), Quaternion.identity) as GameObject;
+			GameObject uiPart;
+			if (parent != 5) uiPart = Instantiate(UIPart, new Vector3(0,0,0), Quaternion.identity) as GameObject;
+			else uiPart = Instantiate(UIWeap, new Vector3(0,0,0), Quaternion.identity) as GameObject;
 			uiPart.transform.SetParent(contents[parent]);
 			uiPart.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
 			uiPart.GetComponent<RectTransform>().position = new Vector3(0,0,0);
@@ -88,7 +90,15 @@ public class HangarManager : MonoBehaviour {
 			uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
 			uiPart.GetComponentInChildren<Text>().text = part;
 			string p = part;
-			uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Equip(p));
+			if (parent !=5) uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Equip(p,-1));
+			else {
+				Button[] btns = uiPart.GetComponentsInChildren<Button>();
+				for (int i = 0; i < btns.Length; i++) {
+					int copy = i;
+					Button b = btns[i];
+					b.onClick.AddListener(() => Equip(p,copy));
+				}
+			}
 		}
 
 	}
@@ -142,7 +152,8 @@ public class HangarManager : MonoBehaviour {
 		SceneManager.LoadScene ("Lobby");
 	}
 
-	public void Equip(string part) {
+	public void Equip(string part, int weap) {
+		Debug.Log("Equipping weap: " + weap);
 		GameObject partGO = Resources.Load (part, typeof(GameObject)) as GameObject;
 		SkinnedMeshRenderer newSMR = partGO.GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
 		SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer> ();
@@ -174,10 +185,19 @@ public class HangarManager : MonoBehaviour {
 			parent = 5;
 			break;
 		}
-		Debug.Log (part);
-		Debug.Log (curSMR.Length);
-		curSMR[parent].sharedMesh = newSMR.sharedMesh;
-		curSMR [parent].material = material;
+		if (parent != 5) {
+			curSMR[parent].sharedMesh = newSMR.sharedMesh;
+			curSMR [parent].material = material;
+		} else {
+			switch (weap) {
+			case 0: equipped["weapon1l"] = part; break;
+			case 1: equipped["weapon1r"] = part; break;
+			case 2: equipped["weapon2l"] = part; break;
+			case 3: equipped["weapon2r"] = part; break;
+			default: Debug.Log("Should not get here"); break;
+			}
+			GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, weap);
+		}
 		//			curSMR[i].enabled = true;
 //		for (int i = 0; i < curSMR.Length; i++){
 //			curSMR[i].sharedMesh = newSMR[i].sharedMesh;

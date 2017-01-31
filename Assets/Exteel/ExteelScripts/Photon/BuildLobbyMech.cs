@@ -8,6 +8,8 @@ using System.Collections.Generic;
 public class BuildLobbyMech : MonoBehaviour {
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "SHL009", "SHL009", "SHL009"};
 
+	private GameObject[] weapons;
+
 	void Start() {
 		// Get parts info
 		Data data = UserData.myData;
@@ -64,7 +66,8 @@ public class BuildLobbyMech : MonoBehaviour {
 		hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
 		hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
 
-		GameObject[] weapons = new GameObject[4];
+		if (weapons != null) for (int i = 0; i < 4; i++) if (weapons[i] != null) Destroy(weapons[i]);
+		weapons = new GameObject[4];
 		Weapon[] weaponScripts = new Weapon[4];
 		for (int i = 0; i < weaponNames.Length; i++) {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y-0.4f, hands[i%2].position.z);
