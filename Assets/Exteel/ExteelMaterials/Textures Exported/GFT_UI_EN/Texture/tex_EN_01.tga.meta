@@ -1,12 +1,13 @@
 fileFormatVersion: 2
 guid: 39f5f737b91ab44c394f94453adea0b7
-timeCreated: 1485704826
+timeCreated: 1485937368
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: HIT
     21300002: KILL
     21300004: DEFENSE
+    21300006: FINISH
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -106,6 +107,19 @@ TextureImporter:
         y: 716
         width: 126
         height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: FINISH
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 295
+        width: 260
+        height: 46
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

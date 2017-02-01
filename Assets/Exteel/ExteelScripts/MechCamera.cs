@@ -28,8 +28,6 @@ public class MechCamera : MonoBehaviour
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
 		m_OriginalRotation = transform.localRotation;
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
 	}
 	
 	
@@ -72,13 +70,15 @@ public class MechCamera : MonoBehaviour
 	
 		
 		// smoothly interpolate current values to target angles
-		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
+//		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
+		m_FollowAngles = m_TargetAngles;
+
 
 		float outerRotate = ( - inputV) * rotationSpeed;
 		transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
 
-		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_TargetAngles.y, 0);
-		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
+		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
+		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_FollowAngles.x, 0, 0);
 
 		Vector3 rot = transform.parent.eulerAngles;
 		rot.z = 0;

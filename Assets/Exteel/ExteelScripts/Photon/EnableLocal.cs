@@ -18,7 +18,6 @@ public class EnableLocal : MonoBehaviour {
 		}
 
 		GetComponentInChildren<MechCamera>().enabled = true;
-
 		GetComponentInChildren<AudioListener> ().enabled = true;
 //		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;

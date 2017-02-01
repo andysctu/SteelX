@@ -16,6 +16,10 @@ public class Crosshair : MonoBehaviour {
 		playerSight = GetComponent<Camera> ();
 		currentCrosshair = GetComponentInChildren<Image> ();
 	}
+
+	public void NoCrosshair() {
+		currentCrosshair = null;
+	}
 	
 	// Update is called once per frame
 	void Update () {

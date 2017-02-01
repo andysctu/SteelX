@@ -20,6 +20,8 @@ public class GameManager : Photon.MonoBehaviour {
 
 	private bool showboard = false;
 	private HUD hud;
+	private Camera cam;
+	private bool gameEnding = false;
 
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
@@ -28,7 +30,7 @@ public class GameManager : Photon.MonoBehaviour {
 		if (Offline) {
 			PhotonNetwork.offlineMode = true;
 			PhotonNetwork.CreateRoom("offline");
-			GameInfo.MaxKills = 10;
+			GameInfo.MaxKills = 1;
 		}
 
 		MaxKills = GameInfo.MaxKills;
@@ -39,6 +41,7 @@ public class GameManager : Photon.MonoBehaviour {
 		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		playerScorePanels = new Dictionary<string, GameObject> ();
 
+		cam = player.transform.FindChild("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 	}
 		
@@ -62,8 +65,24 @@ public class GameManager : Photon.MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			PhotonNetwork.LeaveRoom();
 			SceneManager.LoadScene("Lobby");
-			hud.ShowCursor();
+			Cursor.visible = true;
 		}
+
+		if (GameOver() && !gameEnding) {
+			gameEnding = true;
+			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
+			StartCoroutine(ExecuteAfterTime(3));
+			Cursor.visible = true;
+		}
+	}
+
+	IEnumerator ExecuteAfterTime(float time)
+	{
+		yield return new WaitForSeconds(time);
+
+		// Code to execute after the delay
+		PhotonNetwork.LoadLevel("GameLobby");
+		Cursor.visible = true;
 	}
 
 	public void RegisterKill (string shooter, string victim) {

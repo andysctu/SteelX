@@ -2820,6 +2820,12 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: ShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: BlockR
+  - Type: 4
+    SynchronizeType: 0
+    Name: BlockL
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -2833,7 +2839,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
@@ -6616,7 +6622,7 @@ ParticleSystemRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 2100000, guid: 50e79f9482e0041babd79e56b46690df, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0

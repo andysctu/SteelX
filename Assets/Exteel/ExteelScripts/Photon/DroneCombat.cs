@@ -11,9 +11,10 @@ public class DroneCombat : Combat {
 	void Start () {
 		MaxHP = 100;
 		CurrentHP = MaxHP;
-
+		findGameManager();
 //		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 //		cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+		gm.RegisterPlayer("Drone");
 	}
 
 	[PunRPC]
@@ -22,6 +23,7 @@ public class DroneCombat : Combat {
 		if (CurrentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
+			gm.RegisterKill(PhotonNetwork.playerName, "Drone");
 		}
 	}
 

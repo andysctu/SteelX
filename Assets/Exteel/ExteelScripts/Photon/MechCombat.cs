@@ -25,7 +25,6 @@ public class MechCombat : Combat {
 	private Transform shoulderL;
 	private Transform shoulderR;
 
-	private GameManager gm;
 	private GameObject[] weapons;
 	private Transform[] Hands;
 	private Weapon[] weaponScripts;
@@ -134,7 +133,9 @@ public class MechCombat : Combat {
 		Debug.Log ("DisablePlayer()");
 		gameObject.layer = 0;
 		GetComponent<MechController>().enabled = false;
-		GetComponentInChildren<Crosshair>().enabled = false;
+		Crosshair ch = GetComponentInChildren<Crosshair>();
+		ch.NoCrosshair();
+		ch.enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;
@@ -153,7 +154,9 @@ public class MechCombat : Combat {
 		isDead = false;
 		if (!photonView.isMine) return;
 		GetComponent<MechController>().enabled = true;
-		GetComponentInChildren<Crosshair>().enabled = true;
+		Crosshair ch = GetComponentInChildren<Crosshair>();
+		ch.enabled = true;
+
 	}
 
 	// Update is called once per frame
@@ -277,10 +280,4 @@ public class MechCombat : Combat {
 //		gm.playerScores[shooterId] = newShooterScore;
 //		gm.playerScores[victimId] = newVictimScore;
 //	}
-//
-	private void findGameManager() {
-		if (gm == null) {
-			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-		}
-	}
 }

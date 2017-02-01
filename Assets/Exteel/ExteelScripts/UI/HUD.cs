@@ -6,19 +6,19 @@ using UnityEngine.UI;
 public class HUD : MonoBehaviour {
 
 	[SerializeField] GameObject Placeholder;
-	[SerializeField] Sprite Hit, Kill, Defense;
+	[SerializeField] Sprite Hit, Kill, Defense, GameOver;
 
 	private GameObject canvas;
-	private bool showCursor;
 
 	void Start() {
 		canvas = GameObject.Find("Canvas");
-		showCursor = false;
+		Cursor.lockState = CursorLockMode.Confined;
+		Cursor.visible = false;
 	}
 
 	public void ShowText(Camera cam, Vector3 p, string Text) {
 		GameObject i = Instantiate(Placeholder, cam.WorldToScreenPoint(p), Quaternion.identity) as GameObject;
-		i.GetComponent<HUDText>().Set(cam, p);
+		if (Text != "GameOver") i.GetComponent<HUDText>().Set(cam, p);
 		i.transform.SetParent(canvas.transform);
 		Image im = i.GetComponent<Image>();
 
@@ -26,18 +26,12 @@ public class HUD : MonoBehaviour {
 		case "Hit": im.sprite = Hit; break;
 		case "Kill": im.sprite = Kill; break;
 		case "Defense": im.sprite = Defense; break;
+		case "GameOver": im.sprite = GameOver; i.GetComponent<HUDText>().enabled = false; break;
 		}
 
 		im.preserveAspect = true;
 		im.SetNativeSize();
 		i.transform.localScale = new Vector3(1,1,1);
-		Destroy(i, 0.5f);
-	}
-
-	public void ShowCursor() { showCursor = true; }
-
-	void OnGUI() {
-		Cursor.visible = showCursor;
-		Cursor.lockState = CursorLockMode.Confined;
+		if (Text != "GameOver") Destroy(i, 0.5f);
 	}
 }
