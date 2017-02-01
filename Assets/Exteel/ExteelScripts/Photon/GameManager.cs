@@ -19,6 +19,7 @@ public class GameManager : Photon.MonoBehaviour {
 	public int CurrentMaxKills = 0;
 
 	private bool showboard = false;
+	private HUD hud;
 
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
@@ -37,6 +38,8 @@ public class GameManager : Photon.MonoBehaviour {
 		Mech m = UserData.myData.Mech;
 		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		playerScorePanels = new Dictionary<string, GameObject> ();
+
+		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 	}
 		
 	public void RegisterPlayer(string name) {
@@ -56,6 +59,11 @@ public class GameManager : Photon.MonoBehaviour {
 
 	void Update() {
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			PhotonNetwork.LeaveRoom();
+			SceneManager.LoadScene("Lobby");
+			hud.ShowCursor();
+		}
 	}
 
 	public void RegisterKill (string shooter, string victim) {
@@ -78,7 +86,7 @@ public class GameManager : Photon.MonoBehaviour {
 		if (newShooterScore.Kills > CurrentMaxKills) CurrentMaxKills = newShooterScore.Kills;
 	}
 
-	public bool GameOver(){
+	public bool GameOver() {
 		return CurrentMaxKills >= MaxKills;
 	}
 }

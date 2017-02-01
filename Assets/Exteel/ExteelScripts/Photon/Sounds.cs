@@ -10,6 +10,7 @@ public class Sounds : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Source = GetComponent<AudioSource>();
+		Source.volume = 0.1f;
 	}
 	
 	public void PlayShot() {
