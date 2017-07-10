@@ -54,12 +54,12 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	private void findHands() {
-		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
 		hands = new Transform[2];
-		hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
-		hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
+		hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
+		hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
 	}
 
 	private void buildMech(Mech m) {

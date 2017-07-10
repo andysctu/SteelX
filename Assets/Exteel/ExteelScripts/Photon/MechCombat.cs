@@ -48,10 +48,10 @@ public class MechCombat : Combat {
 		findGameManager();
 
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
-		cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+		cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
 
-		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
@@ -62,8 +62,8 @@ public class MechCombat : Combat {
 		}
 
 		Hands = new Transform[2];
-		Hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
-		Hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
+		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
+		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
 
 		bm = GetComponent<BuildMech> ();
 		weapons = bm.weapons;

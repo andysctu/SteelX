@@ -43,14 +43,14 @@ public class HangarManager : MonoBehaviour {
 		contents = new Transform[Tabs.Length];
 		for (int i = 0; i < Tabs.Length; i++) {
 			Transform tabTransform = Tabs [i].transform;
-			GameObject smallTab = tabTransform.FindChild ("Tab").gameObject;
+			GameObject smallTab = tabTransform.Find ("Tab").gameObject;
 			Color c = new Color (255, 255, 255, 63);
 			smallTab.GetComponent<Image> ().color = c;
 			int index = i;
 			smallTab.GetComponent<Button> ().onClick.AddListener (() => activateTab(index));
-			GameObject pane = tabTransform.FindChild ("Pane").gameObject;
+			GameObject pane = tabTransform.Find ("Pane").gameObject;
 			pane.SetActive (i == 0);
-			contents[i] = pane.transform.FindChild("Viewport/Content");
+			contents[i] = pane.transform.Find("Viewport/Content");
 		}
 
 		// Debug, take out
@@ -106,10 +106,10 @@ public class HangarManager : MonoBehaviour {
 	private void activateTab(int index) {
 		for (int i = 0; i < Tabs.Length; i++) {
 			Transform tabTransform = Tabs [i].transform;
-			GameObject smallTab = tabTransform.FindChild ("Tab").gameObject;
+			GameObject smallTab = tabTransform.Find ("Tab").gameObject;
 			Color c = new Color (255, 255, 255, 63);
 			smallTab.GetComponent<Image> ().color = c;
-			tabTransform.FindChild ("Pane").gameObject.SetActive (i == index);
+			tabTransform.Find ("Pane").gameObject.SetActive (i == index);
 		}
 		if ((index == 4 && activeTab != 4) ||(index != 4 && activeTab == 4)) {
 			Debug.Log ("rotating");

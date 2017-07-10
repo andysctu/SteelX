@@ -59,12 +59,12 @@ public class BuildLobbyMech : MonoBehaviour {
 	}
 
 	void buildWeapons(string[] weaponNames) {
-		Transform shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		Transform shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+		Transform shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+		Transform shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
 		Transform[] hands = new Transform[2];
-		hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
-		hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
+		hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
+		hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
 
 		if (weapons != null) for (int i = 0; i < 4; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];

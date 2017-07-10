@@ -41,7 +41,7 @@ public class GameManager : Photon.MonoBehaviour {
 		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		playerScorePanels = new Dictionary<string, GameObject> ();
 
-		cam = player.transform.FindChild("Camera").GetComponent<Camera>();
+		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 	}
 		
@@ -52,10 +52,10 @@ public class GameManager : Photon.MonoBehaviour {
 		playerScores.Add (name, new Score ());
 
 		GameObject ps = Instantiate (PlayerStat, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
-		ps.transform.FindChild ("Pilot Name").GetComponent<Text> ().text = name;
-		ps.transform.FindChild ("Kills").GetComponent<Text> ().text = "0";
-		ps.transform.FindChild ("Deaths").GetComponent<Text> ().text = "0";
-		ps.transform.SetParent(Scoreboard.transform.FindChild ("Team1").transform);
+		ps.transform.Find ("Pilot Name").GetComponent<Text> ().text = name;
+		ps.transform.Find ("Kills").GetComponent<Text> ().text = "0";
+		ps.transform.Find ("Deaths").GetComponent<Text> ().text = "0";
+		ps.transform.SetParent(Scoreboard.transform.Find ("Team1").transform);
 		ps.GetComponent<RectTransform> ().localScale = new Vector3 (1, 1, 1);
 		playerScorePanels.Add (name, ps);
 	}
@@ -97,8 +97,8 @@ public class GameManager : Photon.MonoBehaviour {
 		newVictimScore.Deaths = playerScores [victim].Deaths + 1;
 		playerScores [victim] = newVictimScore;
 
-		playerScorePanels [shooter].transform.FindChild ("Kills").GetComponent<Text> ().text = playerScores [shooter].Kills.ToString();
-		playerScorePanels [victim].transform.FindChild ("Deaths").GetComponent<Text> ().text = playerScores [victim].Deaths.ToString();
+		playerScorePanels [shooter].transform.Find ("Kills").GetComponent<Text> ().text = playerScores [shooter].Kills.ToString();
+		playerScorePanels [victim].transform.Find ("Deaths").GetComponent<Text> ().text = playerScores [victim].Deaths.ToString();
 		Debug.Log (shooter + " has " + playerScores [shooter].Kills + " kills.");
 		Debug.Log (victim + " has " + playerScores [victim].Deaths + " deaths.");
 

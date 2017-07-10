@@ -60,7 +60,7 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		mechCombat = GetComponent<MechCombat>();
-		camTransform = transform.FindChild("Camera");
+		camTransform = transform.Find("Camera");
 	}
 
 	// Update is called once per frame
