@@ -2,5 +2,6 @@
 	public SHL009() {
 		Damage = 100;
 		Range = 25;
+		Animation = "Slash";
 	}
 }
