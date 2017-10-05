@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Combat : Photon.MonoBehaviour {
-	public int MaxHP;
+	public const int MaxHP = 100;
 	public int CurrentHP;
 
 	protected GameManager gm;

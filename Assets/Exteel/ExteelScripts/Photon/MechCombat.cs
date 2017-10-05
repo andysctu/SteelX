@@ -11,55 +11,92 @@ public class MechCombat : Combat {
 	[SerializeField] GameObject bulletTrace;
 	[SerializeField] GameObject bulletImpact;
 
-	private bool isDead;
-
+	// Game variables
 	public Score score;
 
+	// Combat variables
+	private bool isDead;
 	private RaycastHit hit;
-	private bool fireL = false;
-	private bool shootingL = false;
-
-	private bool fireR = false;
-	private bool shootingR = false;
-
-	private Transform shoulderL;
-	private Transform shoulderR;
-
-	private Transform head;
-
-	private GameObject[] weapons;
-	private Transform[] Hands;
 	private Weapon[] weaponScripts;
-
 	private int weaponOffset = 0;
-
-	private BuildMech bm;
-
-	private Slider healthBar;
-
 	private const int LEFT_HAND = 0;
 	private const int RIGHT_HAND = 1;
-
-	// Control rate of fire
 	float timeOfLastShotL;
 	float timeOfLastShotR;
 
+	// Left
+	private bool fireL = false;
+	private bool shootingL = false;
+
+	// Right
+	private bool fireR = false;
+	private bool shootingR = false;
+
+	// Transforms
+	private Transform shoulderL;
+	private Transform shoulderR;
+	private Transform head;
+	private Transform[] Hands;
+
+	// GameObjects
+	private GameObject[] weapons;
+
+	// HUD
+	private Slider healthBar;
 	private HUD hud;
 	private Camera cam;
 
+	// Components
+	private BuildMech bm;
+
 	void Start() {
-		MaxHP = 100;
-		CurrentHP = MaxHP;
 		findGameManager();
+		initMechStats();
+		initTransforms();
+		initGameObjects();
+		initComponents();
+		initCombatVariables();
+		initHUD();
+	}
 
-		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+	void initMechStats() {
+		CurrentHP = MaxHP;
+	}
+
+	void initTransforms() {
 		cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
-
+		head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
 		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+		Hands = new Transform[2];
+		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
+		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
+	}
 
-		head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
+	void initGameObjects() {
+		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+		weapons = bm.weapons;
+	}
 
+	void initComponents() {
+		bm = GetComponent<BuildMech> ();
+	}
+
+	void initCombatVariables() {
+		weaponScripts = bm.weaponScripts;
+		timeOfLastShotL = Time.time;
+		timeOfLastShotR = Time.time;
+	}
+
+	void initHUD() {
+		initHealthBar();
+	}
+
+	void timeOfLastShot(int handPosition) {
+		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
+	}
+
+	Slider initHealthBar() {
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
 			healthBar = sliders[0];
@@ -67,30 +104,27 @@ public class MechCombat : Combat {
 		} else {
 			Debug.Log("Health bar null");
 		}
-
-		Hands = new Transform[2];
-		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
-		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
-
-		bm = GetComponent<BuildMech> ();
-		weapons = bm.weapons;
-		weaponScripts = bm.weaponScripts;
-
-		timeOfLastShotL = Time.time;
-		timeOfLastShotR = Time.time;
 	}
 		
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
 //		photonView.RPC("BulletTrace", PhotonTargets.All, start, direction);
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
-			Debug.Log ("Hit tag: " + hit.transform.tag);
+			Debug.Log("Hit tag: " + hit.transform.tag);
 			Debug.Log("Hit name: " + hit.transform.name);
 			if (hit.transform.tag == "Player" || hit.transform.tag == "Drone"){
+				// Apply damage
 				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
+
+				// Effects
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
-				if (hit.transform.gameObject.GetComponent<Combat>().CurrentHP <= 0) hud.ShowText(cam, hit.point, "Kill");
-				else hud.ShowText(cam, hit.point, "Hit");
+
+				// UI
+				if (hit.transform.gameObject.GetComponent<Combat> ().CurrentHP <= 0) {
+					hud.ShowText (cam, hit.point, "Kill");
+				} else {
+					hud.ShowText (cam, hit.point, "Hit");
+				}
 			} else if (hit.transform.tag == "Shield") {
 				hud.ShowText(cam, hit.point, "Defense");
 			}
@@ -109,7 +143,6 @@ public class MechCombat : Combat {
 //		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(diff.x, diff.y, diff.z, 1.0f)) as GameObject;
 //	}
 
-
 	[PunRPC]
 	void BulletTrace(Vector3 start, Vector3 direction) {
 		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(direction.x, direction.y, direction.z, 1.0f)) as GameObject;
@@ -120,24 +153,36 @@ public class MechCombat : Combat {
 		GameObject bulletImpactClone = Instantiate(bulletImpact, point, new Quaternion(rot.x,rot.y,rot.z,1.0f)) as GameObject;
 	}
 
+	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
 	public override void OnHit(int d, string shooter) {
-		Debug.Log ("Got shot");
-		Debug.Log ("isDead: " + isDead);
-		if (isDead) return;
+		Debug.Log ("OnHit, isDead: " + isDead);
+		// If already dead, do nothing
+		if (isDead) {
+			return;
+		}
+		// Apply damage
 		CurrentHP -= d;
 		Debug.Log ("HP: " + CurrentHP);
+
+		// If fatal hit,
 		if (CurrentHP <= 0) {
 			isDead = true;
-			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
+			// UI for shooter
+			if (shooter == PhotonNetwork.playerName) {
+				// Do we need this? Already being displayed in OnHit
+				hud.ShowText(cam, transform.position, "Kill");
+			}
+			// Update scoreboard
 			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
-			DisablePlayer ();
+
+			DisablePlayer();
 		}
 	}
 
+	// Disable MechController, Crosshair, Renderers, and set layer to 0
 	[PunRPC]
 	void DisablePlayer() {
-		Debug.Log ("DisablePlayer()");
 		gameObject.layer = 0;
 		GetComponent<MechController>().enabled = false;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
@@ -149,9 +194,10 @@ public class MechCombat : Combat {
 		}
 	}
 
+	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
 	[PunRPC]
 	void EnablePlayer() {
-		transform.position = gm.SpawnPoints [0].position;
+		transform.position = gm.SpawnPoints[0].position;
 		gameObject.layer = 8;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
@@ -160,6 +206,8 @@ public class MechCombat : Combat {
 		CurrentHP = MaxHP;
 		isDead = false;
 		if (!photonView.isMine) return;
+
+		// If this is me, enable MechController and Crosshair
 		GetComponent<MechController>().enabled = true;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		ch.enabled = true;
@@ -169,29 +217,27 @@ public class MechCombat : Combat {
 	// Update is called once per frame
 	void Update () {
 		if (!photonView.isMine || gm.GameOver()) return;
+
+		// Respawn
 		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			isDead = false;
 			photonView.RPC ("EnablePlayer", PhotonTargets.All, null);
 		}
 
+		// Drain HP bar gradually
 		if (isDead) {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
 			return;
 		}
-			
+
+		// Fix head to always look ahead
 		head.LookAt(head.position + transform.forward * 10);
-		if (Input.GetKey(KeyCode.Mouse0)){
-			handleCombat(LEFT_HAND);
-		} else {
-			fireL = false;
-		}
 
-		if (Input.GetKey(KeyCode.Mouse1)){
-			handleCombat(RIGHT_HAND);
-		} else {
-			fireR = false;
-		}
+		// Animate left and right combat
+		handleCombat(LEFT_HAND);
+		handleCombat(RIGHT_HAND);
 
+		// Switch weapons
 		if (!isDead && Input.GetKeyDown (KeyCode.R)) {
 			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
 		}
@@ -257,6 +303,11 @@ public class MechCombat : Combat {
 	}
 
 	void handleCombat(int handPosition) {
+		if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+			setIsFiring (handPosition, false);
+			return;
+		}
+			
 		if (usingRangedWeapon(handPosition)) {
 			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
