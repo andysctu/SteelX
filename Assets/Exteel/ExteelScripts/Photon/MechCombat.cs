@@ -16,6 +16,11 @@ public class MechCombat : Combat {
 	private float fuelGain = 1.0f;
 	private float minFuelRequired = 75f;
 	private float currentFuel;
+	private float jumpPower = 50.0f;
+	private float moveSpeed = 40.0f;
+	private float boostSpeed;
+	private float verticalBoostSpeed = 1f;
+	private float maxVerticalBoostSpeed;
 
 	// Game variables
 	public Score score;
@@ -69,6 +74,8 @@ public class MechCombat : Combat {
 	void initMechStats() {
 		currentHP = MAX_HP;
 		currentFuel = MAX_FUEL;
+		boostSpeed = moveSpeed + 20;
+		maxVerticalBoostSpeed = boostSpeed / 2;
 	}
 
 	void initTransforms() {
@@ -358,14 +365,34 @@ public class MechCombat : Combat {
 		currentFuel -= fuelDrain;
 	}
 
-	public bool CanBoost() {
+	public bool EnoughFuelToBoost() {
 		return currentFuel >= minFuelRequired;
 	}
 
 	public bool FuelEmpty() {
-		return currentFuel > 0;
+		return currentFuel <= 0;
 	}
-		
+
+	public float VerticalBoostSpeed() {
+		return verticalBoostSpeed;
+	}
+
+	public float MoveSpeed() {
+		return moveSpeed;
+	}
+
+	public float BoostSpeed() {
+		return boostSpeed;
+	}
+
+	public float JumpPower() {
+		return jumpPower;
+	}
+
+	public float MaxVerticalBoostSpeed() {
+		return maxVerticalBoostSpeed;
+	}
+
 //	public void BulletTraceEvent() {
 //		photonView.RPC("BulletTraceRPC", PhotonTargets.All);
 //	}
