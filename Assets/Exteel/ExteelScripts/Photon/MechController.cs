@@ -15,13 +15,6 @@ public class MechController : Photon.MonoBehaviour {
 	public float BoostSpeed;
 	public float VerticalBoostSpeed = 1f;
 	public bool isHorizBoosting = false;
-	//	public bool testGrounded;
-
-	public float MaxFuel = 100.0f;
-	public float CurrentFuel;
-	public float FuelDrain = 1.0f;
-	public float FuelGain = 1.0f;
-	public float MinFuelRequired = 75f;
 
 	private float marginOfError = 0.1f;
 	private float minDownSpeed = 0.0f;
@@ -31,7 +24,6 @@ public class MechController : Photon.MonoBehaviour {
 	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 
-	private Slider fuelBar;
 	private bool startBoosting = false;
 
 	private Vector3 move = Vector3.zero;
@@ -44,21 +36,10 @@ public class MechController : Photon.MonoBehaviour {
 
 	private Transform camTransform;
 
-//	[SerializeField] bool Offline;
-
 	// Use this for initialization
 	void Start () {
 		CharacterController = GetComponent<CharacterController> ();
-		CurrentFuel = MaxFuel;
 		BoostSpeed = MoveSpeed + 20;
-		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
-		if (sliders.Length > 1) {
-			fuelBar = sliders[1];
-			fuelBar.value = 1;
-		} else {
-			Debug.Log("Fuel bar null");
-		}
-
 		mechCombat = GetComponent<MechCombat>();
 		camTransform = transform.Find("Camera");
 	}
@@ -107,16 +88,16 @@ public class MechController : Photon.MonoBehaviour {
 
 		// Need this to prevent starting a boost when below min fuel
 		if (!isHorizBoosting) {
-			startBoosting = Input.GetKey ("left shift") && CurrentFuel >= MinFuelRequired;
+			startBoosting = Input.GetKey ("left shift") && mechCombat.CanBoost();
 			isHorizBoosting = startBoosting;
 		} 
 
 		if (!ableToVertBoost) {
-			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && CurrentFuel >= MinFuelRequired;
+			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && mechCombat.CanBoost();
 		}
 
 		Vector3 curPos = camTransform.localPosition;
-		if ((startBoosting && Input.GetKey ("left shift") && CurrentFuel > 0) || (ableToVertBoost && Input.GetKey("space") && CurrentFuel > 0)) {
+		if ((startBoosting && Input.GetKey ("left shift") && mechCombat.FuelEmpty()) || (ableToVertBoost && Input.GetKey("space") && mechCombat.FuelEmpty())) {
 			isHorizBoosting = true;
 			if (animator != null) animator.SetBool("Boost", true);
 
@@ -131,7 +112,8 @@ public class MechController : Photon.MonoBehaviour {
 			}
 			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 
-			CurrentFuel -= FuelDrain;
+			mechCombat.DecrementFuel();
+
 			move.x *= BoostSpeed * Time.fixedDeltaTime;
 			move.z *= BoostSpeed * Time.fixedDeltaTime;
 			move.y += ySpeed * Time.fixedDeltaTime;
@@ -143,8 +125,9 @@ public class MechController : Photon.MonoBehaviour {
 			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 			
 			isHorizBoosting = false;
-			CurrentFuel += FuelGain;
-			if (CurrentFuel > MaxFuel) CurrentFuel = MaxFuel;
+
+			mechCombat.IncrementFuel();
+
 			move.x *= MoveSpeed * Time.fixedDeltaTime;
 			move.z *= (MoveSpeed) * Time.fixedDeltaTime; // Walking backwards should be slower
 			move.y += ySpeed * Time.fixedDeltaTime;
@@ -152,26 +135,6 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		CharacterController.Move (move);
-
-		if (fuelBar == null) {
-			Slider[] sliders = GameObject.Find("Canvas/HUDPanel/HUD").GetComponentsInChildren<Slider>();
-			if (sliders.Length > 1) {
-				fuelBar = sliders[1];
-				Debug.Log("2Sliders length > 1");
-			} else {
-				Debug.Log("2Fuel bar null");
-			}
-		} else {
-			float currentPercent = fuelBar.value;
-			float targetPercent = CurrentFuel/(float)MaxFuel;
-			float err = 0.01f;
-			if (Mathf.Abs(currentPercent - targetPercent) > err) {
-				currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
-			}
-
-			fuelBar.value = currentPercent;
-		}
-
 	}
 
 	[PunRPC]

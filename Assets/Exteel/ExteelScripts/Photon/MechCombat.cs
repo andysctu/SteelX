@@ -11,6 +11,12 @@ public class MechCombat : Combat {
 	[SerializeField] GameObject bulletTrace;
 	[SerializeField] GameObject bulletImpact;
 
+	// Boost variables
+	private float fuelDrain = 1.0f;
+	private float fuelGain = 1.0f;
+	private float minFuelRequired = 75f;
+	private float currentFuel;
+
 	// Game variables
 	public Score score;
 
@@ -21,8 +27,8 @@ public class MechCombat : Combat {
 	private int weaponOffset = 0;
 	private const int LEFT_HAND = 0;
 	private const int RIGHT_HAND = 1;
-	float timeOfLastShotL;
-	float timeOfLastShotR;
+	private float timeOfLastShotL;
+	private float timeOfLastShotR;
 
 	// Left
 	private bool fireL = false;
@@ -43,6 +49,7 @@ public class MechCombat : Combat {
 
 	// HUD
 	private Slider healthBar;
+	private Slider fuelBar;
 	private HUD hud;
 	private Camera cam;
 
@@ -60,7 +67,8 @@ public class MechCombat : Combat {
 	}
 
 	void initMechStats() {
-		CurrentHP = MaxHP;
+		currentHP = MAX_HP;
+		currentFuel = MAX_FUEL;
 	}
 
 	void initTransforms() {
@@ -89,23 +97,26 @@ public class MechCombat : Combat {
 	}
 
 	void initHUD() {
-		initHealthBar();
+		initHealthAndFuelBars();
 	}
 
 	void timeOfLastShot(int handPosition) {
 		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
 	}
 
-	Slider initHealthBar() {
+	Slider initHealthAndFuelBars() {
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
 			healthBar = sliders[0];
 			healthBar.value = 1;
-		} else {
-			Debug.Log("Health bar null");
+
+			if (sliders.Length > 1) {
+				fuelBar = sliders [1];
+				fuelBar.value = 1;
+			}
 		}
 	}
-		
+
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
 //		photonView.RPC("BulletTrace", PhotonTargets.All, start, direction);
 		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
@@ -130,18 +141,6 @@ public class MechCombat : Combat {
 			}
 		}
 	}
-		
-//	public void BulletTraceEvent() {
-//		photonView.RPC("BulletTraceRPC", PhotonTargets.All);
-//	}
-//
-//	[PunRPC]
-//	void BulletTraceRPC() {
-//		Camera cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
-//		Vector3 worldPoint = cam.ScreenToWorldPoint(new Vector3(0.5f, 0.5f, 0f));
-//		Vector3 diff = worldPoint - Hands[0].position;
-//		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(diff.x, diff.y, diff.z, 1.0f)) as GameObject;
-//	}
 
 	[PunRPC]
 	void BulletTrace(Vector3 start, Vector3 direction) {
@@ -162,11 +161,11 @@ public class MechCombat : Combat {
 			return;
 		}
 		// Apply damage
-		CurrentHP -= d;
-		Debug.Log ("HP: " + CurrentHP);
+		currentHP -= d;
+		Debug.Log ("HP: " + currentHP);
 
 		// If fatal hit,
-		if (CurrentHP <= 0) {
+		if (currentHP <= 0) {
 			isDead = true;
 			// UI for shooter
 			if (shooter == PhotonNetwork.playerName) {
@@ -203,7 +202,7 @@ public class MechCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
-		CurrentHP = MaxHP;
+		currentHP = MAX_HP;
 		isDead = false;
 		if (!photonView.isMine) return;
 
@@ -242,14 +241,7 @@ public class MechCombat : Combat {
 			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
 		}
 
-		// Update Health bar gradually
-		float currentPercent = healthBar.value;
-		float targetPercent = CurrentHP/(float)MaxHP;
-		float err = 0.01f;
-		if (Mathf.Abs(currentPercent - targetPercent) > err) {
-			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
-		}
-		healthBar.value = currentPercent;
+		updateHUD();
 	}
 
 	// Set animations and tweaks
@@ -303,6 +295,23 @@ public class MechCombat : Combat {
 		}
 	}
 
+	void updateHUD() {
+		// Update Health bar gradually
+		healthBar.value = calculateSliderPercent(healthBar.value, currentHP/(float)MAX_HP);
+
+		// Update Fuel bar gradually
+		fuelBar.value = calculateSliderPercent(healthBar.value, currentFuel/(float)MAX_FUEL);
+	}
+
+	// Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
+	float calculateSliderPercent(float currentPercent, float targetPercent) {
+		float err = 0.01f;
+		if (Mathf.Abs(currentPercent - targetPercent) > err) {
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+		}
+		return currentPercent;
+	}
+
 	// Switch weapons by increasing weaponOffset by 2
 	// Each player holds 2 sets of weapons (4 total)
 	// Switching weapons will switch from set 1 (weap 1 + 2) to set 2 (weap 3 + 4)
@@ -338,6 +347,36 @@ public class MechCombat : Combat {
 	string animationString(int handPosition) {
 		return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
 	}
+
+	// Public functions
+	public void IncrementFuel() {
+		currentFuel += fuelGain;
+		if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
+	}
+
+	public bool DecrementFuel() {
+		currentFuel -= fuelDrain;
+	}
+
+	public bool CanBoost() {
+		return currentFuel >= minFuelRequired;
+	}
+
+	public bool FuelEmpty() {
+		return currentFuel > 0;
+	}
+		
+//	public void BulletTraceEvent() {
+//		photonView.RPC("BulletTraceRPC", PhotonTargets.All);
+//	}
+//
+//	[PunRPC]
+//	void BulletTraceRPC() {
+//		Camera cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+//		Vector3 worldPoint = cam.ScreenToWorldPoint(new Vector3(0.5f, 0.5f, 0f));
+//		Vector3 diff = worldPoint - Hands[0].position;
+//		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(diff.x, diff.y, diff.z, 1.0f)) as GameObject;
+//	}
 //
 //	[Server]
 //	public void RegisterKill(uint shooterId, uint victimId){
