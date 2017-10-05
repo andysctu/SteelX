@@ -25,6 +25,8 @@ public class MechCombat : Combat {
 	private Transform shoulderL;
 	private Transform shoulderR;
 
+	private Transform head;
+
 	private GameObject[] weapons;
 	private Transform[] Hands;
 	private Weapon[] weaponScripts;
@@ -34,6 +36,9 @@ public class MechCombat : Combat {
 	private BuildMech bm;
 
 	private Slider healthBar;
+
+	private const int LEFT_HAND = 0;
+	private const int RIGHT_HAND = 1;
 
 	// Control rate of fire
 	float timeOfLastShotL;
@@ -52,6 +57,8 @@ public class MechCombat : Combat {
 
 		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+
+		head = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/head");
 
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
@@ -173,25 +180,13 @@ public class MechCombat : Combat {
 		}
 			
 		if (Input.GetKey(KeyCode.Mouse0)){
-			fireL = true;
-		
-			if (Time.time - timeOfLastShotL >= 1/bm.weaponScripts[weaponOffset].Rate) {
-				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
-				timeOfLastShotL = Time.time;
-			}
-
+			handleCombat(LEFT_HAND);
 		} else {
 			fireL = false;
 		}
 
 		if (Input.GetKey(KeyCode.Mouse1)){
-			fireR = true;
-
-			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + 1].Rate) {
-				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset + 1].Damage, weaponScripts[weaponOffset + 1].Range);
-				timeOfLastShotR = Time.time;
-			}
-
+			handleCombat(RIGHT_HAND);
 		} else {
 			fireR = false;
 		}
@@ -222,14 +217,22 @@ public class MechCombat : Combat {
 		float x = camTransform.rotation.eulerAngles.x;
 		if (fireL) {
 			animator.SetBool(weaponScripts[weaponOffset].Animation + "L", true);
-			if (weaponScripts[weaponOffset].Animation == "Shoot") shoulderL.Rotate(0, -x, 0);
+			if (usingRangedWeapon(LEFT_HAND)) shoulderL.Rotate(0, -x, 0);
 		} else {
 			animator.SetBool(weaponScripts[weaponOffset].Animation + "L", false);
 		}
 
 		if (fireR) {
+			Debug.Log("Setting Slash");
 			animator.SetBool(weaponScripts[weaponOffset+1].Animation + "R", true);
-			if (weaponScripts[weaponOffset+1].Animation == "Shoot") shoulderR.Rotate(0, x, 0);
+			if (usingRangedWeapon(RIGHT_HAND)) shoulderR.Rotate(0, x, 0);
+			if (weaponScripts[weaponOffset+1].Animation == "Slash") {
+//				head.Rotate(0, 45, 0);
+//				shoulderR.Rotate(0, x, 0);
+//				handR.Rotate(0, -50, 0);
+			} else {
+//				handR.rotation = Quaternion.Slerp(handR.ro
+			}
 		} else {
 			animator.SetBool(weaponScripts[weaponOffset+1].Animation + "R", false);
 		}
@@ -244,6 +247,39 @@ public class MechCombat : Combat {
 		Debug.Log("weapon offset is now: " + weaponOffset);
 	}
 		
+	bool usingRangedWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Shoot";
+	}
+
+	bool usingMeleeWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
+	}
+
+	void handleCombat(int handPosition) {
+		if (usingRangedWeapon(handPosition)) {
+			setIsFiring(handPosition, true);
+			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
+				timeOfLastShotR = Time.time;
+			}
+		} else if (usingMeleeWeapon(handPosition)) {
+			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
+				timeOfLastShotR = Time.time;
+				setIsFiring(handPosition, true);
+			} else {
+				setIsFiring(handPosition, false);
+			}
+		}
+	}
+
+	void setIsFiring(int handPosition, bool isFiring) {
+		if (handPosition == LEFT_HAND) {
+			fireL = isFiring;
+		} else {
+			fireR = isFiring;
+		}
+	}
 //
 //	[Server]
 //	public void RegisterKill(uint shooterId, uint victimId){
