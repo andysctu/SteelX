@@ -242,72 +242,28 @@ public class MechCombat : Combat {
 			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
 		}
 
-		// Update Health bar
-		if (healthBar == null) {
-			Slider[] sliders = GameObject.Find("Canvas/HUDPanel/HUD").GetComponentsInChildren<Slider>();
-			if (sliders.Length > 0) {
-				healthBar = sliders[0];
-			}
-		} else {
-			float currentPercent = healthBar.value;
-			float targetPercent = CurrentHP/(float)MaxHP;
-			float err = 0.01f;
-			if (Mathf.Abs(currentPercent - targetPercent) > err) {
-				currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
-			}
-
-			healthBar.value = currentPercent;
+		// Update Health bar gradually
+		float currentPercent = healthBar.value;
+		float targetPercent = CurrentHP/(float)MaxHP;
+		float err = 0.01f;
+		if (Mathf.Abs(currentPercent - targetPercent) > err) {
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
 		}
+		healthBar.value = currentPercent;
 	}
 
+	// Set animations and tweaks
 	void LateUpdate() {
-		float x = camTransform.rotation.eulerAngles.x;
-		if (fireL) {
-			animator.SetBool(weaponScripts[weaponOffset].Animation + "L", true);
-			if (usingRangedWeapon(LEFT_HAND)) shoulderL.Rotate(0, -x, 0);
-		} else {
-			animator.SetBool(weaponScripts[weaponOffset].Animation + "L", false);
-		}
-
-		if (fireR) {
-			Debug.Log("Setting Slash");
-			animator.SetBool(weaponScripts[weaponOffset+1].Animation + "R", true);
-			if (usingRangedWeapon(RIGHT_HAND)) shoulderR.Rotate(0, x, 0);
-			if (weaponScripts[weaponOffset+1].Animation == "Slash") {
-//				head.Rotate(0, 45, 0);
-//				shoulderR.Rotate(0, x, 0);
-//				handR.Rotate(0, -50, 0);
-			} else {
-//				handR.rotation = Quaternion.Slerp(handR.ro
-			}
-		} else {
-			animator.SetBool(weaponScripts[weaponOffset+1].Animation + "R", false);
-		}
-	}
-		
-	[PunRPC]
-	void SwitchWeapons() {
-		for (int i = 0; i < weapons.Length; i++) {
-			weapons[i].SetActive(!weapons[i].activeSelf);
-		}
-		weaponOffset = (weaponOffset + 2) % 4;
-		Debug.Log("weapon offset is now: " + weaponOffset);
-	}
-		
-	bool usingRangedWeapon(int handPosition) {
-		return weaponScripts[weaponOffset+handPosition].Animation == "Shoot";
-	}
-
-	bool usingMeleeWeapon(int handPosition) {
-		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
+		handleAnimation(LEFT_HAND);
+		handleAnimation(RIGHT_HAND);
 	}
 
 	void handleCombat(int handPosition) {
 		if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-			setIsFiring (handPosition, false);
+			setIsFiring(handPosition, false);
 			return;
 		}
-			
+
 		if (usingRangedWeapon(handPosition)) {
 			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
@@ -325,12 +281,62 @@ public class MechCombat : Combat {
 		}
 	}
 
+	void handleAnimation(int handPosition) {
+		if (getIsFiring(handPosition)) {
+			// Rotate arm to point to where you are looking (left hand is opposite)
+			float x = camTransform.rotation.eulerAngles.x * handPosition == LEFT_HAND ? -1 : 1;
+
+			// Name of animation, i.e. ShootR, SlashL, etc
+			string animationString = animationString(handPosition);
+
+			// Start animation
+			animator.SetBool(animationString(handPosition), true);
+
+			// Tweaks
+			if (usingRangedWeapon(handPosition)) { // Shooting
+				shoulderR.Rotate (0, x, 0);
+			} else if (usingMeleeWeapon(handPosition)) { // Slashing
+				
+			}
+		} else {
+			animator.SetBool(animationString, false); // Stop animation
+		}
+	}
+
+	// Switch weapons by increasing weaponOffset by 2
+	// Each player holds 2 sets of weapons (4 total)
+	// Switching weapons will switch from set 1 (weap 1 + 2) to set 2 (weap 3 + 4)
+	[PunRPC]
+	void SwitchWeapons() {
+		for (int i = 0; i < weapons.Length; i++) {
+			weapons[i].SetActive(!weapons[i].activeSelf);
+		}
+		weaponOffset = (weaponOffset + 2) % 4;
+		Debug.Log("weapon offset is now: " + weaponOffset);
+	}
+
+	bool getIsFiring(int handPosition) {
+		return handPosition == LEFT_HAND ? fireL : fireR;
+	}
+
 	void setIsFiring(int handPosition, bool isFiring) {
 		if (handPosition == LEFT_HAND) {
 			fireL = isFiring;
 		} else {
 			fireR = isFiring;
 		}
+	}
+
+	bool usingRangedWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Shoot";
+	}
+
+	bool usingMeleeWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
+	}
+
+	string animationString(int handPosition) {
+		return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
 	}
 //
 //	[Server]
