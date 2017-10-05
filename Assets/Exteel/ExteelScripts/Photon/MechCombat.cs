@@ -58,7 +58,7 @@ public class MechCombat : Combat {
 		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
 
-		head = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/head");
+		head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
 
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
@@ -179,6 +179,7 @@ public class MechCombat : Combat {
 			return;
 		}
 			
+		head.LookAt(head.position + transform.forward * 10);
 		if (Input.GetKey(KeyCode.Mouse0)){
 			handleCombat(LEFT_HAND);
 		} else {
