@@ -57,7 +57,7 @@ public class GameManager : Photon.MonoBehaviour {
 		ps.transform.Find ("Deaths").GetComponent<Text> ().text = "0";
 		ps.transform.SetParent(Scoreboard.transform.Find ("Team1").transform);
 		ps.GetComponent<RectTransform> ().localScale = new Vector3 (1, 1, 1);
-		playerScorePanels.Add (name, ps);
+		playerScorePanels.Add(name, ps);
 	}
 
 	void Update() {

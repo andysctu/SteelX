@@ -90,11 +90,11 @@ public class MechCombat : Combat {
 
 	void initGameObjects() {
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
-		weapons = bm.weapons;
 	}
 
 	void initComponents() {
-		bm = GetComponent<BuildMech> ();
+		bm = GetComponent<BuildMech>();
+		weapons = bm.weapons;
 	}
 
 	void initCombatVariables() {
@@ -107,11 +107,11 @@ public class MechCombat : Combat {
 		initHealthAndFuelBars();
 	}
 
-	void timeOfLastShot(int handPosition) {
+	float timeOfLastShot(int handPosition) {
 		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
 	}
 
-	Slider initHealthAndFuelBars() {
+	void initHealthAndFuelBars() {
 		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
 			healthBar = sliders[0];
@@ -138,7 +138,7 @@ public class MechCombat : Combat {
 				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 
 				// UI
-				if (hit.transform.gameObject.GetComponent<Combat> ().CurrentHP <= 0) {
+				if (hit.transform.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
 					hud.ShowText (cam, hit.point, "Kill");
 				} else {
 					hud.ShowText (cam, hit.point, "Hit");
@@ -281,15 +281,15 @@ public class MechCombat : Combat {
 	}
 
 	void handleAnimation(int handPosition) {
+		// Name of animation, i.e. ShootR, SlashL, etc
+		string animationStr = animationString(handPosition);
+
 		if (getIsFiring(handPosition)) {
 			// Rotate arm to point to where you are looking (left hand is opposite)
 			float x = camTransform.rotation.eulerAngles.x * handPosition == LEFT_HAND ? -1 : 1;
 
-			// Name of animation, i.e. ShootR, SlashL, etc
-			string animationString = animationString(handPosition);
-
 			// Start animation
-			animator.SetBool(animationString(handPosition), true);
+			animator.SetBool(animationStr, true);
 
 			// Tweaks
 			if (usingRangedWeapon(handPosition)) { // Shooting
@@ -298,7 +298,7 @@ public class MechCombat : Combat {
 				
 			}
 		} else {
-			animator.SetBool(animationString, false); // Stop animation
+			animator.SetBool(animationStr, false); // Stop animation
 		}
 	}
 
@@ -361,7 +361,7 @@ public class MechCombat : Combat {
 		if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
 	}
 
-	public bool DecrementFuel() {
+	public void DecrementFuel() {
 		currentFuel -= fuelDrain;
 	}
 

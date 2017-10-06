@@ -16,4 +16,8 @@ public class Combat : Photon.MonoBehaviour {
 			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 		}
 	}
+
+	public int CurrentHP() {
+		return currentHP;
+	}
 }

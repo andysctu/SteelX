@@ -4,23 +4,17 @@ using UnityEngine;
 
 public class DroneCombat : Combat {
 
-	private HUD hud;
-	private Camera cam;
-
 	// Use this for initialization
 	void Start () {
-		MaxHP = 100;
-		CurrentHP = MaxHP;
+		currentHP = MAX_HP;
 		findGameManager();
-//		hud = GameObject.Find("Canvas").GetComponent<HUD>();
-//		cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
 		gm.RegisterPlayer("Drone");
 	}
 
 	[PunRPC]
 	public override void OnHit(int d, string shooter) {
-		CurrentHP -= d;
-		if (CurrentHP <= 0) {
+		currentHP -= d;
+		if (currentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
 			gm.RegisterKill(PhotonNetwork.playerName, "Drone");
@@ -42,7 +36,7 @@ public class DroneCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
-		CurrentHP = MaxHP;
+		currentHP = MAX_HP;
 		GetComponent<CapsuleCollider>().enabled = true;
 	}
 

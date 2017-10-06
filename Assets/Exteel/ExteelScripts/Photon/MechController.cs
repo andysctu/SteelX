@@ -132,12 +132,10 @@ public class MechController : Photon.MonoBehaviour {
 			// Camera work
 			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 
+			// Use fuel while boosting
 			mechCombat.DecrementFuel();
 
-			updateSpeed(mechCombat.BoostSpeed()
-			move.x *= mechCombat.BoostSpeed() * Time.fixedDeltaTime;
-			move.z *= mechCombat.BoostSpeed() * Time.fixedDeltaTime;
-			move.y += ySpeed * Time.fixedDeltaTime;
+			updateSpeed(mechCombat.BoostSpeed());
 			photonView.RPC ("Boost", PhotonTargets.All, true);
 		}
 		// Handle walking
@@ -149,20 +147,19 @@ public class MechController : Photon.MonoBehaviour {
 			
 			isHorizBoosting = false;
 
+			// Recharge fuel while not boosting
 			mechCombat.IncrementFuel();
 
-			move.x *= mechCombat.MoveSpeed() * Time.fixedDeltaTime;
-			move.z *= (mechCombat.MoveSpeed()) * Time.fixedDeltaTime; // Walking backwards should be slower
-			move.y += ySpeed * Time.fixedDeltaTime;
+			updateSpeed(mechCombat.BoostSpeed());
 			photonView.RPC ("Boost", PhotonTargets.All, false);
 		}
 
 		CharacterController.Move (move);
 	}
 
-	void updateSpeed(float x, float z) {
-		move.x *= x * Time.fixedDeltaTime;
-		move.z *= z * Time.fixedDeltaTime;
+	void updateSpeed(float horizontalSpeed) {
+		move.x *= horizontalSpeed * Time.fixedDeltaTime;
+		move.z *= horizontalSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 	}
 
