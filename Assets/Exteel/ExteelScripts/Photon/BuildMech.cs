@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "SHS309", "SHL009", "SHL009"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "SHL009", "SHL009"};
 	private GameManager gm;
 	public GameObject[] weapons;
 
