@@ -118,7 +118,7 @@ public class MechCombat : Combat {
 			healthBar.value = 1;
 
 			if (sliders.Length > 1) {
-				fuelBar = sliders [1];
+				fuelBar = sliders[1];
 				fuelBar.value = 1;
 			}
 		}
@@ -198,6 +198,7 @@ public class MechCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;
 		}
+		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
 	}
 
 	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
@@ -217,6 +218,7 @@ public class MechCombat : Combat {
 		GetComponent<MechController>().enabled = true;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		ch.enabled = true;
+		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(true);
 
 	}
 
@@ -307,7 +309,7 @@ public class MechCombat : Combat {
 		healthBar.value = calculateSliderPercent(healthBar.value, currentHP/(float)MAX_HP);
 
 		// Update Fuel bar gradually
-		fuelBar.value = calculateSliderPercent(healthBar.value, currentFuel/(float)MAX_FUEL);
+		fuelBar.value = calculateSliderPercent(fuelBar.value, currentFuel/(float)MAX_FUEL);
 	}
 
 	// Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01

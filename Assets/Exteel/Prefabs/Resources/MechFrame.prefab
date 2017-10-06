@@ -106,7 +106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &109764
 GameObject:
   m_ObjectHideFlags: 1
@@ -2779,8 +2779,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 4
-  instantiationId: 4
+  viewIdField: 0
+  instantiationId: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
 MonoBehaviour:
@@ -2913,8 +2913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 100
-  CurrentHP: 0
   camTransform: {fileID: 405268}
   animator: {fileID: 9563454}
   bulletTrace: {fileID: 1000012364431528, guid: b13677d6fb8844587a6d985f74e755c3,
@@ -2936,16 +2934,7 @@ MonoBehaviour:
   animator: {fileID: 9563454}
   boostFlame: {fileID: 1000013792597976}
   Gravity: 2
-  JumpPower: 50
-  MoveSpeed: 40
-  BoostSpeed: 0
-  VerticalBoostSpeed: 1
   isHorizBoosting: 0
-  MaxFuel: 100
-  CurrentFuel: 0
-  FuelDrain: 1
-  FuelGain: 1
-  MinFuelRequired: 75
   jumped: 0
   TimeBetweenFire: 0.25
   xSpeed: 0
@@ -3023,8 +3012,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 3
-  instantiationId: 3
+  viewIdField: 0
+  instantiationId: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
 Behaviour:

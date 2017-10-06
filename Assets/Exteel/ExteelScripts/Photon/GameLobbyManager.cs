@@ -52,7 +52,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 			addPlayer (player.name);
 		}
 
-		PhotonNetwork.automaticallySyncScene = true;
+//		PhotonNetwork.automaticallySyncScene = true;
 
 		if (PhotonNetwork.isMasterClient) {
 			GameObject startButton = GameObject.Find ("Canvas/MenuBar/Start");
@@ -155,6 +155,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	[PunRPC]
 	public void ChangeMaxKills(string maxKills) {
+		Debug.Log("Setting max kills to " + maxKills);
 		GameInfo.MaxKills = int.Parse(maxKills);
 	}
 

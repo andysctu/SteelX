@@ -13,8 +13,8 @@ public class Crosshair : MonoBehaviour {
 	private RaycastHit hit;
 	// Use this for initialization
 	void Start () {
-		playerSight = GetComponent<Camera> ();
-		currentCrosshair = GetComponentInChildren<Image> ();
+		playerSight = GetComponent<Camera>();
+		currentCrosshair = GetComponentInChildren<Image>();
 	}
 
 	public void NoCrosshair() {

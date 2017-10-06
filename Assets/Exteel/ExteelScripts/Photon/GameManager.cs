@@ -64,15 +64,14 @@ public class GameManager : Photon.MonoBehaviour {
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			PhotonNetwork.LeaveRoom();
-			SceneManager.LoadScene("Lobby");
 			Cursor.visible = true;
+			SceneManager.LoadScene("Lobby");
 		}
 
 		if (GameOver() && !gameEnding) {
 			gameEnding = true;
 			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
 			StartCoroutine(ExecuteAfterTime(3));
-			Cursor.visible = true;
 		}
 	}
 
@@ -81,8 +80,8 @@ public class GameManager : Photon.MonoBehaviour {
 		yield return new WaitForSeconds(time);
 
 		// Code to execute after the delay
-		PhotonNetwork.LoadLevel("GameLobby");
 		Cursor.visible = true;
+		PhotonNetwork.LoadLevel("GameLobby");
 	}
 
 	public void RegisterKill (string shooter, string victim) {
