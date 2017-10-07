@@ -289,6 +289,7 @@ public class MechCombat : Combat {
 		string animationStr = animationString(handPosition);
 
 		if (getIsFiring(handPosition)) {
+			Debug.Log("Hand " + handPosition + " is firing");
 			// Rotate arm to point to where you are looking (left hand is opposite)
 			float x = camTransform.rotation.eulerAngles.x * handPosition == LEFT_HAND ? -1 : 1;
 
@@ -302,6 +303,7 @@ public class MechCombat : Combat {
 				
 			}
 		} else {
+			Debug.Log("Hand " + handPosition + " stopped firing");
 			animator.SetBool(animationStr, false); // Stop animation
 		}
 	}
@@ -328,11 +330,21 @@ public class MechCombat : Combat {
 	// Switching weapons will switch from set 1 (weap 1 + 2) to set 2 (weap 3 + 4)
 	[PunRPC]
 	void SwitchWeapons() {
+		// Stop current attacks
+		setIsFiring(LEFT_HAND, false);
+		setIsFiring(RIGHT_HAND, false);
+
+		// Stop current animations
+		animator.SetBool(animationString(LEFT_HAND), false);
+		animator.SetBool(animationString(RIGHT_HAND), false);
+
+		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
+
+		// Change weaponOffset
 		weaponOffset = (weaponOffset + 2) % 4;
-		Debug.Log("weapon offset is now: " + weaponOffset);
 	}
 
 	bool getIsFiring(int handPosition) {
