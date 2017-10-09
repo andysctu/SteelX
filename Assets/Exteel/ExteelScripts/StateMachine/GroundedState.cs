@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GroundedState : StateMachineBehaviour {
-
-	private CharacterController cc;
-	private MechController mctrl;
-	private MechCombat mcbt;
+public class GroundedState : MechStateMachineBehaviour {
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
-	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		cc = animator.transform.parent.gameObject.GetComponent<CharacterController>();
-		mctrl = animator.transform.parent.gameObject.GetComponent<MechController>();
-		mcbt = animator.transform.parent.gameObject.GetComponent<MechCombat>();
-	}
+	//override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+	//		
+	//}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -22,6 +16,7 @@ public class GroundedState : StateMachineBehaviour {
 
 		if (cc.isGrounded) {
 			if (Input.GetKey(KeyCode.Space)) {
+				animator.SetBool("Grounded", false);
 				animator.SetBool("Jump", true);
 
 				mctrl.ySpeed = mcbt.JumpPower();

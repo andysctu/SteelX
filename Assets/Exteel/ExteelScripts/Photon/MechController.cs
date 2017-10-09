@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
+// MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
 
 	public CharacterController CharacterController;
@@ -71,23 +72,27 @@ public class MechController : Photon.MonoBehaviour {
 			
 		if (!CharacterController.isGrounded) {
 			ySpeed -= Gravity;
-			UpdateSpeed(0);
+		} else {
+			ySpeed = 0;
 		}
+
+		UpdateSpeed (0);
 	}
 
 	void LateUpdate() {
-//		animator.SetFloat("Speed", speed);
-//		animator.SetFloat("Direction", direction);
-//		animator.SetBool("Jump", jump);
-//		animator.SetBool("Grounded", grounded);
-//		animator.SetBool("Boost", boost);
+
 	}
 
 	public void UpdateSpeed(float horizontalSpeed) {
+		Debug.Log ("yspeed: " + ySpeed);
 		move.x *= horizontalSpeed * Time.fixedDeltaTime;
 		move.z *= horizontalSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 		CharacterController.Move(move);
+	}
+
+	public void VerticalBoost() {
+		ySpeed = mechCombat.MaxVerticalBoostSpeed();
 	}
 
 	[PunRPC]

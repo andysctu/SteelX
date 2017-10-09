@@ -12,7 +12,7 @@ public class Crosshair : MonoBehaviour {
 	private LayerMask layerMask = (1 << 8);
 	private RaycastHit hit;
 
-	public const float CAM_DISTANCE_TO_MECH = 19f;
+	public const float CAM_DISTANCE_TO_MECH = 20f;
 	// Use this for initialization
 	void Start () {
 		playerSight = GetComponent<Camera>();

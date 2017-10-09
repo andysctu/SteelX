@@ -21,7 +21,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	private bool inHangar = false;
 
 	void Start () {
-		if (SceneManager.GetActiveScene().name == "Hangar" || SceneManager.GetActiveScene().name == "Lobby") inHangar = true;
+		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") inHangar = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar) return;
 

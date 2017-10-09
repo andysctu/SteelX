@@ -380,6 +380,8 @@ public class MechCombat : Combat {
 
 	public void DecrementFuel() {
 		currentFuel -= fuelDrain;
+		if (currentFuel < 0)
+			currentFuel = 0;
 	}
 
 	public bool EnoughFuelToBoost() {
