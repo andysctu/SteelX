@@ -2779,8 +2779,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 4
-  instantiationId: 4
+  viewIdField: 0
+  instantiationId: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
 MonoBehaviour:
@@ -2934,7 +2934,6 @@ MonoBehaviour:
   animator: {fileID: 9563454}
   boostFlame: {fileID: 1968359501305730}
   Gravity: 2
-  isHorizBoosting: 0
   jumped: 0
   TimeBetweenFire: 0.25
   xSpeed: 0
@@ -3012,8 +3011,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 3
-  instantiationId: 3
+  viewIdField: 0
+  instantiationId: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
 Behaviour:
