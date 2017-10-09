@@ -12,7 +12,7 @@ public class Crosshair : MonoBehaviour {
 	private LayerMask layerMask = (1 << 8);
 	private RaycastHit hit;
 
-	public const float CAM_DISTANCE_TO_MECH = 15f;
+	public const float CAM_DISTANCE_TO_MECH = 19f;
 	// Use this for initialization
 	void Start () {
 		playerSight = GetComponent<Camera>();
@@ -26,6 +26,7 @@ public class Crosshair : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 //		Debug.Log("ps: " + playerSight.transform.position.x + ", " + playerSight.transform.position.y + ", " + playerSight.transform.position.z);
+		Debug.DrawLine(playerSight.transform.TransformPoint(0, 0, CAM_DISTANCE_TO_MECH), playerSight.transform.TransformPoint(0, 0, CAM_DISTANCE_TO_MECH) + playerSight.transform.forward * 20);
 		if (Physics.Raycast(playerSight.transform.TransformPoint(0, 0, CAM_DISTANCE_TO_MECH), playerSight.transform.forward, out hit, Mathf.Infinity, layerMask)){
 			currentCrosshair.sprite = CrosshairTarget;
 		} else {

@@ -12,13 +12,13 @@ public class MechCombat : Combat {
 	[SerializeField] GameObject bulletImpact;
 
 	// Boost variables
-	private float fuelDrain = 1.0f;
+	private float fuelDrain = 0.5f;
 	private float fuelGain = 1.0f;
-	private float minFuelRequired = 75f;
+	private float minFuelRequired = 25f;
 	private float currentFuel;
 	private float jumpPower = 50.0f;
 	private float moveSpeed = 40.0f;
-	private float boostSpeed;
+	private float boostSpeed = 100f;
 	private float verticalBoostSpeed = 1f;
 	private float maxVerticalBoostSpeed;
 
@@ -74,7 +74,6 @@ public class MechCombat : Combat {
 	void initMechStats() {
 		currentHP = MAX_HP;
 		currentFuel = MAX_FUEL;
-		boostSpeed = moveSpeed + 20;
 		maxVerticalBoostSpeed = boostSpeed / 2;
 	}
 
@@ -289,9 +288,8 @@ public class MechCombat : Combat {
 		string animationStr = animationString(handPosition);
 
 		if (getIsFiring(handPosition)) {
-			Debug.Log("Hand " + handPosition + " is firing");
 			// Rotate arm to point to where you are looking (left hand is opposite)
-			float x = camTransform.rotation.eulerAngles.x * handPosition == LEFT_HAND ? -1 : 1;
+			float x = camTransform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
 
 			// Start animation
 			animator.SetBool(animationStr, true);
@@ -303,7 +301,6 @@ public class MechCombat : Combat {
 				
 			}
 		} else {
-			Debug.Log("Hand " + handPosition + " stopped firing");
 			animator.SetBool(animationStr, false); // Stop animation
 		}
 	}

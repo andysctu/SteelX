@@ -10,7 +10,8 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField] GameObject boostFlame;
 
 	public float Gravity = 2.0f;
-	public bool isHorizBoosting = false;
+	private bool isHorizBoosting = false;
+	private bool isVertBoosting = false;
 
 	private float marginOfError = 0.1f;
 	private float minDownSpeed = 0.0f;
@@ -24,10 +25,19 @@ public class MechController : Photon.MonoBehaviour {
 
 	private Vector3 move = Vector3.zero;
 
-	bool ableToVertBoost = false;
+	private bool ableToVertBoost = false;
 
 	private MechCombat mechCombat;
 	private Transform camTransform;
+
+	private float characterControllerSpeed;
+
+	// Animation
+	private float speed;
+	private float direction;
+	private bool boost;
+	private bool grounded;
+	private bool jump;
 
 	// Unused
 	[SerializeField] Transform[] Legs;
@@ -65,96 +75,165 @@ public class MechController : Photon.MonoBehaviour {
 		// Transform direction from local space to world space
 		move = transform.TransformDirection(move);
 
-		// Always be moving down to stick to ground?
-		move.y = minDownSpeed;
+		ySpeed -= Gravity;
 
-		// Handle movement in air
-		if (!CharacterController.isGrounded) {
-			if (!isHorizBoosting) { // If we are in the air and not boosting
-				ySpeed -= Gravity; // Fall
-			} else { // If we are in the air and also boosting
-				if (jumped) ySpeed += mechCombat.VerticalBoostSpeed(); // Start vertical boosting if we've jumped
-				if (ySpeed > mechCombat.MaxVerticalBoostSpeed()) ySpeed = mechCombat.MaxVerticalBoostSpeed(); // Cap vertical speed
+		ableToVertBoost = jump && (Input.GetKeyUp(KeyCode.Space) || !Input.GetKey(KeyCode.Space)) && mechCombat.EnoughFuelToBoost();
+
+		if (CharacterController.isGrounded) {
+			grounded = true;
+			jump = false;
+
+			if (Input.GetKey(KeyCode.Space)) {
+				jump = true;
+				grounded = false;
+
+				ySpeed = mechCombat.JumpPower();
 			}
-		} else {
-			ySpeed = 0;
-			jumped = false;
 
-			// Can't vertical boost while on the ground
-			ableToVertBoost = false;
+			if (Input.GetKey(KeyCode.LeftShift)) {
+				boost = true;
 
-			// Animation
-			animator.SetBool("Grounded", true);
-		}
-			
-		if (Input.GetButton ("Jump") && !jumped) {
-			ySpeed = mechCombat.JumpPower();
-			jumped = true;
-
-			// Animation
-			animator.SetBool("Jump", true);
-			animator.SetBool("Grounded", false);
-		} else {
-			// Animation
-			animator.SetBool("Jump", false);
-		}
-
-		// We are only able to vertically boost if we've jumped, and if we're not already pressing space
-		if (!ableToVertBoost) {
-			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && mechCombat.EnoughFuelToBoost();
-		}
-
-		// Prevent starting a boost when below min fuel
-		if (!isHorizBoosting) {
-			startBoosting = Input.GetKey ("left shift") && mechCombat.EnoughFuelToBoost();
-			isHorizBoosting = startBoosting;
-		} 
-			
-		// NOTE: ableToVertBoost and startBoosting depend on EnoughFuelToBoost, whereas if you are already boosting, you just need !FuelEmpty()
-
-		Vector3 curPos = camTransform.localPosition;
-
-		// Handle horizontal boosting and vertical boosting
-		if ((startBoosting && Input.GetKey ("left shift") && !mechCombat.FuelEmpty()) || (ableToVertBoost && Input.GetKey("space") && !mechCombat.FuelEmpty())) {
-			isHorizBoosting = true;
-			animator.SetBool("Boost", true);
-
-			Vector3 newPos = camTransform.localPosition;
-			float h = Input.GetAxis("Horizontal");
-			if (h > 0) {
-				newPos = new Vector3(-7, curPos.y, curPos.z);
-			} else if (h < 0) {
-				newPos = new Vector3(7, curPos.y, curPos.z);
+				mechCombat.DecrementFuel();
+				characterControllerSpeed = mechCombat.BoostSpeed();
 			} else {
-				newPos = new Vector3(0, curPos.y, curPos.z);
+				boost = false;
+
+				mechCombat.IncrementFuel();
+				characterControllerSpeed = mechCombat.MoveSpeed();
 			}
+		} else {
+			Debug.Log("here able: " + ableToVertBoost);
+			if (ableToVertBoost && Input.GetKey(KeyCode.Space)) {
+				boost = true;
 
-			// Camera work
-			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
-
-			// Use fuel while boosting
-			mechCombat.DecrementFuel();
-
-			updateSpeed(mechCombat.BoostSpeed());
-			photonView.RPC ("Boost", PhotonTargets.All, true);
-		}
-		// Handle walking
-		else {
-			animator.SetBool("Boost", false);
-
-			Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
-			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
-			
-			isHorizBoosting = false;
-
-			// Recharge fuel while not boosting
-			mechCombat.IncrementFuel();
-
-			updateSpeed(mechCombat.BoostSpeed());
-			photonView.RPC ("Boost", PhotonTargets.All, false);
+				ySpeed = mechCombat.VerticalBoostSpeed();
+				mechCombat.DecrementFuel();
+			} else {
+				mechCombat.IncrementFuel();
+			}
 		}
 
-		CharacterController.Move (move);
+		updateSpeed(characterControllerSpeed);
+
+		CharacterController.Move(move);
+
+//		// Handle movement in air
+//		if (!CharacterController.isGrounded) {
+//			if (!isVertBoosting) { // If we are in the air and not boosting
+//				ySpeed -= Gravity; // Fall
+//			} else { // If we are in the air and also boosting
+//				ySpeed += mechCombat.VerticalBoostSpeed(); // Start vertical boosting if we've jumped
+//				if (ySpeed > mechCombat.MaxVerticalBoostSpeed()) ySpeed = mechCombat.MaxVerticalBoostSpeed(); // Cap vertical speed
+//			}
+//		} else {
+//			ySpeed = 0;
+//			jumped = false;
+//
+//			// Can't vertical boost while on the ground
+//			ableToVertBoost = false;
+//			isVertBoosting = false;
+//
+//			// Animation
+//			animator.SetBool("Grounded", true);
+//		}
+//			
+//		if (Input.GetButton ("Jump") && !jumped) {
+//			ySpeed = mechCombat.JumpPower();
+//			jumped = true;
+//
+//			// Animation
+//			animator.SetBool("Jump", true);
+//			animator.SetBool("Grounded", false);
+//		} else {
+//			// Animation
+//			animator.SetBool("Jump", false);
+//		}
+
+//		// We are only able to vertically boost if we've jumped, and if we're not already pressing space
+//		if (!ableToVertBoost) {
+//			ableToVertBoost = jumped && (Input.GetKeyUp("space") || !Input.GetKey("space")) && mechCombat.EnoughFuelToBoost();
+//		}
+//
+//		// Prevent starting a boost when below min fuel
+//		if (!isHorizBoosting) {
+//			startBoosting = Input.GetKey ("left shift") && mechCombat.EnoughFuelToBoost();
+//			isHorizBoosting = startBoosting;
+//		} 
+//			
+//		// NOTE: ableToVertBoost and startBoosting depend on EnoughFuelToBoost, whereas if you are already boosting, you just need !FuelEmpty()
+//
+//		Vector3 curPos = camTransform.localPosition;
+//
+//		// Handle horizontal boosting and vertical boosting
+//		if (startBoosting && Input.GetKey ("left shift") && !mechCombat.FuelEmpty()) {
+//			isHorizBoosting = true;
+//			animator.SetBool("Boost", true);
+//
+//			// Camera work
+//			Vector3 newPos = camTransform.localPosition;
+//			float h = Input.GetAxis("Horizontal");
+//			if (h > 0) {
+//				newPos = new Vector3(-7, curPos.y, curPos.z);
+//			} else if (h < 0) {
+//				newPos = new Vector3(7, curPos.y, curPos.z);
+//			} else {
+//				newPos = new Vector3(0, curPos.y, curPos.z);
+//			}
+//			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+//
+//			// Use fuel while boosting
+//			mechCombat.DecrementFuel();
+//
+//			updateSpeed(mechCombat.BoostSpeed());
+//			photonView.RPC ("Boost", PhotonTargets.All, true);
+//		} else if (ableToVertBoost && (Input.GetKey("space") || Input.GetKey("left shift")) && !mechCombat.FuelEmpty()) {
+//			isVertBoosting = true;
+//			animator.SetBool("Boost", true);
+//
+//			// Camera work
+//			Vector3 newPos = camTransform.localPosition;
+//			float h = Input.GetAxis("Horizontal");
+//			if (h > 0) {
+//				newPos = new Vector3(-7, curPos.y, curPos.z);
+//			} else if (h < 0) {
+//				newPos = new Vector3(7, curPos.y, curPos.z);
+//			} else {
+//				newPos = new Vector3(0, curPos.y, curPos.z);
+//			}
+//			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+//
+//			// Use fuel while boosting
+//			mechCombat.DecrementFuel();
+//
+//			updateSpeed(mechCombat.BoostSpeed());
+//			photonView.RPC ("Boost", PhotonTargets.All, true);
+//		}
+//		// Handle walking
+//		else {
+//			animator.SetBool("Boost", false);
+//
+//			Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
+//			camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+//			
+//			isHorizBoosting = false;
+//			isVertBoosting = false;
+//
+//			// Recharge fuel while not boosting
+//			mechCombat.IncrementFuel();
+//
+//			updateSpeed(mechCombat.MoveSpeed());
+//			photonView.RPC ("Boost", PhotonTargets.All, false);
+//		}
+
+//		CharacterController.Move (move);
+	}
+
+	void LateUpdate() {
+		animator.SetFloat("Speed", speed);
+		animator.SetFloat("Direction", direction);
+		animator.SetBool("Jump", jump);
+		animator.SetBool("Grounded", grounded);
+		animator.SetBool("Boost", boost);
 	}
 
 	void updateSpeed(float horizontalSpeed) {
@@ -184,10 +263,9 @@ public class MechController : Photon.MonoBehaviour {
 		if (move.magnitude > 1) {
 			move = Vector3.Normalize (move);
 		}
-		if (animator != null) {
-			animator.SetFloat("Speed", v);
-			animator.SetFloat("Direction", h);
-		}
+
+		speed = v;
+		direction = h;
 
 //		Debug.Log("Speed: " + v);
 //		Debug.Log("Direc: " + h);
