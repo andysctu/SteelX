@@ -14,7 +14,15 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		mcbt.DecrementFuel();
 		mctrl.VerticalBoost();
 
-		if (Input.GetKeyUp(KeyCode.Space)) {
+		float speed = Input.GetAxis("Vertical");
+		float direction = Input.GetAxis("Horizontal");
+
+		animator.SetFloat("Speed", speed);
+		animator.SetFloat("Direction", direction);
+//		mctrl.DynamicCam();
+
+		if (mcbt.FuelEmpty() || Input.GetKeyUp(KeyCode.Space)) {
+			mctrl.ResetCam();
 			animator.SetBool("Boost", false);
 		}
 	}

@@ -30,6 +30,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	private MechCombat mechCombat;
 	private Transform camTransform;
+	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
 
@@ -56,43 +57,70 @@ public class MechController : Photon.MonoBehaviour {
 
 	void initTransforms() {
 		camTransform = transform.Find("Camera");
+		originalCamPos = camTransform.localPosition;
 	}
 
 	// Update is called once per frame
 	void Update () {
 		// Update the Vector3 move variable
 		GetXZDirection();
-	}
 
-	void FixedUpdate() {
 		// Do nothing if CharacterController not found
 		if (CharacterController == null || !CharacterController.enabled){
 			return;
 		}
-			
+
 		if (!CharacterController.isGrounded) {
 			ySpeed -= Gravity;
 		} else {
 			ySpeed = 0;
 		}
 
-		UpdateSpeed (0);
+		UpdateSpeed();
 	}
 
-	void LateUpdate() {
-
-	}
-
-	public void UpdateSpeed(float horizontalSpeed) {
-		Debug.Log ("yspeed: " + ySpeed);
-		move.x *= horizontalSpeed * Time.fixedDeltaTime;
-		move.z *= horizontalSpeed * Time.fixedDeltaTime;
+	public void UpdateSpeed() {
+		move.x *= xSpeed * Time.fixedDeltaTime;
+		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 		CharacterController.Move(move);
 	}
 
 	public void VerticalBoost() {
 		ySpeed = mechCombat.MaxVerticalBoostSpeed();
+	}
+
+	public void Jump() {
+		ySpeed = mechCombat.JumpPower();
+		UpdateSpeed();
+	}
+
+	public void Run() {
+		xSpeed = mechCombat.MoveSpeed();
+		zSpeed = mechCombat.MoveSpeed();
+	}
+
+	public void Boost() {
+		xSpeed = mechCombat.BoostSpeed();
+		zSpeed = mechCombat.BoostSpeed();
+	}
+
+	public void ResetCam() {
+		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, new Vector3(0, originalCamPos.y, originalCamPos.z), 0.1f);
+	}
+
+	public void DynamicCam() {
+		Vector3 curPos = camTransform.localPosition;
+		Vector3 newPos = camTransform.localPosition;
+
+		if (direction > 0) {
+			newPos = new Vector3(-7, curPos.y, curPos.z);
+		} else if (direction < 0) {
+			newPos = new Vector3(7, curPos.y, curPos.z);
+		} else {
+			newPos = new Vector3(0, curPos.y, curPos.z);
+		}
+		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}
 
 	[PunRPC]
@@ -110,15 +138,16 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		if (h > marginOfError || h < -marginOfError) {
-			move += new Vector3(h, 	0, 0);
+			move += new Vector3(h, 0, 0);
 		}
 
+		move = transform.TransformDirection(move);
 		if (move.magnitude > 1) {
-			move = Vector3.Normalize (move);
+			move = Vector3.Normalize(move);
 		}
-
-		speed = v;
-		direction = h;
+			
+//		speed = v;
+//		direction = h;
 
 //		Debug.Log("Speed: " + v);
 //		Debug.Log("Direc: " + h);

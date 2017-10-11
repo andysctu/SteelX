@@ -7,12 +7,16 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected CharacterController cc;
 	protected MechController mctrl;
 	protected MechCombat mcbt;
+	protected Transform camTransform;
+	protected Vector3 originalPos;
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		cc = animator.transform.parent.gameObject.GetComponent<CharacterController>();
 		mctrl = animator.transform.parent.gameObject.GetComponent<MechController>();
 		mcbt = animator.transform.parent.gameObject.GetComponent<MechCombat>();
+		camTransform = animator.transform.parent.Find("Camera");
+		originalPos = camTransform.localPosition;
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
