@@ -72,6 +72,7 @@ public class GameManager : Photon.MonoBehaviour {
 		if (GameOver() && !gameEnding) {
 			gameEnding = true;
 			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
+			Scoreboard.SetActive(true);
 			StartCoroutine(ExecuteAfterTime(3));
 		}
 

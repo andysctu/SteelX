@@ -87,19 +87,19 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	public void StartGame() {
 		Debug.Log ("Starting game");
-		PhotonNetwork.room.open = false;
-		PhotonNetwork.LoadLevel (GameInfo.Map);
+		PhotonNetwork.room.open = true;
+		PhotonNetwork.LoadLevel(GameInfo.Map);
 	}
 
 	public void LeaveGame() {
 		Debug.Log("Leaving game");
-		PhotonNetwork.LeaveRoom ();
-		PhotonNetwork.LoadLevel ("Lobby");
+		PhotonNetwork.LeaveRoom();
+		PhotonNetwork.LoadLevel("Lobby");
 	}
 
 	public void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
-		Debug.Log ("Player connected: " + newPlayer.name);
-		addPlayer (newPlayer.name);
+		Debug.Log("Player connected: " + newPlayer.name);
+		addPlayer(newPlayer.name);
 	}
 
 	public void OnPhotonPlayerDisconnected(PhotonPlayer disconnectedPlayer) {
