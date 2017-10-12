@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : Photon.MonoBehaviour {
-	[SyncVar] public float TimeLeft;
+	public float TimeLeft;
 
 	[SerializeField] GameObject PlayerPrefab;
 	[SerializeField] GameObject Scoreboard;
@@ -14,7 +14,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public Transform[] SpawnPoints;
 
-	public int MaxTime = 10;
+	public int MaxTimeInSeconds = 300;
 	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
 
@@ -26,6 +26,9 @@ public class GameManager : Photon.MonoBehaviour {
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
 
+	int storedStartTime;
+	int storedDuration;
+
 	void Start() {
 		if (Offline) {
 			PhotonNetwork.offlineMode = true;
@@ -34,7 +37,7 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		MaxKills = GameInfo.MaxKills;
-		MaxTime = GameInfo.MaxTime;
+		MaxTimeInSeconds = GameInfo.MaxTime * 60;
 
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
 		BuildMech mechBuilder = player.GetComponent<BuildMech>();
@@ -44,6 +47,8 @@ public class GameManager : Photon.MonoBehaviour {
 
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+
+		SyncTime();
 	}
 		
 	public void RegisterPlayer(string name) {
@@ -61,7 +66,23 @@ public class GameManager : Photon.MonoBehaviour {
 		playerScorePanels.Add(name, ps);
 	}
 
+	void SyncTime() {
+		int startTime = PhotonNetwork.ServerTimestamp;
+		ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", MaxTimeInSeconds } };
+		PhotonNetwork.room.SetCustomProperties(ht);
+	}
+
+	public void OnPhotonCustomRoomPropertiesChanged(Hashtable propertiesThatChanged) {
+		if (propertiesThatChanged.ContainsKey("startTime") && propertiesThatChanged.ContainsKey("duration")) {
+			storedStartTime = (int)propertiesThatChanged["startTime"];
+			storedDuration = (int)propertiesThatChanged["duration"];
+		}
+	}
+
 	void Update() {
+		if (!photonView.isMine)
+			return;
+		
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
@@ -77,6 +98,12 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		// Update time
+		if (storedDuration != 0 && storedDuration != 0) {
+			int timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
+			int currentTimer = storedDuration - timerDuration;
+
+			Debug.Log(timerDuration + "   " + currentTimer);
+		}
 	}
 
 	IEnumerator ExecuteAfterTime(float time)
@@ -88,7 +115,7 @@ public class GameManager : Photon.MonoBehaviour {
 		PhotonNetwork.LoadLevel("GameLobby");
 	}
 
-	public void RegisterKill (string shooter, string victim) {
+	public void RegisterKill(string shooter, string victim) {
 		Debug.Log(shooter + " killed " + victim);
 		Score newShooterScore = new Score ();
 		newShooterScore.Kills = playerScores [shooter].Kills + 1;

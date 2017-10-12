@@ -481,6 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ac960660a6d741c99f0cacc0110e9d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TimeLeft: 0
   PlayerPrefab: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   Scoreboard: {fileID: 1755713648}
   PlayerStat: {fileID: 158918, guid: 4321b3f070bb849c6bca02b8dc508745, type: 2}
@@ -488,7 +489,7 @@ MonoBehaviour:
   SpawnPoints:
   - {fileID: 627666924}
   - {fileID: 240219571}
-  MaxTime: 10
+  MaxTimeInSeconds: 300
   MaxKills: 2
   CurrentMaxKills: 0
 --- !u!4 &132999376
@@ -1147,6 +1148,78 @@ RectTransform:
   m_AnchoredPosition: {x: 6, y: 0}
   m_SizeDelta: {x: -42, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &557594109
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 378.52225
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -8.724452e-17
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 392.91434
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400766, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: viewIdField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: instantiationId
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: viewIdField
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: instantiationId
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013355623540, guid: dace0f8d137bc4c339fcea3950b1731e,
+        type: 2}
+      propertyPath: panLevelCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82000013355623540, guid: dace0f8d137bc4c339fcea3950b1731e,
+        type: 2}
+      propertyPath: reverbZoneMixCustomCurve.m_RotationOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &565705584
 Prefab:
   m_ObjectHideFlags: 0

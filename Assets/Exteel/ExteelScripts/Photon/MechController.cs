@@ -53,7 +53,7 @@ public class MechController : Photon.MonoBehaviour {
 	void initComponents() {
 		CharacterController = GetComponent<CharacterController> ();
 		mechCombat = GetComponent<MechCombat>();
-		animator = GetComponentInChildren<Animator>()[0];
+		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
 	}
 
 	void initTransforms() {
@@ -78,6 +78,7 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		if (animator.GetBool("Boost")) {
+			Debug.Log("Boosting");
 			DynamicCam();
 		}
 
