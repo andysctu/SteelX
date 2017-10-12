@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : Photon.MonoBehaviour {
-//	[SyncVar] public float TimeLeft;
+	[SyncVar] public float TimeLeft;
 
 	[SerializeField] GameObject PlayerPrefab;
 	[SerializeField] GameObject Scoreboard;
@@ -34,12 +34,13 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		MaxKills = GameInfo.MaxKills;
+		MaxTime = GameInfo.MaxTime;
 
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
 		BuildMech mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
 		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
-		playerScorePanels = new Dictionary<string, GameObject> ();
+		playerScorePanels = new Dictionary<string, GameObject>();
 
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
@@ -49,22 +50,22 @@ public class GameManager : Photon.MonoBehaviour {
 		if (playerScores == null) {
 			playerScores = new Dictionary<string, Score>();
 		}
-		playerScores.Add (name, new Score ());
+		playerScores.Add (name, new Score());
 
 		GameObject ps = Instantiate (PlayerStat, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
-		ps.transform.Find ("Pilot Name").GetComponent<Text> ().text = name;
-		ps.transform.Find ("Kills").GetComponent<Text> ().text = "0";
-		ps.transform.Find ("Deaths").GetComponent<Text> ().text = "0";
-		ps.transform.SetParent(Scoreboard.transform.Find ("Team1").transform);
-		ps.GetComponent<RectTransform> ().localScale = new Vector3 (1, 1, 1);
+		ps.transform.Find("Pilot Name").GetComponent<Text>().text = name;
+		ps.transform.Find("Kills").GetComponent<Text>().text = "0";
+		ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
+		ps.transform.SetParent(Scoreboard.transform.Find("Team1").transform);
+		ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 		playerScorePanels.Add(name, ps);
 	}
 
 	void Update() {
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
-			PhotonNetwork.LeaveRoom();
 			Cursor.visible = true;
+			PhotonNetwork.LeaveRoom();
 			SceneManager.LoadScene("Lobby");
 		}
 
@@ -73,6 +74,8 @@ public class GameManager : Photon.MonoBehaviour {
 			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
 			StartCoroutine(ExecuteAfterTime(3));
 		}
+
+		// Update time
 	}
 
 	IEnumerator ExecuteAfterTime(float time)
