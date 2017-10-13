@@ -129,8 +129,8 @@ public class GameManager : Photon.MonoBehaviour {
 	public void RegisterKill(string shooter, string victim) {
 		Debug.Log(shooter + " killed " + victim);
 		Score newShooterScore = new Score ();
-		newShooterScore.Kills = playerScores [shooter].Kills + 1;
-		newShooterScore.Deaths = playerScores [shooter].Deaths;
+		newShooterScore.Kills = playerScores[shooter].Kills + 1;
+		newShooterScore.Deaths = playerScores[shooter].Deaths;
 		playerScores [shooter] = newShooterScore;
 
 		Score newVictimScore = new Score ();
@@ -138,8 +138,8 @@ public class GameManager : Photon.MonoBehaviour {
 		newVictimScore.Deaths = playerScores [victim].Deaths + 1;
 		playerScores [victim] = newVictimScore;
 
-		playerScorePanels [shooter].transform.Find("Kills").GetComponent<Text> ().text = playerScores [shooter].Kills.ToString();
-		playerScorePanels [victim].transform.Find("Deaths").GetComponent<Text> ().text = playerScores [victim].Deaths.ToString();
+		playerScorePanels [shooter].transform.Find("Kills").GetComponent<Text>().text = playerScores[shooter].Kills.ToString();
+		playerScorePanels [victim].transform.Find("Deaths").GetComponent<Text>().text = playerScores[victim].Deaths.ToString();
 		Debug.Log (shooter + " has " + playerScores [shooter].Kills + " kills.");
 		Debug.Log (victim + " has " + playerScores [victim].Deaths + " deaths.");
 
