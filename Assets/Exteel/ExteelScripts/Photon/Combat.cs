@@ -2,7 +2,7 @@
 
 public class Combat : Photon.MonoBehaviour {
 	public const int MAX_HP = 100;
-	public const float MAX_FUEL = 100.0f;
+	public const float MAX_FUEL = 300.0f;
 
 	protected int currentHP;
 

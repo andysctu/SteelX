@@ -12,13 +12,13 @@ public class MechCombat : Combat {
 	[SerializeField] GameObject bulletImpact;
 
 	// Boost variables
-	private float fuelDrain = 0.5f;
+	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
 	private float jumpPower = 50.0f;
-	private float moveSpeed = 30.0f;
-	private float boostSpeed = 60f;
+	private float moveSpeed = 60.0f;
+	private float boostSpeed = 100f;
 	private float verticalBoostSpeed = 1f;
 	private float maxVerticalBoostSpeed;
 

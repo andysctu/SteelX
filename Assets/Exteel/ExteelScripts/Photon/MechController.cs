@@ -65,7 +65,9 @@ public class MechController : Photon.MonoBehaviour {
 	void Update () {
 		// Update the Vector3 move variable
 		GetXZDirection();
+	}
 
+	void FixedUpdate() {
 		// Do nothing if CharacterController not found
 		if (CharacterController == null || !CharacterController.enabled){
 			return;
@@ -79,8 +81,10 @@ public class MechController : Photon.MonoBehaviour {
 
 		if (animator.GetBool("Boost")) {
 			DynamicCam();
+			mechCombat.DecrementFuel();
 		} else {
 			ResetCam();
+			mechCombat.IncrementFuel();
 		}
 
 		UpdateSpeed();

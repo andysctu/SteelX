@@ -42,7 +42,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 11
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -54,7 +54,7 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 8
+    serializedVersion: 9
     m_Resolution: 2
     m_BakeResolution: 40
     m_TextureWidth: 1024
@@ -87,7 +87,7 @@ LightmapSettings:
     m_PVRFilteringAtrousNormalSigma: 1
     m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 0}
-  m_ShadowMaskMode: 2
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1327,8 +1327,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ownerId: 0
   group: 0
+  OwnerShipWasTransfered: 0
   prefixBackup: -1
-  observed: {fileID: 0}
   synchronization: 0
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
@@ -1338,6 +1338,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 2
   instantiationId: 2
+  currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &676933362
 MonoBehaviour:
@@ -2347,8 +2348,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ownerId: 0
   group: 0
+  OwnerShipWasTransfered: 0
   prefixBackup: -1
-  observed: {fileID: 0}
   synchronization: 0
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
@@ -2358,6 +2359,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 1
   instantiationId: 1
+  currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &1404352594
 MonoBehaviour:
@@ -2370,14 +2372,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ac960660a6d741c99f0cacc0110e9d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TimeLeft: 0
   PlayerPrefab: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   Scoreboard: {fileID: 19465376}
   PlayerStat: {fileID: 158918, guid: 4321b3f070bb849c6bca02b8dc508745, type: 2}
-  Offline: 1
+  Offline: 0
   SpawnPoints:
   - {fileID: 528610064}
   - {fileID: 1942509677}
-  MaxTime: 10
+  MaxTimeInSeconds: 300
   MaxKills: 2
   CurrentMaxKills: 0
 --- !u!4 &1404352595

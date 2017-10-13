@@ -11,7 +11,6 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		mcbt.DecrementFuel();
 		mctrl.Boost();
 
 		float speed = Input.GetAxis("Vertical");
