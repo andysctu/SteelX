@@ -37,7 +37,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 //		}
 
 		if (!PhotonNetwork.connected) {
-			PhotonNetwork.LoadLevel ("Lobby");
+			PhotonNetwork.LoadLevel("Lobby");
 			return;
 		}
 
@@ -46,17 +46,17 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 //		MenuBar.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.2f);
 //		MapInfo.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.4f, Screen.height);
 
-		players = new List<GameObject> ();
+		players = new List<GameObject>();
 		for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
 			PhotonPlayer player = PhotonNetwork.playerList[i];
-			addPlayer (player.name);
+			addPlayer(player.name);
 		}
 
 //		PhotonNetwork.automaticallySyncScene = true;
 
 		if (PhotonNetwork.isMasterClient) {
-			GameObject startButton = GameObject.Find ("Canvas/MenuBar/Start");
-			startButton.GetComponent<Button> ().interactable = true;
+			GameObject startButton = GameObject.Find("Canvas/MenuBar/Start");
+			startButton.GetComponent<Button>().interactable = true;
 			Map.interactable = true;
 			GameMode.interactable = true;
 			MaxKills.interactable = true;
@@ -106,8 +106,8 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		Debug.Log ("Player disconnected: " + disconnectedPlayer.name);
 		foreach (GameObject lobbyPlayer in players) {
 			if (lobbyPlayer.name == disconnectedPlayer.name) {
-				PhotonNetwork.Destroy (lobbyPlayer);
-				players.Remove (lobbyPlayer);
+				PhotonNetwork.Destroy(lobbyPlayer);
+				players.Remove(lobbyPlayer);
 			}
 		}
 	}

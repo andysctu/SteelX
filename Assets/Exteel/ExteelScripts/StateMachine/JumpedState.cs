@@ -8,6 +8,7 @@ public class JumpedState : MechStateMachineBehaviour {
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+		if (cc == null || !cc.enabled || !cc.isGrounded) return;
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		jumpReleased = false;
 		mctrl.Jump();

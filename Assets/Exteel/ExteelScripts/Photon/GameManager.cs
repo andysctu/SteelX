@@ -29,6 +29,8 @@ public class GameManager : Photon.MonoBehaviour {
 	int storedStartTime;
 	int storedDuration;
 
+	private BuildMech mechBuilder;
+
 	void Start() {
 		if (Offline) {
 			PhotonNetwork.offlineMode = true;
@@ -41,7 +43,7 @@ public class GameManager : Photon.MonoBehaviour {
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
 
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
-		BuildMech mechBuilder = player.GetComponent<BuildMech>();
+		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
 		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		playerScorePanels = new Dictionary<string, GameObject>();
@@ -52,6 +54,11 @@ public class GameManager : Photon.MonoBehaviour {
 		if (PhotonNetwork.isMasterClient) {
 			SyncTime();
 		}
+	}
+
+	public void onPhotonPlayerConnected(PhotonPlayer newPlayer) {
+		Mech m = UserData.myData.Mech;
+		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 	}
 		
 	public void RegisterPlayer(string name) {
