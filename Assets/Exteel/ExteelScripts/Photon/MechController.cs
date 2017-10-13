@@ -78,8 +78,9 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		if (animator.GetBool("Boost")) {
-			Debug.Log("Boosting");
 			DynamicCam();
+		} else {
+			ResetCam();
 		}
 
 		UpdateSpeed();
@@ -112,7 +113,9 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void ResetCam() {
-		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, new Vector3(0, originalCamPos.y, originalCamPos.z), 0.1f);
+		Vector3 curPos = camTransform.localPosition;
+		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
+		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}
 
 	public void DynamicCam() {
@@ -153,7 +156,7 @@ public class MechController : Photon.MonoBehaviour {
 		}
 			
 //		speed = v;
-//		direction = h;
+		direction = h;
 
 //		Debug.Log("Speed: " + v);
 //		Debug.Log("Direc: " + h);
