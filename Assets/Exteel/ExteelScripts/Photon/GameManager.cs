@@ -34,6 +34,7 @@ public class GameManager : Photon.MonoBehaviour {
 			PhotonNetwork.offlineMode = true;
 			PhotonNetwork.CreateRoom("offline");
 			GameInfo.MaxKills = 1;
+			GameInfo.MaxTime = 1;
 		}
 
 		MaxKills = GameInfo.MaxKills;
@@ -48,7 +49,9 @@ public class GameManager : Photon.MonoBehaviour {
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 
-		SyncTime();
+		if (PhotonNetwork.isMasterClient) {
+			SyncTime();
+		}
 	}
 		
 	public void RegisterPlayer(string name) {
@@ -69,10 +72,11 @@ public class GameManager : Photon.MonoBehaviour {
 	void SyncTime() {
 		int startTime = PhotonNetwork.ServerTimestamp;
 		ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", MaxTimeInSeconds } };
+		Debug.Log("Setting " + startTime + ", " + MaxTimeInSeconds);
 		PhotonNetwork.room.SetCustomProperties(ht);
 	}
 
-	public void OnPhotonCustomRoomPropertiesChanged(Hashtable propertiesThatChanged) {
+	public void OnPhotonCustomRoomPropertiesChanged(ExitGames.Client.Photon.Hashtable propertiesThatChanged) {
 		if (propertiesThatChanged.ContainsKey("startTime") && propertiesThatChanged.ContainsKey("duration")) {
 			storedStartTime = (int)propertiesThatChanged["startTime"];
 			storedDuration = (int)propertiesThatChanged["duration"];

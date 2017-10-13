@@ -79,6 +79,10 @@ public class MechController : Photon.MonoBehaviour {
 			ySpeed = 0;
 		}
 
+		if (animator == null) {
+			return;
+		}
+
 		if (animator.GetBool("Boost")) {
 			DynamicCam();
 			mechCombat.DecrementFuel();

@@ -10,17 +10,14 @@ public class JumpedState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		jumpReleased = false;
+		mctrl.Jump();
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		mcbt.IncrementFuel();
-
 		if (cc.isGrounded) {
 			animator.SetBool ("Jump", false);
 			animator.SetBool ("Grounded", true);
-		} else {
-			
 		}
 
 		if (Input.GetKeyUp (KeyCode.Space)) {
@@ -28,7 +25,6 @@ public class JumpedState : MechStateMachineBehaviour {
 		}
 
 		if (jumpReleased && Input.GetKey(KeyCode.Space)) {
-			mctrl.ySpeed = mcbt.VerticalBoostSpeed();
 			animator.SetBool("Boost", true);
 		}
 	}
