@@ -49,9 +49,9 @@ public class GameManager : Photon.MonoBehaviour {
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 
-		if (PhotonNetwork.isMasterClient) {
-			SyncTime();
-		}
+//		if (PhotonNetwork.isMasterClient) {
+		SyncTime();
+//		}
 	}
 		
 	public void RegisterPlayer(string name) {

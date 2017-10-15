@@ -33,6 +33,7 @@ public class MechController : Photon.MonoBehaviour {
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
+	private bool canVerticalBoost = false;
 
 	// Animation
 	private float speed;
@@ -99,6 +100,14 @@ public class MechController : Photon.MonoBehaviour {
 		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 		CharacterController.Move(move);
+	}
+
+	public void SetCanVerticalBoost(bool canVBoost) {
+		canVerticalBoost = canVBoost;
+	}
+
+	public bool CanVerticalBoost() {
+		return canVerticalBoost;
 	}
 
 	public void VerticalBoost() {

@@ -485,7 +485,7 @@ MonoBehaviour:
   PlayerPrefab: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   Scoreboard: {fileID: 1755713648}
   PlayerStat: {fileID: 158918, guid: 4321b3f070bb849c6bca02b8dc508745, type: 2}
-  Offline: 1
+  Offline: 0
   SpawnPoints:
   - {fileID: 627666924}
   - {fileID: 240219571}
@@ -1202,16 +1202,6 @@ Prefab:
     - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: instantiationId
       value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 82000013355623540, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: panLevelCustomCurve.m_RotationOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 82000013355623540, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: reverbZoneMixCustomCurve.m_RotationOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_IsActive

@@ -13,6 +13,8 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (Input.GetKey(KeyCode.Space)) {
 			animator.SetBool("Grounded", false);
 			animator.SetBool("Jump", true);
+			mctrl.SetCanVerticalBoost(true);
+			return;
 		}
 
 		if (speed > 0 || speed < 0 || direction > 0 || direction < 0) {
