@@ -40,7 +40,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (inHangar) {
 			buildMech(data.Mech);
 		} else { // Register my name on all clients
-			photonView.RPC("SetName", PhotonTargets.All, PhotonNetwork.playerName);
+			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
 		}
 	}
 		
@@ -50,52 +50,11 @@ public class BuildMech : Photon.MonoBehaviour {
 		findGameManager();
 		gm.RegisterPlayer(name);
 	}
-
+		
 	public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
 		photonView.RPC("buildMech", PhotonTargets.AllBuffered, c, a, l, h, b, w1l, w1r, w2l, w2r);
-//		buildNetworkMech(c, a, l, h, b, w1l, w1r, w2l, w2r);
 	}
-
-//	public void BuildForOther(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
-//		photonView.RPC("buildMech", PhotonTargets., c, a, l, h, b, w1l, w1r, w2l, w2r);
-		//		buildNetworkMech(c, a, l, h, b, w1l, w1r, w2l, w2r);
-//	}
-
-//	private void buildNetworkMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
-//		findHands();
-//		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
-//		for (int i = 0; i < parts.Length; i++) {
-//			parts[i] = parts[i] == null ? defaultParts[i] : parts[i];
-//		}
-//
-//		// Create new array to store skinned mesh renderers 
-//		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
-//
-//		Material[] materials = new Material[5];
-//		for (int i = 0; i < 5; i++) {
-//			// Load mech part
-//			GameObject part = Resources.Load(parts[i], typeof(GameObject)) as GameObject;
-//
-//			// Extract Skinned Mesh
-//			newSMR[i] = part.GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
-//
-//			// Load texture
-//			materials[i] = Resources.Load(parts[i] + "mat", typeof(Material)) as Material;
-//		}
-//
-//		// Replace all
-//		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
-//		for (int i = 0; i < curSMR.Length; i++){
-//			if (newSMR[i] == null) Debug.Log(i + " is null");
-//			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-//			curSMR[i].material = materials[i];
-//			curSMR[i].enabled = true;
-//		}
-//
-//		// Replace weapons
-//		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
-//	}
-		
+				
 	private void findHands() {
 		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");

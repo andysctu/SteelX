@@ -16,14 +16,9 @@ public class JumpedState : MechStateMachineBehaviour {
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (cc == null || !cc.enabled) {
-			Debug.Log("cc: " + cc);
-			if (cc != null) {
-				Debug.Log("enabled: " + cc.enabled);
-			}
 			return;
 		}
-
-		Debug.Log("Grounded: " + cc.isGrounded);
+			
 		if (cc.isGrounded) {
 			animator.SetBool("Jump", false);
 			animator.SetBool("Grounded", true);

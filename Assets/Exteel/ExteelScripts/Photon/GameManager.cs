@@ -10,6 +10,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject PlayerPrefab;
 	[SerializeField] GameObject Scoreboard;
 	[SerializeField] GameObject PlayerStat;
+	[SerializeField] Text Timer;
 	[SerializeField] bool Offline;
 
 	public Transform[] SpawnPoints;
@@ -51,14 +52,9 @@ public class GameManager : Photon.MonoBehaviour {
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 
-//		if (PhotonNetwork.isMasterClient) {
-		SyncTime();
-//		}
-	}
-
-	public void onPhotonPlayerConnected(PhotonPlayer newPlayer) {
-		Mech m = UserData.myData.Mech;
-		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		if (PhotonNetwork.isMasterClient) {
+			SyncTime();
+		}
 	}
 		
 	public void RegisterPlayer(string name) {
@@ -75,7 +71,7 @@ public class GameManager : Photon.MonoBehaviour {
 		ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 		playerScorePanels.Add(name, ps);
 	}
-
+		
 	void SyncTime() {
 		int startTime = PhotonNetwork.ServerTimestamp;
 		ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", MaxTimeInSeconds } };
@@ -91,9 +87,6 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void Update() {
-		if (!photonView.isMine)
-			return;
-		
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
@@ -113,7 +106,9 @@ public class GameManager : Photon.MonoBehaviour {
 			int timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
 			int currentTimer = storedDuration - timerDuration;
 
-//			Debug.Log(timerDuration + "   " + currentTimer);
+			int seconds = timerDuration % 60;
+			int minutes = timerDuration / 60;
+			Timer.text = minutes.ToString("D2") + ":" + seconds.ToString("D2");
 		}
 	}
 
