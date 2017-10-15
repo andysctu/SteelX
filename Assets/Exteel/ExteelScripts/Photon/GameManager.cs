@@ -113,7 +113,7 @@ public class GameManager : Photon.MonoBehaviour {
 			int timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
 			int currentTimer = storedDuration - timerDuration;
 
-			Debug.Log(timerDuration + "   " + currentTimer);
+//			Debug.Log(timerDuration + "   " + currentTimer);
 		}
 	}
 

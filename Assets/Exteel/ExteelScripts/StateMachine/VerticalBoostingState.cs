@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class VerticalBoostingState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled || !cc.isGrounded) return;
 		base.OnStateEnter(animator, stateInfo, layerIndex);
+		if (cc == null || !cc.enabled) return;
 		mctrl.SetCanVerticalBoost(false);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled || !cc.isGrounded) return;
+		if (cc == null || !cc.enabled) return;
 		mctrl.VerticalBoost();
 
 		float speed = Input.GetAxis("Vertical");

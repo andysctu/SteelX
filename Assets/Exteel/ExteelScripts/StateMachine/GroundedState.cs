@@ -14,6 +14,7 @@ public class GroundedState : MechStateMachineBehaviour {
 			animator.SetBool("Grounded", false);
 			animator.SetBool("Jump", true);
 			mctrl.SetCanVerticalBoost(true);
+			mctrl.Jump();
 			return;
 		}
 
