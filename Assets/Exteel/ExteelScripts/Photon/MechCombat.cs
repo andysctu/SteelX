@@ -178,10 +178,11 @@ public class MechCombat : Combat {
 				// Do we need this? Already being displayed in OnHit
 				hud.ShowText(cam, transform.position, "Kill");
 			}
-			// Update scoreboard
-			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
 
 			DisablePlayer();
+
+			// Update scoreboard
+			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
 		}
 	}
 
