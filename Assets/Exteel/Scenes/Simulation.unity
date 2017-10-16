@@ -486,7 +486,7 @@ MonoBehaviour:
   Scoreboard: {fileID: 1755713648}
   PlayerStat: {fileID: 158918, guid: 4321b3f070bb849c6bca02b8dc508745, type: 2}
   Timer: {fileID: 2098613861}
-  Offline: 1
+  Offline: 0
   SpawnPoints:
   - {fileID: 627666924}
   - {fileID: 240219571}
@@ -1188,25 +1188,25 @@ Prefab:
       propertyPath: m_RootOrder
       value: 8
       objectReference: {fileID: 0}
-    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: viewIdField
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: instantiationId
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: viewIdField
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: instantiationId
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: viewIdField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: instantiationId
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: viewIdField
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: instantiationId
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}

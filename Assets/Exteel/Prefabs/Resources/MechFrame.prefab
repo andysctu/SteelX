@@ -2822,23 +2822,23 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: ShootR
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: BlockR
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: BlockL
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: SlashR
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: SlashL
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
   - SynchronizeType: 1
     LayerIndex: 1
-  - SynchronizeType: 0
+  - SynchronizeType: 1
     LayerIndex: 2
 --- !u!114 &11418416
 MonoBehaviour:
@@ -3924,7 +3924,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:

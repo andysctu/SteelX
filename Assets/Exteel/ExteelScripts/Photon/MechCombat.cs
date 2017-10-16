@@ -229,7 +229,7 @@ public class MechCombat : Combat {
 		// Respawn
 		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			isDead = false;
-			photonView.RPC ("EnablePlayer", PhotonTargets.All, null);
+			photonView.RPC("EnablePlayer", PhotonTargets.All, null);
 		}
 
 		// Drain HP bar gradually
@@ -247,7 +247,7 @@ public class MechCombat : Combat {
 
 		// Switch weapons
 		if (!isDead && Input.GetKeyDown (KeyCode.R)) {
-			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
+			photonView.RPC("SwitchWeapons", PhotonTargets.All, null);
 		}
 
 		updateHUD();
@@ -260,26 +260,38 @@ public class MechCombat : Combat {
 	}
 
 	void handleCombat(int handPosition) {
-		if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-			setIsFiring(handPosition, false);
-			return;
+		bool usingRanged = usingRangedWeapon(handPosition);
+		bool usingMelee = usingMeleeWeapon(handPosition);
+		bool usingShield = usingShieldWeapon(handPosition);
+
+		if (usingRanged || usingShield) {
+			if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+				setIsFiring(handPosition, false);
+				return;
+			}
+		} else if (usingMelee) {
+			if (!Input.GetKeyDown(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+				setIsFiring(handPosition, false);
+				return;
+			}
 		}
 
-		if (usingRangedWeapon(handPosition)) {
+		if (usingRanged) {
 			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
 				FireRaycast(camTransform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
 				timeOfLastShotR = Time.time;
 			}
-		} else if (usingMeleeWeapon(handPosition)) {
+		} else if (usingMelee) {
+			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
 				FireRaycast(camTransform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
 				timeOfLastShotR = Time.time;
-				setIsFiring(handPosition, true);
+//				setIsFiring(handPosition, true);
 			} else {
-				setIsFiring(handPosition, false);
+//				setIsFiring(handPosition, false);
 			}
-		} else if (usingShield(handPosition)) {
+		} else if (usingShield) {
 			setIsFiring(handPosition, true);
 		}
 	}
@@ -365,7 +377,7 @@ public class MechCombat : Combat {
 		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
 	}
 
-	bool usingShield(int handPosition) {
+	bool usingShieldWeapon(int handPosition) {
 		return weaponScripts[weaponOffset+handPosition].Animation == "Block";
 	}
 
