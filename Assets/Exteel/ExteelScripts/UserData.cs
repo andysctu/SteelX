@@ -2,9 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using System.IO;
+using UnityEngine.SceneManagement;
 
 public class UserData : NetworkBehaviour {
 	public static Dictionary<int, Data> data;
+
+	private PhotonView PhotonView;
+	private int PlayersInGame = 0;
 
 	public static Data myData;
 
@@ -17,9 +22,18 @@ public class UserData : NetworkBehaviour {
 //		data[connId] = d;
 //	}
 
+	void Awake(){
+		PhotonNetwork.automaticallySyncScene = true;
+		if (string.IsNullOrEmpty(PhotonNetwork.playerName))
+		{
+			PhotonNetwork.playerName = "Guest#" + Random.Range(1, 9999);
+		}
+		PhotonNetwork.sendRate = 60;
+		PhotonNetwork.sendRateOnSerialize = 30;
+
+	}
 	// Use this for initialization
 	void Start () {
-		data = new Dictionary<int,Data>();
-		DontDestroyOnLoad(this);
+		data = new Dictionary<int,Data>(); 
 	}
 }

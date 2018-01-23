@@ -34,9 +34,14 @@ public class LobbyManager: MonoBehaviour {
 	
 	}
 
+	void OnJoinedLobby(){
+		//PhotonNetwork.LoadLevel (1);
+		print ("Joined Lobby");
+	}
+
 	public void CreateRoom() {
 		Debug.Log ("Creating room: " + RoomName.text);
-		PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() { MaxPlayers = 10 }, null);
+		PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() {IsVisible = true, IsOpen = true, MaxPlayers = 10 }, TypedLobby.Default);
 	}
 
 	public void OnPhotonCreateRoomFailed()
@@ -59,7 +64,7 @@ public class LobbyManager: MonoBehaviour {
 
 	public void OnCreatedRoom()
 	{
-		Debug.Log("OnCreatedRoom");
+		Debug.Log("Room created successfully.");
 		PhotonNetwork.LoadLevel("GameLobby");
 	}
 

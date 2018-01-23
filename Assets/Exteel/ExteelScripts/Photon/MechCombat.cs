@@ -16,9 +16,9 @@ public class MechCombat : Combat {
 	private float fuelGain = 1.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
-	private float jumpPower = 50.0f;
-	private float moveSpeed = 60.0f;
-	private float boostSpeed = 100f;
+	private float jumpPower = 80.0f;
+	private float moveSpeed = 40.0f;
+	private float boostSpeed = 80f;
 	private float verticalBoostSpeed = 1f;
 	private float maxVerticalBoostSpeed;
 
@@ -34,6 +34,8 @@ public class MechCombat : Combat {
 	private const int RIGHT_HAND = 1;
 	private float timeOfLastShotL;
 	private float timeOfLastShotR;
+
+
 
 	// Left
 	private bool fireL = false;
@@ -56,10 +58,11 @@ public class MechCombat : Combat {
 	private Slider healthBar;
 	private Slider fuelBar;
 	private HUD hud;
-	private Camera cam;
+	private Camera cam; //*
 
 	// Components
 	private BuildMech bm;
+	private Crosshair crosshair;
 
 	void Start() {
 		findGameManager();
@@ -69,12 +72,14 @@ public class MechCombat : Combat {
 		initComponents();
 		initCombatVariables();
 		initHUD();
+		initCrosshair();
+		initCam ();
 	}
 
 	void initMechStats() {
 		currentHP = MAX_HP;
 		currentFuel = MAX_FUEL;
-		maxVerticalBoostSpeed = boostSpeed / 2;
+		maxVerticalBoostSpeed = boostSpeed / 4;
 	}
 
 	void initTransforms() {
@@ -106,6 +111,13 @@ public class MechCombat : Combat {
 		initHealthAndFuelBars();
 	}
 
+	void initCam(){
+		//cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
+	}
+
+	void initCrosshair(){
+		crosshair = cam.GetComponent<Crosshair> ();
+	}
 	float timeOfLastShot(int handPosition) {
 		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
 	}
@@ -123,40 +135,98 @@ public class MechCombat : Combat {
 		}
 	}
 
-	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
-//		photonView.RPC("BulletTrace", PhotonTargets.All, start, direction);
-		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
-			Debug.Log("Hit tag: " + hit.transform.tag);
-			Debug.Log("Hit name: " + hit.transform.name);
-			if (hit.transform.tag == "Player" || hit.transform.tag == "Drone"){
+	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
+		//Debug.DrawLine(start, (start + 10*direction), Color.red, 10f);
+		if (crosshair == null) {
+			Debug.Log ("Fatal error : crosshair is null");
+		}
+			
+		Transform target;
+		if( (target = crosshair.getCurrentTarget()) != null){
+			Debug.Log("Hit tag: " + target.tag);
+			Debug.Log("Hit name: " + target.name);
+			// start : camera mid point
+			print ("Hit.transform.gameObject.name : " + target.gameObject.name);
+
+			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.gameObject.name);
+			//****
+
+			if (target.tag == "Player" || target.tag == "Drone"){
 				// Apply damage
-				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
+				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 
 				// Effects
-				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
+				//photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
 
 				// UI
-				if (hit.transform.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
-					hud.ShowText (cam, hit.point, "Kill");
+				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
+					hud.ShowText (cam, target.position, "Kill");
 				} else {
-					hud.ShowText (cam, hit.point, "Hit");
+					hud.ShowText (cam, target.position, "Hit");
 				}
-			} else if (hit.transform.tag == "Shield") {
-				hud.ShowText(cam, hit.point, "Defense");
+			} else if (target.tag == "Shield") {
+				hud.ShowText(cam, target.position, "Defense");
 			}
+		}else{
+			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, string.Empty);
 		}
+		/*
+		print ("dir :" + direction);
+		print("start : " + start);
+		*/
+
 	}
+	/*
+	[PunRPC]
+	void RegisterBulletTrace(int handPosition, Vector3 direction , string name) {
+		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[handPosition].position, Quaternion.LookRotation(direction )) as GameObject;
+
+		GameObject target = GameObject.Find (name);
+		if(target == null){
+			Debug.Log ("target can not be found.");
+		}else{
+			bulletTraceClone.transform.SetParent(GameObject.Find(name).transform);
+			Debug.Log ("target is found.");
+
+		}
+
+	}*/
 
 	[PunRPC]
-	void BulletTrace(Vector3 start, Vector3 direction) {
-		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(direction.x, direction.y, direction.z, 1.0f)) as GameObject;
+	void RegisterBulletTrace(int handPosition, Vector3 direction , string name) {
+		StartCoroutine (InstantiateBulletTrace (handPosition, direction, name));
+
+	}
+	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction , string name){
+		int i;
+		for(i=0;i<3;i++){
+			GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[handPosition].position, Quaternion.LookRotation(direction )) as GameObject;
+			GameObject target = GameObject.Find (name);
+			if(string.IsNullOrEmpty(name) || target == null){
+				Debug.Log ("target can not be found => move directly. ");
+			}else{
+				bulletTraceClone.transform.SetParent(GameObject.Find(name).transform);
+				Debug.Log ("target is found.");
+			}
+			yield return new WaitForSeconds(0.3f);
+		}
+
 	}
 
+	/*
+	[PunRPC]
+	void BulletTrace(int handPosition, Vector3 direction) {
+		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[handPosition].position, Quaternion.LookRotation(direction) ) as GameObject;
+	}
+	*/
+
+	/*
 	[PunRPC]
 	void BulletImpact(Vector3 point, Vector3 rot) {
 		GameObject bulletImpactClone = Instantiate(bulletImpact, point, new Quaternion(rot.x,rot.y,rot.z,1.0f)) as GameObject;
 	}
+	*/
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
@@ -275,17 +345,24 @@ public class MechCombat : Combat {
 				return;
 			}
 		}
-
 		if (usingRanged) {
 			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
-				FireRaycast(camTransform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
+				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
 				timeOfLastShotR = Time.time;
 			}
+
+			if (getIsFiring (1-handPosition) == true) {
+				if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + 1-handPosition].Rate) {
+					FireRaycast (cam.transform.TransformPoint (0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts [weaponOffset + 1-handPosition].Damage, weaponScripts [weaponOffset + 1-handPosition].Range, 1-handPosition);
+					timeOfLastShotL = Time.time;
+				}
+			}
+
 		} else if (usingMelee) {
 			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
-				FireRaycast(camTransform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
+				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
 				timeOfLastShotR = Time.time;
 //				setIsFiring(handPosition, true);
 			} else {
@@ -302,7 +379,7 @@ public class MechCombat : Combat {
 
 		if (getIsFiring(handPosition)) {
 			// Rotate arm to point to where you are looking (left hand is opposite)
-			float x = camTransform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
+			float x = cam.transform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
 
 			// Start animation
 			animator.SetBool(animationStr, true);

@@ -10,7 +10,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	[SerializeField] GameObject boostFlame;
 
-	public float Gravity = 2.0f;
+	public float Gravity = 4.0f;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
@@ -41,6 +41,7 @@ public class MechController : Photon.MonoBehaviour {
 	private bool boost;
 	private bool grounded;
 	private bool jump;
+
 
 	// Unused
 	[SerializeField] Transform[] Legs;
@@ -77,7 +78,8 @@ public class MechController : Photon.MonoBehaviour {
 		if (!CharacterController.isGrounded) {
 			ySpeed -= Gravity;
 		} else {
-			ySpeed = 0;
+			//ySpeed = 0;
+			ySpeed = -CharacterController.stepOffset / Time.deltaTime;
 		}
 
 		if (animator == null) {
@@ -111,20 +113,36 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void VerticalBoost() {
+		Boost (true);
 		ySpeed = mechCombat.MaxVerticalBoostSpeed();
 	}
 
 	public void Jump() {
+		if(boostFlame.active == true) //temporary sol. for running not shutting boost down
+			photonView.RPC ("BoostFlame", PhotonTargets.All,false);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
 	}
 
 	public void Run() {
+		if(boostFlame.active == true) //temporary sol. for running not shutting boost down
+			photonView.RPC ("BoostFlame", PhotonTargets.All,false);
 		xSpeed = mechCombat.MoveSpeed();
 		zSpeed = mechCombat.MoveSpeed();
 	}
 
-	public void Boost() {
+	public void Boost(bool toggleFlame = true) {
+		if (toggleFlame == true) {
+			if (boostFlame.active == false) {
+				photonView.RPC ("BoostFlame", PhotonTargets.All, toggleFlame);
+			}
+		}
+		else{
+			if (boostFlame.active == true) {
+				photonView.RPC ("BoostFlame", PhotonTargets.All, toggleFlame);
+			}
+			return;
+		}
 		xSpeed = mechCombat.BoostSpeed();
 		zSpeed = mechCombat.BoostSpeed();
 	}
@@ -150,7 +168,7 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	[PunRPC]
-	void Boost(bool boost) {
+	void BoostFlame(bool boost) {
 		boostFlame.SetActive(boost);
 	}
 

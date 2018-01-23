@@ -2,6 +2,6 @@
 	public APS403() {
 		Damage = 25;
 		Range = 500;
-		Rate = 3;
+		Rate = 1;
 	}
 }

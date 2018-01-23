@@ -3,20 +3,22 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Crosshair : MonoBehaviour {
-	
+
+	public float CrosshairRadius = 15f;
+	public float MaxDistance = 100f;
 	public Sprite CrosshairNormal;
 	public Sprite CrosshairTarget;
 
-	private Camera playerSight;
+	private Camera camera;
 	private Image currentCrosshair;
-	private LayerMask layerMask = (1 << 8);
-	private RaycastHit hit;
+	public LayerMask layerMask = 8;
 
+	private Transform target;
 	public const float CAM_DISTANCE_TO_MECH = 20f;
 	// Use this for initialization
 	void Start () {
-		playerSight = GetComponent<Camera>();
-		currentCrosshair = GetComponentInChildren<Image>();
+		camera = transform.GetComponent<Camera>();
+		currentCrosshair = transform.GetComponentInChildren<Image>();
 	}
 
 	public void NoCrosshair() {
@@ -25,12 +27,21 @@ public class Crosshair : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-//		Debug.Log("ps: " + playerSight.transform.position.x + ", " + playerSight.transform.position.y + ", " + playerSight.transform.position.z);
-		Debug.DrawLine(playerSight.transform.TransformPoint(0, 0, CAM_DISTANCE_TO_MECH), playerSight.transform.TransformPoint(0, 0, CAM_DISTANCE_TO_MECH) + playerSight.transform.forward * 20);
-		if (Physics.Raycast(playerSight.transform.TransformPoint(0, 0, CAM_DISTANCE_TO_MECH), playerSight.transform.forward, out hit, Mathf.Infinity, layerMask)){
+		RaycastHit hit;
+		//Debug.DrawLine (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH) + camera.transform.forward * 20);
+
+		if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadius, camera.transform.forward, out hit, MaxDistance, layerMask)) {
 			currentCrosshair.sprite = CrosshairTarget;
+			target = hit.transform;
+
+			//play Lock sound
 		} else {
 			currentCrosshair.sprite = CrosshairNormal;
+			target = null;
 		}
+	}
+
+	public Transform getCurrentTarget(){
+		return target;
 	}
 }

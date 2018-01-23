@@ -31,7 +31,7 @@ public class GameManager : Photon.MonoBehaviour {
 	int storedDuration;
 
 	private BuildMech mechBuilder;
-
+	float curtime;
 	void Start() {
 		if (Offline) {
 			PhotonNetwork.offlineMode = true;
@@ -44,10 +44,13 @@ public class GameManager : Photon.MonoBehaviour {
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
 
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
+		//GameObject player = PlayerNetwork.instance.player;
+
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
-		mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		playerScorePanels = new Dictionary<string, GameObject>();
+		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+
 
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
@@ -87,6 +90,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void Update() {
+		Cursor.lockState = CursorLockMode.Locked;
 		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
@@ -142,6 +146,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public bool GameOver() {
+		Cursor.lockState = CursorLockMode.None;
 		return CurrentMaxKills >= MaxKills;
 	}
 }

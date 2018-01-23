@@ -27,16 +27,42 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		// Get parts info
 		Data data = UserData.myData;
-		data.Mech.Core = data.Mech.Core == null ? defaultParts[0] : data.Mech.Core;
-		data.Mech.Arms = data.Mech.Arms == null ? defaultParts[1] : data.Mech.Arms;
-		data.Mech.Legs = data.Mech.Legs == null ? defaultParts[2] : data.Mech.Legs;
-		data.Mech.Head = data.Mech.Head == null ? defaultParts[3] : data.Mech.Head;
-		data.Mech.Booster = data.Mech.Booster == null ? defaultParts[4] : data.Mech.Booster;
-		data.Mech.Weapon1L = data.Mech.Weapon1L == null ? defaultParts[5] : data.Mech.Weapon1L;
-		data.Mech.Weapon1R = data.Mech.Weapon1R == null ? defaultParts[6] : data.Mech.Weapon1R;
-		data.Mech.Weapon2L = data.Mech.Weapon2L == null ? defaultParts[7] : data.Mech.Weapon2L;
-		data.Mech.Weapon2R = data.Mech.Weapon2R == null ? defaultParts[8] : data.Mech.Weapon2R;
-		data.User.PilotName = data.User.PilotName == null ? "Default Pilot" : data.User.PilotName;
+		data.Mech.Core = string.IsNullOrEmpty(data.Mech.Core)? defaultParts[0] : data.Mech.Core;
+		data.Mech.Arms = string.IsNullOrEmpty(data.Mech.Arms)? defaultParts[1] : data.Mech.Arms;
+		data.Mech.Legs = string.IsNullOrEmpty(data.Mech.Legs)? defaultParts[2] : data.Mech.Legs;
+		data.Mech.Head = string.IsNullOrEmpty(data.Mech.Head)? defaultParts[3] : data.Mech.Head;
+		data.Mech.Booster = string.IsNullOrEmpty(data.Mech.Booster) ? defaultParts[4] : data.Mech.Booster;
+		data.Mech.Weapon1L = string.IsNullOrEmpty(data.Mech.Weapon1L) ? defaultParts[6] : data.Mech.Weapon1L;
+		data.Mech.Weapon1R = string.IsNullOrEmpty(data.Mech.Weapon1R) ? defaultParts[6] : data.Mech.Weapon1R;
+		data.Mech.Weapon2L = string.IsNullOrEmpty(data.Mech.Weapon2L) ? defaultParts[7] : data.Mech.Weapon2L;
+		data.Mech.Weapon2R = string.IsNullOrEmpty(data.Mech.Weapon2R) ? defaultParts[8] : data.Mech.Weapon2R;
+		data.User.PilotName = string.IsNullOrEmpty(data.User.PilotName) ? "Default Pilot" : data.User.PilotName;
+
+		//setting userdata for testing
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Core) == true)
+			UserData.myData.Mech.Core = defaultParts [0];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Arms) == true)
+			UserData.myData.Mech.Arms = defaultParts [1];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Legs) == true)
+			UserData.myData.Mech.Legs = defaultParts [2];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Head) == true)
+			UserData.myData.Mech.Head = defaultParts [3];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Booster) == true)
+			UserData.myData.Mech.Booster = defaultParts [4];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon1L) == true)
+			UserData.myData.Mech.Weapon1L = defaultParts [6];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon1R) == true)
+			UserData.myData.Mech.Weapon1R = defaultParts [6];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon2L) == true)
+			UserData.myData.Mech.Weapon2L = defaultParts [7];
+		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon2R) == true)
+			UserData.myData.Mech.Weapon2R = defaultParts [8];
+
+
+
+
+
+
 		if (inHangar) {
 			buildMech(data.Mech);
 		} else { // Register my name on all clients
@@ -73,7 +99,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		findHands ();
 		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
 		for (int i = 0; i < parts.Length; i++) {
-			parts [i] = parts [i] == null ? defaultParts [i] : parts [i];
+			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
 		}
 			
 		// Create new array to store skinned mesh renderers 

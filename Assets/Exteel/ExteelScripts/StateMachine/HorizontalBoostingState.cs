@@ -17,13 +17,14 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 		if (mcbt.FuelEmpty() || !Input.GetKey(KeyCode.LeftShift)) {
 			animator.SetBool("Boost", false);
+			mctrl.Boost (false);
 			return;
 		}
 
 		if (Input.GetKey(KeyCode.Space)) {
-			animator.SetBool("Boost", false);
-			animator.SetBool("Grounded", false);
-			animator.SetBool("Jump", true);
+			//animator.SetBool("Boost", false);
+			//animator.SetBool("Grounded", false);
+			//animator.SetBool("Jump", true);
 		}
 	}
 }

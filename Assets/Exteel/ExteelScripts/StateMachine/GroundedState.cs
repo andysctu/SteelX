@@ -9,6 +9,7 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled || !cc.isGrounded) return;
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
+		mctrl.Boost (false);
 
 		if (Input.GetKey(KeyCode.Space)) {
 			animator.SetBool("Grounded", false);

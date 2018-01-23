@@ -14,7 +14,7 @@ public class EnableLocal : MonoBehaviour {
 
 		// Enable camera/radar
 		foreach (Camera c in GetComponentsInChildren<Camera>()){
-			c.enabled = true;
+				c.enabled = true;
 		}
 
 		GetComponentInChildren<MechCamera>().enabled = true;
@@ -25,6 +25,7 @@ public class EnableLocal : MonoBehaviour {
 		// Enable crosshair
 		GetComponentInChildren<Crosshair>().enabled = true;
 
+		
 		GameObject crossHairImage = transform.Find("Camera/Canvas/CrosshairImage").gameObject;
 		crossHairImage.SetActive(true);
 		// Disable your own cube

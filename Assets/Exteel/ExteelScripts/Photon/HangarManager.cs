@@ -131,22 +131,23 @@ public class HangarManager : MonoBehaviour {
 
 	public void Back() {
 		// Save mech
-		WWWForm form = new WWWForm();
+		//WWWForm form = new WWWForm();
 
-		form.AddField("uid", UserData.myData.User.Uid);
+		/*form.AddField("uid", UserData.myData.User.Uid);
 		foreach (KeyValuePair<string, string> entry in equipped) {
 			form.AddField(entry.Key, entry.Value);
-		}
+		}*/
 
+		/*
 		WWW www = new WWW(MechHandlerURL, form);
-		while (!www.isDone) {}
-
+		while (!www.isDone) {}*/
+		/*
 		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
 			string json = www.text;
 			Mech m = JsonUtility.FromJson<Mech>(json);
 			UserData.myData.Mech = m;
 			UserData.myData.Mech.PopulateParts();
-		}
+		}*/
 
 		// Return to lobby
 		SceneManager.LoadScene ("Lobby");
