@@ -5,7 +5,7 @@ AnimationClip:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Sword L2
+  m_Name: Sword R2
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20584,7 +20584,7 @@ AnimationClip:
     m_KeepOriginalPositionY: 1
     m_KeepOriginalPositionXZ: 0
     m_HeightFromFeet: 0
-    m_Mirror: 0
+    m_Mirror: 1
   m_EditorCurves:
   - curve:
       serializedVersion: 2
@@ -40222,7 +40222,7 @@ AnimationClip:
   m_GenerateMotionCurves: 0
   m_Events:
   - time: 0
-    functionName: CallLSlashPlaying
+    functionName: CallRSlashPlaying
     data: 
     objectReferenceParameter: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e,
       type: 2}
@@ -40230,7 +40230,7 @@ AnimationClip:
     intParameter: 1
     messageOptions: 0
   - time: 0.93333334
-    functionName: CallSlashL2ToFalse
+    functionName: CallSlashR2ToFalse
     data: 
     objectReferenceParameter: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e,
       type: 2}
@@ -40238,7 +40238,7 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.96666664
-    functionName: CallLSlashPlaying
+    functionName: CallRSlashPlaying
     data: 
     objectReferenceParameter: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e,
       type: 2}

@@ -35,18 +35,14 @@ public class MechCombat : Combat {
 	private float timeOfLastShotL;
 	private float timeOfLastShotR;
 
-
-
 	// Left
 	private bool fireL = false;
 	private bool shootingL = false;
 	private int isLSlashPlaying = 0;
-	private bool SlashL2 = false;
-	private bool SlashL3 = false;
 	// Right
 	private bool fireR = false;
 	private bool shootingR = false;
-
+	private int isRSlashPlaying = 0;
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -55,6 +51,7 @@ public class MechCombat : Combat {
 
 	// GameObjects
 	private GameObject[] weapons;
+	private GameObject Target;
 
 	// HUD
 	private Slider healthBar;
@@ -138,11 +135,12 @@ public class MechCombat : Combat {
 	}
 
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
-		//Debug.DrawLine(start, (start + 10*direction), Color.red, 10f);
 		if (crosshair == null) {
 			Debug.Log ("Fatal error : crosshair is null");
 		}
-			
+
+		//Target : GameObject
+		Target = null;
 		Transform target;
 		if( (target = crosshair.getCurrentTarget()) != null){
 			Debug.Log("Hit tag: " + target.tag);
@@ -151,17 +149,14 @@ public class MechCombat : Combat {
 			print ("Hit.transform.gameObject.name : " + target.gameObject.name);
 
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.gameObject.name);
-			//****
 
 			if (target.tag == "Player" || target.tag == "Drone"){
-				// Apply damage
+				//* Apply damage when the bullet collides the target ( using calculated traveling time )
+
 				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 
-				// Effects
-				//photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
-
-				// UI
+				//* UI : calculate the traveling time s.t. it shows text when the bullet collides the target
 				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
 					hud.ShowText (cam, target.position, "Kill");
 				} else {
@@ -173,42 +168,23 @@ public class MechCombat : Combat {
 		}else{
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, string.Empty);
 		}
-		/*
-		print ("dir :" + direction);
-		print("start : " + start);
-		*/
 
 	}
-	/*
-	[PunRPC]
-	void RegisterBulletTrace(int handPosition, Vector3 direction , string name) {
-		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[handPosition].position, Quaternion.LookRotation(direction )) as GameObject;
-
-		GameObject target = GameObject.Find (name);
-		if(target == null){
-			Debug.Log ("target can not be found.");
-		}else{
-			bulletTraceClone.transform.SetParent(GameObject.Find(name).transform);
-			Debug.Log ("target is found.");
-
-		}
-
-	}*/
 
 	[PunRPC]
 	void RegisterBulletTrace(int handPosition, Vector3 direction , string name) {
+		Target = GameObject.Find (name);
 		StartCoroutine (InstantiateBulletTrace (handPosition, direction, name));
-
 	}
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction , string name){
 		int i;
 		for(i=0;i<3;i++){
 			GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[handPosition].position, Quaternion.LookRotation(direction )) as GameObject;
-			GameObject target = GameObject.Find (name);
-			if(string.IsNullOrEmpty(name) || target == null){
+
+			if(string.IsNullOrEmpty(name) || Target == null){
 				Debug.Log ("target can not be found => move directly. ");
 			}else{
-				bulletTraceClone.transform.SetParent(GameObject.Find(name).transform);
+				bulletTraceClone.transform.SetParent(Target.transform);
 				Debug.Log ("target is found.");
 			}
 			yield return new WaitForSeconds(0.3f);
@@ -347,62 +323,43 @@ public class MechCombat : Combat {
 				return;
 			}
 		}
-		if (usingRanged) {
-			setIsFiring(handPosition, true);
-			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
-				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
-				timeOfLastShotR = Time.time;
-			}
 
-			if (getIsFiring (1-handPosition) == true) {
-				if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + 1-handPosition].Rate) {
-					FireRaycast (cam.transform.TransformPoint (0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts [weaponOffset + 1-handPosition].Damage, weaponScripts [weaponOffset + 1-handPosition].Range, 1-handPosition);
+		if (usingRanged) {
+			if (Time.time - ((handPosition == 1)? timeOfLastShotR :timeOfLastShotL) >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				setIsFiring(handPosition, true);
+				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
+				if(handPosition == 1){
+					timeOfLastShotR = Time.time;
+				}else {
 					timeOfLastShotL = Time.time;
 				}
 			}
-
 		} else if (usingMelee) {
-			setIsFiring(handPosition, true);
-			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
-				//FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
-				timeOfLastShotR = Time.time;
-				/*
+			if (Time.time -((handPosition == 1)? timeOfLastShotR :timeOfLastShotL) >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				setIsFiring(handPosition, true);
+				//* Detect if the box collides any target 
+
+				//SlashL2 & L3 is set to false by animation calling Combo.cs -> MechCombat.cs
+				//* maybe put it in handleAnimation() ? 
 				if(handPosition == 0){
+					timeOfLastShotL = Time.time;
 					if (isLSlashPlaying == 1) {
-						if (SlashL2 == false) {
-							SlashL2 = true;
+						if (animator.GetBool("SlashL2") == false) {
+							animator.SetBool ("SlashL2",true);
 						} else
-							SlashL3 = true;
+							animator.SetBool ("SlashL3",true);
 					}
 				}else if(handPosition == 1){
-
-				}
-				*/
-				setIsFiring(handPosition, true);
-
-
-			} else {
-				setIsFiring(handPosition, false);
-			}
-
-			print ("isLSlashPlaying : " + isLSlashPlaying + "with hand position : " + handPosition); // received 1 & 0 
-			if(handPosition == 0){
-				if (isLSlashPlaying == 1) {
-					print ("SlashL2 : " + SlashL2 + " SlashL3 : " + SlashL3);
-					if (SlashL2 == false) {
-						SlashL2 = true;
-						animator.SetBool ("SlashL2", true);
-						print ("SlashL2 is set to true.");
-					} else {
-						SlashL3 = true;
-						animator.SetBool ("SlashL3", true);
-						print ("SlashL3 is set to true.");
+					timeOfLastShotR = Time.time;
+					if (isRSlashPlaying == 1) {
+						if (animator.GetBool("SlashR2") == false) {
+							print ("SlashR2 is set to true");
+							animator.SetBool ("SlashR2",true);
+						} else
+							animator.SetBool ("SlashR3",true);
 					}
 				}
-			}else if(handPosition == 1){
-
 			}
-
 		} else if (usingShield) {
 			setIsFiring(handPosition, true);
 		}
@@ -423,7 +380,7 @@ public class MechCombat : Combat {
 			if (usingRangedWeapon(handPosition)) { // Shooting
 				shoulderR.Rotate (0, x, 0);
 			} else if (usingMeleeWeapon(handPosition)) { // Slashing
-				
+
 			}
 		} else {
 			animator.SetBool(animationStr, false); // Stop animation
@@ -542,12 +499,20 @@ public class MechCombat : Combat {
 		print ("received isPlaying : " + isPlaying); //has received
 	}
 	public void SetSlashL2ToFalse(){
-		SlashL2 = false;
 		animator.SetBool ("SlashL2", false);
 	}
 	public void SetSlashL3ToFalse(){
-		SlashL3 = false;
 		animator.SetBool ("SlashL3", false);
+	}
+	public void SetIsRSlashPlaying(int isPlaying){
+		isRSlashPlaying = isPlaying;
+		print ("received isPlaying : " + isPlaying); //has received
+	}
+	public void SetSlashR2ToFalse(){
+		animator.SetBool ("SlashR2", false);
+	}
+	public void SetSlashR3ToFalse(){
+		animator.SetBool ("SlashR3", false);
 	}
 
 //	public void BulletTraceEvent() {
