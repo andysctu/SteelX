@@ -743,6 +743,7 @@ GameObject:
   - component: {fileID: 11465704}
   - component: {fileID: 114000010976113334}
   - component: {fileID: 82000013355623540}
+  - component: {fileID: 114895722533198232}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -2832,6 +2833,12 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: SlashL
+  - Type: 4
+    SynchronizeType: 0
+    Name: Slash2L
+  - Type: 4
+    SynchronizeType: 0
+    Name: Slash3L
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -4144,6 +4151,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114895722533198232
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!135 &135631605668770392

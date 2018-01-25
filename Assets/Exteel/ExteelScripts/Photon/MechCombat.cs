@@ -40,7 +40,9 @@ public class MechCombat : Combat {
 	// Left
 	private bool fireL = false;
 	private bool shootingL = false;
-
+	private int isLSlashPlaying = 0;
+	private bool SlashL2 = false;
+	private bool SlashL3 = false;
 	// Right
 	private bool fireR = false;
 	private bool shootingR = false;
@@ -362,12 +364,45 @@ public class MechCombat : Combat {
 		} else if (usingMelee) {
 			setIsFiring(handPosition, true);
 			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
-				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
+				//FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
 				timeOfLastShotR = Time.time;
-//				setIsFiring(handPosition, true);
+				/*
+				if(handPosition == 0){
+					if (isLSlashPlaying == 1) {
+						if (SlashL2 == false) {
+							SlashL2 = true;
+						} else
+							SlashL3 = true;
+					}
+				}else if(handPosition == 1){
+
+				}
+				*/
+				setIsFiring(handPosition, true);
+
+
 			} else {
-//				setIsFiring(handPosition, false);
+				setIsFiring(handPosition, false);
 			}
+
+			print ("isLSlashPlaying : " + isLSlashPlaying + "with hand position : " + handPosition); // received 1 & 0 
+			if(handPosition == 0){
+				if (isLSlashPlaying == 1) {
+					print ("SlashL2 : " + SlashL2 + " SlashL3 : " + SlashL3);
+					if (SlashL2 == false) {
+						SlashL2 = true;
+						animator.SetBool ("SlashL2", true);
+						print ("SlashL2 is set to true.");
+					} else {
+						SlashL3 = true;
+						animator.SetBool ("SlashL3", true);
+						print ("SlashL3 is set to true.");
+					}
+				}
+			}else if(handPosition == 1){
+
+			}
+
 		} else if (usingShield) {
 			setIsFiring(handPosition, true);
 		}
@@ -383,7 +418,7 @@ public class MechCombat : Combat {
 
 			// Start animation
 			animator.SetBool(animationStr, true);
-
+			print (animationStr + " is set to true.");
 			// Tweaks
 			if (usingRangedWeapon(handPosition)) { // Shooting
 				shoulderR.Rotate (0, x, 0);
@@ -500,6 +535,19 @@ public class MechCombat : Combat {
 
 	public float MaxVerticalBoostSpeed() {
 		return maxVerticalBoostSpeed;
+	}
+
+	public void SetIsLSlashPlaying(int isPlaying){
+		isLSlashPlaying = isPlaying;
+		print ("received isPlaying : " + isPlaying); //has received
+	}
+	public void SetSlashL2ToFalse(){
+		SlashL2 = false;
+		animator.SetBool ("SlashL2", false);
+	}
+	public void SetSlashL3ToFalse(){
+		SlashL3 = false;
+		animator.SetBool ("SlashL3", false);
 	}
 
 //	public void BulletTraceEvent() {

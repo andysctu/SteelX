@@ -19,6 +19,7 @@ public class HangarManager : MonoBehaviour {
 	private Dictionary<string, string> equipped;
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
 
+
 	// Use this for initialization
 	void Start () {
 		equipped = new Dictionary<string, string>();
