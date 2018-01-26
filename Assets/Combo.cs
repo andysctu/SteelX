@@ -7,6 +7,12 @@ public class Combo : MonoBehaviour {
 	public void CallLSlashPlaying(int isPlaying){
 		GetComponentInParent<MechCombat> ().SetIsLSlashPlaying(isPlaying);
 	}
+	public void CallSlashL1ToFalse(){
+		GetComponentInParent<MechCombat> ().SetSlashL1ToFalse();
+	}
+	public void CallSlashR1ToFalse(){
+		GetComponentInParent<MechCombat> ().SetSlashR1ToFalse();
+	}
 	public void CallSlashL2ToFalse(){
 		GetComponentInParent<MechCombat> ().SetSlashL2ToFalse();
 	}

@@ -4,13 +4,11 @@ using System.Collections;
 
 public class Crosshair : MonoBehaviour {
 
-	public float CrosshairRadius = 15f;
+	public float CrosshairRadius = 25f;
 	public float MaxDistance = 100f;
-	public Sprite CrosshairNormal;
-	public Sprite CrosshairTarget;
 
+	private CrosshairImage crosshairImage;
 	private Camera camera;
-	private Image currentCrosshair;
 	public LayerMask layerMask = 8;
 
 	private Transform target;
@@ -18,25 +16,28 @@ public class Crosshair : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		camera = transform.GetComponent<Camera>();
-		currentCrosshair = transform.GetComponentInChildren<Image>();
+		crosshairImage = GetComponentInChildren<CrosshairImage> ();
+		if (crosshairImage == null)
+			print ("crosshairImage is null.");
+		crosshairImage.SetRadius (CrosshairRadius);
+		crosshairImage.SetCurrentImage (0);
 	}
 
 	public void NoCrosshair() {
-		currentCrosshair = null;
+		crosshairImage.noCrosshair = true;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 		RaycastHit hit;
 		//Debug.DrawLine (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH) + camera.transform.forward * 20);
 
 		if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadius, camera.transform.forward, out hit, MaxDistance, layerMask)) {
-			currentCrosshair.sprite = CrosshairTarget;
+			crosshairImage.SetCurrentImage (1);
 			target = hit.transform;
 
 			//play Lock sound
 		} else {
-			currentCrosshair.sprite = CrosshairNormal;
+			crosshairImage.SetCurrentImage (0);
 			target = null;
 		}
 	}

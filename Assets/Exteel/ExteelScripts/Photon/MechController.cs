@@ -33,6 +33,7 @@ public class MechController : Photon.MonoBehaviour {
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
+	private float SlashMovingSpeed;
 	private bool canVerticalBoost = false;
 
 	// Animation
@@ -41,6 +42,8 @@ public class MechController : Photon.MonoBehaviour {
 	private bool boost;
 	private bool grounded;
 	private bool jump;
+	//public bool isSlashPlaying = false;
+	//private bool wasOnSlashing = false;
 
 
 	// Unused
@@ -71,7 +74,22 @@ public class MechController : Photon.MonoBehaviour {
 
 	void FixedUpdate() {
 		// Do nothing if CharacterController not found & slashing
-		if (CharacterController == null || !CharacterController.enabled || mechCombat.isLSlashPlaying==1 || mechCombat.isRSlashPlaying ==1){
+		if (CharacterController == null || !CharacterController.enabled ){
+			return;
+		}
+		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
+			/*
+			if (wasOnSlashing == false) {
+				//Enter
+				SlashMovingSpeed = 3f;
+			}
+			CharacterController.Move(transform.forward * SlashMovingSpeed);
+			SlashMovingSpeed /= 1.5f;
+			wasOnSlashing = true;
+			return;
+		} else{
+			wasOnSlashing = false;
+			*/
 			return;
 		}
 

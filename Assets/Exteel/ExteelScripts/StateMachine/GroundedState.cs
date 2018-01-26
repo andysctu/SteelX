@@ -10,6 +10,11 @@ public class GroundedState : MechStateMachineBehaviour {
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
+		if(animator.GetBool("Boost") == true && !Input.GetKey(KeyCode.LeftShift)){
+			animator.SetBool ("Boost", false); // happens when boosting before slashing
+			mctrl.Boost(false);
+		}
+
 		if (Input.GetKey(KeyCode.Space)) {
 			animator.SetBool("Grounded", false);
 			animator.SetBool("Jump", true);

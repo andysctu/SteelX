@@ -3,6 +3,6 @@
 		Damage = 100;
 		Range = 25;
 		Animation = "Slash";
-		Rate = 2f;
+		Rate = 1.5f;
 	}
 }
