@@ -9,12 +9,10 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled || !cc.isGrounded) return;
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
-		mctrl.Boost (false);
 
 		if (Input.GetKey(KeyCode.Space)) {
 			animator.SetBool("Grounded", false);
 			animator.SetBool("Jump", true);
-			mctrl.SetCanVerticalBoost(true);
 			mctrl.Jump();
 			return;
 		}
@@ -24,7 +22,7 @@ public class GroundedState : MechStateMachineBehaviour {
 
 			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost()) {
 				animator.SetBool("Boost", true);
-				mctrl.Boost();
+				mctrl.Boost(true);
 			}
 		}
 			

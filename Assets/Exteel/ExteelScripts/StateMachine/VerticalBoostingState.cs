@@ -7,6 +7,7 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 		mctrl.SetCanVerticalBoost(false);
+		mctrl.Boost (true);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

@@ -70,7 +70,7 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		// Do nothing if CharacterController not found
+		// Do nothing if CharacterController not found & slashing
 		if (CharacterController == null || !CharacterController.enabled || mechCombat.isLSlashPlaying==1 || mechCombat.isRSlashPlaying ==1){
 			return;
 		}
@@ -113,36 +113,21 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void VerticalBoost() {
-		Boost (true);
 		ySpeed = mechCombat.MaxVerticalBoostSpeed();
 	}
 
 	public void Jump() {
-		if(boostFlame.active == true) //temporary sol. for running not shutting boost down
-			photonView.RPC ("BoostFlame", PhotonTargets.All,false);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
 	}
 
 	public void Run() {
-		if(boostFlame.active == true) //temporary sol. for running not shutting boost down
-			photonView.RPC ("BoostFlame", PhotonTargets.All,false);
 		xSpeed = mechCombat.MoveSpeed();
 		zSpeed = mechCombat.MoveSpeed();
 	}
 
-	public void Boost(bool toggleFlame = true) {
-		if (toggleFlame == true) {
-			if (boostFlame.active == false) {
-				photonView.RPC ("BoostFlame", PhotonTargets.All, toggleFlame);
-			}
-		}
-		else{
-			if (boostFlame.active == true) {
-				photonView.RPC ("BoostFlame", PhotonTargets.All, toggleFlame);
-			}
-			return;
-		}
+	public void Boost(bool boost) {
+		photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
 		xSpeed = mechCombat.BoostSpeed();
 		zSpeed = mechCombat.BoostSpeed();
 	}
