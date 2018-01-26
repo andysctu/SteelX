@@ -63,6 +63,7 @@ public class MechCombat : Combat {
 	// Components
 	private BuildMech bm;
 	private Crosshair crosshair;
+	private SlashDetector slashDetector;
 
 	void Start() {
 		findGameManager();
@@ -74,6 +75,7 @@ public class MechCombat : Combat {
 		initHUD();
 		initCrosshair();
 		initCam ();
+		initSlashDetector();
 	}
 
 	void initMechStats() {
@@ -134,7 +136,9 @@ public class MechCombat : Combat {
 			}
 		}
 	}
-
+	void initSlashDetector(){
+		slashDetector = GetComponentInChildren<SlashDetector> ();
+	}
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
 		if (crosshair == null) {
 			Debug.Log ("Fatal error : crosshair is null");
@@ -170,6 +174,42 @@ public class MechCombat : Combat {
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, string.Empty);
 		}
 
+	}
+
+	void SlashDetect(int damage){
+		Target = null;
+		Transform target;
+
+		if(slashDetector == null){
+			Debug.Log ("Fatal error : slashDetector is null");
+		}
+
+		if ((target = slashDetector.getCurrentTarget ()) != null) {
+			print ("Slash hit : " + target.gameObject.name);
+
+			photonView.RPC ("SlashOnTarget", PhotonTargets.All, target.gameObject.name);
+
+			if (target.tag == "Player" || target.tag == "Drone") {
+				//* Apply damage when the bullet collides the target ( using calculated traveling time )
+
+				target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
+
+				if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
+					hud.ShowText (cam, target.position, "Kill");
+				} else {
+					hud.ShowText (cam, target.position, "Hit");
+				}
+			} else if (target.tag == "Shield") {
+				hud.ShowText (cam, target.position, "Defense");
+			}
+		} else
+			print ("no current target.");
+	}
+
+	[PunRPC]
+	void SlashOnTarget(string name) {
+		Target = GameObject.Find (name);
+		//**
 	}
 
 	[PunRPC]
@@ -342,22 +382,25 @@ public class MechCombat : Combat {
 
 				//SlashL2 & L3 is set to false by animation calling Combo.cs -> MechCombat.cs
 				//* maybe put it in handleAnimation() ? 
+				SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage);
 				if(handPosition == 0){
 					timeOfLastShotL = Time.time;
 					if (isLSlashPlaying == 1) {
-						if (animator.GetBool("SlashL2") == false) {
-							animator.SetBool ("SlashL2",true);
-						} else
-							animator.SetBool ("SlashL3",true);
+						if (animator.GetBool ("SlashL2") == false) {
+							animator.SetBool ("SlashL2", true);
+						} else {
+							animator.SetBool ("SlashL3", true);
+						}
 					}
 				}else if(handPosition == 1){
 					timeOfLastShotR = Time.time;
 					if (isRSlashPlaying == 1) {
-						if (animator.GetBool("SlashR2") == false) {
+						if (animator.GetBool ("SlashR2") == false) {
 							print ("SlashR2 is set to true");
-							animator.SetBool ("SlashR2",true);
-						} else
-							animator.SetBool ("SlashR3",true);
+							animator.SetBool ("SlashR2", true);
+						} else {
+							animator.SetBool ("SlashR3", true);
+						}
 					}
 				}
 			}
