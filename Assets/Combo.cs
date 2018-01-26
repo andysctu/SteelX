@@ -5,7 +5,6 @@ using UnityEngine;
 public class Combo : MonoBehaviour {
 
 	public void CallLSlashPlaying(int isPlaying){
-		print ("isPlaying : " + isPlaying);
 		GetComponentInParent<MechCombat> ().SetIsLSlashPlaying(isPlaying);
 	}
 	public void CallSlashL2ToFalse(){
@@ -15,7 +14,6 @@ public class Combo : MonoBehaviour {
 		GetComponentInParent<MechCombat> ().SetSlashL3ToFalse();
 	}
 	public void CallRSlashPlaying(int isPlaying){
-		print ("isPlaying : " + isPlaying);
 		GetComponentInParent<MechCombat> ().SetIsRSlashPlaying(isPlaying);
 	}
 	public void CallSlashR2ToFalse(){

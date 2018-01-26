@@ -2834,11 +2834,17 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: SlashL
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: SlashL2
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: SlashL3
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR3
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -2931,6 +2937,8 @@ MonoBehaviour:
     type: 2}
   bulletImpact: {fileID: 1000011334909706, guid: deea98a8c0755429dbfa9ce7c710b4a2,
     type: 2}
+  isLSlashPlaying: 0
+  isRSlashPlaying: 0
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4096,6 +4104,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Shot: {fileID: 8300000, guid: 0cd99550def3a4bdeaa71bbe61af6496, type: 3}
+  Slash1: {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
+  Slash2: {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
+  Slash3: {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
 --- !u!114 &114000012410893822
 MonoBehaviour:
   m_ObjectHideFlags: 1
