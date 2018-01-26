@@ -38,11 +38,12 @@ public class MechCombat : Combat {
 	// Left
 	private bool fireL = false;
 	private bool shootingL = false;
-	private int isLSlashPlaying = 0;
+	public int isLSlashPlaying = 0;
 	// Right
 	private bool fireR = false;
 	private bool shootingR = false;
-	private int isRSlashPlaying = 0;
+	public int isRSlashPlaying = 0;
+
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;

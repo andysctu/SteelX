@@ -71,7 +71,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	void FixedUpdate() {
 		// Do nothing if CharacterController not found
-		if (CharacterController == null || !CharacterController.enabled){
+		if (CharacterController == null || !CharacterController.enabled || mechCombat.isLSlashPlaying==1 || mechCombat.isRSlashPlaying ==1){
 			return;
 		}
 
