@@ -7,10 +7,11 @@ public class BulletTrace : MonoBehaviour {
 	public GameObject bulletImpact;
 	private Rigidbody rb;
 
-	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[4];
+	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
 	private bool isfollow = false;
 	private Transform Target;
 	private float bulletSpeed = 200;
+	private bool isCollided = false;
 
 	void Start () {
 		ParticleSystem ps = GetComponent<ParticleSystem>();
@@ -40,7 +41,10 @@ public class BulletTrace : MonoBehaviour {
 
 	void OnParticleCollision(GameObject other){
 
+		if (isCollided == true)
+			return;
 		if ( other.layer != 8  || (Target!=null && other.name == Target.gameObject.name) ) {
+				isCollided = true;
 				GetComponent<ParticleSystem> ().Stop ();
 
 				int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
@@ -54,6 +58,6 @@ public class BulletTrace : MonoBehaviour {
 					i++;
 				}
 			Destroy (gameObject, 0.5f);
-			}
+		}
 	}
 }

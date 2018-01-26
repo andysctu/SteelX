@@ -10,7 +10,7 @@ public class MechCombat : Combat {
 	[SerializeField] Animator animator;
 	[SerializeField] GameObject bulletTrace;
 	[SerializeField] GameObject bulletImpact;
-
+	[SerializeField] MechController mechController;
 	// Boost variables
 	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
@@ -378,27 +378,33 @@ public class MechCombat : Combat {
 		} else if (usingMelee) {
 			if (Time.time -((handPosition == 1)? timeOfLastShotR :timeOfLastShotL) >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
 				setIsFiring(handPosition, true);
-				//* Detect if the box collides any target 
 
 				//SlashL2 & L3 is set to false by animation calling Combo.cs -> MechCombat.cs
 				//* maybe put it in handleAnimation() ? 
-				SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage);
+
 				if(handPosition == 0){
 					timeOfLastShotL = Time.time;
+					if (usingMeleeWeapon (1))
+						timeOfLastShotR = timeOfLastShotL;
 					if (isLSlashPlaying == 1) {
 						if (animator.GetBool ("SlashL2") == false) {
+							SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
 							animator.SetBool ("SlashL2", true);
-						} else {
+						} else if(animator.GetBool("SlashL3") == false){
+							SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage);
 							animator.SetBool ("SlashL3", true);
 						}
 					}
 				}else if(handPosition == 1){
 					timeOfLastShotR = Time.time;
+					if (usingMeleeWeapon (0))
+						timeOfLastShotL = timeOfLastShotR;
 					if (isRSlashPlaying == 1) {
 						if (animator.GetBool ("SlashR2") == false) {
-							print ("SlashR2 is set to true");
+							SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temp.
 							animator.SetBool ("SlashR2", true);
-						} else {
+						} else if(animator.GetBool("SlashR3") == false){
+							SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage);
 							animator.SetBool ("SlashR3", true);
 						}
 					}
@@ -418,16 +424,21 @@ public class MechCombat : Combat {
 			float x = cam.transform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
 
 			// Start animation
-			animator.SetBool(animationStr, true);
-			print (animationStr + " is set to true.");
+
 			// Tweaks
 			if (usingRangedWeapon(handPosition)) { // Shooting
+				animator.SetBool(animationStr, true);
 				shoulderR.Rotate (0, x, 0);
 			} else if (usingMeleeWeapon(handPosition)) { // Slashing
-
+				if(animator.GetBool(animationStr) == false && ((handPosition == 1)? isRSlashPlaying : isLSlashPlaying) == 0){
+					animator.SetBool(animationStr, true);
+					SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
+				}
 			}
 		} else {
-			animator.SetBool(animationStr, false); // Stop animation
+			if (usingRangedWeapon(handPosition)) {
+				animator.SetBool(animationStr, false); // Stop animation
+			}
 		}
 	}
 
@@ -557,6 +568,12 @@ public class MechCombat : Combat {
 	}
 	public void SetSlashR3ToFalse(){
 		animator.SetBool ("SlashR3", false);
+	}
+	public void SetSlashL1ToFalse(){
+		animator.SetBool ("SlashL", false);
+	}
+	public void SetSlashR1ToFalse(){
+		animator.SetBool ("SlashR", false);
 	}
 
 //	public void BulletTraceEvent() {

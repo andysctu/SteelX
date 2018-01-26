@@ -2938,6 +2938,7 @@ MonoBehaviour:
     type: 2}
   bulletImpact: {fileID: 1000011334909706, guid: deea98a8c0755429dbfa9ce7c710b4a2,
     type: 2}
+  mechController: {fileID: 0}
   isLSlashPlaying: 0
   isRSlashPlaying: 0
 --- !u!114 &11462782
@@ -3867,8 +3868,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1070562588728804}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.19, z: 4.43}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 5.19, z: 8.73}
+  m_LocalScale: {x: 1.3975066, y: 1, z: 1.8258001}
   m_Children: []
   m_Father: {fileID: 400766}
   m_RootOrder: 4
@@ -4207,6 +4208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9ada891e76aaa48a1a80e6e442858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  User: {fileID: 138214}
 --- !u!114 &114546949833010082
 MonoBehaviour:
   m_ObjectHideFlags: 1
