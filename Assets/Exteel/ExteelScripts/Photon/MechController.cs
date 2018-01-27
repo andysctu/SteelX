@@ -79,9 +79,14 @@ public class MechController : Photon.MonoBehaviour {
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
 
 			if(SlashMovingSpeed >0.1f){
-				//print ("speed " + SlashMovingSpeed);
+				if(Slashdir.y >0 && animator.GetBool("Grounded") == true){
+					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.y);	// make sure not slashing to the sky
+				}
 				CharacterController.Move(Slashdir * SlashMovingSpeed);
 				SlashMovingSpeed /= 1.5f;
+				if(CharacterController.isGrounded == false){
+					mechCombat.CanSlash = false;
+				}
 			}
 
 			return;

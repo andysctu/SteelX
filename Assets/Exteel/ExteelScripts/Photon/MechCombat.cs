@@ -11,6 +11,7 @@ public class MechCombat : Combat {
 	[SerializeField] GameObject bulletTrace;
 	[SerializeField] GameObject bulletImpact;
 	[SerializeField] MechController mechController;
+	[SerializeField] CharacterController CharacterController;
 	// Boost variables
 	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
@@ -35,6 +36,7 @@ public class MechCombat : Combat {
 	private float timeOfLastShotL;
 	private float timeOfLastShotR;
 
+	public bool CanSlash = true;
 	// Left
 	private bool fireL = false;
 	private bool shootingL = false;
@@ -343,6 +345,10 @@ public class MechCombat : Combat {
 			photonView.RPC("SwitchWeapons", PhotonTargets.All, null);
 		}
 
+		if(CharacterController.isGrounded == true){
+			CanSlash = true;
+		}
+
 		updateHUD();
 	}
 
@@ -387,10 +393,13 @@ public class MechCombat : Combat {
 				//* maybe put it in handleAnimation() ? 
 
 				if(handPosition == 0){
+					if (CharacterController.isGrounded == false)
+						return;
+					
 					timeOfLastShotL = Time.time;
-					if (usingMeleeWeapon (1))
+					if (usingMeleeWeapon (1))//both melee weapons should not be usable
 						timeOfLastShotR = timeOfLastShotL;
-					if (isLSlashPlaying == 1) {
+					if (isLSlashPlaying == 1) {						
 						if (animator.GetBool ("SlashL2") == false) {
 							SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
 							animator.SetBool ("SlashL2", true);
@@ -400,6 +409,9 @@ public class MechCombat : Combat {
 						}
 					}
 				}else if(handPosition == 1){
+					if (CharacterController.isGrounded == false)
+						return;
+					
 					timeOfLastShotR = Time.time;
 					if (usingMeleeWeapon (0))
 						timeOfLastShotL = timeOfLastShotR;
@@ -435,8 +447,14 @@ public class MechCombat : Combat {
 				shoulderR.Rotate (0, x, 0);
 			} else if (usingMeleeWeapon(handPosition)) { // Slashing
 				if(animator.GetBool(animationStr) == false && ((handPosition == 1)? isRSlashPlaying : isLSlashPlaying) == 0){
-					animator.SetBool(animationStr, true);
-					SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
+
+					//if already melee attack in air => CanSlash is false
+					if(CanSlash == true){
+						CanSlash = false;  //This is in case not jumping but slash to the air
+						//will set to true if on ground ( in update )
+						animator.SetBool(animationStr, true);
+						SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
+					}
 				}
 			}
 		} else {
