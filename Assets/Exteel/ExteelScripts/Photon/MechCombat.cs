@@ -202,8 +202,12 @@ public class MechCombat : Combat {
 			} else if (target.tag == "Shield") {
 				hud.ShowText (cam, target.position, "Defense");
 			}
-		} else
+		} else{
 			print ("no current target.");
+			mechController.SetSlashMoving(cam.transform.forward,5f);
+
+		}
+			
 	}
 
 	[PunRPC]

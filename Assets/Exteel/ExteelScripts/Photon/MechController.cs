@@ -34,6 +34,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	private float characterControllerSpeed;
 	private float SlashMovingSpeed;
+	private Vector3 Slashdir;
 	private bool canVerticalBoost = false;
 
 	// Animation
@@ -78,18 +79,13 @@ public class MechController : Photon.MonoBehaviour {
 			return;
 		}
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
-			/*
-			if (wasOnSlashing == false) {
-				//Enter
-				SlashMovingSpeed = 3f;
+
+			if(SlashMovingSpeed >0.1f){
+				print ("speed " + SlashMovingSpeed);
+				CharacterController.Move(Slashdir * SlashMovingSpeed);
+				SlashMovingSpeed /= 1.5f;
 			}
-			CharacterController.Move(transform.forward * SlashMovingSpeed);
-			SlashMovingSpeed /= 1.5f;
-			wasOnSlashing = true;
-			return;
-		} else{
-			wasOnSlashing = false;
-			*/
+
 			return;
 		}
 
@@ -121,7 +117,10 @@ public class MechController : Photon.MonoBehaviour {
 		move.y += ySpeed * Time.fixedDeltaTime;
 		CharacterController.Move(move);
 	}
-
+	public void SetSlashMoving(Vector3 dir, float speed){
+		SlashMovingSpeed = speed;
+		Slashdir = dir;
+	}
 	public void SetCanVerticalBoost(bool canVBoost) {
 		canVerticalBoost = canVBoost;
 	}
