@@ -35,7 +35,7 @@ public class MechController : Photon.MonoBehaviour {
 	private float characterControllerSpeed;
 	private float SlashMovingSpeed;
 	private Vector3 Slashdir;
-	private bool canVerticalBoost = false;
+	private bool canVerticalBoost = true; // this is set to true when grounded , not in air now
 
 	// Animation
 	private float speed;

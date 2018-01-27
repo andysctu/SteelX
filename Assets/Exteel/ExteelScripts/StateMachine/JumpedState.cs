@@ -11,7 +11,15 @@ public class JumpedState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 		jumpReleased = false;
-		mctrl.SetCanVerticalBoost(true);
+		//mctrl.SetCanVerticalBoost(true);  //CanVerticalBoost  is set to true when grounded
+
+		if(animator.GetBool ("OnSlash")==true){
+			animator.SetBool ("Boost", false);
+			mctrl.SetCanVerticalBoost (false);
+			mctrl.Boost (false);
+		}
+
+		animator.SetBool ("OnSlash", false);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -23,7 +31,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc.isGrounded) {
 			animator.SetBool("Jump", false);
 			animator.SetBool("Grounded", true);
-			mctrl.SetCanVerticalBoost(false);
+			mctrl.SetCanVerticalBoost(true);
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space)) {

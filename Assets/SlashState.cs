@@ -33,25 +33,12 @@ public class SlashState : StateMachineBehaviour {
 	//override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash){
 	//
 	//}
+	public void OnStateEnter(Animator animator, int stateMachinePathHash){
+		animator.SetBool ("OnSlash", true);
+	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	//override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
 	//
 	//}
-	int StateHash;
-	public void OnStateMachineEnter(Animator animator,int stateMachinePathHash) {
-		StateHash = stateMachinePathHash;
-		Debug.Log ("Enter :" + StateHash);
-	}
-
-	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash){
-		//OnStateMachineExit (animator, StateHash);
-		animator.CrossFade (StateHash, 0.3f);
-		Debug.Log ("Exit :" + StateHash);
-		Debug.Log ("Org : " + stateMachinePathHash);
-	}
-	/*public void OnStateMachineExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		animator.CrossFade (StateHash, 0.3f);//does not work as expected
-	}*/
 }
