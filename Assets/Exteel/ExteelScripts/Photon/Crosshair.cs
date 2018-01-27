@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Crosshair : MonoBehaviour {
 
-	public float CrosshairRadius = 25f;
+	public float CrosshairRadius = 10f;
 	public float MaxDistance = 100f;
 
 	private CrosshairImage crosshairImage;
@@ -15,6 +15,7 @@ public class Crosshair : MonoBehaviour {
 	public const float CAM_DISTANCE_TO_MECH = 20f;
 	// Use this for initialization
 	void Start () {
+		CrosshairRadius = 10f;
 		camera = transform.GetComponent<Camera>();
 		crosshairImage = GetComponentInChildren<CrosshairImage> ();
 		if (crosshairImage == null)

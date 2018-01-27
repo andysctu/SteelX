@@ -17,7 +17,7 @@ public class CrosshairImage : MonoBehaviour {
 	public bool noCrosshair = false;
 
 	public void SetRadius(float setRadius){
-		radius = setRadius * 10f;
+		radius = setRadius * 25f;
 		print ("set : " + setRadius);
 
 		crosshairs0 [0].offsetMin = new Vector2 (-radius, radius);
