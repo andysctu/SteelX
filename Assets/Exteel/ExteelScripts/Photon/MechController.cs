@@ -43,8 +43,6 @@ public class MechController : Photon.MonoBehaviour {
 	private bool boost;
 	private bool grounded;
 	private bool jump;
-	//public bool isSlashPlaying = false;
-	//private bool wasOnSlashing = false;
 
 
 	// Unused
@@ -81,7 +79,7 @@ public class MechController : Photon.MonoBehaviour {
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
 
 			if(SlashMovingSpeed >0.1f){
-				print ("speed " + SlashMovingSpeed);
+				//print ("speed " + SlashMovingSpeed);
 				CharacterController.Move(Slashdir * SlashMovingSpeed);
 				SlashMovingSpeed /= 1.5f;
 			}
