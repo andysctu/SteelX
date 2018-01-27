@@ -2846,6 +2846,9 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: SlashR3
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnSlash
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -2869,6 +2872,7 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 256
+  Sounds: {fileID: 114000010976113334}
 --- !u!114 &11422958
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4322,6 +4326,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Shot: {fileID: 8300000, guid: 0cd99550def3a4bdeaa71bbe61af6496, type: 3}
+  Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
+  OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
   Slash1: {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
   Slash2: {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
   Slash3: {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}

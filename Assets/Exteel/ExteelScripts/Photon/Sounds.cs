@@ -5,6 +5,8 @@ public class Sounds : MonoBehaviour {
 
 	// Sound clip
 	[SerializeField] AudioClip Shot;
+	[SerializeField] AudioClip Lock;
+	[SerializeField] AudioClip OnLocked;
 	[SerializeField] AudioClip Slash1;
 	[SerializeField] AudioClip Slash2;
 	[SerializeField] AudioClip Slash3;
@@ -28,5 +30,8 @@ public class Sounds : MonoBehaviour {
 	}
 	public void PlaySlash3(){
 		Source.PlayOneShot(Slash3);
+	}
+	public void PlayLock(){
+		Source.PlayOneShot (Lock);
 	}
 }

@@ -11,7 +11,10 @@ public class Crosshair : MonoBehaviour {
 	private Camera camera;
 	public LayerMask layerMask = 8;
 
+	[SerializeField]
+	private Sounds Sounds;
 	private Transform target;
+	private bool Lock = false;
 	public const float CAM_DISTANCE_TO_MECH = 20f;
 	// Use this for initialization
 	void Start () {
@@ -35,11 +38,15 @@ public class Crosshair : MonoBehaviour {
 		if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadius, camera.transform.forward, out hit, MaxDistance, layerMask)) {
 			crosshairImage.SetCurrentImage (1);
 			target = hit.transform;
-
+			if(Lock == false){
+				Sounds.PlayLock ();
+				Lock = true;
+			}
 			//play Lock sound
 		} else {
 			crosshairImage.SetCurrentImage (0);
 			target = null;
+			Lock = false;
 		}
 	}
 
