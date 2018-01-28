@@ -1,35 +1,35 @@
-This is my email : chengchonz@yahoo.com.tw   	
-If you have any bug , ideas , feel free to report.  	
-Joining us (Andy & me) is also welcome.  	
+This is my email : chengchonz@yahoo.com.tw  </br> 	
+If you have any bug , ideas , feel free to report.</br>  	
+Joining us (Andy & me) is also welcome. </br> 	
 
   	
-To implement List :   	  
+To implement List : </br>  	  
   	
-main :  	
+main :</br>  	
   	
 Save the change in Hangar and go in game smoothly</br>  	
-Generalize a standard way to change weapon ( different weapon has its own damage , animation , ... )  	
-Add the heat bar  	
-Move on to the next weapon  	
-Save User data & account    	
-Game modes  	
-Remake all animations (skills not included) to high quality  	
-Make skills  	
+Generalize a standard way to change weapon ( different weapon has its own damage , animation , ... ) </br>  	
+Add the heat bar</br>  	
+Move on to the next weapon</br>  	
+Save User data & account</br>    	
+Game modes</br>  	
+Remake all animations (skills not included) to high quality</br>  	
+Make skills</br>  	
+  </br>	
+others : </br>  	  	
   	
-others :   	  	
-  	
-Optimize jump boost  	
-Optimize the melee attack & tidy up the code ( melee attack statemachine )   	
-Put all weapons & robot parts on  	
-Add "locked" message on UI  		
-Set mutiple "HIT" on UI  	
-Put the health & energy numbers on UI  	
-Sound effects  	
-Switch weapon animation  	
-Add crosshair shaking  	
-Add the Tab function  	
-Chatroom  	
-Build maps  	
+Optimize jump boost</br> 	
+Optimize the melee attack & tidy up the code ( melee attack statemachine ) </br> 	
+Put all weapons & robot parts on </br> 	
+Add "locked" message on UI  	</br>	
+Set mutiple "HIT" on UI  </br>	
+Put the health & energy numbers on UI  </br>	
+Sound effects  	</br>
+Switch weapon animation  	</br>
+Add crosshair shaking  	</br>
+Add the Tab function  	</br>
+Chatroom  	</br>
+Build maps  	</br>
 Improve efficiency
  
 
