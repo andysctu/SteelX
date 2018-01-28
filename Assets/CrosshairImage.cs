@@ -4,49 +4,80 @@ using UnityEngine;
 
 public class CrosshairImage : MonoBehaviour {
 
-	private float radius;
+	private float radiusL;
+	private float radiusR;
 
 	[SerializeField]
 	private GameObject[] crosshairs;
 
 	[SerializeField]
-	private RectTransform[] crosshairs0;
+	private RectTransform[] crosshairsL0;
 	[SerializeField]
-	private RectTransform[] crosshairs1;
+	private RectTransform[] crosshairsL1;
+	[SerializeField]
+	private RectTransform[] crosshairsR0;
+	[SerializeField]
+	private RectTransform[] crosshairsR1;
 
-	public bool noCrosshair = false;
+	public bool noCrosshairL = false;
+	public bool noCrosshairR = false;
 
-	public void SetRadius(float setRadius){
-		radius = setRadius * 25f;
-		print ("set : " + setRadius);
+	public void SetRadius(float setRadiusL, float setRadiusR){
+		radiusL = setRadiusL * 25f;
+		radiusR = setRadiusR * 25f;
 
-		crosshairs0 [0].offsetMin = new Vector2 (-radius, radius);
-		crosshairs0 [0].offsetMax = new Vector2 (-radius, radius);
+		crosshairsL0 [0].offsetMin = new Vector2 (-radiusL, radiusL);
+		crosshairsL0 [0].offsetMax = new Vector2 (-radiusL, radiusL);
 
-		crosshairs0 [1].offsetMin = new Vector2 (radius, radius);
-		crosshairs0 [1].offsetMax = new Vector2 (radius, radius);
+		crosshairsL0 [1].offsetMin = new Vector2 (radiusL, radiusL);
+		crosshairsL0 [1].offsetMax = new Vector2 (radiusL, radiusL);
 
-		crosshairs0 [2].offsetMin = new Vector2 (-radius, -radius);
-		crosshairs0 [2].offsetMax = new Vector2 (-radius, -radius);
+		crosshairsL0 [2].offsetMin = new Vector2 (-radiusL, -radiusL);
+		crosshairsL0 [2].offsetMax = new Vector2 (-radiusL, -radiusL);
 
-		crosshairs0 [3].offsetMin = new Vector2 (radius, -radius);
-		crosshairs0 [3].offsetMax = new Vector2 (radius, -radius);
+		crosshairsL0 [3].offsetMin = new Vector2 (radiusL, -radiusL);
+		crosshairsL0 [3].offsetMax = new Vector2 (radiusL, -radiusL);
 
-		crosshairs1 [0].offsetMin = new Vector2 (-radius, radius);
-		crosshairs1 [0].offsetMax = new Vector2 (-radius, radius);
+		crosshairsL1 [0].offsetMin = new Vector2 (-radiusL, radiusL);
+		crosshairsL1 [0].offsetMax = new Vector2 (-radiusL, radiusL);
 
-		crosshairs1 [1].offsetMin = new Vector2 (radius, radius);
-		crosshairs1 [1].offsetMax = new Vector2 (radius, radius);
+		crosshairsL1 [1].offsetMin = new Vector2 (radiusL, radiusL);
+		crosshairsL1 [1].offsetMax = new Vector2 (radiusL, radiusL);
 
-		crosshairs1 [2].offsetMin = new Vector2 (-radius, -radius);
-		crosshairs1 [2].offsetMax = new Vector2 (-radius, -radius);
+		crosshairsL1 [2].offsetMin = new Vector2 (-radiusL, -radiusL);
+		crosshairsL1 [2].offsetMax = new Vector2 (-radiusL, -radiusL);
 
-		crosshairs1 [3].offsetMin = new Vector2 (radius, -radius);
-		crosshairs1 [3].offsetMax = new Vector2 (radius, -radius);
+		crosshairsL1 [3].offsetMin = new Vector2 (radiusL, -radiusL);
+		crosshairsL1 [3].offsetMax = new Vector2 (radiusL, -radiusL);
+
+		//R
+		crosshairsR0 [0].offsetMin = new Vector2 (-radiusR, radiusR);
+		crosshairsR0 [0].offsetMax = new Vector2 (-radiusR, radiusR);
+
+		crosshairsR0 [1].offsetMin = new Vector2 (radiusR, radiusR);
+		crosshairsR0 [1].offsetMax = new Vector2 (radiusR, radiusR);
+
+		crosshairsR0 [2].offsetMin = new Vector2 (-radiusR, -radiusR);
+		crosshairsR0 [2].offsetMax = new Vector2 (-radiusR, -radiusR);
+
+		crosshairsR0 [3].offsetMin = new Vector2 (radiusR, -radiusR);
+		crosshairsR0 [3].offsetMax = new Vector2 (radiusR, -radiusR);
+
+		crosshairsR1 [0].offsetMin = new Vector2 (-radiusR, radiusR);
+		crosshairsR1 [0].offsetMax = new Vector2 (-radiusR, radiusR);
+
+		crosshairsR1 [1].offsetMin = new Vector2 (radiusR, radiusR);
+		crosshairsR1 [1].offsetMax = new Vector2 (radiusR, radiusR);
+
+		crosshairsR1 [2].offsetMin = new Vector2 (-radiusR, -radiusR);
+		crosshairsR1 [2].offsetMax = new Vector2 (-radiusR, -radiusR);
+
+		crosshairsR1 [3].offsetMin = new Vector2 (radiusR, -radiusR);
+		crosshairsR1 [3].offsetMax = new Vector2 (radiusR, -radiusR);
 
 	}
 
-	public void SetCurrentImage(int CurImage){
+	public void SetCurrentLImage(int CurImage){
 		if(CurImage == 1){
 			crosshairs [0].SetActive (false);
 			crosshairs [1].SetActive (true);
@@ -54,5 +85,22 @@ public class CrosshairImage : MonoBehaviour {
 			crosshairs [0].SetActive (true);
 			crosshairs [1].SetActive (false);
 		}
+	}
+	public void SetCurrentRImage(int CurImage){
+		if(CurImage == 1){
+			crosshairs [2].SetActive (false);
+			crosshairs [3].SetActive (true);
+		}else if(CurImage == 0){
+			crosshairs [2].SetActive (true);
+			crosshairs [3].SetActive (false);
+		}
+	}
+	public void NoCrosshairL(){
+		crosshairs [0].SetActive (false);
+		crosshairs [1].SetActive (false);
+	}
+	public void NoCrosshairR(){
+		crosshairs [2].SetActive (false);
+		crosshairs [3].SetActive (false);
 	}
 }

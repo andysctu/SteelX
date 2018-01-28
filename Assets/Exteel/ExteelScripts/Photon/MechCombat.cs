@@ -148,8 +148,8 @@ public class MechCombat : Combat {
 
 		//Target : GameObject
 		Target = null;
-		Transform target;
-		if( (target = crosshair.getCurrentTarget()) != null){
+		Transform target = (handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR()  ;
+		if( target != null){
 			Debug.Log("Hit tag: " + target.tag);
 			Debug.Log("Hit name: " + target.name);
 			// start : camera mid point
@@ -494,6 +494,8 @@ public class MechCombat : Combat {
 		animator.SetBool(animationString(LEFT_HAND), false);
 		animator.SetBool(animationString(RIGHT_HAND), false);
 
+		//Play switch weapon animation
+
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
@@ -501,6 +503,9 @@ public class MechCombat : Combat {
 
 		// Change weaponOffset
 		weaponOffset = (weaponOffset + 2) % 4;
+
+		//Check crosshair
+		crosshair.updateCrosshair (weaponOffset,weaponOffset+1);
 	}
 
 	bool getIsFiring(int handPosition) {

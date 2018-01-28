@@ -3,5 +3,6 @@
 		Damage = 25;
 		Range = 500;
 		Rate = 1;
+		radius = 10f;
 	}
 }
