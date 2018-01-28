@@ -7,7 +7,7 @@ To implement List :
   	
 main :  	
   	
-Save the change in Hangar and go in game smoothly  	
+Save the change in Hangar and go in game smoothly</br>  	
 Generalize a standard way to change weapon ( different weapon has its own damage , animation , ... )  	
 Add the heat bar  	
 Move on to the next weapon  	
