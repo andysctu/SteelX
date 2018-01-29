@@ -6,11 +6,10 @@ Joining us (Andy & me) is also welcome. </br>
 To implement List : </br>  	  
   	
 main :</br>  	
-  	
-Save the change in Hangar and go in game smoothly</br>  	
+ 
+Move on to the next weapon : RCL034</br>  	
 Generalize a standard way to change weapon ( different weapon has its own damage , animation , ... ) </br>  	
 Add the heat bar</br>  	
-Move on to the next weapon</br>  	
 Save User data & account</br>    	
 Game modes</br>  	
 Remake all animations (skills not included) to high quality</br>  	
