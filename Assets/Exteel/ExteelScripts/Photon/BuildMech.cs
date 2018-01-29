@@ -25,7 +25,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") inHangar = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar) return;
-		animator = GetComponentInChildren<Animator> ();
 
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Core)){
 			UserData.myData.Mech.Core = defaultParts [0];
@@ -59,7 +58,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 		// Get parts info
 		Data data = UserData.myData;
-
+		animator = GetComponentInChildren<Animator> ();
+		weaponOffset = 0;
 		if (inHangar) {
 			buildMech(data.Mech);
 		} else { // Register my name on all clients
@@ -137,6 +137,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons [i].transform.SetParent (hands [i % 2]);
 					break;
 				}
 			case "SHL009": {
@@ -144,47 +145,49 @@ public class BuildMech : Photon.MonoBehaviour {
 					float rot = -135;
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,((i%2)==0?rot - 60:rot),0));
 					weapons[i].transform.position.Set(p.x, p.y, p.z);
+					weapons [i].transform.SetParent (hands [i % 2]);
 					break;
 				}
 			case "SHS309": {
 					weaponScripts[i] = new SHS309();
 					weapons[i].transform.Rotate(0, 0, (i % 2 == 0 ? -1 : 0) * 180);
 					weapons[i].transform.position = new Vector3(p.x + ((i % 2) == 0 ? 0 : 1) * 0.25f, p.y + 0.8f, p.z + 0.5f);
+					weapons [i].transform.SetParent (hands [i % 2]);
 					break;
 				}
 			case "RCL034":{
-					p = new Vector3 (hands [(i + 1) % 2].position.x, hands [(i + 1) % 2].position.y - 0.4f, hands [(i+1)% 2].position.z);
-					weaponScripts[i] = new RCL034();
-					weapons [i].transform.SetParent (hands [(i+1) % 2]);
 
+					//Since the launch button is on right hand
+					p = new Vector3 (hands [(i + 1) % 2].position.x, hands [(i + 1) % 2].position.y - 0.4f, hands [(i+1)% 2].position.z);
+					weapons [i].transform.SetParent (hands [(i+1) % 2]);
+					weaponScripts[i] = new RCL034();
+
+					//by trial and error :(
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
 					weapons[i].transform.position = new Vector3(p.x , p.y - 1f, p.z);
 
-
-					print ("px,py,pz : " + p);
-					print ("org pos : " + weapons [i].transform.position);
-					if(i==0){
-						if(animator!=null)
+					if(i==weaponOffset){
+						if(animator!=null){
+							//In Hangar or Lobby
 							animator.SetBool ("UsingRCL",true);
-						else {
+						}else {
+							//In game
 							animator = GetComponentInChildren<MeleeCombat> ().GetComponent<Animator> ();
-							if(animator!=null)
+							if(animator!=null){
 								animator.SetBool ("UsingRCL",true);
+							}else{
+								Debug.LogError ("Can't find animator.");
+							}
 						}
 					}
 					break;
 				}
 			}
-
-			if(i!=0)
-			weapons [i].transform.SetParent (hands [i % 2]);
 		}
-		weaponOffset = 0;
-
 		weapons [1].SetActive (false);//temp 
 
-		weapons [2].SetActive (false);
-		weapons [3].SetActive (false);
+		weapons [(weaponOffset+2)%4].SetActive (false);
+		weapons [(weaponOffset+3)%4].SetActive (false);
 	}
 	void Update(){
 		print ("P : "+weapons [0].transform.position);
