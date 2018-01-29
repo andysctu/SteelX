@@ -48,8 +48,6 @@ public class GameManager : Photon.MonoBehaviour {
 
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
-		// 1l & 1r are both null here   ?????
-		
 		playerScorePanels = new Dictionary<string, GameObject>();
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 

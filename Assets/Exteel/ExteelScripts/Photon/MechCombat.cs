@@ -456,9 +456,12 @@ public class MechCombat : Combat {
 						SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
 					}
 				}
+			}else if(usingShieldWeapon(handPosition)){
+				animator.SetBool(animationStr, true);
+				shoulderR.Rotate (0, x, 0);
 			}
 		} else {
-			if (usingRangedWeapon(handPosition)) {
+			if (!usingMeleeWeapon(handPosition)) {
 				animator.SetBool(animationStr, false); // Stop animation
 			}
 		}
