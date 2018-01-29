@@ -165,10 +165,12 @@ public class HangarManager : MonoBehaviour {
 		switch (part [0]) {
 		case 'C':
 			parent = 0; equipped["core"] = part;
+			UserData.myData.Mech.Core = part;
 			break;
 		case 'A':
 			if (part [1] == 'E') {
 				parent = 1; equipped["arms"] = part;
+				UserData.myData.Mech.Arms = part;
 			}
 			else {
 				parent = 5;
@@ -176,12 +178,15 @@ public class HangarManager : MonoBehaviour {
 			break;
 		case 'L':
 			parent = 2; equipped["legs"] = part;
+			UserData.myData.Mech.Legs = part;
 			break;
 		case 'H':
 			parent = 3; equipped["head"] = part;
+			UserData.myData.Mech.Head = part;
 			break;
 		case 'P':
 			parent = 4; equipped["booster"] = part;
+			UserData.myData.Mech.Booster = part;
 			break;
 		default:
 			parent = 5;
