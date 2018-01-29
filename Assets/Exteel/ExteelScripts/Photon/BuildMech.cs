@@ -18,12 +18,12 @@ public class BuildMech : Photon.MonoBehaviour {
 	public Weapon[] weaponScripts;
 	private int weaponOffset = 0;
 
-	private bool call_BuildMech = false;
+	private bool inHangar = false;
 
 	void Start () {
-		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") call_BuildMech = true;
+		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") inHangar = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
-		if (!photonView.isMine && !call_BuildMech) return;
+		if (!photonView.isMine && !inHangar) return;
 
 		// Get parts info
 		Data data = UserData.myData;
@@ -38,31 +38,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		data.Mech.Weapon2R = string.IsNullOrEmpty(data.Mech.Weapon2R) ? defaultParts[8] : data.Mech.Weapon2R;
 		data.User.PilotName = string.IsNullOrEmpty(data.User.PilotName) ? "Default Pilot" : data.User.PilotName;
 
-		//setting userdata for testing
-		/*
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Core) == true)
-			UserData.myData.Mech.Core = defaultParts [0];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Arms) == true)
-			UserData.myData.Mech.Arms = defaultParts [1];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Legs) == true)
-			UserData.myData.Mech.Legs = defaultParts [2];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Head) == true)
-			UserData.myData.Mech.Head = defaultParts [3];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Booster) == true)
-			UserData.myData.Mech.Booster = defaultParts [4];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon1L) == true)
-			UserData.myData.Mech.Weapon1L = defaultParts [6];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon1R) == true)
-			UserData.myData.Mech.Weapon1R = defaultParts [6];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon2L) == true)
-			UserData.myData.Mech.Weapon2L = defaultParts [7];
-		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon2R) == true)
-			UserData.myData.Mech.Weapon2R = defaultParts [8];
-		*/
-
-
-
-		if (call_BuildMech) {
+		if (inHangar) {
 			buildMech(data.Mech);
 		} else { // Register my name on all clients
 			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
