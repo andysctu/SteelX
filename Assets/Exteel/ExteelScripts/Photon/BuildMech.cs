@@ -25,18 +25,39 @@ public class BuildMech : Photon.MonoBehaviour {
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar) return;
 
+
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Core)){
+			UserData.myData.Mech.Core = defaultParts [0];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Arms)){
+			UserData.myData.Mech.Arms = defaultParts [1];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Legs)){
+			UserData.myData.Mech.Legs = defaultParts [2];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Head)){
+			UserData.myData.Mech.Head = defaultParts [3];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Booster)){
+			UserData.myData.Mech.Booster = defaultParts [4];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
+			UserData.myData.Mech.Weapon1L = defaultParts [6];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
+			UserData.myData.Mech.Weapon1R = defaultParts [6];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
+			UserData.myData.Mech.Weapon2L = defaultParts [7];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2R)){
+			UserData.myData.Mech.Weapon2R = defaultParts [8];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.User.PilotName)){
+			UserData.myData.User.PilotName = "Default Pilot";
+		}
 		// Get parts info
 		Data data = UserData.myData;
-		data.Mech.Core = string.IsNullOrEmpty(data.Mech.Core)? defaultParts[0] : data.Mech.Core;
-		data.Mech.Arms = string.IsNullOrEmpty(data.Mech.Arms)? defaultParts[1] : data.Mech.Arms;
-		data.Mech.Legs = string.IsNullOrEmpty(data.Mech.Legs)? defaultParts[2] : data.Mech.Legs;
-		data.Mech.Head = string.IsNullOrEmpty(data.Mech.Head)? defaultParts[3] : data.Mech.Head;
-		data.Mech.Booster = string.IsNullOrEmpty(data.Mech.Booster) ? defaultParts[4] : data.Mech.Booster;
-		data.Mech.Weapon1L = string.IsNullOrEmpty(data.Mech.Weapon1L) ? defaultParts[6] : data.Mech.Weapon1L;
-		data.Mech.Weapon1R = string.IsNullOrEmpty(data.Mech.Weapon1R) ? defaultParts[6] : data.Mech.Weapon1R;
-		data.Mech.Weapon2L = string.IsNullOrEmpty(data.Mech.Weapon2L) ? defaultParts[7] : data.Mech.Weapon2L;
-		data.Mech.Weapon2R = string.IsNullOrEmpty(data.Mech.Weapon2R) ? defaultParts[8] : data.Mech.Weapon2R;
-		data.User.PilotName = string.IsNullOrEmpty(data.User.PilotName) ? "Default Pilot" : data.User.PilotName;
 
 		if (inHangar) {
 			buildMech(data.Mech);
@@ -74,6 +95,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		findHands ();
 		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
 		for (int i = 0; i < parts.Length; i++) {
+			if (string.IsNullOrEmpty (parts [i]))
+				print (i + " part is null.");
 			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
 		}
 			
