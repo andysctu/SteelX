@@ -7,13 +7,14 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "SHL009", "SHL009"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "SHL009", "SHL009" , "RCL034"};
 	private GameManager gm;
 	public GameObject[] weapons;
 
 	private Transform shoulderL;
 	private Transform shoulderR;
 	private Transform[] hands;
+	private Animator animator;
 
 	public Weapon[] weaponScripts;
 	private int weaponOffset = 0;
@@ -24,7 +25,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") inHangar = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar) return;
-
+		animator = GetComponentInChildren<Animator> ();
 
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Core)){
 			UserData.myData.Mech.Core = defaultParts [0];
@@ -42,10 +43,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
-			UserData.myData.Mech.Weapon1L = defaultParts [6];
+			UserData.myData.Mech.Weapon1L = defaultParts [9];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
-			UserData.myData.Mech.Weapon1R = defaultParts [6];
+			UserData.myData.Mech.Weapon1R = defaultParts [9];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
 			UserData.myData.Mech.Weapon2L = defaultParts [7];
@@ -95,8 +96,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		findHands ();
 		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
 		for (int i = 0; i < parts.Length; i++) {
-			if (string.IsNullOrEmpty (parts [i]))
-				print (i + " part is null.");
 			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
 		}
 			
@@ -127,7 +126,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		// Replace weapons
 		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
-
 	private void buildWeapons (string[] weaponNames) {
 		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
@@ -135,7 +133,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		for (int i = 0; i < weaponNames.Length; i++) {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
-				
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();
@@ -155,14 +152,43 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.position = new Vector3(p.x + ((i % 2) == 0 ? 0 : 1) * 0.25f, p.y + 0.8f, p.z + 0.5f);
 					break;
 				}
+			case "RCL034":{
+					p = new Vector3 (hands [(i + 1) % 2].position.x, hands [(i + 1) % 2].position.y - 0.4f, hands [(i+1)% 2].position.z);
+					weaponScripts[i] = new RCL034();
+					weapons [i].transform.SetParent (hands [(i+1) % 2]);
+
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
+					weapons[i].transform.position = new Vector3(p.x , p.y - 1f, p.z);
+
+
+					print ("px,py,pz : " + p);
+					print ("org pos : " + weapons [i].transform.position);
+					if(i==0){
+						if(animator!=null)
+							animator.SetBool ("UsingRCL",true);
+						else {
+							animator = GetComponentInChildren<MeleeCombat> ().GetComponent<Animator> ();
+							if(animator!=null)
+								animator.SetBool ("UsingRCL",true);
+						}
+					}
+					break;
+				}
 			}
+
+			if(i!=0)
 			weapons [i].transform.SetParent (hands [i % 2]);
 		}
 		weaponOffset = 0;
+
+		weapons [1].SetActive (false);//temp 
+
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
 	}
-
+	void Update(){
+		print ("P : "+weapons [0].transform.position);
+	}
 	public void EquipWeapon(string weapon, int weapPos) {
 		Destroy(weapons[weapPos]);
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);

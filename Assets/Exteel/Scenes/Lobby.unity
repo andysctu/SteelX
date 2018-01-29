@@ -997,7 +997,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 236393243}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -556.1179, y: 256, z: 0}
+  m_LocalPosition: {x: -549.7324, y: 256, z: 0}
   m_LocalScale: {x: 1, y: 0.9165611, z: 1}
   m_Children:
   - {fileID: 1523021234}
@@ -2006,8 +2006,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CrosshairNormal: {fileID: 21300000, guid: 1f92ba6d5378743f1952734eac27eb17, type: 3}
-  CrosshairTarget: {fileID: 21300000, guid: c401fef18ce45494080583c10b628b82, type: 3}
+  MaxDistance: 100
+  bm: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  Sounds: {fileID: 0}
 --- !u!114 &475772438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12653,7 +12657,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1950139391}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -835.4036, y: 25, z: 0}
+  m_LocalPosition: {x: -829.0181, y: 25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 217981201}
@@ -13067,7 +13071,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2116817709}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -725.4036, y: 25, z: 0}
+  m_LocalPosition: {x: -719.0181, y: 25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1741659495}
