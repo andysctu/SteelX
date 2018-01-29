@@ -192,13 +192,26 @@ public class HangarManager : MonoBehaviour {
 			curSMR [parent].material = material;
 		} else {
 			switch (weap) {
-			case 0: equipped["weapon1l"] = part; break;
-			case 1: equipped["weapon1r"] = part; break;
-			case 2: equipped["weapon2l"] = part; break;
-			case 3: equipped["weapon2r"] = part; break;
+			case 0:
+				equipped ["weapon1l"] = part;
+				UserData.myData.Mech.Weapon1L = part;
+			break;
+			case 1: 
+				equipped["weapon1r"] = part; 
+				UserData.myData.Mech.Weapon1R = part;
+			break;
+			case 2:
+				equipped["weapon2l"] = part;
+				UserData.myData.Mech.Weapon2L = part;
+			break;
+			case 3:
+				equipped["weapon2r"] = part; 
+				UserData.myData.Mech.Weapon2R = part;
+			break;
 			default: Debug.Log("Should not get here"); break;
 			}
 			GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, weap);
+
 		}
 		//			curSMR[i].enabled = true;
 //		for (int i = 0; i < curSMR.Length; i++){

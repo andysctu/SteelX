@@ -18,12 +18,12 @@ public class BuildMech : Photon.MonoBehaviour {
 	public Weapon[] weaponScripts;
 	private int weaponOffset = 0;
 
-	private bool inHangar = false;
+	private bool call_BuildMech = false;
 
 	void Start () {
-		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") inHangar = true;
+		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") call_BuildMech = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
-		if (!photonView.isMine && !inHangar) return;
+		if (!photonView.isMine && !call_BuildMech) return;
 
 		// Get parts info
 		Data data = UserData.myData;
@@ -39,6 +39,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		data.User.PilotName = string.IsNullOrEmpty(data.User.PilotName) ? "Default Pilot" : data.User.PilotName;
 
 		//setting userdata for testing
+		/*
 		if (string.IsNullOrEmpty (UserData.myData.Mech.Core) == true)
 			UserData.myData.Mech.Core = defaultParts [0];
 		if (string.IsNullOrEmpty (UserData.myData.Mech.Arms) == true)
@@ -57,13 +58,11 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Weapon2L = defaultParts [7];
 		if (string.IsNullOrEmpty (UserData.myData.Mech.Weapon2R) == true)
 			UserData.myData.Mech.Weapon2R = defaultParts [8];
+		*/
 
 
 
-
-
-
-		if (inHangar) {
+		if (call_BuildMech) {
 			buildMech(data.Mech);
 		} else { // Register my name on all clients
 			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);

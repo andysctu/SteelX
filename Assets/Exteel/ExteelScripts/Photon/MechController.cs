@@ -76,6 +76,8 @@ public class MechController : Photon.MonoBehaviour {
 		if (CharacterController == null || !CharacterController.enabled ){
 			return;
 		}
+
+		// slash z-offset
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
 
 			if(SlashMovingSpeed >0.1f){
