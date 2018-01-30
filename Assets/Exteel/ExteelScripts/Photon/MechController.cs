@@ -176,6 +176,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	[PunRPC]
 	void BoostFlame(bool boost) {
+		print ("set to : " + boost);
 		boostFlame.SetActive(boost);
 	}
 

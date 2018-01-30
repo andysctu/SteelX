@@ -7,11 +7,13 @@ public class Sync : Photon.MonoBehaviour {
 	//sync vals
 	Vector3 trueLoc;
 	Quaternion trueRot;
-	PhotonView pv;
+
+	[SerializeField]
+	PhotonView pv; // if use getcomponent, pv sometimes is null (don't know why , too slow? )
 
 	// Use this for initialization
 	void Start () {
-		pv = GetComponent<PhotonView>();
+		//pv = GetComponent<PhotonView>();
 	}
 	
 	// Update is called once per frame
@@ -37,6 +39,8 @@ public class Sync : Photon.MonoBehaviour {
 		else
 		{
 			//send our posistion in the data stream
+	//		if (pv == null)
+				//print (photonView.ownerId);
 			if(pv.isMine){
 				stream.SendNext(transform.position);
 				stream.SendNext(transform.rotation);

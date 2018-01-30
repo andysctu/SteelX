@@ -2909,10 +2909,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   camTransform: {fileID: 405268}
   animator: {fileID: 9563454}
-  bulletTrace: {fileID: 1346241026468800, guid: 45a2af6408f32d2469f4db65ae68552e,
-    type: 2}
-  bulletImpact: {fileID: 1268594371034638, guid: bde2c2899e4dd7e4fa7607ccd378626d,
-    type: 2}
+  bullets:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   mechController: {fileID: 11462782}
   CharacterController: {fileID: 14356836}
   CanSlash: 1
@@ -4512,6 +4513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c15faef08202c475bb9c4b68055cf909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pv: {fileID: 11416036}
 --- !u!114 &114110032944658736
 MonoBehaviour:
   m_ObjectHideFlags: 1
