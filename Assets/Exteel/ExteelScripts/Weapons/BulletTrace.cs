@@ -41,7 +41,7 @@ public class BulletTrace : MonoBehaviour {
 
 	void OnParticleCollision(GameObject other){
 
-		if (isCollided == true)
+		if (isCollided == true )
 			return;
 		if ( other.layer != 8  || (Target!=null && other.name == Target.gameObject.name) ) {
 				isCollided = true;

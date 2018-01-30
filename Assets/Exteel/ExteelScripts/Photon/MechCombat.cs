@@ -229,6 +229,11 @@ public class MechCombat : Combat {
 			GameObject bullet;
 			bullet = Instantiate (bullets[weaponOffset], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 
+			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
+			RCLbullet.hud = hud;
+			RCLbullet.cam = cam;
+			RCLbullet.Shooter = gameObject;
+
 		} else {
 			for (i = 0; i < 3; i++) {
 				GameObject bullet;

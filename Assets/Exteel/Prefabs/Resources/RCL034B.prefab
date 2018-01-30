@@ -21,8 +21,8 @@ GameObject:
   - component: {fileID: 4125981434863748}
   - component: {fileID: 198170001577329900}
   - component: {fileID: 199793282573629844}
-  - component: {fileID: 114278995729569274}
   - component: {fileID: 54322590674335124}
+  - component: {fileID: 114525870773608232}
   m_Layer: 11
   m_Name: RCL034B
   m_TagString: Untagged
@@ -58,7 +58,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &114278995729569274
+--- !u!114 &114525870773608232
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -66,7 +66,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1346241026468800}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cb4bb06fb89a42daa1f25bfbcd1a824, type: 3}
+  m_Script: {fileID: 11500000, guid: dbd6deb84fd72a14db87c289eb8942fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bulletImpact: {fileID: 1268594371034638, guid: bde2c2899e4dd7e4fa7607ccd378626d,
