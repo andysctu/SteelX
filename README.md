@@ -4,10 +4,14 @@ Joining us (Andy & me) is also welcome. </br>
 
   	
 To implement List : </br>  	  
-  	
+ </br>
 main :</br>  	
  
-Move on to the next weapon : RCL034</br>  	
+RCL034 : bulletTrace & sound </br>
+
+Seperate bulletTrace to L&R </br>
+Select bulletTrace&impact  when switching weapons </br> 
+
 Generalize a standard way to change weapon ( different weapon has its own damage , animation , ... ) </br>  	
 Add the heat bar</br>  	
 Save User data & account</br>    	
