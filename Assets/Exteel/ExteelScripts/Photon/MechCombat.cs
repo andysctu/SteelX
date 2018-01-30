@@ -8,8 +8,7 @@ public class MechCombat : Combat {
 
 	[SerializeField] Transform camTransform;
 	[SerializeField] Animator animator;
-	[SerializeField] GameObject bulletTrace;
-	[SerializeField] GameObject bulletImpact;
+	[SerializeField] public GameObject[] bullets = new GameObject[4];
 	[SerializeField] MechController mechController;
 	[SerializeField] CharacterController CharacterController;
 	// Boost variables
@@ -227,15 +226,19 @@ public class MechCombat : Combat {
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction , string name){
 		int i;
 		if (usingRCLWeapon (handPosition)) {
-			GameObject bulletTraceClone = Instantiate (bulletTrace, Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+			GameObject bullet;
+			bullet = Instantiate (bullets[weaponOffset], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+
 		} else {
 			for (i = 0; i < 3; i++) {
-				GameObject bulletTraceClone = Instantiate (bulletTrace, Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+				GameObject bullet;
+				bullet = Instantiate ((handPosition==0)? bullets[weaponOffset] : bullets[weaponOffset+1], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+
 
 				if (string.IsNullOrEmpty (name) || Target == null) {
 					Debug.Log ("target can not be found => move directly. ");
 				} else {
-					bulletTraceClone.transform.SetParent (Target.transform);
+					bullet.transform.SetParent (Target.transform);
 					Debug.Log ("target is found.");
 				}
 				yield return new WaitForSeconds (0.3f);
@@ -570,6 +573,10 @@ public class MechCombat : Combat {
 		if(!usingRCLWeapon(handPosition))
 			return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
 		else return "ShootRCL";
+	}
+
+	public void updataBullet(){
+		
 	}
 
 	// Public functions

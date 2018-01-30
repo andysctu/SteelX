@@ -133,6 +133,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
+		GameObject[] bulletPrefabs = new GameObject[4];
+		MechCombat mechCombat = GetComponent<MechCombat>();
+
+
 		for (int i = 0; i < weaponNames.Length; i++) {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
@@ -141,6 +145,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts[i] = new APS403();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
 					weapons [i].transform.SetParent (hands [i % 2]);
+					bulletPrefabs [i] = Resources.Load ("APS403B") as GameObject;
 					break;
 				}
 			case "SHL009": {
@@ -149,6 +154,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,((i%2)==0?rot - 60:rot),0));
 					weapons[i].transform.position.Set(p.x, p.y, p.z);
 					weapons [i].transform.SetParent (hands [i % 2]);
+					bulletPrefabs [i] = null;
 					break;
 				}
 			case "SHS309": {
@@ -156,6 +162,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.Rotate(0, 0, (i % 2 == 0 ? -1 : 0) * 180);
 					weapons[i].transform.position = new Vector3(p.x + ((i % 2) == 0 ? 0 : 1) * 0.25f, p.y + 0.8f, p.z + 0.5f);
 					weapons [i].transform.SetParent (hands [i % 2]);
+					bulletPrefabs [i] = null;
 					break;
 				}
 			case "RCL034":{
@@ -168,6 +175,9 @@ public class BuildMech : Photon.MonoBehaviour {
 					//by trial and error :(
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
 					weapons[i].transform.position = new Vector3(p.x , p.y - 1f, p.z);
+					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
+					if (bulletPrefabs [i] == null)
+						Debug.Log ("the prefab is null...");
 
 					if(i==weaponOffset){
 						if(animator!=null){
@@ -187,6 +197,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
 					weapons [i+1].transform.SetParent (hands [i % 2]);
 					weapons [i + 1].SetActive (false);
+					bulletPrefabs [i+1] = null;
 
 					i++;//skip the right hand
 					break;
@@ -196,6 +207,11 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
+		if (mechCombat != null) { //null : Not in game => no need to attaach
+			for (int i = 0; i < 4; i++) {
+				mechCombat.bullets [i] = bulletPrefabs [i];
+			}
+		}
 	}
 
 

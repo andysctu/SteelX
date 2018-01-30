@@ -43,6 +43,8 @@ public class GameManager : Photon.MonoBehaviour {
 		MaxKills = GameInfo.MaxKills;
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
 
+		InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+		/*
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
 		//GameObject player = PlayerNetwork.instance.player;
 
@@ -54,10 +56,23 @@ public class GameManager : Photon.MonoBehaviour {
 
 		cam = player.transform.Find("Camera").GetComponent<Camera>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
-
+		*/
 		if (PhotonNetwork.isMasterClient) {
 			SyncTime();
 		}
+	}
+	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
+		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
+		//GameObject player = PlayerNetwork.instance.player;
+
+		mechBuilder = player.GetComponent<BuildMech>();
+		Mech m = UserData.myData.Mech;
+		playerScorePanels = new Dictionary<string, GameObject>();
+		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+
+
+		cam = player.transform.Find("Camera").GetComponent<Camera>();
+		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 	}
 		
 	public void RegisterPlayer(string name) {
