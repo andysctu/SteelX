@@ -249,8 +249,6 @@ public class MechCombat : Combat {
 				yield return new WaitForSeconds (0.3f);
 			}
 		}
-
-
 	}
 
 	/*
@@ -276,6 +274,7 @@ public class MechCombat : Combat {
 			return;
 		}
 		// Apply damage
+		print ("called onhit by :"+gameObject);
 		currentHP -= d;
 		Debug.Log ("HP: " + currentHP);
 
@@ -299,10 +298,11 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void DisablePlayer() {
 		gameObject.layer = 0;
-		GetComponent<MechController>().enabled = false;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		ch.NoCrosshair();
-		ch.enabled = false;
+		GetComponent<MechController>().enabled = false;
+		if(ch!=null)
+			ch.enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;

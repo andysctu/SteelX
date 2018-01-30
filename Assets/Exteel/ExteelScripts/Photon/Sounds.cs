@@ -10,6 +10,7 @@ public class Sounds : MonoBehaviour {
 	[SerializeField] AudioClip Slash1;
 	[SerializeField] AudioClip Slash2;
 	[SerializeField] AudioClip Slash3;
+	[SerializeField] AudioClip RCLShoot;
 	private AudioSource Source;
 
 	// Use this for initialization
@@ -33,5 +34,8 @@ public class Sounds : MonoBehaviour {
 	}
 	public void PlayLock(){
 		Source.PlayOneShot (Lock);
+	}
+	public void PlayRCLShoot(){
+		Source.PlayOneShot (RCLShoot);
 	}
 }

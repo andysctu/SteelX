@@ -2841,14 +2841,20 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: SlashL3
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: SlashR2
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: SlashR3
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: OnSlash
+  - Type: 4
+    SynchronizeType: 2
+    Name: UsingRCL
+  - Type: 4
+    SynchronizeType: 2
+    Name: ShootRCL
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -4503,6 +4509,7 @@ MonoBehaviour:
   Slash1: {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
   Slash2: {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
   Slash3: {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
+  RCLShoot: {fileID: 8300000, guid: 6618481c1a17b4cfd8ab5c9f5477d947, type: 3}
 --- !u!114 &114000012410893822
 MonoBehaviour:
   m_ObjectHideFlags: 1
