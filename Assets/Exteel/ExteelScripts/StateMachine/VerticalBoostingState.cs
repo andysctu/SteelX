@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VerticalBoostingState : MechStateMachineBehaviour {
-	static bool curBoostState = false;
+	static bool curBoostState = true;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 		mctrl.SetCanVerticalBoost(false);
-	
+		curBoostState = true;
+		/*
 		if(curBoostState==false){
 			mctrl.Boost (true);
 			curBoostState = true;
 			Debug.Log ("called set to true in Vertical boost enter.");
-		}
+		}*/
 		animator.SetBool ("OnSlash", false);
 	}
 

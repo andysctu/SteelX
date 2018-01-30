@@ -27,7 +27,9 @@ public class MechController : Photon.MonoBehaviour {
 	private Vector3 move = Vector3.zero;
 
 	private bool ableToVertBoost = false;
+	private bool isBoostFlameOn = false;
 
+	[SerializeField]
 	private MechCombat mechCombat;
 	private Transform camTransform;
 	private Vector3 originalCamPos;
@@ -56,7 +58,6 @@ public class MechController : Photon.MonoBehaviour {
 
 	void initComponents() {
 		CharacterController = GetComponent<CharacterController> ();
-		mechCombat = GetComponent<MechCombat>();
 		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
 	}
 
@@ -149,7 +150,10 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Boost(bool boost) {
-		photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
+		if(boost != isBoostFlameOn){
+			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
+			isBoostFlameOn = boost;
+		}
 		xSpeed = mechCombat.BoostSpeed();
 		zSpeed = mechCombat.BoostSpeed();
 	}
