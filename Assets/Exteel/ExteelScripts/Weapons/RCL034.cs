@@ -1,9 +1,10 @@
 ﻿class RCL034 : RangedWeapon {
 	public RCL034() {  //temporary
-		Damage = 25;
+		Damage = 80;
 		Range = 500;
 		Rate = 1;
-		radius = 10f;
+		radius = 0f;
+		Animation = "ShootRCL";
 	}
 }
 

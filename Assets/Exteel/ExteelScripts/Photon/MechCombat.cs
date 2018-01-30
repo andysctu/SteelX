@@ -221,21 +221,27 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void RegisterBulletTrace(int handPosition, Vector3 direction , string name) {
 		Target = GameObject.Find (name);
+
 		StartCoroutine (InstantiateBulletTrace (handPosition, direction, name));
 	}
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction , string name){
 		int i;
-		for(i=0;i<3;i++){
-			GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[handPosition].position, Quaternion.LookRotation(direction )) as GameObject;
+		if (usingRCLWeapon (handPosition)) {
+			GameObject bulletTraceClone = Instantiate (bulletTrace, Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+		} else {
+			for (i = 0; i < 3; i++) {
+				GameObject bulletTraceClone = Instantiate (bulletTrace, Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 
-			if(string.IsNullOrEmpty(name) || Target == null){
-				Debug.Log ("target can not be found => move directly. ");
-			}else{
-				bulletTraceClone.transform.SetParent(Target.transform);
-				Debug.Log ("target is found.");
+				if (string.IsNullOrEmpty (name) || Target == null) {
+					Debug.Log ("target can not be found => move directly. ");
+				} else {
+					bulletTraceClone.transform.SetParent (Target.transform);
+					Debug.Log ("target is found.");
+				}
+				yield return new WaitForSeconds (0.3f);
 			}
-			yield return new WaitForSeconds(0.3f);
 		}
+
 
 	}
 
@@ -362,7 +368,9 @@ public class MechCombat : Combat {
 		bool usingRanged = usingRangedWeapon(handPosition);
 		bool usingMelee = usingMeleeWeapon(handPosition);
 		bool usingShield = usingShieldWeapon(handPosition);
+		bool usingRCL = usingRCLWeapon (handPosition);
 
+		/*
 		if (usingRanged || usingShield) {
 			if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
 				setIsFiring(handPosition, false);
@@ -373,7 +381,12 @@ public class MechCombat : Combat {
 				setIsFiring(handPosition, false);
 				return;
 			}
+		}*/
+		if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+			setIsFiring(handPosition, false);
+			return;
 		}
+
 
 		if (usingRanged) {
 			if (Time.time - ((handPosition == 1)? timeOfLastShotR :timeOfLastShotL) >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
@@ -428,6 +441,14 @@ public class MechCombat : Combat {
 			}
 		} else if (usingShield) {
 			setIsFiring(handPosition, true);
+		}else if(usingRCL){
+			if (Time.time - timeOfLastShotL >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				setIsFiring(handPosition, true);
+
+				//**Start Position
+				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
+				timeOfLastShotL = Time.time;
+			}
 		}
 	}
 
@@ -459,9 +480,11 @@ public class MechCombat : Combat {
 			}else if(usingShieldWeapon(handPosition)){
 				animator.SetBool(animationStr, true);
 				shoulderR.Rotate (0, x, 0);
+			}else if(usingRCLWeapon(handPosition)){
+				animator.SetBool(animationStr, true);
 			}
 		} else {
-			if (!usingMeleeWeapon(handPosition)) {
+			if (!usingMeleeWeapon(handPosition) && !usingEmptyWeapon(handPosition)) {
 				animator.SetBool(animationStr, false); // Stop animation
 			}
 		}
@@ -535,8 +558,18 @@ public class MechCombat : Combat {
 		return weaponScripts[weaponOffset+handPosition].Animation == "Block";
 	}
 
+	bool usingRCLWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "ShootRCL";
+	}
+
+	bool usingEmptyWeapon(int handPosition){
+		return weaponScripts[weaponOffset+handPosition].Animation == "";
+	}
+
 	string animationString(int handPosition) {
-		return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
+		if(!usingRCLWeapon(handPosition))
+			return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
+		else return "ShootRCL";
 	}
 
 	// Public functions

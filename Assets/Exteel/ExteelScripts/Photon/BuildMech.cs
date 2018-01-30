@@ -95,7 +95,10 @@ public class BuildMech : Photon.MonoBehaviour {
 	public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
 		findHands ();
 		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
-		for (int i = 0; i < parts.Length; i++) {
+
+
+		//intentionally not checking if weapon is null 
+		for (int i = 0; i < parts.Length-4; i++) {
 			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
 		}
 			
@@ -180,18 +183,22 @@ public class BuildMech : Photon.MonoBehaviour {
 							}
 						}
 					}
+					weaponScripts [i + 1] = new EmptyWeapon ();
+					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
+					weapons [i+1].transform.SetParent (hands [i % 2]);
+					weapons [i + 1].SetActive (false);
+
+					i++;//skip the right hand
 					break;
 				}
 			}
 		}
-		weapons [1].SetActive (false);//temp 
 
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
 	}
-	void Update(){
-		print ("P : "+weapons [0].transform.position);
-	}
+
+
 	public void EquipWeapon(string weapon, int weapPos) {
 		Destroy(weapons[weapPos]);
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
