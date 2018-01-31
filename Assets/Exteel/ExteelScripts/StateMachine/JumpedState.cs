@@ -41,6 +41,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (jumpReleased && mctrl.CanVerticalBoost() && Input.GetKey(KeyCode.Space)) {
 			animator.SetBool("Boost", true);
 			mctrl.Boost (true);
+			mctrl.GetComponentInChildren<Sounds> ().PlayBoostStart ();
 			animator.CrossFade ("BoostJump", 0.3f);//does not work as expected
 		}
 	}

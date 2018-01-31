@@ -10,6 +10,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 		animator.SetBool("Boost", true);
 		animator.SetBool ("OnSlash", false);
+
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
