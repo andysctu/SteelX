@@ -12,7 +12,7 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject Mech;
 	[SerializeField] Sprite buttonTexture;
 
-	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309" };
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034" };
 
 	private Transform[] contents;
 	private int activeTab;
@@ -95,6 +95,13 @@ public class HangarManager : MonoBehaviour {
 			else {
 				Button[] btns = uiPart.GetComponentsInChildren<Button>();
 				for (int i = 0; i < btns.Length; i++) {
+
+					//if two-handed , skip 1 &3  temp.
+					if (p == "RCL034" && (i == 1 || i == 3)){
+						btns [i].image.enabled = false;
+						continue;
+					}
+
 					int copy = i;
 					Button b = btns[i];
 					b.onClick.AddListener(() => Equip(p,copy));
@@ -196,26 +203,71 @@ public class HangarManager : MonoBehaviour {
 			curSMR[parent].sharedMesh = newSMR.sharedMesh;
 			curSMR [parent].material = material;
 		} else {
-			switch (weap) {
-			case 0:
-				equipped ["weapon1l"] = part;
-				UserData.myData.Mech.Weapon1L = part;
-			break;
-			case 1: 
-				equipped["weapon1r"] = part; 
-				UserData.myData.Mech.Weapon1R = part;
-			break;
-			case 2:
-				equipped["weapon2l"] = part;
-				UserData.myData.Mech.Weapon2L = part;
-			break;
-			case 3:
-				equipped["weapon2r"] = part; 
-				UserData.myData.Mech.Weapon2R = part;
-			break;
-			default: Debug.Log("Should not get here"); break;
+			if (part == "RCL034") { //temp , check if it is two handed weapon
+				switch (weap) { //set to left hand
+				case 0:
+				case 1:
+					equipped ["weapon1l"] = part;
+					UserData.myData.Mech.Weapon1L = part;
+					equipped ["weapon1r"] = "EmptyWeapon"; 
+					UserData.myData.Mech.Weapon1R = "EmptyWeapon";
+					GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, 0);
+					Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", true);
+				break;
+				case 2:
+				case 3:
+					equipped ["weapon2l"] = part;
+					UserData.myData.Mech.Weapon2L = part;
+					equipped ["weapon2r"] = "EmptyWeapon"; 
+					UserData.myData.Mech.Weapon2R = "EmptyWeapon";
+					GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, 2);
+					//Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", true);   //2l,2r do not show , currently
+				break;
+				default:
+					Debug.Log ("Should not get here");
+					break;
+				}
+			} else {
+				//check if previous is two-handed (always on left hand)
+				//the weapon is destroyed in BuildMech
+				if(weap>=2){
+					//check 2l
+					if(equipped["weapon2l"] == "RCL034"){
+						//since 2l,2r do not show 
+						//Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", false);
+					}
+				}else{
+					//check 1l
+					if(equipped["weapon1l"] == "RCL034"){
+						Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", false);
+					}
+				}
+
+
+				switch (weap) {
+				case 0:
+					equipped ["weapon1l"] = part;
+					UserData.myData.Mech.Weapon1L = part;
+					break;
+				case 1: 
+					equipped ["weapon1r"] = part; 
+					UserData.myData.Mech.Weapon1R = part;
+					break;
+				case 2:
+					equipped ["weapon2l"] = part;
+					UserData.myData.Mech.Weapon2L = part;
+					break;
+				case 3:
+					equipped ["weapon2r"] = part; 
+					UserData.myData.Mech.Weapon2R = part;
+					break;
+				default:
+					Debug.Log ("Should not get here");
+					break;
+				}
+				GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, weap);
 			}
-			GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, weap);
+
 
 		}
 		//			curSMR[i].enabled = true;

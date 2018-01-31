@@ -168,8 +168,8 @@ public class BuildMech : Photon.MonoBehaviour {
 			case "RCL034":{
 
 					//Since the launch button is on right hand
-					p = new Vector3 (hands [(i + 1) % 2].position.x, hands [(i + 1) % 2].position.y - 0.4f, hands [(i+1)% 2].position.z);
-					weapons [i].transform.SetParent (hands [(i+1) % 2]);
+					p = new Vector3 (hands [1].position.x, hands [1].position.y - 0.4f, hands [1].position.z);
+					weapons [i].transform.SetParent (hands [1]);
 					weaponScripts[i] = new RCL034();
 
 					//by trial and error :(
@@ -216,38 +216,60 @@ public class BuildMech : Photon.MonoBehaviour {
 
 
 	public void EquipWeapon(string weapon, int weapPos) {
+		//if previous is two-handed => also destroy left hand 
+		if(weapPos>=2){
+			if(UserData.myData.Mech.Weapon2L == "RCL034"){
+				print ("destroy 2l");
+				Destroy (weapons [2]);
+			}
+		}else{
+			if(UserData.myData.Mech.Weapon1L == "RCL034"){
+				Destroy (weapons [0]);
+				print ("destroy 1L");
+			}
+		}
+
 		Destroy(weapons[weapPos]);
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
 		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, p, transform.rotation) as GameObject;
 		switch (weapon) {
-		case "APS403": {
-				weaponScripts[weapPos] = new APS403();
-				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
+		case "APS403":
+			{
+				weaponScripts [weapPos] = new APS403 ();
+				weapons [weapPos].transform.Rotate (0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				break;
 			}
-		case "SHL009": {
-				weaponScripts[weapPos] = new SHL009();
+		case "SHL009":
+			{
+				weaponScripts [weapPos] = new SHL009 ();
 				float rot = -165;
-				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(90,rot,0));
+				weapons [weapPos].transform.rotation = Quaternion.Euler (new Vector3 (90, rot, 0));
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				break;
 			}
-		case "SHS309": {
-				weaponScripts[weapPos] = new SHS309();
-				weapons[weapPos].transform.Rotate(0, 0, (weapPos % 2 == 0 ? -1 : 0) * 180);
-				weapons[weapPos].transform.position = new Vector3(p.x, p.y + 0.8f, p.z + 0.5f);
+		case "SHS309":
+			{
+				weaponScripts [weapPos] = new SHS309 ();
+				weapons [weapPos].transform.Rotate (0, 0, (weapPos % 2 == 0 ? -1 : 0) * 180);
+				weapons [weapPos].transform.position = new Vector3 (p.x, p.y + 0.8f, p.z + 0.5f);
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				break;
 			}
-		case "RCL034" :{
-				weapPos = (weapPos >= 2) ? 2 : 0;
-				weaponScripts[weapPos] = new SHS309(); // only on left hand
-				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
-				weapons[weapPos].transform.position = new Vector3(p.x , p.y - 1f, p.z);
+		case "RCL034":
+			{
+				weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
+				p = new Vector3 (hands [1].position.x, hands [1].position.y - 0.4f, hands [1].position.z);
+				weapons [weapPos].transform.SetParent (hands [1]); //but the parent is always set to right hand ( for nice look)
+				weaponScripts [weapPos] = new RCL034 ();
+				weapons [weapPos].transform.rotation = Quaternion.Euler (new Vector3 (-90, 180, 0));
+				weapons [weapPos].transform.position = new Vector3 (p.x, p.y - 1f, p.z);
 
-				weaponScripts[weapPos+1] = new EmptyWeapon();
+				weaponScripts [weapPos + 1] = new EmptyWeapon ();
+				weapons [weapPos + 1].SetActive (false);
 				break;
 			}
 		}
-		weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 		if (weapPos >= 2) weapons[weapPos].SetActive(false);
 	}
 		
