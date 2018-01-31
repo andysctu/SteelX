@@ -2,7 +2,7 @@
 	public RCL034() {  //temporary
 		Damage = 100;
 		Range = 500;
-		Rate = 1;
+		Rate = 0.8f;
 		radius = 0f;
 		Animation = "ShootRCL";
 	}

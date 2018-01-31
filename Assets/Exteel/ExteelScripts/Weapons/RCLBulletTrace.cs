@@ -14,9 +14,12 @@ public class RCLBulletTrace : MonoBehaviour {
 	private Transform Target;
 	private float bulletSpeed = 200;
 	private bool isCollided = false;
+	ParticleSystem ps ;
+
+	//private List<ParticleCollisionEvent>()
 
 	void Start () {
-		ParticleSystem ps = GetComponent<ParticleSystem>();
+		ps = GetComponent<ParticleSystem>();
 		ps.Play();
 
 		GetComponent<Rigidbody> ().velocity = transform.forward * bulletSpeed;
@@ -34,23 +37,19 @@ public class RCLBulletTrace : MonoBehaviour {
 		if (isCollided == true || other == Shooter)
 			return;
 		isCollided = true;
-
-		GetComponent<ParticleSystem> ().Stop ();
+		ps.Stop ();
 			
 		int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 		int i = 0;
 		while (i < numCollisionEvents) {
 			collisionHitLoc = collisionEvents [i].intersection;
-
-				//play impact
+			//play impact
 			GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 			temp.GetComponent<ParticleSystem> ().Play ();
 			i++;
 		}
 		if (other.layer == 8) { // collides player
-			print ("call on hit in RCL.");
 			other.GetComponent<Transform>().position += transform.forward*5f;
-			print ("Forced move.");
 			hud.ShowText (cam, collisionHitLoc, "Hit");
 
 			if(other.GetComponent<PhotonView>().isMine)	//avoid multi-calls
@@ -64,4 +63,5 @@ public class RCLBulletTrace : MonoBehaviour {
 			Destroy (gameObject, 0.5f);
 
 	}
+
 }

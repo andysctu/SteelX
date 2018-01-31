@@ -227,7 +227,7 @@ public class MechCombat : Combat {
 		int i;
 		if (usingRCLWeapon (handPosition)) {
 			GameObject bullet;
-			bullet = Instantiate (bullets[weaponOffset], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+			bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f, Quaternion.LookRotation (direction)) as GameObject;
 
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
 			RCLbullet.hud = hud;

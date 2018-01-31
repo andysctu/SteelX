@@ -36,7 +36,7 @@ public class UIManager : MonoBehaviour {
 		}
 
 		RoomInfo[] roomsInfo = PhotonNetwork.GetRoomList ();
-		Debug.Log (roomsInfo.Length);
+		Debug.Log ("roomsInfo.length :"+roomsInfo.Length);
 		rooms = new GameObject[roomsInfo.Length];
 		for (int i = 0; i < roomsInfo.Length; i++) {
 			GameObject roomPanel = Instantiate (RoomPanel);
