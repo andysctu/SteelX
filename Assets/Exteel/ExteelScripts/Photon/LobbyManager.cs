@@ -31,7 +31,7 @@ public class LobbyManager: MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 
 	void OnJoinedLobby(){

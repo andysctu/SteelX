@@ -24,12 +24,12 @@ public class InRoomChat : Photon.MonoBehaviour
 
     public void OnGUI()
     {
-        if (!this.IsVisible || !PhotonNetwork.inRoom)
+		if (!this.IsVisible || !PhotonNetwork.inRoom)
         {
-            return;
+           return;
         }
 
-        if (Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return))
+		if (Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return ))
         {
             if (!string.IsNullOrEmpty(this.inputLine))
             {

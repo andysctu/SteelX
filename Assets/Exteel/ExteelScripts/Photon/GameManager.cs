@@ -12,7 +12,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject PlayerStat;
 	[SerializeField] Text Timer;
 	[SerializeField] bool Offline;
-
+	public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
 
 	public int MaxTimeInSeconds = 300;
@@ -39,7 +39,7 @@ public class GameManager : Photon.MonoBehaviour {
 			GameInfo.MaxKills = 1;
 			GameInfo.MaxTime = 1;
 		}
-
+		InRoomChat.enabled = true;
 		MaxKills = GameInfo.MaxKills;
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
 
@@ -105,7 +105,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	void Update() {
 		Cursor.lockState = CursorLockMode.Locked;
-		Scoreboard.SetActive(Input.GetKey(KeyCode.Tab));
+		Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
 			PhotonNetwork.LeaveRoom();
