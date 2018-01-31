@@ -356,7 +356,7 @@ public class MechCombat : Combat {
 
 		// Switch weapons
 		if (!isDead && Input.GetKeyDown (KeyCode.R)) {
-			photonView.RPC("SwitchWeapons", PhotonTargets.All, null);
+			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
 		if(CharacterController.isGrounded == true){
@@ -519,7 +519,7 @@ public class MechCombat : Combat {
 	// Each player holds 2 sets of weapons (4 total)
 	// Switching weapons will switch from set 1 (weap 1 + 2) to set 2 (weap 3 + 4)
 	[PunRPC]
-	void SwitchWeapons() {
+	void CallSwitchWeapons() {
 		// Stop current attacks
 		setIsFiring(LEFT_HAND, false);
 		setIsFiring(RIGHT_HAND, false);
@@ -530,6 +530,12 @@ public class MechCombat : Combat {
 
 		//Play switch weapon animation
 
+		Invoke ("SwitchWeaponsBegin", 1f);
+	}
+
+
+	void SwitchWeaponsBegin(){
+
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
@@ -537,6 +543,13 @@ public class MechCombat : Combat {
 
 		// Change weaponOffset
 		weaponOffset = (weaponOffset + 2) % 4;
+
+		//check if using RCL => RCLIdle
+		if(usingRCLWeapon(0)){
+			animator.SetBool ("UsingRCL", true);
+		}else{
+			animator.SetBool ("UsingRCL", false);
+		}
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset,weaponOffset+1);

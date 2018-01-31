@@ -177,7 +177,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.position = new Vector3(p.x , p.y - 1f, p.z);
 					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
 					if (bulletPrefabs [i] == null)
-						Debug.Log ("the prefab is null...");
+						Debug.Log ("the bullet prefab is null...");
 
 					if(i==weaponOffset){
 						if(animator!=null){
@@ -235,6 +235,15 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts[weapPos] = new SHS309();
 				weapons[weapPos].transform.Rotate(0, 0, (weapPos % 2 == 0 ? -1 : 0) * 180);
 				weapons[weapPos].transform.position = new Vector3(p.x, p.y + 0.8f, p.z + 0.5f);
+				break;
+			}
+		case "RCL034" :{
+				weapPos = (weapPos >= 2) ? 2 : 0;
+				weaponScripts[weapPos] = new SHS309(); // only on left hand
+				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
+				weapons[weapPos].transform.position = new Vector3(p.x , p.y - 1f, p.z);
+
+				weaponScripts[weapPos+1] = new EmptyWeapon();
 				break;
 			}
 		}
