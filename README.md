@@ -7,9 +7,10 @@ To implement List : </br>
  </br>
 main :</br>  	
  
-RCL034 : bulletTrace</br>
-RCL034 : hitsound </br>
+	RCL034 : bulletTrace</br>
+	RCL034 : hitsound </br>
 RCL034 : crosshair</br>
+RCL034 : bulletTrace start pos
 	RCL034 : make RCL034B detects multiple objects(maybe later)</br>
 </br>
 Adjust APS403B&BI</br>

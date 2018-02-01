@@ -8,7 +8,7 @@ public class CrosshairImage : MonoBehaviour {
 	private float radiusR;
 
 	[SerializeField]
-	private GameObject[] crosshairs;
+	private GameObject[] crosshairs;// 4 : RCL's , 5 : middlecross , 6:RCL middlecross
 
 	[SerializeField]
 	private RectTransform[] crosshairsL0;
@@ -18,6 +18,7 @@ public class CrosshairImage : MonoBehaviour {
 	private RectTransform[] crosshairsR0;
 	[SerializeField]
 	private RectTransform[] crosshairsR1;
+
 
 	public bool noCrosshairL = false;
 	public bool noCrosshairR = false;
@@ -85,6 +86,10 @@ public class CrosshairImage : MonoBehaviour {
 			crosshairs [0].SetActive (true);
 			crosshairs [1].SetActive (false);
 		}
+		crosshairs [5].SetActive (true);
+
+		crosshairs [4].SetActive (false);
+		crosshairs [6].SetActive (false);
 	}
 	public void SetCurrentRImage(int CurImage){
 		if(CurImage == 1){
@@ -94,13 +99,30 @@ public class CrosshairImage : MonoBehaviour {
 			crosshairs [2].SetActive (true);
 			crosshairs [3].SetActive (false);
 		}
+		crosshairs [5].SetActive (true);
+
+		crosshairs [4].SetActive (false);
+		crosshairs [6].SetActive (false);
 	}
 	public void NoCrosshairL(){
 		crosshairs [0].SetActive (false);
 		crosshairs [1].SetActive (false);
+
+		crosshairs [4].SetActive (false);
+		crosshairs [5].SetActive (true);
+		crosshairs [6].SetActive (false);
 	}
 	public void NoCrosshairR(){
 		crosshairs [2].SetActive (false);
 		crosshairs [3].SetActive (false);
+
+		crosshairs [4].SetActive (false);
+		crosshairs [5].SetActive (true);
+		crosshairs [6].SetActive (false);
+	}
+	public void RCLcrosshair(){  // middlecross turns off only when RCL is on  
+		crosshairs [4].SetActive (true);
+		crosshairs [5].SetActive (false);
+		crosshairs [6].SetActive (true);
 	}
 }

@@ -30,7 +30,7 @@ public class Crosshair : MonoBehaviour {
 		updateCrosshair (0,1);
 	}
 
-	public void NoCrosshair() {
+	public void NoCrosshair() { // this is called only when disable player
 		crosshairImage.NoCrosshairL();
 		crosshairImage.NoCrosshairR ();
 	}
@@ -49,6 +49,10 @@ public class Crosshair : MonoBehaviour {
 			crosshairImage.SetCurrentRImage (0);
 		} else{
 			crosshairImage.NoCrosshairR ();
+		}
+
+		if(weaponScripts[L].Animation == "ShootRCL"){
+			crosshairImage.RCLcrosshair ();
 		}
 	}
 
