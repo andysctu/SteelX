@@ -49,11 +49,12 @@ public class RCLBulletTrace : MonoBehaviour {
 			i++;
 		}
 		if (other.layer == 8) { // collides player
-			other.GetComponent<Transform>().position += transform.forward*5f;
+			other.GetComponent<Transform>().position += transform.forward*5f; // **
 			hud.ShowText (cam, collisionHitLoc, "Hit");
-
 			if(other.GetComponent<PhotonView>().isMine)	//avoid multi-calls
+			{
 				other.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, 100, PhotonNetwork.playerName); // 100 :temp
+			}
 
 		}else{
 			//collides environment
