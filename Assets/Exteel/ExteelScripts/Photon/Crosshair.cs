@@ -31,11 +31,13 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	public void NoCrosshair() { // this is called only when disable player
-		crosshairImage.NoCrosshairL();
-		crosshairImage.NoCrosshairR ();
+		if (crosshairImage != null) {
+			crosshairImage.NoCrosshairL ();
+			crosshairImage.NoCrosshairR ();
 
-		targetL = null;	
-		targetR = null;
+			targetL = null;	
+			targetR = null;
+		}
 	}
 	public void updateCrosshair(int L, int R){
 		CrosshairRadiusL = weaponScripts [L].radius;

@@ -299,12 +299,14 @@ public class MechCombat : Combat {
 	void DisablePlayer() {
 		gameObject.layer = 0;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
-		ch.NoCrosshair();
-		GetComponent<MechController>().enabled = false;
-		if(ch!=null)
+		if(ch!=null){
+			ch.NoCrosshair();
 			ch.enabled = false;
+		}
+		GetComponent<MechController>().enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
+			print (renderer + " is disabled.");
 			renderer.enabled = false;
 		}
 		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);

@@ -105,6 +105,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	void Update() {
 		Cursor.lockState = CursorLockMode.Locked;
+
 		Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
@@ -113,6 +114,7 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		if (GameOver() && !gameEnding) {
+			print ("called game over");
 			gameEnding = true;
 			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
 			Scoreboard.SetActive(true);

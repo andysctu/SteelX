@@ -11,7 +11,7 @@ main :</br>
 RCL034 : bullet particle remake</br>
 RCL034 : hitsound </br>
 *RCL034 : make RCL034B detects multiple objects</br>
-*crosshair scaling problem ( the middle cross disappears for some specific size of screen )
+*crosshair scaling problem ( the middle cross disappears for some specific size of screen , or we can force using 1366*768 )
 
 </br>
 Adjust APS403B&BI</br>
