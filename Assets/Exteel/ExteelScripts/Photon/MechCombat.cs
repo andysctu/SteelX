@@ -225,9 +225,9 @@ public class MechCombat : Combat {
 	}
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction , string name){
 		int i;
-		if (usingRCLWeapon (handPosition)) {
+		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet;
-			bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f, Quaternion.LookRotation (direction)) as GameObject;
+			bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
 			RCLbullet.hud = hud;
@@ -593,7 +593,7 @@ public class MechCombat : Combat {
 		else return "ShootRCL";
 	}
 
-	public void updataBullet(){
+	public void updataBullet(){// no need , change weaponOffset is done in switch Weapon
 		
 	}
 
