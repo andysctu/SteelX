@@ -113,7 +113,6 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		}
 	}
 		
-	// Not actually updating dropdown values of clients yet, only host
 	public void ChangeMap() {
 		photonView.RPC("ChangeMap", PhotonTargets.All, Map.captionText.text);
 	}
@@ -139,7 +138,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	public void ChangeMap(string map) {
 		GameInfo.Map = map;
 		int i = Array.IndexOf(Maps, map);
-		Map.value = i;
+		Map.captionText.text = map;
 	}
 
 	[PunRPC]
@@ -152,16 +151,19 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	[PunRPC]
 	public void ChangeGameMode(string gameMode) {
 		GameInfo.GameMode = gameMode;
+		GameMode.captionText.text = gameMode;
 	}
 
 	[PunRPC]
 	public void ChangeMaxKills(string maxKills) {
 		Debug.Log("Setting max kills to " + maxKills);
 		GameInfo.MaxKills = int.Parse(maxKills);
+		MaxKills.captionText.text = maxKills;
 	}
 
 	[PunRPC]
 	public void ChangeMaxPlayers(string maxPlayers) {
 		GameInfo.MaxPlayers = int.Parse(maxPlayers);
+		MaxPlayers.captionText.text = maxPlayers;
 	}
 }

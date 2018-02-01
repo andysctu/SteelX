@@ -274,7 +274,7 @@ public class MechCombat : Combat {
 			return;
 		}
 		// Apply damage
-		print ("called onhit by :"+gameObject);
+
 		currentHP -= d;
 		Debug.Log ("HP: " + currentHP);
 
