@@ -17,7 +17,8 @@ public class DroneCombat : Combat {
 		if (currentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
-			gm.RegisterKill(PhotonNetwork.playerName, "Drone");
+			//gm.RegisterKill(PhotonNetwork.playerName, "Drone");
+			gm.RegisterKill(shooter, "Drone");
 		}
 	}
 

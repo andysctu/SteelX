@@ -9,6 +9,7 @@ public class RCLBulletTrace : MonoBehaviour {
 	public HUD hud;
 	public Camera cam;
 	public GameObject Shooter;
+	public string ShooterName;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
 	private Transform Target;
@@ -53,7 +54,8 @@ public class RCLBulletTrace : MonoBehaviour {
 			hud.ShowText (cam, collisionHitLoc, "Hit");
 			if(other.GetComponent<PhotonView>().isMine)	//avoid multi-calls
 			{
-				other.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, 100, PhotonNetwork.playerName); // 100 :temp
+				other.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, 100, ShooterName); // 100 :temp
+				print ("call RCL ONhit with shooterName: " + ShooterName);
 			}
 
 		}else{

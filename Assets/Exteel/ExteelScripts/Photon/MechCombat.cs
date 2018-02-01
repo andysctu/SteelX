@@ -228,13 +228,15 @@ public class MechCombat : Combat {
 		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet;
 			bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
-
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
 			RCLbullet.hud = hud;
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
+			RCLbullet.ShooterName = gameObject.name;
+			print (PhotonNetwork.playerName + " shoot a RCL B");
 
 		} else {
+			print ("goes aps");
 			for (i = 0; i < 3; i++) {
 				GameObject bullet;
 				bullet = Instantiate ((handPosition==0)? bullets[weaponOffset] : bullets[weaponOffset+1], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
@@ -274,7 +276,6 @@ public class MechCombat : Combat {
 			return;
 		}
 		// Apply damage
-
 		currentHP -= d;
 		Debug.Log ("HP: " + currentHP);
 
@@ -282,15 +283,18 @@ public class MechCombat : Combat {
 		if (currentHP <= 0) {
 			isDead = true;
 			// UI for shooter
+
+			/*
 			if (shooter == PhotonNetwork.playerName) {
 				// Do we need this? Already being displayed in OnHit
 				hud.ShowText(cam, transform.position, "Kill");
-			}
+			}*/
 
 			DisablePlayer();
 
 			// Update scoreboard
 			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
+			print ("call registerKill shooter : " + shooter + " victim :" + GetComponent<PhotonView> ().name);
 		}
 	}
 
@@ -306,7 +310,6 @@ public class MechCombat : Combat {
 		GetComponent<MechController>().enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
-			print (renderer + " is disabled.");
 			renderer.enabled = false;
 		}
 		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
