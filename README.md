@@ -49,3 +49,4 @@ Improve efficiency
 Unsolved bugs :
 *Penetrating the ground ( rare , changing the ground to box collidor didn't fix )  (it even happened when vertical boosting)
 *error : Photonview id duplicate found   </br>
+(small) Change weapon in Hargar may not in the right position ( becuse of IK ) , maybe use update(after IK ) ?

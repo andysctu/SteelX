@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "LMG012", "SHL009" , "RCL034"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "LMG012", "SHL009" , "RCL034" ,"BRF025"};
 	private GameManager gm;
 	public GameObject[] weapons;
 
@@ -42,10 +42,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
-			UserData.myData.Mech.Weapon1L = defaultParts [9];
+			UserData.myData.Mech.Weapon1L = defaultParts [10];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
-			UserData.myData.Mech.Weapon1R = defaultParts [9];
+			UserData.myData.Mech.Weapon1R = defaultParts [10];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
 			UserData.myData.Mech.Weapon2L = defaultParts [6];
@@ -168,8 +168,17 @@ public class BuildMech : Photon.MonoBehaviour {
 			case "LMG012": {
 					weaponScripts[i] = new LMG012();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
 					weapons [i].transform.SetParent (hands [i % 2]);
-					//bulletPrefabs [i] = Resources.Load ("") as GameObject;
+					bulletPrefabs [i] = Resources.Load ("LMG012B") as GameObject;
+					break;
+				}
+			case "BRF025": {
+					weaponScripts[i] = new BRF025();
+					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
+					weapons [i].transform.SetParent (hands [i % 2]);
+					bulletPrefabs [i] = Resources.Load ("BRF025B") as GameObject;
 					break;
 				}
 			case "RCL034":{
@@ -259,6 +268,20 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos] = new SHS309 ();
 				weapons [weapPos].transform.Rotate (0, 0, (weapPos % 2 == 0 ? -1 : 0) * 180);
 				weapons [weapPos].transform.position = new Vector3 (p.x, p.y + 0.8f, p.z + 0.5f);
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				break;
+			}
+		case "LMG012": {
+				weaponScripts[weapPos] = new LMG012();
+				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
+				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				break;
+			}
+		case "BRF025": {
+				weaponScripts[weapPos] = new BRF025();
+				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos% 2) == 0 ? -1 : 1));
+				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				break;
 			}
