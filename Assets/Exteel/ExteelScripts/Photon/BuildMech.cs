@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "SHL009", "SHL009" , "RCL034"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "LMG012", "SHL009" , "RCL034"};
 	private GameManager gm;
 	public GameObject[] weapons;
 
@@ -48,7 +48,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Weapon1R = defaultParts [9];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
-			UserData.myData.Mech.Weapon2L = defaultParts [7];
+			UserData.myData.Mech.Weapon2L = defaultParts [6];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2R)){
 			UserData.myData.Mech.Weapon2R = defaultParts [8];
@@ -165,6 +165,13 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 					break;
 				}
+			case "LMG012": {
+					weaponScripts[i] = new LMG012();
+					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons [i].transform.SetParent (hands [i % 2]);
+					//bulletPrefabs [i] = Resources.Load ("") as GameObject;
+					break;
+				}
 			case "RCL034":{
 
 					//Since the launch button is on right hand
@@ -172,9 +179,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons [i].transform.SetParent (hands [1]);
 					weaponScripts[i] = new RCL034();
 
-					//by trial and error :(
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
-					weapons[i].transform.position = new Vector3(p.x , p.y - 1f, p.z);
+					weapons[i].transform.position = new Vector3(p.x , p.y , p.z);
 					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
 					if (bulletPrefabs [i] == null)
 						Debug.Log ("the bullet prefab is null...");
@@ -263,7 +269,7 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [1]); //but the parent is always set to right hand ( for nice look)
 				weaponScripts [weapPos] = new RCL034 ();
 				weapons [weapPos].transform.rotation = Quaternion.Euler (new Vector3 (-90, 180, 0));
-				weapons [weapPos].transform.position = new Vector3 (p.x, p.y - 1f, p.z);
+				weapons [weapPos].transform.position = new Vector3 (p.x, p.y , p.z);
 
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
 				weapons [weapPos + 1].SetActive (false);
