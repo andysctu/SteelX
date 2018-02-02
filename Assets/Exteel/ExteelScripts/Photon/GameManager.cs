@@ -65,6 +65,7 @@ public class GameManager : Photon.MonoBehaviour {
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
 		//GameObject player = PlayerNetwork.instance.player;
 
+
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
 		playerScorePanels = new Dictionary<string, GameObject>();
