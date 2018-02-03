@@ -203,48 +203,6 @@ public class HangarManager : MonoBehaviour {
 			curSMR[parent].sharedMesh = newSMR.sharedMesh;
 			curSMR [parent].material = material;
 		} else {
-			/*
-			if (part == "RCL034") { //temp , check if it is two handed weapon
-				switch (weap) { //set to left hand
-				case 0:
-				case 1:
-					equipped ["weapon1l"] = part;
-					UserData.myData.Mech.Weapon1L = part;
-					equipped ["weapon1r"] = "EmptyWeapon"; 
-					UserData.myData.Mech.Weapon1R = "EmptyWeapon";
-					GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, 0);
-					Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", true);
-				break;
-				case 2:
-				case 3:
-					equipped ["weapon2l"] = part;
-					UserData.myData.Mech.Weapon2L = part;
-					equipped ["weapon2r"] = "EmptyWeapon"; 
-					UserData.myData.Mech.Weapon2R = "EmptyWeapon";
-					GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, 2);
-					//Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", true);   //2l,2r do not show , currently
-				break;
-				default:
-					Debug.Log ("Should not get here");
-					break;
-				}
-			} else {
-				//check if previous is two-handed (always on left hand)
-				//the weapon is destroyed in BuildMech
-				if(weap>=2){
-					//check 2l
-					if(equipped["weapon2l"] == "RCL034"){
-						//since 2l,2r do not show 
-						//Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", false);
-					}
-				}else{
-					//check 1l
-					if(equipped["weapon1l"] == "RCL034"){
-						Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", false);
-					}
-				}*/
-
-
 				switch (weap) {
 				case 0:
 					equipped ["weapon1l"] = part;

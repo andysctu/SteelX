@@ -553,7 +553,7 @@ public class MechCombat : Combat {
 
 		// Change weaponOffset
 		weaponOffset = (weaponOffset + 2) % 4;
-
+		Sounds.UpdateSounds (weaponOffset);
 		//check if using RCL => RCLIdle
 		if(usingRCLWeapon(0)){
 			animator.SetBool ("UsingRCL", true);

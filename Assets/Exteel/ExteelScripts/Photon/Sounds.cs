@@ -20,6 +20,10 @@ public class Sounds : MonoBehaviour {
 		Source = GetComponent<AudioSource>();
 		Source.volume = 0.1f;
 	}
+
+	public void UpdateSounds(int Offset){
+		weaponOffset = Offset;
+	}
 	
 	public void PlayShotL() {  // RCL is fine
 		Source.PlayOneShot(ShotSounds[weaponOffset]);
