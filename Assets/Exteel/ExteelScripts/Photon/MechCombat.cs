@@ -8,9 +8,9 @@ public class MechCombat : Combat {
 
 	[SerializeField] Transform camTransform;
 	[SerializeField] Animator animator;
-	[SerializeField] public GameObject[] bullets = new GameObject[4];
 	[SerializeField] MechController mechController;
 	[SerializeField] CharacterController CharacterController;
+	[SerializeField] Sounds Sounds;
 	// Boost variables
 	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
@@ -53,6 +53,7 @@ public class MechCombat : Combat {
 
 	// GameObjects
 	private GameObject[] weapons;
+	private GameObject[] bullets;
 	private GameObject Target;
 
 	// HUD
@@ -102,6 +103,8 @@ public class MechCombat : Combat {
 	void initComponents() {
 		bm = GetComponent<BuildMech>();
 		weapons = bm.weapons;
+		bullets = bm.bulletPrefabs;
+		Sounds.ShotSounds = bm.ShotSounds;
 	}
 
 	void initCombatVariables() {
@@ -205,6 +208,8 @@ public class MechCombat : Combat {
 			}
 		} else{
 			print ("no current target.");
+
+			if(animator.GetBool("SlashL")!=true && animator.GetBool("SlashR")!=true)
 			mechController.SetSlashMoving(cam.transform.forward,5f);
 
 		}
@@ -236,10 +241,10 @@ public class MechCombat : Combat {
 			print (PhotonNetwork.playerName + " shoot a RCL B");
 
 		} else {
-			print ("goes aps");
-			for (i = 0; i < 3; i++) {
+			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
+			for (i = 0; i < bN; i++) {
 				GameObject bullet;
-				bullet = Instantiate ((handPosition==0)? bullets[weaponOffset] : bullets[weaponOffset+1], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+				bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 
 
 				if (string.IsNullOrEmpty (name) || Target == null) {
@@ -248,7 +253,7 @@ public class MechCombat : Combat {
 					bullet.transform.SetParent (Target.transform);
 					Debug.Log ("target is found.");
 				}
-				yield return new WaitForSeconds (0.3f);
+				yield return new WaitForSeconds (1/bm.weaponScripts[weaponOffset + handPosition].Rate/bN);
 			}
 		}
 	}

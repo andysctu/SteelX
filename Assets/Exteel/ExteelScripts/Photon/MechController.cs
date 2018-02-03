@@ -86,7 +86,7 @@ public class MechController : Photon.MonoBehaviour {
 					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.y);	// make sure not slashing to the sky
 				}
 				CharacterController.Move(Slashdir * SlashMovingSpeed);
-				SlashMovingSpeed /= 1.5f;
+				SlashMovingSpeed /= 1.2f;
 				if(CharacterController.isGrounded == false){
 					mechCombat.CanSlash = false;
 				}

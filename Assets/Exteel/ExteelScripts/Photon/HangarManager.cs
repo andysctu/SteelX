@@ -203,6 +203,7 @@ public class HangarManager : MonoBehaviour {
 			curSMR[parent].sharedMesh = newSMR.sharedMesh;
 			curSMR [parent].material = material;
 		} else {
+			/*
 			if (part == "RCL034") { //temp , check if it is two handed weapon
 				switch (weap) { //set to left hand
 				case 0:
@@ -241,7 +242,7 @@ public class HangarManager : MonoBehaviour {
 					if(equipped["weapon1l"] == "RCL034"){
 						Mech.GetComponentInChildren<Animator> ().SetBool ("UsingRCL", false);
 					}
-				}
+				}*/
 
 
 				switch (weap) {
@@ -278,4 +279,4 @@ public class HangarManager : MonoBehaviour {
 //		}
 //		arm (new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
-}
+

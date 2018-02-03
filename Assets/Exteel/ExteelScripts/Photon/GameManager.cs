@@ -65,7 +65,6 @@ public class GameManager : Photon.MonoBehaviour {
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
 		//GameObject player = PlayerNetwork.instance.player;
 
-
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
 		playerScorePanels = new Dictionary<string, GameObject>();
@@ -105,7 +104,8 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void Update() {
-		Cursor.lockState = CursorLockMode.Locked;
+		if(!GameOver())
+			Cursor.lockState = CursorLockMode.Locked;
 
 		Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
@@ -117,6 +117,7 @@ public class GameManager : Photon.MonoBehaviour {
 		if (GameOver() && !gameEnding) {
 			print ("called game over");
 			gameEnding = true;
+			Cursor.lockState = CursorLockMode.None;
 			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
 			Scoreboard.SetActive(true);
 			StartCoroutine(ExecuteAfterTime(3));
@@ -136,6 +137,7 @@ public class GameManager : Photon.MonoBehaviour {
 	IEnumerator ExecuteAfterTime(float time)
 	{
 		yield return new WaitForSeconds(time);
+		//Final stage
 
 		// Code to execute after the delay
 		Cursor.visible = true;
@@ -143,6 +145,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void RegisterKill(string shooter, string victim) {
+		//Display Log on UI
 		Debug.Log(shooter + " killed " + victim);
 		Score newShooterScore = new Score ();
 		newShooterScore.Kills = playerScores[shooter].Kills + 1;
@@ -163,7 +166,6 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public bool GameOver() {
-		Cursor.lockState = CursorLockMode.None;
 		return CurrentMaxKills >= MaxKills;
 	}
 }

@@ -2891,6 +2891,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapons: []
+  bulletPrefabs: []
+  ShotSounds: []
 --- !u!114 &11436158
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2915,13 +2917,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   camTransform: {fileID: 405268}
   animator: {fileID: 9563454}
-  bullets:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   mechController: {fileID: 11462782}
   CharacterController: {fileID: 14356836}
+  Sounds: {fileID: 114000010976113334}
   CanSlash: 1
   isLSlashPlaying: 0
   isRSlashPlaying: 0
@@ -4403,8 +4401,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 10, y: 15, z: 10}
-  m_Center: {x: 0, y: -1.43, z: 1.09}
+  m_Size: {x: 10, y: 15, z: 5.082368}
+  m_Center: {x: 0, y: -1.4300003, z: -1.3688279}
 --- !u!82 &82000013355623540
 AudioSource:
   m_ObjectHideFlags: 1
@@ -4539,13 +4537,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Shot: {fileID: 8300000, guid: 0cd99550def3a4bdeaa71bbe61af6496, type: 3}
+  ShotSounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
   Slash1: {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
   Slash2: {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
   Slash3: {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
-  RCLShoot: {fileID: 8300000, guid: 6618481c1a17b4cfd8ab5c9f5477d947, type: 3}
   BoostStart: {fileID: 8300000, guid: 85694ab5f1a2240bfa16915335ffdacf, type: 3}
   BoostLoop: {fileID: 8300000, guid: e529fb7ecf34944479ec3cb577df8643, type: 3}
 --- !u!114 &114000012410893822
