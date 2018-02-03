@@ -3,6 +3,8 @@ using System.Collections;
 
 public class BulletImpact : MonoBehaviour {
 
+	[SerializeField] private AudioClip ImpactSound;
+
 	// Use this for initialization
 	void Start () {
 		//print ("bulletimpact is called.");

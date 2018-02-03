@@ -4,7 +4,7 @@ using System.Collections;
 public class Sounds : MonoBehaviour {
 
 	// Sound clip
-	public AudioClip[] ShotSounds = new AudioClip[4];
+	public AudioClip[] ShotSounds = new AudioClip[4]; // init in MechCombat 
 	[SerializeField] AudioClip Lock;
 	[SerializeField] AudioClip OnLocked;
 	[SerializeField] AudioClip Slash1;
@@ -12,6 +12,7 @@ public class Sounds : MonoBehaviour {
 	[SerializeField] AudioClip Slash3;
 	[SerializeField] AudioClip BoostStart;
 	[SerializeField] AudioClip BoostLoop;
+	[SerializeField] AudioClip SwitchWeapon;
 	int weaponOffset =0; // update by switchWeapon
 	private AudioSource Source;
 
@@ -49,5 +50,8 @@ public class Sounds : MonoBehaviour {
 	}
 	public void PlayBoostLoop(){
 		Source.PlayOneShot(BoostLoop);
+	}
+	public void PlaySwitchWeapon(){
+		Source.PlayOneShot(SwitchWeapon);
 	}
 }

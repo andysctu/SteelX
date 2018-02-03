@@ -184,10 +184,6 @@ public class MechCombat : Combat {
 		Target = null;
 		Transform target;
 
-		if(slashDetector == null){
-			Debug.Log ("Fatal error : slashDetector is null");
-		}
-
 		if ((target = slashDetector.getCurrentTarget ()) != null) {
 			print ("Slash hit : " + target.gameObject.name);
 
@@ -209,8 +205,9 @@ public class MechCombat : Combat {
 		} else{
 			print ("no current target.");
 
-			if(animator.GetBool("SlashL")!=true && animator.GetBool("SlashR")!=true)
-			mechController.SetSlashMoving(cam.transform.forward,5f);
+			//the first one does not move
+			if( (animator.GetBool("SlashL")!=true && animator.GetBool("SlashR")!=true)||animator.GetBool("Grounded")==false )
+				mechController.SetSlashMoving(cam.transform.forward,5f);
 
 		}
 			
@@ -400,10 +397,18 @@ public class MechCombat : Combat {
 				return;
 			}
 		}*/
-		if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-			setIsFiring(handPosition, false);
-			return;
+		if (!usingMelee) {
+			if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+				setIsFiring (handPosition, false);
+				return;
+			}
+		}else{
+			if(!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)){
+				setIsFiring (handPosition, false);
+				return;
+			}
 		}
+
 
 
 		if (usingRanged) {
@@ -540,6 +545,9 @@ public class MechCombat : Combat {
 
 		//Play switch weapon animation
 
+		//decrease energy
+
+		Sounds.PlaySwitchWeapon ();
 		Invoke ("SwitchWeaponsBegin", 1f);
 	}
 
@@ -649,7 +657,6 @@ public class MechCombat : Combat {
 
 	public void SetIsLSlashPlaying(int isPlaying){
 		isLSlashPlaying = isPlaying;
-		print ("received isPlaying : " + isPlaying); //has received
 	}
 	public void SetSlashL2ToFalse(){
 		animator.SetBool ("SlashL2", false);
@@ -659,7 +666,6 @@ public class MechCombat : Combat {
 	}
 	public void SetIsRSlashPlaying(int isPlaying){
 		isRSlashPlaying = isPlaying;
-		print ("received isPlaying : " + isPlaying); //has received
 	}
 	public void SetSlashR2ToFalse(){
 		animator.SetBool ("SlashR2", false);

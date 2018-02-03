@@ -80,18 +80,18 @@ public class MechController : Photon.MonoBehaviour {
 
 		// slash z-offset
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
-
+			
 			if(SlashMovingSpeed >0.1f){
 				if(Slashdir.y >0 && animator.GetBool("Grounded") == true){
 					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.y);	// make sure not slashing to the sky
 				}
 				CharacterController.Move(Slashdir * SlashMovingSpeed);
 				SlashMovingSpeed /= 1.2f;
-				if(CharacterController.isGrounded == false){
-					mechCombat.CanSlash = false;
-				}
-			}
+				//if(CharacterController.isGrounded == false){
+			//		mechCombat.CanSlash = false;
+			//	}
 
+			}
 			return;
 		}
 
@@ -219,4 +219,5 @@ public class MechController : Photon.MonoBehaviour {
 //			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
 //		}
 	}
+
 }

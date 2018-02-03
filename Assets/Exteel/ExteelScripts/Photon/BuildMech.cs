@@ -244,8 +244,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		if(weapon.Contains("RCL") || weapon.Contains ("MSR") || weapon.Contains ("LCN")){
 			Destroy (weapons[weapPos + 1]);
 		}
-
-		print ("destroy weapPos : "+weapPos);
 		Destroy(weapons[weapPos]);
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
 		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, p, transform.rotation) as GameObject;
