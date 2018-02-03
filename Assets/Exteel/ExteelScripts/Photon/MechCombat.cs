@@ -235,7 +235,6 @@ public class MechCombat : Combat {
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
 			RCLbullet.ShooterName = gameObject.name;
-			print (PhotonNetwork.playerName + " shoot a RCL B");
 
 		} else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
@@ -550,7 +549,6 @@ public class MechCombat : Combat {
 		Sounds.PlaySwitchWeapon ();
 		Invoke ("SwitchWeaponsBegin", 1f);
 	}
-
 
 	void SwitchWeaponsBegin(){
 

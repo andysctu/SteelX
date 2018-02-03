@@ -10,7 +10,7 @@ public class BulletTrace : MonoBehaviour {
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
 	private bool isfollow = false;
 	private Transform Target;
-	private float bulletSpeed = 300;
+	private float bulletSpeed = 350;
 	private bool isCollided = false;
 
 	void Start () {
