@@ -241,7 +241,10 @@ public class MechCombat : Combat {
 			for (i = 0; i < bN; i++) {
 				GameObject bullet;
 				bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
-
+				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
+				bulletTrace.HUD = hud;
+				bulletTrace.cam = cam;
+				bulletTrace.ShooterName = gameObject.name;
 
 				if (string.IsNullOrEmpty (name) || Target == null) {
 					Debug.Log ("target can not be found => move directly. ");
@@ -569,6 +572,10 @@ public class MechCombat : Combat {
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset,weaponOffset+1);
+	}
+
+	void mutipleHitmessage(){
+		
 	}
 
 	bool getIsFiring(int handPosition) {

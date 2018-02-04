@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Combat : Photon.MonoBehaviour {
-	public const int MAX_HP = 1000;
+	public const int MAX_HP = 2000;
 	public const float MAX_FUEL = 300.0f;
 
 	protected int currentHP;

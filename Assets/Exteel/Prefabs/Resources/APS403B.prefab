@@ -71,6 +71,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletImpact: {fileID: 1000011334909706, guid: deea98a8c0755429dbfa9ce7c710b4a2,
     type: 2}
+  HUD: {fileID: 0}
+  ShooterName: 
+  cam: {fileID: 0}
 --- !u!198 &198000011201848454
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -2577,7 +2580,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 2
+    radiusScale: 2.5
     collidesWith:
       serializedVersion: 2
       m_Bits: 4294967295

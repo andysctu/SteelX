@@ -5,12 +5,15 @@ using UnityEngine;
 public class BulletTrace : MonoBehaviour {
 
 	public GameObject bulletImpact;
+	public HUD HUD; // for multiple hit messages
+	public string ShooterName;
+	public Camera cam;
 	private Rigidbody rb;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
 	private bool isfollow = false;
 	private Transform Target;
-	private float bulletSpeed = 350;
+	private float bulletSpeed = 320;
 	private bool isCollided = false;
 	private Vector3 lastPos;
 	void Start () {
@@ -47,7 +50,9 @@ public class BulletTrace : MonoBehaviour {
 		if ( other.layer != 8  || (Target!=null && other.name == Target.gameObject.name) ) {
 				isCollided = true;
 				GetComponent<ParticleSystem> ().Stop ();
-
+				
+				if(PhotonNetwork.playerName == ShooterName)
+					HUD.ShowText (cam, other.transform.position + new Vector3(0,5f,0), "Hit");
 				int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 				int i = 0;
 				while (i < numCollisionEvents) {

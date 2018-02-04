@@ -3971,6 +3971,11 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 198615941964575300, guid: 4dc398f818ee4cd48b534a7bff5a72d1,
+        type: 2}
+      propertyPath: CollisionModule.radiusScale
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
   m_IsPrefabParent: 0
@@ -4598,6 +4603,11 @@ Prefab:
     - target: {fileID: 1000012364431528, guid: ec663680a4d9f6a48a50a3a5b0ebecf0, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198000011201848454, guid: ec663680a4d9f6a48a50a3a5b0ebecf0,
+        type: 2}
+      propertyPath: CollisionModule.radiusScale
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ec663680a4d9f6a48a50a3a5b0ebecf0, type: 2}
