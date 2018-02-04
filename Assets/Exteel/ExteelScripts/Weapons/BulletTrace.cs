@@ -12,7 +12,7 @@ public class BulletTrace : MonoBehaviour {
 	private Transform Target;
 	private float bulletSpeed = 350;
 	private bool isCollided = false;
-
+	private Vector3 lastPos;
 	void Start () {
 		ParticleSystem ps = GetComponent<ParticleSystem>();
 		ps.Play();
@@ -26,6 +26,7 @@ public class BulletTrace : MonoBehaviour {
 				print ("Fatal error : Can not find the target's transform.");
 			}
 			isfollow = true;
+			Destroy(gameObject, 2f);  //just in case not destroy
 		}
 	}
 
@@ -36,11 +37,11 @@ public class BulletTrace : MonoBehaviour {
 			Vector3 dir = -(transform.position - Target.position - new Vector3(0,5,0)).normalized;
 			GetComponent<Rigidbody> ().velocity = bulletSpeed*dir;
 		}
-
 	}
 
-	void OnParticleCollision(GameObject other){
 
+
+	void OnParticleCollision(GameObject other){
 		if (isCollided == true )
 			return;
 		if ( other.layer != 8  || (Target!=null && other.name == Target.gameObject.name) ) {

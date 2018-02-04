@@ -12,7 +12,7 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject Mech;
 	[SerializeField] Sprite buttonTexture;
 
-	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034" };
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012" };
 
 	private Transform[] contents;
 	private int activeTab;
@@ -72,7 +72,10 @@ public class HangarManager : MonoBehaviour {
 					parent = 5;
 				break;
 			case 'L':
-				parent = 3;
+				if (part [1] == 'M')
+					parent = 5;
+				else
+					parent = 3;
 				break;
 			case 'P':
 				parent = 4;
@@ -184,8 +187,12 @@ public class HangarManager : MonoBehaviour {
 			}
 			break;
 		case 'L':
-			parent = 2; equipped["legs"] = part;
-			UserData.myData.Mech.Legs = part;
+			if (part [1] != 'M') {
+				parent = 2; 
+				equipped ["legs"] = part;
+				UserData.myData.Mech.Legs = part;
+			} else
+				parent = 5;
 			break;
 		case 'H':
 			parent = 3; equipped["head"] = part;

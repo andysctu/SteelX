@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class HUD : MonoBehaviour {
 
 	[SerializeField] GameObject Placeholder;
-	[SerializeField] Sprite Hit, Kill, Defense, GameOver;
+	[SerializeField] Sprite Hit, Kill, Defense,Locked, GameOver;
 
 	private GameObject canvas;
 
@@ -25,6 +25,7 @@ public class HUD : MonoBehaviour {
 		switch (Text) {
 		case "Hit": im.sprite = Hit; break;
 		case "Kill": im.sprite = Kill; break;
+		case "Locked":im.sprite = Locked;break;
 		case "Defense": im.sprite = Defense; break;
 		case "GameOver": im.sprite = GameOver; i.GetComponent<HUDText>().enabled = false; break;
 		}

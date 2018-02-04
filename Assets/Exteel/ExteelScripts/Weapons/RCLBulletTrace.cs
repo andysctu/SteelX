@@ -41,30 +41,29 @@ public class RCLBulletTrace : MonoBehaviour {
 		ps.Stop ();
 			
 		int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-		int i = 0;
-		while (i < numCollisionEvents) {
+		for(int i=0;i < numCollisionEvents;i++) {
 			collisionHitLoc = collisionEvents [i].intersection;
 			//play impact
 			GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 			temp.GetComponent<ParticleSystem> ().Play ();
-			i++;
 		}
-		if (other.layer == 8) { // collides player
-			other.GetComponent<Transform>().position += transform.forward*5f; // **
 
-			if(PhotonNetwork.playerName == ShooterName)
-				hud.ShowText (cam, collisionHitLoc, "Hit");
-
-			if(other.GetComponent<PhotonView>().isMine)	//avoid multi-calls
-			{
-				other.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, 100, ShooterName); // 100 :temp
-				print ("call RCL ONhit with shooterName: " + ShooterName);
+		Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10f);
+		for (int i=0;i < hitColliders.Length;i++)
+		{
+			if(hitColliders[i].gameObject.layer == 8  && hitColliders[i].gameObject.name!=ShooterName){
+				hitColliders[i].GetComponent<Transform>().position += transform.forward*5f;
+				if(PhotonNetwork.playerName == ShooterName)
+					hud.ShowText (cam, hitColliders[i].transform.position + new Vector3(0,5f,0), "Hit");
+				if(hitColliders[i].GetComponent<PhotonView>().isMine)	//avoid multi-calls
+				{
+					hitColliders[i].GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, 100, ShooterName); // 100 :temp
+					print ("call RCL ONhit with shooterName: " + ShooterName);
+				}
 			}
-
-		}else{
-			//collides environment
-			//do nothing currently
+			print (hitColliders [i].gameObject.name);
 		}
+
 
 			Destroy (gameObject, 0.5f);
 

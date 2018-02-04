@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHS309", "APS403", "LMG012", "SHL009" , "RCL034" ,"BRF025"};
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012" };
 	private GameManager gm;
 	public GameObject[] weapons;
 	public GameObject[] bulletPrefabs;
@@ -45,16 +45,16 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
-			UserData.myData.Mech.Weapon1L = defaultParts [7];
+			UserData.myData.Mech.Weapon1L = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
-			UserData.myData.Mech.Weapon1R = defaultParts [7];
+			UserData.myData.Mech.Weapon1R = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
 			UserData.myData.Mech.Weapon2L = defaultParts [6];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2R)){
-			UserData.myData.Mech.Weapon2R = defaultParts [8];
+			UserData.myData.Mech.Weapon2R = defaultParts [6];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.User.PilotName)){
 			UserData.myData.User.PilotName = "Default Pilot";
@@ -191,6 +191,24 @@ public class BuildMech : Photon.MonoBehaviour {
 					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
 					break;
 				}
+		/*	case "BCN029": {
+					weaponScripts[i] = new BRF025();
+					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
+					weapons [i].transform.SetParent (hands [i % 2]);
+					bulletPrefabs [i] = Resources.Load ("BRF025B") as GameObject;
+					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					break;
+				}*/
+			case "SGN150": {
+					weaponScripts[i] = new SGN150();
+					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
+					weapons [i].transform.SetParent (hands [i % 2]);
+					bulletPrefabs [i] = Resources.Load ("SGN150") as GameObject;
+					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					break;
+				}
 			case "RCL034":{
 					//Since the launch button is on right hand
 					p = new Vector3 (hands [1].position.x, hands [1].position.y - 0.4f, hands [1].position.z);
@@ -247,6 +265,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		Destroy(weapons[weapPos]);
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
 		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, p, transform.rotation) as GameObject;
+		print ("load weapon :" + weapon);
 		switch (weapon) {
 		case "APS403":
 			{
@@ -276,6 +295,15 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
 				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				break;
+			}
+		case "SGN150": {
+				weaponScripts[weapPos] = new SGN150();
+				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
+				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				bulletPrefabs [weapPos] = Resources.Load ("SGN150") as GameObject;
+				ShotSounds [weapPos] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
 				break;
 			}
 		case "BRF025": {
