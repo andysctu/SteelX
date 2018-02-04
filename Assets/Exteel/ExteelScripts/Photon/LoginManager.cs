@@ -45,11 +45,13 @@ public class LoginManager : MonoBehaviour {
 		form.AddField("username", fields[0].text);
 		form.AddField("password", fields[1].text);
 
-		WWW www = new WWW(LoginURL, form);
+		//WWW www = new WWW(LoginURL, form);
 
 		Debug.Log("Authenticating...");
 
 		print ("PlayerName :" + PhotonNetwork.playerName);
+
+		/* 
 		while (!www.isDone) {}
 		foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
 			Debug.Log(entry.Key + ": " + entry.Value);
@@ -66,7 +68,15 @@ public class LoginManager : MonoBehaviour {
 			Application.LoadLevel (1);
 		} else {
 			error.SetActive(true);
-		}
+		}*/
+
+		// for debug
+		UserData.myData.Mech.PopulateParts();
+		PhotonNetwork.playerName = fields [0].text;
+		Application.LoadLevel (1);
+		//
+
+
 	}
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Tab)) {

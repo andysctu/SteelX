@@ -159,13 +159,12 @@ public class MechCombat : Combat {
 
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.gameObject.name);
 
+
 			if (target.tag == "Player" || target.tag == "Drone"){
-				//* Apply damage when the bullet collides the target ( using calculated traveling time )
 
 				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 
-				//* UI : calculate the traveling time s.t. it shows text when the bullet collides the target
 				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
 					hud.ShowText (cam, target.position, "Kill");
 				} else {
@@ -173,6 +172,7 @@ public class MechCombat : Combat {
 				}
 			} else if (target.tag == "Shield") {
 				hud.ShowText(cam, target.position, "Defense");
+				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, PhotonNetwork.playerName);
 			}
 		}else{
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, string.Empty);
@@ -245,12 +245,13 @@ public class MechCombat : Combat {
 				bulletTrace.HUD = hud;
 				bulletTrace.cam = cam;
 				bulletTrace.ShooterName = gameObject.name;
-
+				if (bN > 1)
+					bulletTrace.isLMG = true; //multiple messages
+				
 				if (string.IsNullOrEmpty (name) || Target == null) {
-					Debug.Log ("target can not be found => move directly. ");
+					//do nothing
 				} else {
 					bullet.transform.SetParent (Target.transform);
-					Debug.Log ("target is found.");
 				}
 				yield return new WaitForSeconds (1/bm.weaponScripts[weaponOffset + handPosition].Rate/bN);
 			}
@@ -485,12 +486,10 @@ public class MechCombat : Combat {
 			// Rotate arm to point to where you are looking (left hand is opposite)
 			float x = cam.transform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
 
-			// Start animation
-
 			// Tweaks
 			if (usingRangedWeapon(handPosition)) { // Shooting
 				animator.SetBool(animationStr, true);
-				shoulderR.Rotate (0, x, 0);
+				//shoulderR.Rotate (0, x, 0);
 			} else if (usingMeleeWeapon(handPosition)) { // Slashing
 				if(animator.GetBool(animationStr) == false && ((handPosition == 1)? isRSlashPlaying : isLSlashPlaying) == 0){
 

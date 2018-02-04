@@ -10,6 +10,8 @@ public class BulletImpact : MonoBehaviour {
 		//print ("bulletimpact is called.");
 		ParticleSystem ps = GetComponent<ParticleSystem>();
 		//ps.Emit(1);
-		Destroy(gameObject, 0.55f);
+		if (ImpactSound != null)
+			AudioSource.PlayClipAtPoint (ImpactSound, transform.position);
+		Destroy(gameObject, 0.50f);
 	}
 }

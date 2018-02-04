@@ -179,7 +179,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
 					weapons [i].transform.SetParent (hands [i % 2]);
 					bulletPrefabs [i] = Resources.Load ("LMG012B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					//ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
 					break;
 				}
 			case "BRF025": {
@@ -205,8 +205,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
 					weapons [i].transform.SetParent (hands [i % 2]);
-					bulletPrefabs [i] = Resources.Load ("SGN150") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					bulletPrefabs [i] = Resources.Load ("SGN150B") as GameObject;
+					//ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
 					break;
 				}
 			case "RCL034":{

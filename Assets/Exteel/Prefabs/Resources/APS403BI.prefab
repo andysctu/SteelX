@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e6924f4484a4bf0acf2e79f0289f10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ImpactSound: {fileID: 8300000, guid: ce5baff4bb5994a6eae003b3b3f7a4a4, type: 3}
 --- !u!198 &198000013929982948
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -113,7 +114,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1588902640
+  randomSeed: 1976052104
   InitialModule:
     serializedVersion: 3
     enabled: 1

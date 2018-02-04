@@ -8,6 +8,7 @@ public class BulletTrace : MonoBehaviour {
 	public HUD HUD; // for multiple hit messages
 	public string ShooterName;
 	public Camera cam;
+	public bool isLMG = false; //if it's LMG , then show Multiple Hit messages
 	private Rigidbody rb;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
@@ -51,9 +52,10 @@ public class BulletTrace : MonoBehaviour {
 				isCollided = true;
 				GetComponent<ParticleSystem> ().Stop ();
 				
-				if(PhotonNetwork.playerName == ShooterName)
+			if(other.layer==8&&isLMG==true&&PhotonNetwork.playerName == ShooterName)
 					HUD.ShowText (cam, other.transform.position + new Vector3(0,5f,0), "Hit");
-				int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
+				
+			int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 				int i = 0;
 				while (i < numCollisionEvents) {
 					Vector3 collisionHitLoc = collisionEvents [i].intersection;

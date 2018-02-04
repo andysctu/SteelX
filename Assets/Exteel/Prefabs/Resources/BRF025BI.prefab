@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e6924f4484a4bf0acf2e79f0289f10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ImpactSound: {fileID: 8300000, guid: d63705c408c8040cc9065e72b570d0cd, type: 3}
 --- !u!198 &198000013929982948
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -113,7 +114,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1821560612
+  randomSeed: -1868565025
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -265,7 +266,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 8
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -673,7 +674,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 40
       minScalar: 10
       maxCurve:
         serializedVersion: 2
