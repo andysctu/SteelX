@@ -110,6 +110,7 @@ public class GameManager : Photon.MonoBehaviour {
 		Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
+			Cursor.lockState = CursorLockMode.None;
 			PhotonNetwork.LeaveRoom();
 			SceneManager.LoadScene("Lobby");
 		}

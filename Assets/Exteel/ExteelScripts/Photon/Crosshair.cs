@@ -7,7 +7,8 @@ public class Crosshair : MonoBehaviour {
 	private float CrosshairRadiusL ;
 	private float CrosshairRadiusR ;
 
-	public float MaxDistance = 100f;
+	public float MaxDistanceL ;
+	public float MaxDistanceR ;
 
 	[SerializeField]
 	private BuildMech bm;
@@ -19,7 +20,7 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]
 	private Sounds Sounds;
 	private Transform targetL,targetR;
-	private bool Lock = false;
+	private bool LockL = false, LockR = false;
 	public const float CAM_DISTANCE_TO_MECH = 20f;
 	// Use this for initialization
 	void Start () {
@@ -42,6 +43,8 @@ public class Crosshair : MonoBehaviour {
 	public void updateCrosshair(int L, int R){
 		CrosshairRadiusL = weaponScripts [L].radius;
 		CrosshairRadiusR = weaponScripts [R].radius;
+		MaxDistanceL = weaponScripts [L].Range;
+		MaxDistanceR = weaponScripts [R].Range;
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 	
@@ -67,33 +70,31 @@ public class Crosshair : MonoBehaviour {
 		RaycastHit hit;
 		//Debug.DrawLine (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH) + camera.transform.forward * 20);
 		if (CrosshairRadiusL > 0) {
-			if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusL, camera.transform.forward, out hit, MaxDistance, layerMask)) {
+			if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusL, camera.transform.forward, out hit, MaxDistanceL, layerMask)) {
 				crosshairImage.SetCurrentLImage (1);
 				targetL = hit.transform;
-				if (Lock == false) {
+				if (LockL == false) {
 					Sounds.PlayLock ();
-					Lock = true;
+					LockL = true;
 				}
-				//play Lock sound
 			} else {
 				crosshairImage.SetCurrentLImage (0);
 				targetL = null;
-				Lock = false;
+				LockL = false;
 			}
 		}
 		if (CrosshairRadiusR > 0) {
-			if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusR, camera.transform.forward, out hit, MaxDistance, layerMask)) {
+			if (Physics.SphereCast (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusR, camera.transform.forward, out hit, MaxDistanceR, layerMask)) {
 				crosshairImage.SetCurrentRImage (1);
 				targetR = hit.transform;
-				if (Lock == false) {
+				if (LockR == false) {
 					Sounds.PlayLock ();
-					Lock = true;
+					LockR = true;
 				}
-				//play Lock sound
 			} else {
 				crosshairImage.SetCurrentRImage (0);
 				targetR = null;
-				Lock = false;
+				LockR = false;
 			}
 		}
 	}

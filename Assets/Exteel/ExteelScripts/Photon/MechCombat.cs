@@ -150,7 +150,7 @@ public class MechCombat : Combat {
 
 		//Target : GameObject
 		Target = null;
-		Transform target = (handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR()  ;
+		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR())  ;
 		if( target != null){
 			Debug.Log("Hit tag: " + target.tag);
 			Debug.Log("Hit name: " + target.name);
@@ -388,24 +388,14 @@ public class MechCombat : Combat {
 		bool usingShield = usingShieldWeapon(handPosition);
 		bool usingRCL = usingRCLWeapon (handPosition);
 
-		/*
-		if (usingRanged || usingShield) {
-			if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-				setIsFiring(handPosition, false);
-				return;
-			}
-		} else if (usingMelee) {
-			if (!Input.GetKeyDown(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-				setIsFiring(handPosition, false);
-				return;
-			}
-		}*/
-		if (!usingMelee) {
+		if (!usingMelee && bm.weaponScripts[weaponOffset+handPosition].bulletNum>1) { // SGN
 			if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-				setIsFiring (handPosition, false);
+				if (Time.time - ((handPosition == 1)? timeOfLastShotR :timeOfLastShotL) >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate*0.9f)
+					setIsFiring (handPosition, false);
+
 				return;
 			}
-		}else{
+		}else{// melee , RCL , one-shot gun
 			if(!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)){
 				setIsFiring (handPosition, false);
 				return;
@@ -488,6 +478,12 @@ public class MechCombat : Combat {
 
 			// Tweaks
 			if (usingRangedWeapon(handPosition)) { // Shooting
+
+
+
+
+
+
 				animator.SetBool(animationStr, true);
 				//shoulderR.Rotate (0, x, 0);
 			} else if (usingMeleeWeapon(handPosition)) { // Slashing
@@ -573,10 +569,6 @@ public class MechCombat : Combat {
 		crosshair.updateCrosshair (weaponOffset,weaponOffset+1);
 	}
 
-	void mutipleHitmessage(){
-		
-	}
-
 	bool getIsFiring(int handPosition) {
 		return handPosition == LEFT_HAND ? fireL : fireR;
 	}
@@ -618,7 +610,6 @@ public class MechCombat : Combat {
 	public void updataBullet(){// no need , change weaponOffset is done in switch Weapon
 		
 	}
-
 	// Public functions
 	public void IncrementFuel() {
 		currentFuel += fuelGain;

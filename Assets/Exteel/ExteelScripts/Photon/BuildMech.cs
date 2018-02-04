@@ -188,7 +188,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
 					weapons [i].transform.SetParent (hands [i % 2]);
 					bulletPrefabs [i] = Resources.Load ("BRF025B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					ShotSounds [i] = Resources.Load ("Sounds/Zeus_Fire") as AudioClip;
 					break;
 				}
 		/*	case "BCN029": {
