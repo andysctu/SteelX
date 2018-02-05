@@ -9,13 +9,6 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 		mctrl.SetCanVerticalBoost(false);
-		curBoostState = true;
-		/*
-		if(curBoostState==false){
-			mctrl.Boost (true);
-			curBoostState = true;
-			Debug.Log ("called set to true in Vertical boost enter.");
-		}*/
 		animator.SetBool ("OnSlash", false);
 	}
 
@@ -30,10 +23,8 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat("Speed", speed);
 		animator.SetFloat("Direction", direction);
 
-		if ( (mcbt.FuelEmpty() || !Input.GetKey(KeyCode.Space)) && curBoostState == true ) {
-			curBoostState = false;
+		if ( (mcbt.FuelEmpty() || !Input.GetKey(KeyCode.Space))) {
 			mctrl.Boost (false);
-			Debug.Log ("called set to false in Vertical boost enter.");
 			animator.SetFloat("Speed", 0);
 			animator.SetBool("Boost", false);
 		}

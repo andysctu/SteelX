@@ -4,21 +4,18 @@ using UnityEngine;
 
 public class JumpedState : MechStateMachineBehaviour {
 
-	private bool jumpReleased = false;
+	static public bool jumpReleased = false;
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
-		jumpReleased = false;
-		//mctrl.SetCanVerticalBoost(true);  //CanVerticalBoost  is set to true when grounded
-
+		//jumpReleased = false;
 		if(animator.GetBool ("OnSlash")==true){
 			animator.SetBool ("Boost", false);
 			mctrl.SetCanVerticalBoost (false);
 			mctrl.Boost (false);
 		}
-
 		animator.SetBool ("OnSlash", false);
 	}
 
@@ -31,18 +28,21 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc.isGrounded) {
 			animator.SetBool("Jump", false);
 			animator.SetBool("Grounded", true);
-			mctrl.SetCanVerticalBoost(true);
+			mctrl.SetCanVerticalBoost (false);
+			jumpReleased = false;
+			return;
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space)) {
+			Debug.Log ("get space up.");
 			jumpReleased = true;
 		}
-
 		if (jumpReleased && mctrl.CanVerticalBoost() && Input.GetKey(KeyCode.Space)) {
+			jumpReleased = false;
+			Debug.Log ("play boost sound.");
 			animator.SetBool("Boost", true);
 			mctrl.Boost (true);
 			mctrl.GetComponentInChildren<Sounds> ().PlayBoostStart ();
-			//animator.CrossFade ("BoostJump", 0.3f);//does not work as expected
 		}
 	}
 
