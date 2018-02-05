@@ -23,7 +23,8 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			mctrl.Boost (false);
 			return;
 		} else {
-			mctrl.Boost (true);
+			if(GroundedState.isgrounded==true)
+				mctrl.Boost (true);
 		}
 
 
@@ -33,6 +34,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			mctrl.Jump();
 			animator.SetBool("Boost", false);
 			animator.SetBool("Grounded", false);
+			GroundedState.isgrounded = false;
 			animator.SetBool("Jump", true);
 		}
 	}
