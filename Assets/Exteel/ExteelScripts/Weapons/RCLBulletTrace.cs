@@ -10,6 +10,7 @@ public class RCLBulletTrace : MonoBehaviour {
 	public Camera cam;
 	public GameObject Shooter;
 	public string ShooterName;
+	public LayerMask layerMask = 8;
 	private int bulletdmg = 100;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
@@ -34,17 +35,15 @@ public class RCLBulletTrace : MonoBehaviour {
 		isCollided = true;
 		ps.Stop ();
 			
-		int numCollisionEvents = GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-		for(int i=0;i < numCollisionEvents;i++) {
-			collisionHitLoc = collisionEvents [i].intersection;
-			GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-			temp.GetComponent<ParticleSystem> ().Play ();
-		}
+		GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
+		collisionHitLoc = collisionEvents [0].intersection;
+		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+		temp.GetComponent<ParticleSystem> ().Play ();
 
 		Collider[] hitColliders = Physics.OverlapSphere(transform.position, 10f);
 		for (int i=0;i < hitColliders.Length;i++)
 		{
-			if(hitColliders[i].gameObject.layer == 8  && hitColliders[i].gameObject.name!=ShooterName){
+			if(hitColliders[i].gameObject.layer == layerMask  && hitColliders[i].gameObject.name!=ShooterName){
 				hitColliders[i].GetComponent<Transform>().position += transform.forward*5f;
 				if (PhotonNetwork.playerName == ShooterName) {
 					if (hitColliders[i].gameObject.GetComponent<Combat>().CurrentHP() - bulletdmg<= 0) {
@@ -56,7 +55,6 @@ public class RCLBulletTrace : MonoBehaviour {
 				if(hitColliders[i].GetComponent<PhotonView>().isMine)	//avoid multi-calls
 				{
 					hitColliders[i].GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, bulletdmg, ShooterName); 
-					print ("call RCL ONhit with shooterName: " + ShooterName);
 				}
 			}
 			print (hitColliders [i].gameObject.name);

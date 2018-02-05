@@ -26,7 +26,6 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (Input.GetKey(KeyCode.Space)) {
 			animator.SetBool("Grounded", false);
 			animator.SetBool("Jump", true);
-			animator.SetBool ("Grounded", false);
 			mctrl.Jump();
 			return;
 		}

@@ -9,7 +9,6 @@ main :</br>
  
 RCL034 : bullet particle remake</br>
 RCL034 : hitsound </br>
-*RCL034 : make RCL034B detects multiple objects</br>
 *crosshair scaling problem ( the middle cross disappears for some specific size of screen , or we can force using 1366*768 )
 
 </br>
@@ -17,8 +16,7 @@ Adjust APS403B&BI</br>
 Remake SHL animation & hit detect</br>
 
 Add the heat bar</br>
-Game modes : deathmatch , CTF(PhotonNetwork.player.SetCustomProperty("TeamRed"))</br>  
-Generalize a standard way to change weapon ( different weapon has its own damage , animation , ... ) </br>  	
+Game modes : deathmatch , CTF(PhotonNetwork.player.SetCustomProperty("TeamRed"))</br>  	
 Final stage </br>
 Fix  game mode time </br>
 Make sure Shield detect well</br>

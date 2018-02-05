@@ -4,6 +4,6 @@
 		Range = 100;
 		Rate = 1;
 		radius = 10f;
-		bulletNum = 6;
+		bulletNum = 5;
 	}
 }

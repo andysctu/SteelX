@@ -72,8 +72,13 @@ MonoBehaviour:
   bulletImpact: {fileID: 1000011334909706, guid: ca90bef2e1958284eaff81fcf9315827,
     type: 2}
   HUD: {fileID: 0}
-  ShooterName: 
   cam: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  ShooterName: 
+  isTargetShield: 0
+  isLMG: 0
 --- !u!198 &198000011201848454
 ParticleSystem:
   m_ObjectHideFlags: 1

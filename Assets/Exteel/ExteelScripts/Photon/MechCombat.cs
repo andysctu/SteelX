@@ -172,7 +172,6 @@ public class MechCombat : Combat {
 				}
 			} else if (target.tag == "Shield") {
 				hud.ShowText(cam, target.position, "Defense");
-				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, PhotonNetwork.playerName);
 			}
 		}else{
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, string.Empty);
@@ -251,7 +250,9 @@ public class MechCombat : Combat {
 				if (string.IsNullOrEmpty (name) || Target == null) {
 					//do nothing
 				} else {
+					Vector3 scale = bullet.transform.localScale;
 					bullet.transform.SetParent (Target.transform);
+					bullet.transform.localScale = scale;
 				}
 				yield return new WaitForSeconds (1/bm.weaponScripts[weaponOffset + handPosition].Rate/bN);
 			}
