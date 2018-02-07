@@ -29,14 +29,13 @@ public class RCLBulletTrace : MonoBehaviour {
 	}
 
 	void OnParticleCollision(GameObject other){
-		Vector3 collisionHitLoc = new Vector3(0,0,0);
 		if (isCollided == true || other == Shooter)
 			return;
 		isCollided = true;
 		ps.Stop ();
 			
 		GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-		collisionHitLoc = collisionEvents [0].intersection;
+		Vector3 collisionHitLoc = collisionEvents [0].intersection;
 		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 		temp.GetComponent<ParticleSystem> ().Play ();
 

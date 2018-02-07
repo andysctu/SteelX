@@ -5,7 +5,7 @@ using UnityEngine;
 public class BulletTrace : MonoBehaviour {
 
 	public GameObject bulletImpact;
-	public HUD HUD; // for multiple hit messages
+	public HUD HUD;
 	public Camera cam;
 	public LayerMask layerMask = 8, Terrain = 10;
 	private Rigidbody rb;
@@ -35,7 +35,7 @@ public class BulletTrace : MonoBehaviour {
 				isTargetShield = false;
 			
 			isfollow = true;
-			Destroy(gameObject, 2f);  //just in case not destroy
+			Destroy(gameObject, 2f);
 		}
 	}
 
@@ -51,19 +51,10 @@ public class BulletTrace : MonoBehaviour {
 
 
 	void OnParticleCollision(GameObject other){
-		if (isCollided == true )
+		if (isCollided)
 			return;
 
-		if(isfollow == false){
-			isCollided = true;
-			GetComponent<ParticleSystem> ().Stop ();
-			GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-			Vector3 collisionHitLoc = collisionEvents [0].intersection;
-			GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-			temp.GetComponent<ParticleSystem> ().Play ();
-
-			Destroy (gameObject, 0.5f);
-		}else{ // if isfollow , then ignore Terrain & any other player
+		if(isfollow){
 			if (other.name == Target.gameObject.name) {
 				isCollided = true;
 				GetComponent<ParticleSystem> ().Stop ();
@@ -78,6 +69,17 @@ public class BulletTrace : MonoBehaviour {
 				GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 				Vector3 collisionHitLoc = collisionEvents [0].intersection;
 
+				GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+				temp.GetComponent<ParticleSystem> ().Play ();
+
+				Destroy (gameObject, 0.5f);
+			}
+		}else{
+			if(other.layer==Terrain){
+				isCollided = true;
+				GetComponent<ParticleSystem> ().Stop ();
+				GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
+				Vector3 collisionHitLoc = collisionEvents [0].intersection;
 				GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 				temp.GetComponent<ParticleSystem> ().Play ();
 

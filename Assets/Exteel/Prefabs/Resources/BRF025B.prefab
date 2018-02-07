@@ -76,6 +76,9 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 8
+  Terrain:
+    serializedVersion: 2
+    m_Bits: 10
   ShooterName: 
   isTargetShield: 0
   isLMG: 0
@@ -2585,7 +2588,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 2.5
+    radiusScale: 2
     collidesWith:
       serializedVersion: 2
       m_Bits: 4294967295

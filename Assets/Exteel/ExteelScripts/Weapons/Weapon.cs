@@ -6,6 +6,9 @@
 	public float radius=0;
 	public string Animation;
 	public int bulletNum=1; //for animation
+	public float Weight;
+
+	public bool isTwoHanded=false;
 //	protected Transform camTransform;
 //	protected GameObject root;
 
