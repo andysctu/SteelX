@@ -8,7 +8,7 @@ public class CrosshairImage : MonoBehaviour {
 	private float radiusR;
 
 	[SerializeField]
-	private GameObject[] crosshairs;// 4 : RCL's , 5 : middlecross , 6:RCL middlecross
+	private GameObject[] crosshairs;// 4 : RCL's circle, 5 : middlecross , 6:RCL middlecross
 
 	[SerializeField]
 	private RectTransform[] crosshairsL0;
@@ -27,6 +27,12 @@ public class CrosshairImage : MonoBehaviour {
 		radiusL = setRadiusL * 25f;
 		radiusR = setRadiusR * 25f;
 
+
+		SetR1offset (radiusR);
+		SetL1offset (radiusL);
+
+	}
+	void SetL1offset(float radiusL){
 		crosshairsL0 [0].offsetMin = new Vector2 (-radiusL, radiusL);
 		crosshairsL0 [0].offsetMax = new Vector2 (-radiusL, radiusL);
 
@@ -50,7 +56,8 @@ public class CrosshairImage : MonoBehaviour {
 
 		crosshairsL1 [3].offsetMin = new Vector2 (radiusL, -radiusL);
 		crosshairsL1 [3].offsetMax = new Vector2 (radiusL, -radiusL);
-
+	}
+	void SetR1offset(float radiusR){
 		//R
 		crosshairsR0 [0].offsetMin = new Vector2 (-radiusR, radiusR);
 		crosshairsR0 [0].offsetMax = new Vector2 (-radiusR, radiusR);
@@ -75,7 +82,6 @@ public class CrosshairImage : MonoBehaviour {
 
 		crosshairsR1 [3].offsetMin = new Vector2 (radiusR, -radiusR);
 		crosshairsR1 [3].offsetMax = new Vector2 (radiusR, -radiusR);
-
 	}
 
 	public void SetCurrentLImage(int CurImage){
