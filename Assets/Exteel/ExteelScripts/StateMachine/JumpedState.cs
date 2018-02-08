@@ -28,6 +28,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc.isGrounded) {
 			animator.SetBool("Jump", false);
 			animator.SetBool("Grounded", true);
+			mctrl.grounded = true;
 			mctrl.SetCanVerticalBoost (false);
 			jumpReleased = false;
 			return;

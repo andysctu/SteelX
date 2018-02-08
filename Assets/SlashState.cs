@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlashState : StateMachineBehaviour {
+public class SlashState : MechStateMachineBehaviour {
 
     // OnStateEnter is called before OnStateEnter is called on any state inside this state machine
 	//override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -33,12 +33,18 @@ public class SlashState : StateMachineBehaviour {
 	//override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash){
 	//
 	//}
-	public void OnStateEnter(Animator animator, int stateMachinePathHash){
+	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+		Debug.Log ("enter slash.");
 		animator.SetBool ("OnSlash", true);
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
-	//override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
-	//
-	//}
+	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
+		Debug.Log ("exit slash.");
+		animator.SetBool ("OnSlash", false);
+		if(mcbt==null)mcbt = animator.transform.parent.gameObject.GetComponent<MechCombat>();
+		mcbt.isRSlashPlaying = 0;
+		mcbt.isLSlashPlaying = 0;
+		mcbt.SetReceiveNextSlash (1);
+	}
 }

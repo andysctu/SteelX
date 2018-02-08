@@ -37,14 +37,14 @@ public class MechController : Photon.MonoBehaviour {
 	private float characterControllerSpeed;
 	private float SlashMovingSpeed;
 	private Vector3 Slashdir;
-	private bool canVerticalBoost = true; // this is set to true when grounded , not in air now
+	private bool canVerticalBoost = true;
 
 	// Animation
 	private float speed;
 	private float direction;
-	private bool boost;
-	private bool grounded;
-	private bool jump;
+	public bool boost;
+	public bool grounded;
+	public bool jump;
 
 
 	// Unused
@@ -59,6 +59,7 @@ public class MechController : Photon.MonoBehaviour {
 	void initComponents() {
 		CharacterController = GetComponent<CharacterController> ();
 		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
+		grounded = true;
 	}
 
 	void initTransforms() {
@@ -80,17 +81,13 @@ public class MechController : Photon.MonoBehaviour {
 
 		// slash z-offset
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
-			
+			print ("yes : " + mechCombat.isLSlashPlaying + " " + mechCombat.isRSlashPlaying);
 			if(SlashMovingSpeed >0.1f){
-				if(Slashdir.y >0 && animator.GetBool("Grounded") == true){
-					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.y);	// make sure not slashing to the sky
+				if(grounded == true){
+					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky
 				}
 				CharacterController.Move(Slashdir * SlashMovingSpeed);
-				SlashMovingSpeed /= 1.2f;
-				//if(CharacterController.isGrounded == false){
-			//		mechCombat.CanSlash = false;
-			//	}
-
+				SlashMovingSpeed /= 1.5f;
 			}
 			return;
 		}
@@ -154,8 +151,10 @@ public class MechController : Photon.MonoBehaviour {
 			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
 			isBoostFlameOn = boost;
 		}
-		xSpeed = mechCombat.BoostSpeed();
-		zSpeed = mechCombat.BoostSpeed();
+		if (boost == true) {
+			xSpeed = mechCombat.BoostSpeed ();
+			zSpeed = mechCombat.BoostSpeed ();
+		}
 	}
 
 	public void ResetCam() {

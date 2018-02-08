@@ -84,4 +84,8 @@ public class MechCamera : MonoBehaviour
 		rot.z = 0;
 		transform.parent.eulerAngles = rot;
 	}
+
+	public float GetFollowAngle_x(){
+		return m_FollowAngles.x;
+	}
 }
