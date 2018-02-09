@@ -23,12 +23,11 @@ public class GroundedState : MechStateMachineBehaviour {
 		animator.SetBool ("OnSlash", false);  // if grounded => not on slash*/
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
-			Debug.Log("set can ver boost .");
 			mctrl.SetCanVerticalBoost (true);
 			mctrl.Jump();
-			animator.SetBool("Grounded", false);
+			animator.SetBool(grounded_id, false);
 			mctrl.grounded = false;
-			animator.SetBool("Jump", true);
+			animator.SetBool(jump_id, true);
 			return;
 		}
 
@@ -36,14 +35,13 @@ public class GroundedState : MechStateMachineBehaviour {
 			mctrl.Run();
 
 			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && animator.IsInTransition(0)==false) {
-				Debug.Log ("call boost start.");
 				mctrl.GetComponentInChildren<Sounds> ().PlayBoostStart ();
-				animator.SetBool("Boost", true);
+				animator.SetBool(boost_id, true);
 				mctrl.Boost(true);
 			}
 		}
 			
-		animator.SetFloat("Speed", speed);
-		animator.SetFloat("Direction", direction);
+		animator.SetFloat(speed_id, speed);
+		animator.SetFloat(direction_id, direction);
 	}
 }

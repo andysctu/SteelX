@@ -34,15 +34,13 @@ public class SlashState : MechStateMachineBehaviour {
 	//
 	//}
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		Debug.Log ("enter slash.");
 		animator.SetBool ("OnSlash", true);
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
-		Debug.Log ("exit slash.");
 		animator.SetBool ("OnSlash", false);
-		if(mcbt==null)mcbt = animator.transform.parent.gameObject.GetComponent<MechCombat>();
+		if(mcbt==null)mcbt = animator.transform.parent.gameObject.GetComponent<MechCombat>();//avoid null reference bug
 		mcbt.isRSlashPlaying = 0;
 		mcbt.isLSlashPlaying = 0;
 		mcbt.SetReceiveNextSlash (1);

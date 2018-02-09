@@ -45,16 +45,16 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
-			UserData.myData.Mech.Weapon1L = defaultParts [12];
+			UserData.myData.Mech.Weapon1L = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
-			UserData.myData.Mech.Weapon1R = defaultParts [12];
+			UserData.myData.Mech.Weapon1R = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
-			UserData.myData.Mech.Weapon2L = defaultParts [6];
+			UserData.myData.Mech.Weapon2L = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2R)){
-			UserData.myData.Mech.Weapon2R = defaultParts [6];
+			UserData.myData.Mech.Weapon2R = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.User.PilotName)){
 			UserData.myData.User.PilotName = "Default Pilot";
@@ -150,7 +150,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
 					weapons [i].transform.SetParent (hands [i % 2]);
 					bulletPrefabs [i] = Resources.Load ("APS403B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire 04") as AudioClip;
 					break;
 				}
 			case "SHL009": {
@@ -191,15 +191,36 @@ public class BuildMech : Photon.MonoBehaviour {
 					ShotSounds [i] = Resources.Load ("Sounds/Zeus_Fire") as AudioClip;
 					break;
 				}
-		/*	case "BCN029": {
-					weaponScripts[i] = new BRF025();
+			case "BCN029": {
+					weaponScripts[i] = new BCN029();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
-					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
-					weapons [i].transform.SetParent (hands [i % 2]);
-					bulletPrefabs [i] = Resources.Load ("BRF025B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
+					weapons [i].transform.SetParent (hands [1]);
+					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
+					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
+					p = new Vector3 (hands [1].position.x, hands [1].position.y - 0.4f, hands [1].position.z);
+					weapons[i].transform.position = new Vector3(p.x , p.y , p.z);
+
+
+					if(i==weaponOffset){
+						if(animator!=null){
+							//In Hangar or Lobby
+							animator.SetBool ("UsingRCL",true);
+						}else {
+							//In game
+							animator = GetComponentInChildren<MeleeCombat> ().GetComponent<Animator> ();
+							animator.SetBool ("UsingRCL",true);
+						}
+					}
+					weaponScripts [i + 1] = new EmptyWeapon ();
+					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
+					weapons [i+1].transform.SetParent (hands [i % 2]);
+					weapons [i + 1].SetActive (false);
+					bulletPrefabs [i+1] = null;
+
+					i++;//skip the right hand
 					break;
-				}*/
+				}
 			case "SGN150": {
 					weaponScripts[i] = new SGN150();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));

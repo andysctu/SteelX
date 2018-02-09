@@ -11,12 +11,13 @@ public class JumpedState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 		//jumpReleased = false;
-		if(animator.GetBool ("OnSlash")==true){
-			animator.SetBool ("Boost", false);
+
+		if(animator.GetBool (onSlash_id)==true){ //after slashing in air , shut the boost down , otherwise it will go to boost jump
+			animator.SetBool (boost_id, false);
+			animator.SetBool (onSlash_id, false);
 			mctrl.SetCanVerticalBoost (false);
 			mctrl.Boost (false);
 		}
-		animator.SetBool ("OnSlash", false);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -26,8 +27,8 @@ public class JumpedState : MechStateMachineBehaviour {
 		}
 			
 		if (cc.isGrounded) {
-			animator.SetBool("Jump", false);
-			animator.SetBool("Grounded", true);
+			animator.SetBool(jump_id, false);
+			animator.SetBool(grounded_id, true);
 			mctrl.grounded = true;
 			mctrl.SetCanVerticalBoost (false);
 			jumpReleased = false;
@@ -35,15 +36,13 @@ public class JumpedState : MechStateMachineBehaviour {
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space)) {
-			Debug.Log ("get space up.");
 			jumpReleased = true;
 		}
-		if (jumpReleased && mctrl.CanVerticalBoost() && Input.GetKey(KeyCode.Space)) {
+		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
 			jumpReleased = false;
-			Debug.Log ("play boost sound.");
-			animator.SetBool("Boost", true);
+			animator.SetBool(boost_id, true);
 			mctrl.Boost (true);
-			mctrl.GetComponentInChildren<Sounds> ().PlayBoostStart ();
+			Sounds.PlayBoostStart ();
 		}
 	}
 

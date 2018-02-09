@@ -15,7 +15,6 @@ public class Crosshair : MonoBehaviour {
 	private Weapon[] weaponScripts;
 	private CrosshairImage crosshairImage;
 	private Camera camera;
-	private Plane[] planes;
 	public LayerMask layerMask = 8;
 
 	public float SphereRadiusCoeff;
@@ -24,15 +23,16 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]
 	private Sounds Sounds;
 	private Transform targetL,targetR;
+	private RaycastHit hit;
 	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
 	public const float CAM_DISTANCE_TO_MECH = 20f;
-	// Use this for initialization
+
 	void Start () {
 		weaponScripts = bm.weaponScripts;
 		camera = transform.GetComponent<Camera>();
 		crosshairImage = GetComponentInChildren<CrosshairImage> ();
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
-		updateCrosshair (0,1);
+		updateCrosshair (0);
 
 		SphereRadiusCoeff = 0.04f;
 		DistanceCoeff = 0.008f;
@@ -47,11 +47,11 @@ public class Crosshair : MonoBehaviour {
 			targetR = null;
 		}
 	}
-	public void updateCrosshair(int L, int R){
-		CrosshairRadiusL = weaponScripts [L].radius;
-		CrosshairRadiusR = weaponScripts [R].radius;
-		MaxDistanceL = weaponScripts [L].Range;
-		MaxDistanceR = weaponScripts [R].Range;
+	public void updateCrosshair(int offset){
+		CrosshairRadiusL = weaponScripts [offset].radius;
+		CrosshairRadiusR = weaponScripts [offset+1].radius;
+		MaxDistanceL = weaponScripts [offset].Range;
+		MaxDistanceR = weaponScripts [offset+1].Range;
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 	
@@ -66,7 +66,7 @@ public class Crosshair : MonoBehaviour {
 			crosshairImage.NoCrosshairR ();
 		}
 
-		if(weaponScripts[L].Animation == "ShootRCL"){
+		if(weaponScripts[offset].Animation == "ShootRCL"){
 			crosshairImage.RCLcrosshair ();
 		}
 		targetL = null;
@@ -74,7 +74,6 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	void Update () {
-		RaycastHit hit;
 		if (CrosshairRadiusL > 0) {
 			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, camera.transform.forward,MaxDistanceL, layerMask);
 			foreach(RaycastHit target in targets){
@@ -82,7 +81,7 @@ public class Crosshair : MonoBehaviour {
 					continue;
 
 				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position).y*0.65f);
-				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f * 0.65f);
+				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f * 0.65f); // due to wide screen
 
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff *  CrosshairRadiusL) { 
 					crosshairImage.SetCurrentLImage (1);

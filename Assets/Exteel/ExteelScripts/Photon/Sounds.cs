@@ -7,9 +7,8 @@ public class Sounds : MonoBehaviour {
 	public AudioClip[] ShotSounds = new AudioClip[4]; // init in MechCombat 
 	[SerializeField] AudioClip Lock;
 	[SerializeField] AudioClip OnLocked;
-	[SerializeField] AudioClip Slash1;
-	[SerializeField] AudioClip Slash2;
-	[SerializeField] AudioClip Slash3;
+	[SerializeField] AudioClip[] Slash;
+	[SerializeField] AudioClip SlashOnHit;
 	[SerializeField] AudioClip BoostStart;
 	[SerializeField] AudioClip BoostLoop;
 	[SerializeField] AudioClip SwitchWeapon;
@@ -27,21 +26,22 @@ public class Sounds : MonoBehaviour {
 	}
 	
 	public void PlayShotL() {  // RCL is fine
-		Source.PlayOneShot(ShotSounds[weaponOffset]);
+		if(ShotSounds[weaponOffset]!=null)
+			Source.PlayOneShot(ShotSounds[weaponOffset]);
 	}
 	public void PlayShotR() {
-		Source.PlayOneShot(ShotSounds[weaponOffset+1]);
+		if(ShotSounds[weaponOffset+1]!=null)
+			Source.PlayOneShot(ShotSounds[weaponOffset+1]);
 	}
 
-	public void PlaySlash1(){
-		Source.PlayOneShot(Slash1);
+	public void PlaySlashOnHit(){
+		Source.PlayOneShot (SlashOnHit);
 	}
-	public void PlaySlash2(){
-		Source.PlayOneShot(Slash2);
+
+	public void PlaySlash(int num){
+		Source.PlayOneShot (Slash [num]);
 	}
-	public void PlaySlash3(){
-		Source.PlayOneShot(Slash3);
-	}
+
 	public void PlayLock(){
 		Source.PlayOneShot (Lock);
 	}

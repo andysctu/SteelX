@@ -7,6 +7,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	public CharacterController CharacterController;
 	public Animator animator;
+	public Sounds Sounds;
 
 	[SerializeField] GameObject boostFlame;
 
@@ -81,7 +82,6 @@ public class MechController : Photon.MonoBehaviour {
 
 		// slash z-offset
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
-			print ("yes : " + mechCombat.isLSlashPlaying + " " + mechCombat.isRSlashPlaying);
 			if(SlashMovingSpeed >0.1f){
 				if(grounded == true){
 					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky

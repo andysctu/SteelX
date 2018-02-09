@@ -29,8 +29,8 @@ public class LoginManager : MonoBehaviour {
 	}
 
 	void Start() {
-		//fields[0].Select();
-		//fields[0].ActivateInputField();
+		fields[0].Select();
+		fields[0].ActivateInputField();
 	}
 
 	public void Login(){

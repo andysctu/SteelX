@@ -186,11 +186,12 @@ public class MechCombat : Combat {
 	void SlashDetect(int damage){
 
 		if(mechController.grounded == false){
+			mechController.Boost (true);
 			mechController.SetSlashMoving(cam.transform.forward,8f);
 		}
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
+
 			Sounds.PlaySlashOnHit ();
-			//play hit sound
 			foreach(Transform target in targets){
 
 				print ("Slash hit : " + target.gameObject.name);
@@ -215,9 +216,7 @@ public class MechCombat : Combat {
 
 		} else{
 			//the first one does not move
-			print (cam.transform.forward);
-			if( (animator.GetBool("SlashR3")==true || animator.GetBool("SlashR2")==true))
-				mechController.SetSlashMoving(cam.transform.forward,8f);
+			mechController.SetSlashMoving(cam.transform.forward,8f);
 
 		}
 			
@@ -382,7 +381,7 @@ public class MechCombat : Combat {
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
-		if(mechController.grounded == true){
+		if (mechController.grounded == true) {  //temp. use this (has some bug ) , will change after changing the detection of isGrounded
 			CanSlash = true;
 		}
 
@@ -439,17 +438,21 @@ public class MechCombat : Combat {
 			if (Time.time -((handPosition == 1)? timeOfLastShotR :timeOfLastShotL) >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
 				if (receiveNextSlash == false || CanSlash == false)
 					return;
-				
+				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
+
+				if(((handPosition == 1)? isLSlashPlaying : isRSlashPlaying) != 0){ // only one can play at the same time
+					return;
+				}
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if(handPosition == 0){
-					HeatBar.IncreaseHeatBarL (25); //25:temp
+					HeatBar.IncreaseHeatBarL (45); //25:temp
 					timeOfLastShotL = Time.time;
 					if (usingMeleeWeapon (1))
 						timeOfLastShotR = timeOfLastShotL;
 
 				}else if(handPosition == 1){
-					HeatBar.IncreaseHeatBarR (25); //25:temp
+					HeatBar.IncreaseHeatBarR (45); //25:temp
 					timeOfLastShotR = Time.time;
 					if (usingMeleeWeapon (0))
 						timeOfLastShotL = timeOfLastShotR;
@@ -483,13 +486,8 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 				//shoulderR.Rotate (0, x, 0);
 			} else if (usingMeleeWeapon(handPosition)) {
-				if(((handPosition == 1)? isLSlashPlaying : isRSlashPlaying) == 0){ // only one can play at the same time
-					if(CanSlash == true){ //if already melee attack in air => CanSlash is false
-						CanSlash = false;
-						animator.SetBool(animationStr, true);
-						SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
-					}
-				}
+				animator.SetBool(animationStr, true);
+				SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage); // temporary put here
 			}else if(usingShieldWeapon(handPosition)){
 				animator.SetBool(animationStr, true);
 				shoulderR.Rotate (0, x, 0);
