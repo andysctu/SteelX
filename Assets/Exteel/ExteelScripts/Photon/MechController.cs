@@ -118,6 +118,11 @@ public class MechController : Photon.MonoBehaviour {
 		move.x *= xSpeed * Time.fixedDeltaTime;
 		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
+
+		if(animator.GetBool("BCNPose"))		{
+			move.x = 0;
+			move.z = 0;
+		}
 		CharacterController.Move(move);
 	}
 	public void SetSlashMoving(Vector3 dir, float speed){

@@ -45,10 +45,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech.Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
-			UserData.myData.Mech.Weapon1L = defaultParts [5];
+			UserData.myData.Mech.Weapon1L = defaultParts [9];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
-			UserData.myData.Mech.Weapon1R = defaultParts [5];
+			UserData.myData.Mech.Weapon1R = defaultParts [9];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
 			UserData.myData.Mech.Weapon2L = defaultParts [12];
@@ -227,7 +227,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
 					weapons [i].transform.SetParent (hands [i % 2]);
 					bulletPrefabs [i] = Resources.Load ("SGN150B") as GameObject;
-					//ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					ShotSounds [i] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
 					break;
 				}
 			case "RCL034":{
@@ -332,6 +332,24 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos% 2) == 0 ? -1 : 1));
 				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(0,180,0));
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				break;
+			}
+		case "BCN029":
+			{
+				weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
+				p = new Vector3 (hands [1].position.x, hands [1].position.y - 0.4f, hands [1].position.z);
+				weapons [weapPos].transform.SetParent (hands [1]); //but the parent is always set to right hand ( for nice look)
+				weaponScripts [weapPos] = new BCN029 ();
+				weapons [weapPos].transform.rotation = Quaternion.Euler (new Vector3 (-90, 180, 0));
+				weapons [weapPos].transform.position = new Vector3 (p.x, p.y , p.z);
+
+				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
+				weaponScripts [weapPos + 1] = new EmptyWeapon ();
+				weapons [weapPos + 1].SetActive (false);
+
+				if(weapPos>=2)UserData.myData.Mech.Weapon2R = "EmptyWeapon";
+				else UserData.myData.Mech.Weapon1R = "EmptyWeapon";
+
 				break;
 			}
 		case "RCL034":

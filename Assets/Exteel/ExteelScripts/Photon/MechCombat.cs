@@ -285,6 +285,14 @@ public class MechCombat : Combat {
 		}
 	}
 
+	[PunRPC]
+	void OnLocked(string name){
+		print ("this one :" + PhotonNetwork.playerName +  " and  : "+name);
+		if (PhotonNetwork.playerName != name)
+			return;
+		crosshair.ShowLocked ();
+	}
+
 	// Disable MechController, Crosshair, Renderers, and set layer to 0
 	[PunRPC]
 	void DisablePlayer() {
@@ -409,7 +417,7 @@ public class MechCombat : Combat {
 				animator.SetBool ("BCNPose", true);
 			}
 		break;
-		default:
+		default: //Empty weapon
 			return;
 		}
 
@@ -700,11 +708,11 @@ public class MechCombat : Combat {
 		animator.SetBool ("SlashR", false);
 	}
 
-	public void SetRSlashPlaying(int isPlaying){
+	public void SetRSlashPlaying(int isPlaying){// this is true when RSlash is playing ( slashR1 , ... )
 		isRSlashPlaying = isPlaying;
 	}
 
-	public void SetReceiveNextSlash(int receive){
+	public void SetReceiveNextSlash(int receive){ // this is called in the animation clip
 		receiveNextSlash = (receive == 1) ? true : false;
 	}
 

@@ -54,4 +54,7 @@ public class Sounds : MonoBehaviour {
 	public void PlaySwitchWeapon(){
 		Source.PlayOneShot(SwitchWeapon);
 	}
+	public void PlayOnLocked(){
+		Source.PlayOneShot (OnLocked);
+	}
 }

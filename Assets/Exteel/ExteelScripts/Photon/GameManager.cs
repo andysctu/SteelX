@@ -32,6 +32,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	private BuildMech mechBuilder;
 	float curtime;
+
 	void Start() {
 		if (Offline) {
 			PhotonNetwork.offlineMode = true;
@@ -169,4 +170,10 @@ public class GameManager : Photon.MonoBehaviour {
 	public bool GameOver() {
 		return CurrentMaxKills >= MaxKills;
 	}
+	public void OnPhotonPlayerConnected(PhotonPlayer newPlayer){
+		//if (!PhotonNetwork.isMasterClient)
+		//	return;
+		print ("player connected." + newPlayer);
+	}
+
 }

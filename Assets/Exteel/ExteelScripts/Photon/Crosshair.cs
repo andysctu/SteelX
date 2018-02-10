@@ -3,34 +3,44 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Crosshair : MonoBehaviour {
-
+	private const float SendMsgDeltaTime = 0.3f;
+	private float TimeOfLastSend;
 	private float CrosshairRadiusL ;
 	private float CrosshairRadiusR ;
+	private int LastLockTargetID = 0 ;
+	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
+	private bool isOnLocked = false;
+	private const float LockedMsgDuration = 0.5f;
+	private Coroutine coroutine = null;
+	public const float CAM_DISTANCE_TO_MECH = 20f;
+
+	public float SphereRadiusCoeff;
+	public float DistanceCoeff;
 
 	public float MaxDistanceL ;
 	public float MaxDistanceR ;
 
 	[SerializeField]
 	private BuildMech bm;
+	[SerializeField]
+	private PhotonView pv;
+	[SerializeField]
+	private GameObject LockedImg;
 	private Weapon[] weaponScripts;
+	[SerializeField]
 	private CrosshairImage crosshairImage;
 	private Camera camera;
 	public LayerMask layerMask = 8;
 
-	public float SphereRadiusCoeff;
-	public float DistanceCoeff;
 
 	[SerializeField]
 	private Sounds Sounds;
 	private Transform targetL,targetR;
 	private RaycastHit hit;
-	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
-	public const float CAM_DISTANCE_TO_MECH = 20f;
 
 	void Start () {
 		weaponScripts = bm.weaponScripts;
 		camera = transform.GetComponent<Camera>();
-		crosshairImage = GetComponentInChildren<CrosshairImage> ();
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 		updateCrosshair (0);
 
@@ -48,6 +58,8 @@ public class Crosshair : MonoBehaviour {
 		}
 	}
 	public void updateCrosshair(int offset){
+		if (weaponScripts == null)
+			weaponScripts = bm.weaponScripts;//sometimes it's null, don't know why
 		CrosshairRadiusL = weaponScripts [offset].radius;
 		CrosshairRadiusR = weaponScripts [offset+1].radius;
 		MaxDistanceL = weaponScripts [offset].Range;
@@ -91,6 +103,9 @@ public class Crosshair : MonoBehaviour {
 						LockL = true;
 					}
 					foundTargetL = true;
+					print (target.transform.root.GetComponent<PhotonView> ().viewID);
+					SendLockedMessage (target.transform.root.GetComponent<PhotonView> ().viewID, target.transform.root.gameObject.name);
+
 					break;
 				} 
 			}
@@ -119,6 +134,8 @@ public class Crosshair : MonoBehaviour {
 						LockR = true;
 					}
 					foundTargetR = true;
+					SendLockedMessage (target.transform.root.GetComponent<PhotonView> ().viewID, target.transform.root.gameObject.name);
+
 					break;
 				}
 			}
@@ -137,5 +154,37 @@ public class Crosshair : MonoBehaviour {
 	}
 	public Transform getCurrentTargetR(){
 		return targetR;
+	}
+
+	void SendLockedMessage(int id, string Name){
+		if (id == LastLockTargetID) {
+			if (Time.time - TimeOfLastSend >= SendMsgDeltaTime) {
+				pv.RPC ("OnLocked", PhotonTargets.All, Name);
+				TimeOfLastSend = Time.time;
+			}
+		} else {
+			pv.RPC ("OnLocked", PhotonTargets.All, Name);
+			TimeOfLastSend = Time.time;
+			LastLockTargetID = id;
+		}
+	}
+
+	public void ShowLocked(){
+		if(isOnLocked==true){
+			StopCoroutine (coroutine);
+			coroutine = StartCoroutine ("HideLockedAfterTime",LockedMsgDuration);
+		}else{
+			isOnLocked = true;
+			coroutine = StartCoroutine ("HideLockedAfterTime",LockedMsgDuration);
+			Sounds.PlayOnLocked ();
+		}
+
+	}
+
+	IEnumerator HideLockedAfterTime(float time){
+		LockedImg.SetActive (true);
+		yield return new WaitForSeconds (time);
+		LockedImg.SetActive (false);
+		isOnLocked = false;
 	}
 }
