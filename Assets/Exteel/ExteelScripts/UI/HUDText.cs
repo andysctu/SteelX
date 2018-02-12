@@ -20,7 +20,7 @@ public class HUDText : MonoBehaviour {
 	void Update () {
 		if (cam == null) return;
 
-		if(Vector3.Dot(Vector3.forward,transform.InverseTransformPoint(transform.position))<0) //only show in front of cam
+		if(cam.WorldToScreenPoint (originalWorldPos).z<0)
 			gameObject.SetActive (false);
 		
 		transform.position = cam.WorldToScreenPoint(originalWorldPos) + new Vector3(0, height, 0);

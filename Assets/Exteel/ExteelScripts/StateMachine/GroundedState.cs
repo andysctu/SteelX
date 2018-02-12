@@ -6,7 +6,7 @@ public class GroundedState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
-		if (cc == null || !cc.enabled) return;
+		if (cc == null || !cc.enabled || !cc.isGrounded) return;
 		JumpedState.jumpReleased = false;
 	}
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -35,7 +35,8 @@ public class GroundedState : MechStateMachineBehaviour {
 			mctrl.Run();
 
 			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && animator.IsInTransition(0)==false) {
-				mctrl.GetComponentInChildren<Sounds> ().PlayBoostStart ();
+				Sounds.PlayBoostStart ();
+				Sounds.PlayBoostLoop ();
 				animator.SetBool(boost_id, true);
 				mctrl.Boost(true);
 			}
@@ -43,5 +44,6 @@ public class GroundedState : MechStateMachineBehaviour {
 			
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
+
 	}
 }

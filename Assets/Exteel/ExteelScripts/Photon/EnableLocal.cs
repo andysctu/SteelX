@@ -21,7 +21,6 @@ public class EnableLocal : MonoBehaviour {
 		GetComponentInChildren<AudioListener> ().enabled = true;
 //		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;
-
 		// Enable crosshair
 		GetComponentInChildren<Crosshair>().enabled = true;
 

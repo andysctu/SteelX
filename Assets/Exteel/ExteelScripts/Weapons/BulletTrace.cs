@@ -28,12 +28,6 @@ public class BulletTrace : MonoBehaviour {
 			Destroy(gameObject, 2f);
 		}else{//target exists
 			Target = gameObject.transform.parent.GetComponent<Transform>();
-			
-			if (Target.tag == "Shield") {
-				isTargetShield = true;
-			} else
-				isTargetShield = false;
-			
 			isfollow = true;
 			Destroy(gameObject, 2f);
 		}
@@ -43,7 +37,7 @@ public class BulletTrace : MonoBehaviour {
 		if(isfollow==false){
 			return;
 		}else{
-			Vector3 dir = (isTargetShield)? -(transform.position - Target.position).normalized :-(transform.position - Target.position - new Vector3(0,5,0)).normalized;
+			Vector3 dir = -(transform.position - Target.position - new Vector3(0,5,0)).normalized;
 			GetComponent<Rigidbody> ().velocity = bulletSpeed*dir;
 		}
 	}
@@ -53,17 +47,19 @@ public class BulletTrace : MonoBehaviour {
 	void OnParticleCollision(GameObject other){
 		if (isCollided)
 			return;
-
 		if(isfollow){
-			if (other.name == Target.gameObject.name) {
+			if (other.transform.root.name == Target.gameObject.name) {
 				isCollided = true;
 				GetComponent<ParticleSystem> ().Stop ();
 
 				if(isLMG==true&&PhotonNetwork.playerName == ShooterName){
-					if(isTargetShield==false)
-						HUD.ShowText (cam, other.transform.position + new Vector3(0,5f,0), "Hit");
-					else 
-						HUD.ShowText (cam, other.transform.position + new Vector3(0,5f,0), "Defense");
+					print ("in bt : " + isTargetShield);
+					if (!isTargetShield)
+						HUD.ShowText (cam, other.transform.position + new Vector3 (0, 5f, 0), "Hit");
+					else {
+						Debug.Log ("run here.");
+						HUD.ShowText (cam, other.transform.position, "Defense");
+					}
 				}
 
 				GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);

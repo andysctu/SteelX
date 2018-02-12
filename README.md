@@ -6,20 +6,19 @@ Joining us (Andy & me) is also welcome. </br>
 To implement List : </br>  	  
  </br>
 main :</br>  	
- 
+
+OnHit problem (Serious)
+ Make sure Shield detect well</br>
 RCL034 : bullet particle remake</br>
 RCL034 : hitsound </br>
 *crosshair scaling problem ( the middle cross disappears for some specific size of screen , or we can force using 1366*768 )
+*Can't delete unused animation parameter , causing bugs.
 
 </br>
 Adjust APS403B&BI</br>
-Remake SHL animation & hit detect</br>
-
-Add the heat bar</br>
 Game modes : deathmatch , CTF(PhotonNetwork.player.SetCustomProperty("TeamRed"))</br>  	
 Final stage </br>
 Fix  game mode time </br>
-Make sure Shield detect well</br>
 </br>
 Next weapons : rifle -> shotgun   </br>
 Tidy up codes & files </br>	
@@ -30,10 +29,8 @@ Make skills</br>
   </br>	
 others : </br>  	  	
   	
-Optimize jump boost(vertical boost not good )</br> 	
 Put all weapons & robot parts on </br> 	
 Add "locked" message on UI  	</br>	
-Set mutiple "HIT" on UI  </br>	
 Put the health & energy numbers on UI  </br>	
 Sound effects  </br>
 Switch weapon animation  	</br>

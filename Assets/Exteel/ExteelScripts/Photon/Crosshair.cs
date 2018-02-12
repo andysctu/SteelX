@@ -103,7 +103,6 @@ public class Crosshair : MonoBehaviour {
 						LockL = true;
 					}
 					foundTargetL = true;
-					print (target.transform.root.GetComponent<PhotonView> ().viewID);
 					SendLockedMessage (target.transform.root.GetComponent<PhotonView> ().viewID, target.transform.root.gameObject.name);
 
 					break;

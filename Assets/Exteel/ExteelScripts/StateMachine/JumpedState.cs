@@ -43,6 +43,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			animator.SetBool(boost_id, true);
 			mctrl.Boost (true);
 			Sounds.PlayBoostStart ();
+			Sounds.PlayBoostLoop ();
 		}
 	}
 

@@ -1243,7 +1243,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 153797371}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -531.43274, y: 251, z: 0}
+  m_LocalPosition: {x: -540.9324, y: 251, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1835605586}
@@ -2371,7 +2371,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &350384550
 Transform:
   m_ObjectHideFlags: 0
@@ -2399,6 +2399,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   User: {fileID: 1323358508}
+  cam: {fileID: 0}
+  boxCollider: {fileID: 0}
+  mctrl: {fileID: 0}
+  is_lookingUp: 0
 --- !u!23 &350384552
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2569,11 +2573,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxDistance: 100
+  MaxDistanceL: 0
+  MaxDistanceR: 0
   bm: {fileID: 1323358513}
   layerMask:
     serializedVersion: 2
     m_Bits: 256
+  SphereRadiusCoeff: 0
+  DistanceCoeff: 0
   Sounds: {fileID: 1211057272}
 --- !u!114 &358531254
 MonoBehaviour:
@@ -3820,6 +3827,7 @@ MonoBehaviour:
   mechController: {fileID: 531572482}
   CharacterController: {fileID: 531572483}
   Sounds: {fileID: 0}
+  HeatBar: {fileID: 0}
   CanSlash: 1
   isLSlashPlaying: 0
   isRSlashPlaying: 0
@@ -3891,6 +3899,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterController: {fileID: 531572483}
   animator: {fileID: 1397864225}
+  Sounds: {fileID: 0}
   boostFlame: {fileID: 593257868}
   Gravity: 4
   jumped: 0
@@ -3899,6 +3908,9 @@ MonoBehaviour:
   ySpeed: 0
   zSpeed: 0
   mechCombat: {fileID: 531572478}
+  boost: 0
+  grounded: 0
+  jump: 0
   Legs: []
 --- !u!143 &531572483
 CharacterController:
@@ -20590,11 +20602,11 @@ MonoBehaviour:
   - {fileID: 0}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
-  Slash1: {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
-  Slash2: {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
-  Slash3: {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
+  Slash: []
+  SlashOnHit: {fileID: 0}
   BoostStart: {fileID: 0}
   BoostLoop: {fileID: 0}
+  SwitchWeapon: {fileID: 0}
 --- !u!114 &1211057273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21509,6 +21521,7 @@ MonoBehaviour:
   mechController: {fileID: 1323358516}
   CharacterController: {fileID: 1323358517}
   Sounds: {fileID: 0}
+  HeatBar: {fileID: 0}
   CanSlash: 1
   isLSlashPlaying: 0
   isRSlashPlaying: 0
@@ -21580,6 +21593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CharacterController: {fileID: 1323358517}
   animator: {fileID: 1211057269}
+  Sounds: {fileID: 0}
   boostFlame: {fileID: 945746313}
   Gravity: 4
   jumped: 0
@@ -21588,6 +21602,9 @@ MonoBehaviour:
   ySpeed: 0
   zSpeed: 0
   mechCombat: {fileID: 1323358512}
+  boost: 0
+  grounded: 0
+  jump: 0
   Legs: []
 --- !u!143 &1323358517
 CharacterController:
@@ -25326,11 +25343,11 @@ MonoBehaviour:
   - {fileID: 0}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
-  Slash1: {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
-  Slash2: {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
-  Slash3: {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
+  Slash: []
+  SlashOnHit: {fileID: 0}
   BoostStart: {fileID: 0}
   BoostLoop: {fileID: 0}
+  SwitchWeapon: {fileID: 0}
 --- !u!114 &1397864229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31537,6 +31554,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   User: {fileID: 531572474}
+  cam: {fileID: 0}
+  boxCollider: {fileID: 0}
+  mctrl: {fileID: 0}
+  is_lookingUp: 0
 --- !u!23 &1886982848
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -31812,11 +31833,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxDistance: 100
+  MaxDistanceL: 0
+  MaxDistanceR: 0
   bm: {fileID: 531572479}
   layerMask:
     serializedVersion: 2
     m_Bits: 256
+  SphereRadiusCoeff: 0
+  DistanceCoeff: 0
   Sounds: {fileID: 1397864228}
 --- !u!114 &1912059248
 MonoBehaviour:

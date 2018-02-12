@@ -8,7 +8,7 @@ public class MechController : Photon.MonoBehaviour {
 	public CharacterController CharacterController;
 	public Animator animator;
 	public Sounds Sounds;
-
+	public LayerMask Terrain;
 	[SerializeField] GameObject boostFlame;
 
 	public float Gravity = 4.0f;
@@ -29,6 +29,8 @@ public class MechController : Photon.MonoBehaviour {
 
 	private bool ableToVertBoost = false;
 	private bool isBoostFlameOn = false;
+	private bool is_Slashed = false;
+	private Coroutine coroutine = null;
 
 	[SerializeField]
 	private MechCombat mechCombat;
@@ -44,7 +46,7 @@ public class MechController : Photon.MonoBehaviour {
 	private float speed;
 	private float direction;
 	public bool boost;
-	public bool grounded;
+	public bool grounded = true;
 	public bool jump;
 
 
@@ -60,7 +62,6 @@ public class MechController : Photon.MonoBehaviour {
 	void initComponents() {
 		CharacterController = GetComponent<CharacterController> ();
 		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
-		grounded = true;
 	}
 
 	void initTransforms() {
@@ -91,8 +92,7 @@ public class MechController : Photon.MonoBehaviour {
 			}
 			return;
 		}
-
-		if (!CharacterController.isGrounded) {
+		if(!CheckIsGrounded()){
 			ySpeed -= Gravity;
 		} else {
 			//ySpeed = 0;
@@ -119,10 +119,11 @@ public class MechController : Photon.MonoBehaviour {
 		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 
-		if(animator.GetBool("BCNPose"))		{
-			move.x = 0;
-			move.z = 0;
+		if(is_Slashed){
+			move.x = move.x * 0.2f;
+			move.z = move.z * 0.2f;
 		}
+
 		CharacterController.Move(move);
 	}
 	public void SetSlashMoving(Vector3 dir, float speed){
@@ -142,6 +143,8 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Jump() {
+		grounded = true;
+		transform.position = new Vector3 (transform.position.x, transform.position.y + 0.2f, transform.position.z);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
 	}
@@ -156,10 +159,39 @@ public class MechController : Photon.MonoBehaviour {
 			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
 			isBoostFlameOn = boost;
 		}
-		if (boost == true) {
-			xSpeed = mechCombat.BoostSpeed ();
-			zSpeed = mechCombat.BoostSpeed ();
+		if (boost == true ) {
+			if(grounded == true){
+				xSpeed = mechCombat.BoostSpeed ();
+				zSpeed = mechCombat.BoostSpeed ();
+			}else{//boost in air
+				xSpeed = mechCombat.BoostSpeed ()*0.6f;
+				zSpeed = mechCombat.BoostSpeed ()*0.6f;
+			}
 		}
+	}
+
+	public void BCNPose(){
+		xSpeed = 0;
+		zSpeed = 0;
+	}
+
+	public void SlowDown(float duration){
+		if(is_Slashed){
+			StopCoroutine (coroutine);
+			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
+		}else{
+			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
+			is_Slashed = true;
+		}
+	}
+
+	IEnumerator SlowDownCoroutine(float duration){
+		SetCanVerticalBoost (false);
+		animator.SetBool ("Boost", false);
+
+		yield return new WaitForSeconds (duration);
+		is_Slashed = false;
+		coroutine = null;
 	}
 
 	public void ResetCam() {
@@ -223,5 +255,11 @@ public class MechController : Photon.MonoBehaviour {
 //			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
 //		}
 	}
+
+	public bool CheckIsGrounded(){
+		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 1.8f + 0.1f, Terrain);
+		//return CharacterController.isGrounded;
+	}
+
 
 }

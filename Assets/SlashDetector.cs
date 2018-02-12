@@ -24,8 +24,8 @@ public class SlashDetector : MonoBehaviour {
 		if (clamped_cam_angle_x >= 0){
 			is_lookingUp = true;
 			if(!mctrl.grounded){
-				boxCollider.size =new Vector3(boxCollider.size.x,15f, 11f);
-				boxCollider.center = new Vector3(boxCollider.center.x,2.6f, 1.6f);
+				boxCollider.size =new Vector3(boxCollider.size.x,18f, 15f);
+				boxCollider.center = new Vector3(boxCollider.center.x,4.1f, 3.6f);
 			}else{
 				boxCollider.size =new Vector3(boxCollider.size.x,11f, 5f);
 				boxCollider.center = new Vector3(boxCollider.center.x,0.6f, -1.4f);
@@ -33,8 +33,8 @@ public class SlashDetector : MonoBehaviour {
 		}else{
 			is_lookingUp = false;
 			if(!mctrl.grounded){
-				boxCollider.size =new Vector3(boxCollider.size.x,15f, 11f);
-				boxCollider.center = new Vector3(boxCollider.center.x,-1.4f, 1.6f);
+				boxCollider.size =new Vector3(boxCollider.size.x,18f, 15f);
+				boxCollider.center = new Vector3(boxCollider.center.x,-2.9f, 3.6f);
 			}else{
 				boxCollider.size =new Vector3(boxCollider.size.x,11f, 5f);
 				boxCollider.center = new Vector3(boxCollider.center.x,0.6f, -1.4f);

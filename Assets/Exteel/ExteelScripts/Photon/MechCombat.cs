@@ -17,11 +17,11 @@ public class MechCombat : Combat {
 	private float fuelGain = 1.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
-	private float jumpPower = 80.0f;
-	private float moveSpeed = 40.0f;
-	private float boostSpeed = 80f;
+	public float jumpPower = 100.0f;
+	public float moveSpeed = 35.0f;
+	public float boostSpeed = 60f;
 	private float verticalBoostSpeed = 1f;
-	private float maxVerticalBoostSpeed;
+	public float maxVerticalBoostSpeed = 30f;
 
 	// Game variables
 	public Score score;
@@ -90,7 +90,7 @@ public class MechCombat : Combat {
 	void initMechStats() {
 		currentHP = MAX_HP;
 		currentFuel = MAX_FUEL;
-		maxVerticalBoostSpeed = boostSpeed / 4;
+		//maxVerticalBoostSpeed = boostSpeed / 2;
 	}
 
 	void initTransforms() {
@@ -155,13 +155,12 @@ public class MechCombat : Combat {
 		if( target != null){
 			Debug.Log("Hit tag: " + target.tag);
 			Debug.Log("Hit name: " + target.name);
-			// start : camera mid point
-
-			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.GetComponent<PhotonView>().viewID);
 
 			if (target.tag == "Player" || target.tag == "Drone"){
+				
+				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, false);
 
-				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
+				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName, 0f);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 
 				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
@@ -170,12 +169,15 @@ public class MechCombat : Combat {
 					hud.ShowText (cam, target.position, "Hit");
 				}
 			} else if (target.tag == "Shield") {
-				target.GetComponentInParent<MechController>().GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, PhotonNetwork.playerName);
+				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, true);
+
+				Debug.Log ("defended.");
+				target.transform.root.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, PhotonNetwork.playerName, 0f);
 
 				hud.ShowText(cam, target.position, "Defense");
 			}
 		}else{
-			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1);
+			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1, false);
 		}
 
 	}
@@ -197,7 +199,7 @@ public class MechCombat : Combat {
 
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName, 0.4f);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -218,14 +220,16 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
-	void RegisterBulletTrace(int handPosition, Vector3 direction , int playerPVid) {
-		if (playerPVid != -1)
+	void RegisterBulletTrace(int handPosition, Vector3 direction , int playerPVid , bool isShield) {
+		if (playerPVid != -1) {
 			Target = PhotonView.Find (playerPVid).gameObject;
+			print ("the target is :" + Target);
+		}
 		else
 			Target = null;
-		StartCoroutine (InstantiateBulletTrace (handPosition, direction));
+		StartCoroutine (InstantiateBulletTrace (handPosition, direction, isShield));
 	}
-	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction){
+	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, bool isShield){
 		int i;
 		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
@@ -242,6 +246,7 @@ public class MechCombat : Combat {
 				bulletTrace.HUD = hud;
 				bulletTrace.cam = cam;
 				bulletTrace.ShooterName = gameObject.name;
+				bulletTrace.isTargetShield = isShield;
 				if (bN > 1)
 					bulletTrace.isLMG = true; //multiple messages
 				
@@ -257,11 +262,15 @@ public class MechCombat : Combat {
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
-	public override void OnHit(int d, string shooter) {
+	public override void OnHit(int d, string shooter, float slowdownDuration = 0) {
 		Debug.Log ("OnHit, isDead: " + isDead);
 		// If already dead, do nothing
 		if (isDead) {
 			return;
+		}
+
+		if(slowdownDuration > 0){
+			mechController.SlowDown (slowdownDuration);
 		}
 		// Apply damage
 		currentHP -= d;
@@ -287,7 +296,6 @@ public class MechCombat : Combat {
 
 	[PunRPC]
 	void OnLocked(string name){
-		print ("this one :" + PhotonNetwork.playerName +  " and  : "+name);
 		if (PhotonNetwork.playerName != name)
 			return;
 		crosshair.ShowLocked ();
@@ -360,7 +368,7 @@ public class MechCombat : Combat {
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
-		if (mechController.grounded == true) {  //temp. use this (has some bug ) , will change after changing the detection of isGrounded
+		if (mechController.CheckIsGrounded()== true) { // CanSlash is to avoid multiple slashs in air
 			CanSlash = true;
 		}
 
@@ -526,7 +534,7 @@ public class MechCombat : Combat {
 			break;
 			}
 		} else {// melee is set to false by animation
-			if(curWeapons[handPosition]==(int)WeaponTypes.RANGED || curWeapons[handPosition]==(int)WeaponTypes.RCL)
+			if(curWeapons[handPosition]==(int)WeaponTypes.RANGED || curWeapons[handPosition]==(int)WeaponTypes.RCL || curWeapons[handPosition] == (int)WeaponTypes.SHIELD)
 				animator.SetBool(animationStr, false);
 			else if(curWeapons[handPosition]==(int)WeaponTypes.BCN)
 				animator.SetBool ("ShootL", false);
