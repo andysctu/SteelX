@@ -74,6 +74,9 @@ MonoBehaviour:
   hud: {fileID: 0}
   cam: {fileID: 0}
   Shooter: {fileID: 0}
+  PlayerlayerMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!198 &198170001577329900
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -2591,7 +2594,7 @@ ParticleSystem:
     collidesWithDynamic: 1
     interiorCollisions: 1
   TriggerModule:
-    enabled: 1
+    enabled: 0
     collisionShape0: {fileID: 0}
     collisionShape1: {fileID: 0}
     collisionShape2: {fileID: 0}

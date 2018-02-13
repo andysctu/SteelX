@@ -22,7 +22,6 @@ public class MechCombat : Combat {
 	public float boostSpeed = 60f;
 	private float verticalBoostSpeed = 1f;
 	public float maxVerticalBoostSpeed = 30f;
-
 	// Game variables
 	public Score score;
 
@@ -237,7 +236,6 @@ public class MechCombat : Combat {
 			RCLbullet.hud = hud;
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
-			RCLbullet.ShooterName = gameObject.name;
 		} else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
 			for (i = 0; i < bN; i++) {
@@ -268,7 +266,6 @@ public class MechCombat : Combat {
 		if (isDead) {
 			return;
 		}
-
 		if(slowdownDuration > 0){
 			mechController.SlowDown (slowdownDuration);
 		}
@@ -280,7 +277,6 @@ public class MechCombat : Combat {
 		if (currentHP <= 0) {
 			isDead = true;
 			// UI for shooter
-
 			/*
 			if (shooter == PhotonNetwork.playerName) {
 				hud.ShowText(cam, transform.position, "Kill");
