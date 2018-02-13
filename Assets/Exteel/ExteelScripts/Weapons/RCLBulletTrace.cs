@@ -28,7 +28,6 @@ public class RCLBulletTrace : MonoBehaviour {
 		ps.Play();
 		ShooterName = Shooter.name;
 		ShooterID = Shooter.GetComponent<PhotonView> ().viewID;
-		print ("ini ShooterName : " + ShooterName + " ID : " + ShooterID);
 		GetComponent<Rigidbody> ().velocity = transform.forward * bulletSpeed;
 		Destroy(gameObject, 2f);
 	}
@@ -39,7 +38,6 @@ public class RCLBulletTrace : MonoBehaviour {
 		
 		isCollided = true;
 		ps.Stop ();
-			
 		GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 		Vector3 collisionHitLoc = collisionEvents[0].intersection;
 
@@ -54,31 +52,32 @@ public class RCLBulletTrace : MonoBehaviour {
 			//check duplicated
 			PhotonView colliderPV = hitColliders [i].transform.root.GetComponent<PhotonView> ();
 			if(colliderViewIds.Contains(colliderPV.viewID)){
-				print("already contains : "+(int)colliderPV.viewID);
 				continue;
 			}else{
-				print ("added : " + colliderPV.viewID);
 				colliderViewIds.Add (colliderPV.viewID);
 			}
 
-			print ("collider id :" + colliderPV.viewID + " SHooterID : " + ShooterID);
 			if(colliderPV.viewID!=ShooterID){
 
 				if (hitColliders [i].tag == "Shield") {
 					
 					if (Shooter.GetComponent<PhotonView> ().isMine) {
 						if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP () - bulletdmg / 2 <= 0) {
-							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Kill");
+							hud.ShowText (cam, hitColliders [i].transform.position, "Kill");
 						} else {
-							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Defense");
+							hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 						}
 						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterName, 0f); 
 					}
 
 				} else {
-					hitColliders [i].transform.root.GetComponent<Transform> ().position += transform.forward * 8f;  
+					//hitColliders [i].transform.root.GetComponent<Transform> ().position += transform.forward * 5f;  
+					//colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
 
 					if (Shooter.GetComponent<PhotonView> ().isMine) {
+
+						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
+
 						if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP () - bulletdmg <= 0) {
 							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Kill");
 						} else {

@@ -22,6 +22,11 @@ public class DroneCombat : Combat {
 		}
 	}
 
+	[PunRPC]
+	void ForceMove(Vector3 dir, float length){
+		transform.position += dir * length;
+	}
+
 	void DisableDrone() {
 		gameObject.layer = 2;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();

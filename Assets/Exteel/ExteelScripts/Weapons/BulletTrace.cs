@@ -16,8 +16,9 @@ public class BulletTrace : MonoBehaviour {
 	public bool isTargetShield;
 	public bool isLMG = false; //if it's LMG , then show Multiple Hit messages
 	private bool isfollow = false;
-	private float bulletSpeed = 300; // too high will cause collision problem (like 320)
+	private float bulletSpeed = 400;
 	private bool isCollided = false;
+	private bool hasSlowdown = false;
 
 	void Start () {
 		ParticleSystem ps = GetComponent<ParticleSystem>();
@@ -37,6 +38,12 @@ public class BulletTrace : MonoBehaviour {
 		if(isfollow==false){
 			return;
 		}else{
+			if(!hasSlowdown){
+				if(Vector3.Distance(transform.position, Target.position) < 20f){
+					bulletSpeed = 280f;
+					hasSlowdown = true;
+				}
+			}
 			Vector3 dir = -(transform.position - Target.position - new Vector3(0,5,0)).normalized;
 			GetComponent<Rigidbody> ().velocity = bulletSpeed*dir;
 		}
@@ -53,11 +60,9 @@ public class BulletTrace : MonoBehaviour {
 				GetComponent<ParticleSystem> ().Stop ();
 
 				if(isLMG==true&&PhotonNetwork.playerName == ShooterName){
-					print ("in bt : " + isTargetShield);
 					if (!isTargetShield)
 						HUD.ShowText (cam, other.transform.position + new Vector3 (0, 5f, 0), "Hit");
 					else {
-						Debug.Log ("run here.");
 						HUD.ShowText (cam, other.transform.position, "Defense");
 					}
 				}

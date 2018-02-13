@@ -188,6 +188,7 @@ public class MechController : Photon.MonoBehaviour {
 	IEnumerator SlowDownCoroutine(float duration){
 		SetCanVerticalBoost (false);
 		animator.SetBool ("Boost", false);
+		Boost (false);
 
 		yield return new WaitForSeconds (duration);
 		is_Slashed = false;

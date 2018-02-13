@@ -170,7 +170,6 @@ public class MechCombat : Combat {
 			} else if (target.tag == "Shield") {
 				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, true);
 
-				Debug.Log ("defended.");
 				target.transform.root.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, PhotonNetwork.playerName, 0f);
 
 				hud.ShowText(cam, target.position, "Defense");
@@ -297,6 +296,11 @@ public class MechCombat : Combat {
 		crosshair.ShowLocked ();
 	}
 
+	[PunRPC]
+	void ForceMove(Vector3 dir, float length){
+		transform.position += dir * length;
+	}
+
 	// Disable MechController, Crosshair, Renderers, and set layer to 0
 	[PunRPC]
 	void DisablePlayer() {
@@ -417,8 +421,12 @@ public class MechCombat : Combat {
 			setIsFiring (handPosition, false);
 			if(Input.GetKeyDown(KeyCode.Mouse1)){//right click cancel BCNPose
 				animator.SetBool ("BCNPose", false);
+				return;
 			}else if(Input.GetKeyDown(KeyCode.Mouse0)){
-				animator.SetBool ("BCNPose", true);
+				if (!animator.GetBool ("BCNPose")) {
+					animator.SetBool ("BCNPose", true);
+					timeOfLastShotL = Time.time - 1 / bm.weaponScripts [weaponOffset + handPosition].Rate / 2;
+				}
 			}
 		break;
 		default: //Empty weapon
@@ -587,6 +595,7 @@ public class MechCombat : Combat {
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
 		UpdateCurWeaponType ();
+
 		//check if using RCL => RCLIdle
 		if(usingRCLWeapon(0) || usingBCNWeapon(0)){
 			animator.SetBool ("UsingRCL", true);
