@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : Photon.MonoBehaviour {
+	public static bool isTeamMode;
 	public float TimeLeft;
 
 	[SerializeField] GameObject PlayerPrefab;
@@ -40,9 +41,27 @@ public class GameManager : Photon.MonoBehaviour {
 			GameInfo.MaxKills = 1;
 			GameInfo.MaxTime = 1;
 		}
+
+		//Load game info
+		GameInfo.Map = PhotonNetwork.room.CustomProperties ["Map"].ToString();
+		GameInfo.GameMode = PhotonNetwork.room.CustomProperties ["GameMode"].ToString();
+		GameInfo.MaxPlayers = int.Parse(PhotonNetwork.room.CustomProperties ["MaxPlayers"].ToString());
+		GameInfo.MaxKills = int.Parse(PhotonNetwork.room.CustomProperties ["MaxKills"].ToString());
+		GameInfo.MaxTime =  int.Parse(PhotonNetwork.room.CustomProperties ["MaxTime"].ToString());
+		print ("GameInfo gamemode :" + GameInfo.GameMode + " MaxKills :" + GameInfo.MaxKills);
+
+		if(GameInfo.GameMode.Contains("Team") || GameInfo.GameMode.Contains("Capture")){
+			print ("Team mode is on.");
+			isTeamMode = true;
+		}else{
+			print ("Team mode is off.");
+			isTeamMode = false;
+		}
+
 		InRoomChat.enabled = true;
 		MaxKills = GameInfo.MaxKills;
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
+
 
 		InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
 		/*
@@ -64,7 +83,6 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[0].position, SpawnPoints[0].rotation, 0);
-		//GameObject player = PlayerNetwork.instance.player;
 
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;

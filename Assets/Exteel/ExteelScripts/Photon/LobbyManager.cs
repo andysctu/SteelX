@@ -41,7 +41,20 @@ public class LobbyManager: MonoBehaviour {
 
 	public void CreateRoom() {
 		Debug.Log ("Creating room: " + RoomName.text);
-		PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() {IsVisible = true, IsOpen = true, MaxPlayers = 10 }, TypedLobby.Default);
+
+		//Default settings
+		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+		h.Add ("Map", "Simulation");
+		h.Add ("GameMode", "DeathMatch");
+		h.Add ("MaxKills", 1);
+		h.Add ("MaxPlayers", 4);
+		h.Add ("MaxTime", 5); 
+		//PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() {IsVisible = true, IsOpen = true, MaxPlayers = 10 },h, TypedLobby.Default);
+		RoomOptions ro = new RoomOptions(){IsVisible = true, IsOpen = true, MaxPlayers = 4 };
+		ro.CustomRoomProperties = h;
+		string[] str = { "Map", "GameMode", "MaxPlayers" };
+		ro.CustomRoomPropertiesForLobby = str;
+		PhotonNetwork.CreateRoom(RoomName.text,ro,TypedLobby.Default);
 	}
 
 	public void OnPhotonCreateRoomFailed()
