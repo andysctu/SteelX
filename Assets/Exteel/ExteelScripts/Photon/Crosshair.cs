@@ -3,16 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class Crosshair : MonoBehaviour {
-	private const float SendMsgDeltaTime = 0.3f;
+	private const float SendMsgDeltaTime = 0.3f; //If the target is the same, this is the time between two msgs.
 	private float TimeOfLastSend;
 	private float CrosshairRadiusL ;
 	private float CrosshairRadiusR ;
-	private int LastLockTargetID = 0 ;
+	private int LastLockTargetID = 0 ;//avoid sending lock message too often
 	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
 	private bool isOnLocked = false;
 	private bool isTeamMode;
-	private const float LockedMsgDuration = 0.5f;
-	private Coroutine coroutine = null;
+	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
 	public const float CAM_DISTANCE_TO_MECH = 20f;
 
 	public float SphereRadiusCoeff;
@@ -27,17 +26,18 @@ public class Crosshair : MonoBehaviour {
 	private PhotonView pv;
 	[SerializeField]
 	private GameObject LockedImg;
-	private Weapon[] weaponScripts;
 	[SerializeField]
 	private CrosshairImage crosshairImage;
-	private Camera camera;
-	public LayerMask layerMask = 8;
-
-
+	[SerializeField]
+	private LayerMask playerlayer;
 	[SerializeField]
 	private Sounds Sounds;
+
+	private Weapon[] weaponScripts;
+	private Camera camera;
 	private Transform targetL,targetR;
 	private RaycastHit hit;
+	private Coroutine coroutine = null;
 
 	void Start () {
 		weaponScripts = bm.weaponScripts;
@@ -95,6 +95,10 @@ public class Crosshair : MonoBehaviour {
 					continue;
 
 				if(isTeamMode){
+					if (target.collider.tag == "Drone"){
+						continue;
+					}
+						
 					if(targetpv.owner.GetTeam() == pv.owner.GetTeam()){
 						continue;
 					}
@@ -116,7 +120,6 @@ public class Crosshair : MonoBehaviour {
 					//for debug
 					//if(targetpv.owner.GetTeam()!=null)
 					//	print ("target team is : " + targetpv.owner.GetTeam ());
-
 					break;
 				} 
 			}
@@ -136,6 +139,9 @@ public class Crosshair : MonoBehaviour {
 					continue;
 
 				if(isTeamMode){
+					if (target.collider.tag == "Drone"){
+						continue;
+					}
 					if(targetpv.owner.GetTeam() == pv.owner.GetTeam()){
 						continue;
 					}

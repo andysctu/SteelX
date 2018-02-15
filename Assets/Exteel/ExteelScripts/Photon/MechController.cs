@@ -29,7 +29,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	private bool ableToVertBoost = false;
 	private bool isBoostFlameOn = false;
-	private bool is_Slashed = false;
+	private bool isSlowDown = false;
 	private Coroutine coroutine = null;
 
 	[SerializeField]
@@ -119,7 +119,7 @@ public class MechController : Photon.MonoBehaviour {
 		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 
-		if(is_Slashed){
+		if(isSlowDown){
 			move.x = move.x * 0.2f;
 			move.z = move.z * 0.2f;
 		}
@@ -176,12 +176,12 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void SlowDown(float duration){
-		if(is_Slashed){
+		if(isSlowDown){
 			StopCoroutine (coroutine);
 			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
 		}else{
 			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
-			is_Slashed = true;
+			isSlowDown = true;
 		}
 	}
 
@@ -191,7 +191,7 @@ public class MechController : Photon.MonoBehaviour {
 		Boost (false);
 
 		yield return new WaitForSeconds (duration);
-		is_Slashed = false;
+		isSlowDown = false;
 		coroutine = null;
 	}
 

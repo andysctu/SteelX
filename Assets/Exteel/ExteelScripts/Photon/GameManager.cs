@@ -24,6 +24,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private HUD hud;
 	private Camera cam;
 	private bool gameEnding = false;
+	private bool OnSyncTimeRequest = false;
 
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
@@ -49,6 +50,7 @@ public class GameManager : Photon.MonoBehaviour {
 		GameInfo.MaxKills = int.Parse(PhotonNetwork.room.CustomProperties ["MaxKills"].ToString());
 		GameInfo.MaxTime =  int.Parse(PhotonNetwork.room.CustomProperties ["MaxTime"].ToString());
 		print ("GameInfo gamemode :" + GameInfo.GameMode + " MaxKills :" + GameInfo.MaxKills);
+
 
 		if(GameInfo.GameMode.Contains("Team") || GameInfo.GameMode.Contains("Capture")){
 			print ("Team mode is on.");
@@ -144,14 +146,28 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		// Update time
-		if (storedDuration != 0 && storedDuration != 0) {
+		if (storedStartTime != 0 && storedDuration != 0) {
 			int timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
 			int currentTimer = storedDuration - timerDuration;
-
+			/*
 			int seconds = timerDuration % 60;
 			int minutes = timerDuration / 60;
+			*/
+			int seconds = currentTimer % 60;
+			int minutes = currentTimer / 60;
 			Timer.text = minutes.ToString("D2") + ":" + seconds.ToString("D2");
+		}else{
+			if (!OnSyncTimeRequest)
+				StartCoroutine (SyncTimeRequest(1f));
 		}
+	}
+
+	IEnumerator SyncTimeRequest(float time){
+		OnSyncTimeRequest = true;
+		storedStartTime = int.Parse(PhotonNetwork.room.CustomProperties ["startTime"].ToString());
+		storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
+		yield return new WaitForSeconds (time);
+		OnSyncTimeRequest = false;
 	}
 
 	IEnumerator ExecuteAfterTime(float time)
