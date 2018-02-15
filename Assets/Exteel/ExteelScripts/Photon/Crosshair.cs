@@ -88,7 +88,7 @@ public class Crosshair : MonoBehaviour {
 
 	void Update () {
 		if (CrosshairRadiusL > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, camera.transform.forward,MaxDistanceL, layerMask);
+			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, camera.transform.forward,MaxDistanceL, playerlayer);
 			foreach(RaycastHit target in targets){
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
@@ -132,7 +132,7 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 		if (CrosshairRadiusR > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, camera.transform.forward, MaxDistanceR, layerMask);
+			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, camera.transform.forward, MaxDistanceR, playerlayer);
 			foreach (RaycastHit target in targets) {
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
