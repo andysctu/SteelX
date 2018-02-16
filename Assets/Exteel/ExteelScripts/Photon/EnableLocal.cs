@@ -18,7 +18,6 @@ public class EnableLocal : MonoBehaviour {
 		}
 
 		GetComponentInChildren<MechCamera>().enabled = true;
-
 		GetComponentInChildren<AudioListener> ().enabled = true;
 //		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;
@@ -26,6 +25,8 @@ public class EnableLocal : MonoBehaviour {
 		// Enable crosshair
 		GetComponentInChildren<Crosshair>().enabled = true;
 
+		GameObject crossHairImage = transform.Find("Camera/Canvas/CrosshairImage").gameObject;
+		crossHairImage.SetActive(true);
 		// Disable your own cube
 //		transform.Find("Cube").gameObject.SetActive(false);
 	}

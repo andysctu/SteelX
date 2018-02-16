@@ -41,7 +41,7 @@ public class AlphaButtonClickMask : MonoBehaviour, ICanvasRaycastFilter
         Vector2 localPoint;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(_image.rectTransform, sp, eventCamera, out localPoint);
 
-        Vector2 normalizedLocal = new Vector2(localPoint.x / _image.rectTransform.rect.width, localPoint.y / _image.rectTransform.rect.height);
+        Vector2 normalizedLocal = new Vector2(1.0f + localPoint.x / _image.rectTransform.rect.width, 1.0f + localPoint.y / _image.rectTransform.rect.height);
         Vector2 uv = new Vector2(
             _image.sprite.rect.x + normalizedLocal.x * _image.sprite.rect.width, 
             _image.sprite.rect.y + normalizedLocal.y * _image.sprite.rect.height );
@@ -50,7 +50,7 @@ public class AlphaButtonClickMask : MonoBehaviour, ICanvasRaycastFilter
         uv.y /= _image.sprite.texture.height;
 
         //uv are inversed, as 0,0 or the rect transform seem to be upper right, then going negativ toward lower left...
-        Color c = _image.sprite.texture.GetPixelBilinear(1.0f + uv.x, 1.0f + uv.y);
+        Color c = _image.sprite.texture.GetPixelBilinear(uv.x, uv.y);
 
         return c.a> 0.1f;
     }

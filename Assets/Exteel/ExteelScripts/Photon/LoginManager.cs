@@ -7,7 +7,7 @@ public class LoginManager : MonoBehaviour {
 
 	public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
 	public InputField[] fields;
-	public Text error;
+	public GameObject error;
 
 	private int focus = 0;
 
@@ -40,6 +40,10 @@ public class LoginManager : MonoBehaviour {
 	public void Login(){
 		WWWForm form = new WWWForm();
 
+		if (fields[0].text.Length == 0) {
+			fields[0].text = "andysctu";
+			fields[1].text = "password";
+		}
 		form.AddField("username", fields[0].text);
 		form.AddField("password", fields[1].text);
 
@@ -55,11 +59,11 @@ public class LoginManager : MonoBehaviour {
 			string json = www.text;
 			Data d = JsonUtility.FromJson<Data>(json);
 			UserData.myData = d;
+			UserData.myData.Mech.PopulateParts();
 			PhotonNetwork.playerName = fields [0].text;
 			Application.LoadLevel (1);
-		}
-		else {
-			error.gameObject.SetActive(true);
+		} else {
+			error.SetActive(true);
 		}
 	}
 

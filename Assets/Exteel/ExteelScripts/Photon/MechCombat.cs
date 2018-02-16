@@ -2,208 +2,439 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
-public class MechCombat : Photon.MonoBehaviour {
+public class MechCombat : Combat {
 
 	[SerializeField] Transform camTransform;
-	public int MaxHP = 100;
-	public int CurrentHP;
+	[SerializeField] Animator animator;
+	[SerializeField] GameObject bulletTrace;
+	[SerializeField] GameObject bulletImpact;
 
-	private bool isDead;
+	// Boost variables
+	private float fuelDrain = 1.0f;
+	private float fuelGain = 1.0f;
+	private float minFuelRequired = 25f;
+	private float currentFuel;
+	private float jumpPower = 50.0f;
+	private float moveSpeed = 60.0f;
+	private float boostSpeed = 100f;
+	private float verticalBoostSpeed = 1f;
+	private float maxVerticalBoostSpeed;
 
+	// Game variables
 	public Score score;
 
+	// Combat variables
+	private bool isDead;
 	private RaycastHit hit;
+	private Weapon[] weaponScripts;
+	private int weaponOffset = 0;
+	private const int LEFT_HAND = 0;
+	private const int RIGHT_HAND = 1;
+	private float timeOfLastShotL;
+	private float timeOfLastShotR;
+
+	// Left
 	private bool fireL = false;
 	private bool shootingL = false;
 
+	// Right
 	private bool fireR = false;
 	private bool shootingR = false;
 
+	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
-
-	private GameManager gm;
-	private GameObject[] weapons;
+	private Transform head;
 	private Transform[] Hands;
-	private Weapon[] weaponScripts;
 
-	private int weaponOffset = 0;
+	// GameObjects
+	private GameObject[] weapons;
 
+	// HUD
+	private Slider healthBar;
+	private Slider fuelBar;
+	private HUD hud;
+	private Camera cam;
+
+	// Components
 	private BuildMech bm;
 
 	void Start() {
-		CurrentHP = MaxHP;
 		findGameManager();
-		shoulderL = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.FindChild("CurrentMech/metarig/hips/spine/chest/shoulder.R");
-
-		Hands = new Transform[2];
-		Hands [0] = shoulderL.FindChild ("upper_arm.L/forearm.L/hand.L");
-		Hands [1] = shoulderR.FindChild ("upper_arm.R/forearm.R/hand.R");
-
-		bm = GetComponent<BuildMech> ();
-		weapons = bm.weapons;
-		weaponScripts = bm.weaponScripts;
+		initMechStats();
+		initTransforms();
+		initGameObjects();
+		initComponents();
+		initCombatVariables();
+		initHUD();
 	}
-		
-	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
-		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
-			Debug.Log ("Hit tag: " + hit.transform.tag);
-			Debug.Log("Hit name: " + hit.transform.name);
-			if (hit.transform.tag == "Player"){
-				Debug.Log("Damage: " + damage + ", Range: " + range);
-				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
-			} else if (hit.transform.tag == "Drone"){
 
+	void initMechStats() {
+		currentHP = MAX_HP;
+		currentFuel = MAX_FUEL;
+		maxVerticalBoostSpeed = boostSpeed / 2;
+	}
+
+	void initTransforms() {
+		cam = transform.Find("Camera").gameObject.GetComponent<Camera>();
+		head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
+		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
+		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+		Hands = new Transform[2];
+		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
+		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
+	}
+
+	void initGameObjects() {
+		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+	}
+
+	void initComponents() {
+		bm = GetComponent<BuildMech>();
+		weapons = bm.weapons;
+	}
+
+	void initCombatVariables() {
+		weaponScripts = bm.weaponScripts;
+		timeOfLastShotL = Time.time;
+		timeOfLastShotR = Time.time;
+	}
+
+	void initHUD() {
+		initHealthAndFuelBars();
+	}
+
+	float timeOfLastShot(int handPosition) {
+		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
+	}
+
+	void initHealthAndFuelBars() {
+		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
+		if (sliders.Length > 0) {
+			healthBar = sliders[0];
+			healthBar.value = 1;
+
+			if (sliders.Length > 1) {
+				fuelBar = sliders[1];
+				fuelBar.value = 1;
+			}
+		}
+	}
+
+	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range) {
+//		photonView.RPC("BulletTrace", PhotonTargets.All, start, direction);
+		if (Physics.Raycast (start, direction, out hit, range, 1 << 8)){
+			Debug.Log("Hit tag: " + hit.transform.tag);
+			Debug.Log("Hit name: " + hit.transform.name);
+			if (hit.transform.tag == "Player" || hit.transform.tag == "Drone"){
+				// Apply damage
+				hit.transform.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName);
+				Debug.Log("Damage: " + damage + ", Range: " + range);
+
+				// Effects
+				photonView.RPC("BulletImpact", PhotonTargets.All, hit.point, hit.normal);
+
+				// UI
+				if (hit.transform.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
+					hud.ShowText (cam, hit.point, "Kill");
+				} else {
+					hud.ShowText (cam, hit.point, "Hit");
+				}
+			} else if (hit.transform.tag == "Shield") {
+				hud.ShowText(cam, hit.point, "Defense");
 			}
 		}
 	}
 
 	[PunRPC]
-	void OnHit(int d, string shooter) {
-		Debug.Log ("Got shot");
-		Debug.Log ("isDead: " + isDead);
-		if (isDead) return;
-		CurrentHP -= d;
-		Debug.Log ("HP: " + CurrentHP);
-		if (CurrentHP <= 0) {
-			isDead = true;
-			Debug.Log ("Dead");
-			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
-			DisablePlayer ();
-		}
+	void BulletTrace(Vector3 start, Vector3 direction) {
+		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(direction.x, direction.y, direction.z, 1.0f)) as GameObject;
 	}
 
 	[PunRPC]
+	void BulletImpact(Vector3 point, Vector3 rot) {
+		GameObject bulletImpactClone = Instantiate(bulletImpact, point, new Quaternion(rot.x,rot.y,rot.z,1.0f)) as GameObject;
+	}
+
+	// Applies damage, and updates scoreboard + disables player on kill
+	[PunRPC]
+	public override void OnHit(int d, string shooter) {
+		Debug.Log ("OnHit, isDead: " + isDead);
+		// If already dead, do nothing
+		if (isDead) {
+			return;
+		}
+		// Apply damage
+		currentHP -= d;
+		Debug.Log ("HP: " + currentHP);
+
+		// If fatal hit,
+		if (currentHP <= 0) {
+			isDead = true;
+			// UI for shooter
+			if (shooter == PhotonNetwork.playerName) {
+				// Do we need this? Already being displayed in OnHit
+				hud.ShowText(cam, transform.position, "Kill");
+			}
+
+			DisablePlayer();
+
+			// Update scoreboard
+			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
+		}
+	}
+
+	// Disable MechController, Crosshair, Renderers, and set layer to 0
+	[PunRPC]
 	void DisablePlayer() {
-		Debug.Log ("DisablePlayer()");
 		gameObject.layer = 0;
 		GetComponent<MechController>().enabled = false;
-		GetComponentInChildren<Crosshair>().enabled = false;
+		Crosshair ch = GetComponentInChildren<Crosshair>();
+		ch.NoCrosshair();
+		ch.enabled = false;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;
 		}
+		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
 	}
 
+	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
 	[PunRPC]
 	void EnablePlayer() {
-		transform.position = gm.SpawnPoints [0].position;
+		transform.position = gm.SpawnPoints[0].position;
 		gameObject.layer = 8;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
-		CurrentHP = MaxHP;
+		currentHP = MAX_HP;
 		isDead = false;
 		if (!photonView.isMine) return;
+
+		// If this is me, enable MechController and Crosshair
 		GetComponent<MechController>().enabled = true;
-		GetComponentInChildren<Crosshair>().enabled = true;
+		Crosshair ch = GetComponentInChildren<Crosshair>();
+		ch.enabled = true;
+		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(true);
+
 	}
 
 	// Update is called once per frame
 	void Update () {
-//		if (!isLocalPlayer || gm.GameOver()) return;
-		if (!photonView.isMine) return;
+		if (!photonView.isMine || gm.GameOver()) return;
+
+		// Respawn
 		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			isDead = false;
-			photonView.RPC ("EnablePlayer", PhotonTargets.All, null);
+			photonView.RPC("EnablePlayer", PhotonTargets.All, null);
 		}
 
-		if (isDead) return;
-
-		if (Input.GetKey(KeyCode.Mouse0)){
-			Debug.Log ("Fire");
-			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
-			fireL = true;
-		} else {
-			fireL = false;
+		// Drain HP bar gradually
+		if (isDead) {
+			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
+			return;
 		}
 
-		if (Input.GetKey(KeyCode.Mouse1)){
-			FireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, bm.weaponScripts[weaponOffset+1].Damage, weaponScripts[weaponOffset+1].Range);
-			fireR = true;
-		} else {
-			fireR = false;
-		}
+		// Fix head to always look ahead
+		head.LookAt(head.position + transform.forward * 10);
 
+		// Animate left and right combat
+		handleCombat(LEFT_HAND);
+		handleCombat(RIGHT_HAND);
+
+		// Switch weapons
 		if (!isDead && Input.GetKeyDown (KeyCode.R)) {
-			photonView.RPC ("SwitchWeapons", PhotonTargets.All, null);
+			photonView.RPC("SwitchWeapons", PhotonTargets.All, null);
 		}
 
-//		if (CurrentHP <= 0 && !isDead) {
-//			isDead = true;
-//			photonView.RPC ("DisablePlayer", PhotonTargets.All, null);
-//		}
+		updateHUD();
 	}
 
+	// Set animations and tweaks
 	void LateUpdate() {
-		if (fireL) {
-			playShootAnimationL();
-			shootingL = true;
-		} else if (shootingL) {
-			stopShootAnimationL();
-			shootingL = false;
+		handleAnimation(LEFT_HAND);
+		handleAnimation(RIGHT_HAND);
+	}
+
+	void handleCombat(int handPosition) {
+		bool usingRanged = usingRangedWeapon(handPosition);
+		bool usingMelee = usingMeleeWeapon(handPosition);
+		bool usingShield = usingShieldWeapon(handPosition);
+
+		if (usingRanged || usingShield) {
+			if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+				setIsFiring(handPosition, false);
+				return;
+			}
+		} else if (usingMelee) {
+			if (!Input.GetKeyDown(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+				setIsFiring(handPosition, false);
+				return;
+			}
 		}
 
-		if (fireR) {
-			playShootAnimationR();
-			shootingR = true;
-		} else if (shootingR) {
-			stopShootAnimationR();
-			shootingR = false;
+		if (usingRanged) {
+			setIsFiring(handPosition, true);
+			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				FireRaycast(camTransform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
+				timeOfLastShotR = Time.time;
+			}
+		} else if (usingMelee) {
+			setIsFiring(handPosition, true);
+			if (Time.time - timeOfLastShotR >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
+				FireRaycast(camTransform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), camTransform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range);
+				timeOfLastShotR = Time.time;
+//				setIsFiring(handPosition, true);
+			} else {
+//				setIsFiring(handPosition, false);
+			}
+		} else if (usingShield) {
+			setIsFiring(handPosition, true);
 		}
 	}
 
-	void playShootAnimationL() {
-		shoulderL.Rotate(0,90,0);
+	void handleAnimation(int handPosition) {
+		// Name of animation, i.e. ShootR, SlashL, etc
+		string animationStr = animationString(handPosition);
+
+		if (getIsFiring(handPosition)) {
+			// Rotate arm to point to where you are looking (left hand is opposite)
+			float x = camTransform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
+
+			// Start animation
+			animator.SetBool(animationStr, true);
+
+			// Tweaks
+			if (usingRangedWeapon(handPosition)) { // Shooting
+				shoulderR.Rotate (0, x, 0);
+			} else if (usingMeleeWeapon(handPosition)) { // Slashing
+				
+			}
+		} else {
+			animator.SetBool(animationStr, false); // Stop animation
+		}
 	}
 
-	void stopShootAnimationL() {
-		shoulderL.Rotate(0,-90,0);
+	void updateHUD() {
+		// Update Health bar gradually
+		healthBar.value = calculateSliderPercent(healthBar.value, currentHP/(float)MAX_HP);
+
+		// Update Fuel bar gradually
+		fuelBar.value = calculateSliderPercent(fuelBar.value, currentFuel/(float)MAX_FUEL);
 	}
 
-	void playShootAnimationR() {
-		shoulderR.Rotate(0,-90,0);
+	// Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
+	float calculateSliderPercent(float currentPercent, float targetPercent) {
+		float err = 0.01f;
+		if (Mathf.Abs(currentPercent - targetPercent) > err) {
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+		}
+		return currentPercent;
 	}
 
-	void stopShootAnimationR() {
-		shoulderR.Rotate(0,90,0);
-	}
-		
+	// Switch weapons by increasing weaponOffset by 2
+	// Each player holds 2 sets of weapons (4 total)
+	// Switching weapons will switch from set 1 (weap 1 + 2) to set 2 (weap 3 + 4)
 	[PunRPC]
 	void SwitchWeapons() {
+		// Stop current attacks
+		setIsFiring(LEFT_HAND, false);
+		setIsFiring(RIGHT_HAND, false);
+
+		// Stop current animations
+		animator.SetBool(animationString(LEFT_HAND), false);
+		animator.SetBool(animationString(RIGHT_HAND), false);
+
+		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
+
+		// Change weaponOffset
+		weaponOffset = (weaponOffset + 2) % 4;
 	}
 
+	bool getIsFiring(int handPosition) {
+		return handPosition == LEFT_HAND ? fireL : fireR;
+	}
+
+	void setIsFiring(int handPosition, bool isFiring) {
+		if (handPosition == LEFT_HAND) {
+			fireL = isFiring;
+		} else {
+			fireR = isFiring;
+		}
+	}
+
+	bool usingRangedWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Shoot";
+	}
+
+	bool usingMeleeWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
+	}
+
+	bool usingShieldWeapon(int handPosition) {
+		return weaponScripts[weaponOffset+handPosition].Animation == "Block";
+	}
+
+	string animationString(int handPosition) {
+		return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
+	}
+
+	// Public functions
+	public void IncrementFuel() {
+		currentFuel += fuelGain;
+		if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
+	}
+
+	public void DecrementFuel() {
+		currentFuel -= fuelDrain;
+		if (currentFuel < 0)
+			currentFuel = 0;
+	}
+
+	public bool EnoughFuelToBoost() {
+		return currentFuel >= minFuelRequired;
+	}
+
+	public bool FuelEmpty() {
+		return currentFuel <= 0;
+	}
+
+	public float VerticalBoostSpeed() {
+		return verticalBoostSpeed;
+	}
+
+	public float MoveSpeed() {
+		return moveSpeed;
+	}
+
+	public float BoostSpeed() {
+		return boostSpeed;
+	}
+
+	public float JumpPower() {
+		return jumpPower;
+	}
+
+	public float MaxVerticalBoostSpeed() {
+		return maxVerticalBoostSpeed;
+	}
+
+//	public void BulletTraceEvent() {
+//		photonView.RPC("BulletTraceRPC", PhotonTargets.All);
+//	}
 //
-//	// Update is called once per frame
-//	void Update () {
-//		if (!isLocalPlayer || gm.GameOver()) return;
-//		if (Input.GetKey(KeyCode.Mouse0)){
-//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, weaponScripts[weaponOffset].Damage, weaponScripts[weaponOffset].Range);
-//			fireL = true;
-//		} else {
-//			fireL = false;
-//		}
-//
-//		if (Input.GetKey(KeyCode.Mouse1)){
-//			CmdFireRaycast(camTransform.TransformPoint(0,0,0.5f), camTransform.forward, weaponScripts[weaponOffset+1].Damage, weaponScripts[weaponOffset+1].Range);
-//			fireR = true;
-//		} else {
-//			fireR = false;
-//		}
-//
-//		if (Input.GetKeyDown (KeyCode.R)) {
-//			switchWeapons ();
-//		}
-//
-//		if (isDead && Input.GetKeyDown(KeyCode.R)) {
-//			CmdEnablePlayer();
-//		}
+//	[PunRPC]
+//	void BulletTraceRPC() {
+//		Camera cam = transform.FindChild("Camera").gameObject.GetComponent<Camera>();
+//		Vector3 worldPoint = cam.ScreenToWorldPoint(new Vector3(0.5f, 0.5f, 0f));
+//		Vector3 diff = worldPoint - Hands[0].position;
+//		GameObject bulletTraceClone = Instantiate(bulletTrace, Hands[0].position, new Quaternion(diff.x, diff.y, diff.z, 1.0f)) as GameObject;
 //	}
 //
 //	[Server]
@@ -241,10 +472,4 @@ public class MechCombat : Photon.MonoBehaviour {
 //		gm.playerScores[shooterId] = newShooterScore;
 //		gm.playerScores[victimId] = newVictimScore;
 //	}
-//
-	private void findGameManager() {
-		if (gm == null) {
-			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-		}
-	}
 }

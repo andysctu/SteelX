@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -19,11 +20,7 @@ public class UIManager : MonoBehaviour {
 //		roomsPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.7f, Screen.height * 0.7f);
 //		roomsScroll.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.7f - 100, Screen.height * 0.7f);
 //		RoomsWrapper.GetComponent<RectTransform>().sizeDelta = new Vector2 (Screen.width * 0.7f - 100, Screen.height * 0.7f);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
 	}
 
 	public void OnReceivedRoomListUpdate() {
@@ -64,6 +61,10 @@ public class UIManager : MonoBehaviour {
 		CreateRoomModal.SetActive (true);
 	}
 
+	public void HideCreateRoomModel() {
+		CreateRoomModal.SetActive(false);
+	}
+
 	public void JoinRoom() {
 		if (!string.IsNullOrEmpty (selectedRoom)) {
 			Debug.Log ("Joining Room " + selectedRoom);
@@ -75,5 +76,9 @@ public class UIManager : MonoBehaviour {
 	{
 		Debug.Log("OnJoinedRoom");
 		PhotonNetwork.LoadLevel ("GameLobby");
+	}
+
+	public void GoToHangar() {
+		SceneManager.LoadScene ("Hangar");
 	}
 }

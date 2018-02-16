@@ -2,13 +2,14 @@
 using System.Collections;
 
 public class Radar : MonoBehaviour {
-	public Camera radar;
+	private Camera radar;
 
 	private Rect rect;
 	private Texture2D texture;
 
 	// Use this for initialization
 	void Start () {
+		radar = GetComponent<Camera>();
 		texture = new Texture2D(1,1);
 		texture.SetPixel(0,0,Color.blue);
 		texture.wrapMode = TextureWrapMode.Repeat;

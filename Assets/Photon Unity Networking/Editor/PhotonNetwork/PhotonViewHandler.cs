@@ -1,4 +1,4 @@
-#if UNITY_5 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+#if UNITY_5 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 || UNITY_5_4_OR_NEWER
 #define UNITY_MIN_5_3
 #endif
 
@@ -70,7 +70,7 @@ public class PhotonViewHandler : EditorWindow
                     view.viewID = 0;
                     view.prefixBackup = -1;
                     view.instantiationId = -1;
-                    EditorUtility.SetDirty(view);   // even in Unity 5.3+ it's OK to SetDirty() for non-scene objects. 
+                    EditorUtility.SetDirty(view);   // even in Unity 5.3+ it's OK to SetDirty() for non-scene objects.
                     fixedSomeId = true;
                 }
             }
@@ -191,4 +191,3 @@ public class PhotonViewHandler : EditorWindow
         Debug.Log("Corrected scene views where needed.");
     }
 }
-
