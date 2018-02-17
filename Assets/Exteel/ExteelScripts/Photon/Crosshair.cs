@@ -103,7 +103,7 @@ public class Crosshair : MonoBehaviour {
 						continue;
 					}
 				}
-
+				//print ("crosshair target : " + target);
 				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position).y*0.65f);
 				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f * 0.65f); // due to wide screen
 

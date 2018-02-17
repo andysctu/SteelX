@@ -9,6 +9,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject LobbyPlayer;
 	[SerializeField] GameObject Team1, Team2, MenuBar, MapInfo;
 	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
+	[SerializeField] private InRoomChat InRoomChat;
 
 	private string[] Maps = new string[3]{"Simulation", "V-Hill", "City"};
 	List<GameObject> players ;
@@ -111,7 +112,11 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	public void StartGame() {
 		Debug.Log ("Starting game");
 		PhotonNetwork.room.open = true;
-		
+
+		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+		h.Add ("GameInit", false);
+		PhotonNetwork.room.SetCustomProperties (h);
+
 		PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
 	}
 
@@ -136,9 +141,9 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		}
 	}
 
-	public void OnPhotonMasterClientSwitched(PhotonPlayer newMaster){
+	public void OnMasterClientSwitched(PhotonPlayer newMaster){
 		Debug.Log ("Master switched.");
-
+		InRoomChat.AddLine ("The Master is switched to " + newMaster.NickName);
 		if (PhotonNetwork.isMasterClient) {
 			GameObject startButton = GameObject.Find("Canvas/MenuBar/Start");
 			startButton.GetComponent<Button>().interactable = true;
@@ -152,7 +157,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	public void LoadRoomInfo(){
 		Map.captionText.text = PhotonNetwork.room.CustomProperties["Map"].ToString();
 		MaxTime.captionText.text = PhotonNetwork.room.CustomProperties["MaxTime"].ToString();
-		MaxPlayers.captionText.text = PhotonNetwork.room.CustomProperties["MaxPlayers"].ToString();
+		MaxPlayers.captionText.text = PhotonNetwork.room.MaxPlayers.ToString() ;
 		MaxKills.captionText.text = PhotonNetwork.room.CustomProperties["MaxKills"].ToString();
 		GameMode.captionText.text = PhotonNetwork.room.CustomProperties["GameMode"].ToString();
 	}
@@ -183,11 +188,6 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	public void ChangeMaxPlayers() {
 		photonView.RPC("ChangeMaxPlayers", PhotonTargets.All, MaxPlayers.captionText.text);
-
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("MaxPlayers", int.Parse(MaxPlayers.captionText.text));
-		PhotonNetwork.room.SetCustomProperties (h);
-
 		PhotonNetwork.room.MaxPlayers = int.Parse (MaxPlayers.captionText.text);
 	}
 
@@ -195,7 +195,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		photonView.RPC("ChangeMaxTime", PhotonTargets.All, MaxTime.captionText.text);
 
 		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("MaxTime", int.Parse(MaxPlayers.captionText.text));
+		h.Add ("MaxTime", int.Parse(MaxTime.captionText.text));
 		PhotonNetwork.room.SetCustomProperties (h);
 	}
 

@@ -35,7 +35,13 @@ public class RCLBulletTrace : MonoBehaviour {
 	void OnParticleCollision(GameObject other){
 		if (isCollided == true || other == Shooter)
 			return;
-		
+
+		if(GameManager.isTeamMode){
+			if(other.layer == PlayerlayerMask)
+				if (other.tag == "Drone"|| other.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
+					return;
+		}
+
 		isCollided = true;
 		ps.Stop ();
 		GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
@@ -54,6 +60,12 @@ public class RCLBulletTrace : MonoBehaviour {
 			if(colliderViewIds.Contains(colliderPV.viewID)){
 				continue;
 			}else{
+
+				if(GameManager.isTeamMode){
+					if (other.tag == "Drone" ||other.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
+						continue;
+				}
+
 				colliderViewIds.Add (colliderPV.viewID);
 			}
 
@@ -76,19 +88,20 @@ public class RCLBulletTrace : MonoBehaviour {
 
 					if (Shooter.GetComponent<PhotonView> ().isMine) {
 
-						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
+						//colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
 
 						if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP () - bulletdmg <= 0) {
 							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Kill");
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
 						}
-						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterName, 0f); 
+						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterName, 0.3f); 
 
+					}else if(colliderPV.isMine){
+						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 3f);
 					}
 				}
 			}
 		}
 	}
-
 }

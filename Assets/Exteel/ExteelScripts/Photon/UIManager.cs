@@ -42,7 +42,7 @@ public class UIManager : MonoBehaviour {
 			GameObject roomPanel = Instantiate (RoomPanel);
 			Text[] info = roomPanel.GetComponentsInChildren<Text> ();
 			Debug.Log (roomsInfo [i].name);
-			info [3].text = "Players: " + roomsInfo [i].playerCount + "/" + roomsInfo [i].CustomProperties ["MaxPlayers"];
+			info [3].text = "Players: " + roomsInfo [i].playerCount + "/" + roomsInfo [i].MaxPlayers;
 			info [2].text = "GameMode: " + roomsInfo [i].CustomProperties ["GameMode"];
 			info [1].text = "Map: "+roomsInfo [i].CustomProperties ["Map"];
 			info [0].text = "Room Name: " + roomsInfo [i].name;

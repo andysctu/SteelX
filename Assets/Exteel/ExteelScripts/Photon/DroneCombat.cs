@@ -8,7 +8,7 @@ public class DroneCombat : Combat {
 	void Start () {
 		currentHP = MAX_HP;
 		findGameManager();
-		gm.RegisterPlayer("Drone");
+		gm.RegisterPlayer(photonView.viewID, 0);
 	}
 
 	[PunRPC]

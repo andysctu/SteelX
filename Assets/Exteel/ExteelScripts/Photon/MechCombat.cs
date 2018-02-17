@@ -191,9 +191,9 @@ public class MechCombat : Combat {
 			Sounds.PlaySlashOnHit ();
 			foreach(Transform target in targets){
 
-				print ("Slash hit : " + target.gameObject.name);
-
-				//slow down target , or just stop him?
+				if(target == null){//it causes bug if target disconnect
+					continue;
+				}
 
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
@@ -284,7 +284,7 @@ public class MechCombat : Combat {
 			DisablePlayer();
 
 			// Update scoreboard
-			gm.RegisterKill(shooter, GetComponent<PhotonView>().name);
+			gm.RegisterKill(shooter, photonView.name);
 			print ("call registerKill shooter : " + shooter + " victim :" + GetComponent<PhotonView> ().name);
 		}
 	}

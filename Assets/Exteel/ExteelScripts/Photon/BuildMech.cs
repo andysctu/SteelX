@@ -74,7 +74,8 @@ public class BuildMech : Photon.MonoBehaviour {
 	void SetName(string name) {
 		gameObject.name = name;
 		findGameManager();
-		gm.RegisterPlayer(name);
+		print ("the team is : " + photonView.owner.GetTeam ());
+		gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam()==PunTeams.Team.red)? 1 : 0);// blue & none team => set to blue
 	}
 		
 	public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
