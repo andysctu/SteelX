@@ -13,14 +13,17 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject PlayerStat;
 	[SerializeField] Text Timer;
 	[SerializeField] bool Offline;
-	[SerializeField] GameObject RedTeam,BlueTeam;
+	[SerializeField] GameObject Panel_RedTeam, Panel_BlueTeam;
+	[SerializeField] GameObject RedScore, BlueScore;
+	[SerializeField] Text RedScoreText, BlueScoreText;
+
 	public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
 
 	public int MaxTimeInSeconds = 300;
 	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
-
+	private int bluescore = 0, redscore = 0;
 	private int timerDuration;
 	private int currentTimer = 999;
 
@@ -31,6 +34,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private bool OnSyncTimeRequest = false;
 	private bool IsMasterInitGame = false; 
 	private bool OnCheckInitGame = false;
+	private int sendTimes = 0;
 
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
@@ -62,28 +66,62 @@ public class GameManager : Photon.MonoBehaviour {
 
 		Debug.Log ("GameInfo gamemode :" + GameInfo.GameMode + " MaxKills :" + GameInfo.MaxKills);
 
+		//If is master client , initialize room's properties ( team score, ... )
+		if (PhotonNetwork.isMasterClient) {
+			MasterInitGame();
+		}
+
 		//Check team mode
 		if(GameInfo.GameMode.Contains("Team") || GameInfo.GameMode.Contains("Capture")){
 			Debug.Log ("Team mode is on.");
 			isTeamMode = true;
 		}else{
 			Debug.Log ("Team mode is off.");
-			RedTeam.SetActive (false);
+			//close Panel_RedTeam on Scorepanel
+			Panel_RedTeam.SetActive (false);
+			//close teamscores
+			RedScore.SetActive (false);
+			BlueScore.SetActive (false);
 			isTeamMode = false;
 		}
-
-		//If is master client , initialize room's properties ( team score, ... )
-		if (PhotonNetwork.isMasterClient) {
-			MasterInitGame();
-			SyncTime();
-		}
+			
+		StartCoroutine(LateStart());
 
 		// client ini himself
 		ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
 		h2.Add ("Kills", 0);
 		h2.Add ("Deaths", 0);
 		PhotonNetwork.player.SetCustomProperties (h2);
+
 		InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+	}
+		
+	IEnumerator LateStart(){
+		if(!IsMasterInitGame && sendTimes <10){
+				sendTimes++;
+				InRoomChat.AddLine ("Sending sync game request..." + sendTimes);
+				yield return new WaitForSeconds (0.4f);
+				SendSyncInitGameRequest ();
+				yield return StartCoroutine (LateStart ());
+		}else{
+			if(sendTimes >= 10){
+				InRoomChat.AddLine ("Failed to sync game properties. Is master disconnected ? ");
+				Debug.Log ("master not connected");
+			}else{
+				InRoomChat.AddLine ("Game is sync.");
+			}
+
+			BlueScoreText.text = (PhotonNetwork.room.CustomProperties ["BlueScore"]==null)? "0" : PhotonNetwork.room.CustomProperties ["BlueScore"].ToString();
+			RedScoreText.text = (PhotonNetwork.room.CustomProperties ["RedScore"]==null)? "0" : PhotonNetwork.room.CustomProperties ["RedScore"].ToString ();
+			bluescore = int.Parse (BlueScoreText.text);
+			redscore = int.Parse (RedScoreText.text);
+		}
+	}
+
+	void SendSyncInitGameRequest(){
+		if(bool.Parse(PhotonNetwork.room.CustomProperties["GameInit"].ToString()) ==true){
+			IsMasterInitGame = true;
+		}
 	}
 
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
@@ -120,10 +158,9 @@ public class GameManager : Photon.MonoBehaviour {
 
 		GameObject ps = Instantiate (PlayerStat, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
 		ps.transform.Find("Pilot Name").GetComponent<Text>().text = name;
-		/*
 		ps.transform.Find("Kills").GetComponent<Text>().text = "0";
 		ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
-		*/
+
 		Score score = new Score ();
 		if (viewID != 2) {
 			string kills, deaths;
@@ -139,34 +176,28 @@ public class GameManager : Photon.MonoBehaviour {
 
 		if(isTeamMode){
 			if(teamID == 0){
-				ps.transform.SetParent(BlueTeam.transform);
+				ps.transform.SetParent(Panel_BlueTeam.transform);
 			}else{
-				ps.transform.SetParent(RedTeam.transform);
+				ps.transform.SetParent(Panel_RedTeam.transform);
 			}
 		}else
-			ps.transform.SetParent(Scoreboard.transform.Find("Blue").transform);
+			ps.transform.SetParent(Panel_BlueTeam.transform);
 
 		ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 		playerScorePanels.Add(name, ps);
 	}
 
 	void MasterInitGame(){
-
 		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("BlueKills", 0);
-		h.Add ("RedKills", 0);
 		h.Add ("BlueScore", 0);
 		h.Add ("RedScore", 0);
 		PhotonNetwork.room.SetCustomProperties (h);
 
-		ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
-		h2.Add ("Kills", 0);
-		h2.Add ("Deaths", 0);
+		h = new ExitGames.Client.Photon.Hashtable ();
+		h.Add ("GameInit", true);//this is set to false when master pressing "start"
+		PhotonNetwork.room.SetCustomProperties (h);
 
-		ExitGames.Client.Photon.Hashtable h3 = new ExitGames.Client.Photon.Hashtable ();
-		h3.Add ("GameInit", true);
-		PhotonNetwork.room.SetCustomProperties (h3);
-
+		SyncTime();
 		IsMasterInitGame = true;
 	}
 		
@@ -238,36 +269,53 @@ public class GameManager : Photon.MonoBehaviour {
 		PhotonNetwork.LoadLevel("GameLobby");
 	}
 
-	public void RegisterKill(string shooter, string victim) {
-		//Display Log on UI
-		int shooterID,victimID;
+	public void RegisterKill(int shooter_viewID, int victim_viewID) {
+
+		if(victim_viewID == 2){//drone
+			return;
+		}
+		PhotonPlayer shooter_player = null,victime_player = null;
+		shooter_player = PhotonView.Find (shooter_viewID).owner;
+		victime_player = PhotonView.Find (victim_viewID).owner;
+
+		string shooter = shooter_player.NickName, victim = victime_player.NickName;
+
+		//only master update the room properties
 		if(PhotonNetwork.isMasterClient){
 			ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
 			h2.Add ("Kills", playerScores[shooter].Kills + 1);
 
 			ExitGames.Client.Photon.Hashtable h3 = new ExitGames.Client.Photon.Hashtable ();
 			h3.Add ("Deaths", playerScores[victim].Deaths + 1 );
+			shooter_player.SetCustomProperties (h2);
+			victime_player.SetCustomProperties (h3);
 
-			foreach(PhotonPlayer player in PhotonNetwork.playerList){
-				if(player.NickName == shooter){
-					player.SetCustomProperties (h2);
-				}else if(player.NickName == victim){
-					player.SetCustomProperties (h3);
+			if (GameInfo.GameMode == "Team Deathmatch") {
+				if (shooter_player.GetTeam () == PunTeams.Team.blue || shooter_player.GetTeam () == PunTeams.Team.none) {
+					bluescore++;
+					BlueScoreText.text = bluescore.ToString();
+					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+					h.Add ("BlueScore", bluescore);
+					PhotonNetwork.room.SetCustomProperties (h);
+				}else{
+					redscore++;
+					RedScoreText.text = redscore.ToString();
+					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+					h.Add ("RedScore", redscore);
+					PhotonNetwork.room.SetCustomProperties (h);
 				}
 			}
-			/*
-			PhotonView pv = PhotonView.Find (viewID);
-			ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
-			h2.Add ("Kills", playerScores[shooter].Kills + 1);
-			h2.Add ("Deaths", playerScores[shooter].Deaths);
-
-			ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
-			h2.Add ("Kills", playerScores[shooter].Kills + 1);
-			h2.Add ("Deaths", playerScores[shooter].Deaths);*/
-
-
+		}else{
+			if(GameInfo.GameMode == "Team Deathmatch"){
+				if (shooter_player.GetTeam () == PunTeams.Team.blue || shooter_player.GetTeam () == PunTeams.Team.none) {
+					bluescore++;
+					BlueScoreText.text = bluescore.ToString();
+				} else {
+					redscore++;
+					RedScoreText.text = redscore.ToString();
+				}
+			}
 		}
-		Debug.Log(shooter + " killed " + victim);
 		Score newShooterScore = new Score ();
 		newShooterScore.Kills = playerScores[shooter].Kills + 1;
 		newShooterScore.Deaths = playerScores[shooter].Deaths;
@@ -280,8 +328,6 @@ public class GameManager : Photon.MonoBehaviour {
 
 		playerScorePanels [shooter].transform.Find("Kills").GetComponent<Text>().text = playerScores[shooter].Kills.ToString();
 		playerScorePanels [victim].transform.Find("Deaths").GetComponent<Text>().text = playerScores[victim].Deaths.ToString();
-		Debug.Log (shooter + " has " + playerScores [shooter].Kills + " kills.");
-		Debug.Log (victim + " has " + playerScores [victim].Deaths + " deaths.");
 
 		if (newShooterScore.Kills > CurrentMaxKills) CurrentMaxKills = newShooterScore.Kills;
 	}
@@ -289,9 +335,7 @@ public class GameManager : Photon.MonoBehaviour {
 	public bool GameOver() {
 		if (storedStartTime != 0 && storedDuration != 0) {
 			if (currentTimer <= 0) {
-				print ("end game becuase of currentTimer");
-				return false; // temp.
-				//return true;
+				return true;
 			} else {
 				return CurrentMaxKills >= MaxKills;
 			}
@@ -301,15 +345,16 @@ public class GameManager : Photon.MonoBehaviour {
 	void OnPhotonPlayerConnected(PhotonPlayer newPlayer){
 		//if (!PhotonNetwork.isMasterClient)
 		//	return;
-		InRoomChat.AddLine ("player connected : " + newPlayer);
+		InRoomChat.AddLine (newPlayer + " is connected.");
 	}
 
 	void OnPhotonPlayerDisconnected(PhotonPlayer player){
-		InRoomChat.AddLine ("player disconnected : " + player);
+		InRoomChat.AddLine (player + " is disconnected.");
 		playerScorePanels.Remove (player.NickName);
 		playerScores.Remove (player.NickName);
-		Text[] Ts = Scoreboard.GetComponentsInChildren<Text> ();
 
+		//Remove datas from scoreboard
+		Text[] Ts = Scoreboard.GetComponentsInChildren<Text> ();
 		foreach(Text text in Ts){
 			if(text.text == player.NickName){
 				Destroy (text.transform.parent.gameObject);

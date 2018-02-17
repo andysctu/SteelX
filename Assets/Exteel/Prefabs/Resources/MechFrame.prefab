@@ -2885,7 +2885,7 @@ MonoBehaviour:
   pv: {fileID: 11416036}
   LockedImg: {fileID: 1378835646835420}
   crosshairImage: {fileID: 114672547102200730}
-  layerMask:
+  playerlayer:
     serializedVersion: 2
     m_Bits: 256
   Sounds: {fileID: 114000010976113334}
@@ -2931,6 +2931,7 @@ MonoBehaviour:
   CharacterController: {fileID: 14356836}
   Sounds: {fileID: 114000010976113334}
   HeatBar: {fileID: 114328570908798246}
+  InRoomChat: {fileID: 0}
   jumpPower: 100
   moveSpeed: 35
   boostSpeed: 60

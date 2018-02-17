@@ -85,11 +85,13 @@ public class InRoomChat : Photon.MonoBehaviour
             }
         }
 
-        this.messages.Add(senderName +": " + newLine);
+		this.messages.Insert(0, senderName +": " + newLine);
+        //this.messages.Add(senderName +": " + newLine);
     }
 
     public void AddLine(string newLine)
     {
-        this.messages.Add(newLine);
+		this.messages.Insert (0, newLine);
+       // this.messages.Add(newLine);
     }
 }

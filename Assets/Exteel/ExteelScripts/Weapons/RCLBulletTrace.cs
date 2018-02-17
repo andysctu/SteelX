@@ -10,7 +10,6 @@ public class RCLBulletTrace : MonoBehaviour {
 	public Camera cam;
 	public GameObject Shooter;
 
-	private string ShooterName;
 	private int ShooterID; // for efficiency
 	[SerializeField]
 	private LayerMask PlayerlayerMask;
@@ -26,7 +25,6 @@ public class RCLBulletTrace : MonoBehaviour {
 	void Start () {
 		ps = GetComponent<ParticleSystem>();
 		ps.Play();
-		ShooterName = Shooter.name;
 		ShooterID = Shooter.GetComponent<PhotonView> ().viewID;
 		GetComponent<Rigidbody> ().velocity = transform.forward * bulletSpeed;
 		Destroy(gameObject, 2f);
@@ -79,7 +77,7 @@ public class RCLBulletTrace : MonoBehaviour {
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 						}
-						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterName, 0f); 
+						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, 0f); 
 					}
 
 				} else {
@@ -95,7 +93,7 @@ public class RCLBulletTrace : MonoBehaviour {
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
 						}
-						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterName, 0.3f); 
+						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, 0.3f); 
 
 					}else if(colliderPV.isMine){
 						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 3f);

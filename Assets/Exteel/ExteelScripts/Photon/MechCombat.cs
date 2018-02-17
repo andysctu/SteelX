@@ -12,6 +12,7 @@ public class MechCombat : Combat {
 	[SerializeField] CharacterController CharacterController;
 	[SerializeField] Sounds Sounds;
 	[SerializeField] HeatBar HeatBar;
+	[SerializeField] InRoomChat InRoomChat;
 	// Boost variables
 	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
@@ -103,6 +104,7 @@ public class MechCombat : Combat {
 	}
 
 	void initGameObjects() {
+		InRoomChat = GameObject.Find ("InRoomChat") .GetComponent<InRoomChat>();
 		hud = GameObject.Find("Canvas").GetComponent<HUD>();
 	}
 
@@ -159,7 +161,7 @@ public class MechCombat : Combat {
 				
 				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, false);
 
-				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName, 0f);
+				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, 0f);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 
 				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
@@ -170,7 +172,7 @@ public class MechCombat : Combat {
 			} else if (target.tag == "Shield") {
 				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, true);
 
-				target.transform.root.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, PhotonNetwork.playerName, 0f);
+				target.transform.root.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, photonView.viewID, 0f);
 
 				hud.ShowText(cam, target.position, "Defense");
 			}
@@ -197,7 +199,7 @@ public class MechCombat : Combat {
 
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, PhotonNetwork.playerName, 0.4f);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, 0.4f);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -259,7 +261,7 @@ public class MechCombat : Combat {
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
-	public override void OnHit(int d, string shooter, float slowdownDuration = 0) {
+	public override void OnHit(int d, int shooter_viewID, float slowdownDuration = 0) {
 		Debug.Log ("OnHit, isDead: " + isDead);
 		// If already dead, do nothing
 		if (isDead) {
@@ -284,8 +286,10 @@ public class MechCombat : Combat {
 			DisablePlayer();
 
 			// Update scoreboard
-			gm.RegisterKill(shooter, photonView.name);
-			print ("call registerKill shooter : " + shooter + " victim :" + GetComponent<PhotonView> ().name);
+			gm.RegisterKill(shooter_viewID, photonView.viewID);
+
+			string shooter = PhotonView.Find (shooter_viewID).owner.NickName;
+			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
 		}
 	}
 
@@ -337,6 +341,7 @@ public class MechCombat : Combat {
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		ch.enabled = true;
 		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(true);
+		transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(true);
 
 	}
 

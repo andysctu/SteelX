@@ -44,12 +44,24 @@ public class SlashDetector : MonoBehaviour {
 
 	void OnTriggerEnter(Collider target){
 		if (target.gameObject != User && (target.tag == "Drone" || target.tag == "Player" )) {
+
+			if(GameManager.isTeamMode){
+				if ( target.tag == "Drone" || target.transform.root.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
+					return;
+			}
+
 			Target.Add (target.transform);
 		}
 	}
 	 
 	void OnTriggerExit(Collider target){
 		if(target.gameObject != User &&(target.tag == "Drone" || target.tag == "Player" ) ){
+
+			if(GameManager.isTeamMode){
+				if ( target.tag == "Drone" || target.transform.root.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
+					return;
+			}
+
 			Target.Remove (target.transform);
 		}	
 	}

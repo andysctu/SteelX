@@ -9,7 +9,7 @@ public class Combat : Photon.MonoBehaviour {
 	protected GameManager gm;
 
 	[PunRPC]
-	public virtual void OnHit(int d, string shooter, float slowdownDuration) {}
+	public virtual void OnHit(int d, int shooter_viewID, float slowdownDuration) {}
 
 	protected void findGameManager() {
 		if (gm == null) {
