@@ -134,11 +134,15 @@ public class GameManager : Photon.MonoBehaviour {
 				if (PhotonNetwork.room.CustomProperties ["BlueFlagHolder"] != null) {
 					if(int.Parse(PhotonNetwork.room.CustomProperties ["BlueFlagHolder"].ToString()) != -1){
 						playerHoldFlag (int.Parse (PhotonNetwork.room.CustomProperties ["BlueFlagHolder"].ToString ()), 0);
+					}else{
+						BlueFlag.transform.position = StringToVector3 (PhotonNetwork.room.CustomProperties ["BlueFlagPos"].ToString ());
 					}
 				}
 				if (PhotonNetwork.room.CustomProperties ["RedFlagHolder"] != null) {
 					if (int.Parse (PhotonNetwork.room.CustomProperties ["RedFlagHolder"].ToString ()) != -1) {
 						playerHoldFlag (int.Parse (PhotonNetwork.room.CustomProperties ["RedFlagHolder"].ToString ()), 1);
+					}else{
+						RedFlag.transform.position = StringToVector3 (PhotonNetwork.room.CustomProperties ["RedFlagPos"].ToString ());
 					}
 				}
 			}
@@ -221,10 +225,10 @@ public class GameManager : Photon.MonoBehaviour {
 		h.Add ("GameInit", true);//this is set to false when master pressing "start"
 		h.Add ("BlueFlagHolder", -1);
 		h.Add ("RedFlagHolder", -1);
-		h.Add ("BlueFlagPos", Vector3.zero);
-		h.Add ("RedFlagPos", "0,0,0");
+		h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x,0,SpawnPoints [0].position.z));
+		h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x,0,SpawnPoints [1].position.z));
+
 		PhotonNetwork.room.SetCustomProperties (h);
-		print ("hash vector : " + PhotonNetwork.room.CustomProperties ["BlueFlagPos"].ToString ());
 		SyncTime();
 
 		//Instantiate flags
@@ -238,6 +242,8 @@ public class GameManager : Photon.MonoBehaviour {
 	void InstantiateFlags(){
 		GameObject BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [0].position.x , 0 , SpawnPoints [0].position.z), Quaternion.Euler(Vector3.zero), 0, null);
 		GameObject RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [1].position.x , 0 , SpawnPoints [1].position.z), Quaternion.Euler(Vector3.zero), 0, null);
+
+
 		BlueFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
 		RedFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
 	}
@@ -282,7 +288,6 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		if (GameOver() && !gameEnding) {
-			print ("called game over");
 			gameEnding = true;
 			Cursor.lockState = CursorLockMode.None;
 			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
@@ -417,6 +422,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("BlueFlagHolder", -1);
+					h.Add ("BlueFlagPos", BlueFlag.transform.position);
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
 
@@ -430,9 +436,9 @@ public class GameManager : Photon.MonoBehaviour {
 				if (PhotonNetwork.isMasterClient) {
 					RedFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
 
-					print ("red flag holder is set to -1.");
 					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("RedFlagHolder", -1);
+					h.Add ("RedFlagPos", RedFlag.transform.position);
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
 
@@ -478,7 +484,6 @@ public class GameManager : Photon.MonoBehaviour {
 	void playerHoldFlag(int player_viewID, int flag){
 		if(player_viewID == -1){//put the flag to the base
 			if(flag == 0){
-				print ("return blue flag to base");
 				BlueFlag.transform.parent = null;
 				BlueFlag.transform.position = new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z);
 				BlueFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
@@ -493,10 +498,10 @@ public class GameManager : Photon.MonoBehaviour {
 
 					h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("BlueFlagHolder", -1);
+					h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z));
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
 			}else{
-				print ("return red flag to base");
 				RedFlag.transform.parent = null;
 				RedFlag.transform.position = new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z);
 				RedFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
@@ -511,6 +516,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 					h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("RedFlagHolder", -1);
+					h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z));
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
 			}
@@ -518,7 +524,6 @@ public class GameManager : Photon.MonoBehaviour {
 		}else{
 			PhotonView pv = PhotonView.Find (player_viewID);
 			if(flag == 0){
-				print ("give blue flag to :" + pv.owner);
 				BlueFlag.GetComponent<Flag> ().isGrounded = false;
 				BlueFlag.transform.SetParent (pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"));
 				BlueFlag.transform.localPosition = Vector3.zero;
@@ -532,7 +537,6 @@ public class GameManager : Photon.MonoBehaviour {
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
 			}else{
-				print ("give red flag to :" + pv.owner);
 				RedFlag.GetComponent<Flag> ().isGrounded = false;
 				RedFlag.transform.SetParent (pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"));
 				RedFlag.transform.localPosition = Vector3.zero;
@@ -561,6 +565,11 @@ public class GameManager : Photon.MonoBehaviour {
 
 			h = new ExitGames.Client.Photon.Hashtable ();
 			h.Add ((flag == 0) ? "BlueFlagHolder" : "RedFlagHolder", -1);
+			if (flag == 0) {
+				h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z));
+			}else{
+				h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z));
+			}
 			PhotonNetwork.room.SetCustomProperties (h);
 		}
 
@@ -642,5 +651,16 @@ public class GameManager : Photon.MonoBehaviour {
 			RedScoreText.text = redscore.ToString();
 		}
 
+	}
+	public static Vector3 StringToVector3(string sVector){
+		if(sVector.StartsWith("(") && sVector.EndsWith(")")){
+			sVector = sVector.Substring(1,sVector.Length-2);
+		}
+
+		string[] sArray = sVector.Split(',');
+
+		Vector3 result = new Vector3(float.Parse(sArray[0]),float.Parse(sArray[1]),float.Parse(sArray[2]));
+
+		return result;
 	}
 }
