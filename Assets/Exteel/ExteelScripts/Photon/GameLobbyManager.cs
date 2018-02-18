@@ -68,6 +68,11 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 			MaxTime.interactable = true;
 		}
 
+		//set default team
+		if(PhotonNetwork.player.GetTeam()==PunTeams.Team.none){
+			PhotonNetwork.player.SetTeam (PunTeams.Team.blue);
+		}
+
 		LoadRoomInfo ();//Update the caption text
 	}
 

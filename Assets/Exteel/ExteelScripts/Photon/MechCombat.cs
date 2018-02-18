@@ -278,10 +278,6 @@ public class MechCombat : Combat {
 		if (currentHP <= 0) {
 			isDead = true;
 			// UI for shooter
-			/*
-			if (shooter == PhotonNetwork.playerName) {
-				hud.ShowText(cam, transform.position, "Kill");
-			}*/
 
 			DisablePlayer();
 
@@ -308,6 +304,19 @@ public class MechCombat : Combat {
 	// Disable MechController, Crosshair, Renderers, and set layer to 0
 	[PunRPC]
 	void DisablePlayer() {
+		//check if he has the flag
+		if(PhotonNetwork.isMasterClient){
+			if(bool.Parse(photonView.owner.CustomProperties["isHoldFlag"].ToString())){
+				print ("that dead man has the flag.");
+				if(photonView.owner.GetTeam() == PunTeams.Team.blue || photonView.owner.GetTeam() == PunTeams.Team.none){
+					print ("call drop flag : " + 1);
+					gm.GetComponent<PhotonView>().RPC ("DropFlag", PhotonTargets.All, photonView.viewID, 1, transform.position);
+				}else{
+					gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 0, transform.position);
+				}
+			}
+		}
+
 		gameObject.layer = 0;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		if(ch!=null){
