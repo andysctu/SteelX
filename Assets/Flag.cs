@@ -11,6 +11,7 @@ public class Flag : MonoBehaviour {
 	private ParticleSystem ps;
 	private bool isOnPlay = true;
 	public bool isGrounded = true;
+	public bool isOnBase = true;
 
 	void Start(){
 		ps.Play ();
@@ -48,6 +49,10 @@ public class Flag : MonoBehaviour {
 				//Register score
 				print ("send register score");
 				gmpv.RPC ("GetScoreRequest", PhotonTargets.MasterClient, pv.viewID);
+			}else if(!isOnBase){
+				//send back the flag
+				print ("send back the flag");
+				gmpv.RPC ("playerHoldFlag", PhotonTargets.All, -1, (team == PunTeams.Team.red) ? 1 : 0);
 			}
 
 		}else{

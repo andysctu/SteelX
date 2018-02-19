@@ -22,7 +22,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 	private static Vector3 BlueFlagPos = Vector3.zero, RedFlagPos = Vector3.zero;
 
-	//when player disconnect , if he is the flag holder , we can only use this name check
+	//when a player disconnects , if he is the flag holder , we can only use this name check ( can't get customproperty from a disconnected player )
 	private string BlueFlagHolderName = "",RedFlagHolderName = "";
 	private GameObject RedFlag, BlueFlag;
 
@@ -102,8 +102,15 @@ public class GameManager : Photon.MonoBehaviour {
 		h2.Add ("isHoldFlag", false);
 		PhotonNetwork.player.SetCustomProperties (h2);
 
-
-		InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+		if (isTeamMode) {
+			if(PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none)
+				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+			else{
+				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [1].position, SpawnPoints [0].rotation, 0);
+			}
+		}else{
+			InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+		}
 	}
 		
 	IEnumerator LateStart(){
@@ -156,7 +163,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
-		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, SpawnPoints[2].position, SpawnPoints[2].rotation, 0);
+		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
 
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
@@ -399,6 +406,9 @@ public class GameManager : Photon.MonoBehaviour {
 		playerScorePanels.Remove (player.NickName);
 		playerScores.Remove (player.NickName);
 
+		if(bool.Parse(player.CustomProperties["isHoldFlag"].ToString())){
+			print("yeah he hold it.");
+		}
 		//Remove datas from scoreboard
 		Text[] Ts = Scoreboard.GetComponentsInChildren<Text> ();
 		foreach(Text text in Ts){
@@ -484,41 +494,48 @@ public class GameManager : Photon.MonoBehaviour {
 	void playerHoldFlag(int player_viewID, int flag){
 		if(player_viewID == -1){//put the flag to the base
 			if(flag == 0){
-				BlueFlag.transform.parent = null;
-				BlueFlag.transform.position = new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z);
-				BlueFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-				BlueFlag.GetComponent<Flag> ().isGrounded = true;
-				BlueFlagHolder = null;
-				BlueFlagHolderName = "";
-
 				if(PhotonNetwork.isMasterClient){
-					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+					ExitGames.Client.Photon.Hashtable h;
+					if(BlueFlagHolder!=null){
+					h = new ExitGames.Client.Photon.Hashtable () ;
 					h.Add ("isHoldFlag", false);
 					BlueFlagHolder.SetCustomProperties (h);
+					}
 
 					h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("BlueFlagHolder", -1);
 					h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z));
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
+				BlueFlag.transform.parent = null;
+				BlueFlag.transform.position = new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z);
+				BlueFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
+				BlueFlag.GetComponent<Flag> ().isGrounded = true;
+				BlueFlagHolder = null;
+				BlueFlagHolderName = "";
+				BlueFlag.GetComponent<Flag> ().isOnBase = true;
 			}else{
-				RedFlag.transform.parent = null;
-				RedFlag.transform.position = new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z);
-				RedFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-				RedFlag.GetComponent<Flag> ().isGrounded = true;
-				RedFlagHolder = null;
-				RedFlagHolderName = "";
-
 				if(PhotonNetwork.isMasterClient){
-					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+					ExitGames.Client.Photon.Hashtable h;
+
+					if(RedFlagHolder!=null){
+					h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("isHoldFlag", false);
 					RedFlagHolder.SetCustomProperties (h);
+					}
 
 					h = new ExitGames.Client.Photon.Hashtable ();
 					h.Add ("RedFlagHolder", -1);
 					h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z));
 					PhotonNetwork.room.SetCustomProperties (h);
 				}
+				RedFlag.transform.parent = null;
+				RedFlag.transform.position = new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z);
+				RedFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
+				RedFlag.GetComponent<Flag> ().isGrounded = true;
+				RedFlagHolder = null;
+				RedFlagHolderName = "";
+				RedFlag.GetComponent<Flag> ().isOnBase = true;
 			}
 		
 		}else{
@@ -530,6 +547,7 @@ public class GameManager : Photon.MonoBehaviour {
 				BlueFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
 				BlueFlagHolder = pv.owner;
 				BlueFlagHolderName = pv.owner.NickName;
+				BlueFlag.GetComponent<Flag> ().isOnBase = false;
 
 				if (PhotonNetwork.isMasterClient) {
 					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
@@ -543,6 +561,7 @@ public class GameManager : Photon.MonoBehaviour {
 				RedFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
 				RedFlagHolder = pv.owner;
 				RedFlagHolderName = pv.owner.NickName;
+				RedFlag.GetComponent<Flag> ().isOnBase = false;
 
 				if (PhotonNetwork.isMasterClient) {
 					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
@@ -614,6 +633,8 @@ public class GameManager : Photon.MonoBehaviour {
 				return;
 			}else{
 				photonView.RPC ("RegisterScore", PhotonTargets.All, player_viewID);
+
+				//send back the flag
 				photonView.RPC ("playerHoldFlag", PhotonTargets.All, -1, 1);
 			}
 		}else{//Redteam : blue flag holder
@@ -631,6 +652,14 @@ public class GameManager : Photon.MonoBehaviour {
 	void RegisterScore(int player_viewID){
 		PhotonPlayer player = PhotonView.Find (player_viewID).owner;
 
+		if (player.GetTeam () == PunTeams.Team.blue || player.GetTeam () == PunTeams.Team.none) {
+			bluescore++;
+			BlueScoreText.text = bluescore.ToString();
+		} else {
+			redscore++;
+			RedScoreText.text = redscore.ToString();
+		}
+
 		if(PhotonNetwork.isMasterClient){
 			if (player.GetTeam () == PunTeams.Team.blue || player.GetTeam () == PunTeams.Team.none) {
 				ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
@@ -642,15 +671,6 @@ public class GameManager : Photon.MonoBehaviour {
 				PhotonNetwork.room.SetCustomProperties (h);
 			}
 		}
-
-		if (player.GetTeam () == PunTeams.Team.blue || player.GetTeam () == PunTeams.Team.none) {
-			bluescore++;
-			BlueScoreText.text = bluescore.ToString();
-		} else {
-			redscore++;
-			RedScoreText.text = redscore.ToString();
-		}
-
 	}
 	public static Vector3 StringToVector3(string sVector){
 		if(sVector.StartsWith("(") && sVector.EndsWith(")")){
