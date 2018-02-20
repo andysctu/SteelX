@@ -19,11 +19,10 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
-	private PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
-	private static Vector3 BlueFlagPos = Vector3.zero, RedFlagPos = Vector3.zero;
+	public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 
 	//when a player disconnects , if he is the flag holder , we can only use this name check ( can't get customproperty from a disconnected player )
-	private string BlueFlagHolderName = "",RedFlagHolderName = "";
+	public string BlueFlagHolderName = "",RedFlagHolderName = "";
 	private GameObject RedFlag, BlueFlag;
 
 	public int MaxTimeInSeconds = 300;
@@ -40,6 +39,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private bool OnSyncTimeRequest = false;
 	private bool IsMasterInitGame = false; 
 	private bool OnCheckInitGame = false;
+	private bool flag_is_sync = false;
 	private int sendTimes = 0;
 
 	private Dictionary<string, GameObject> playerScorePanels;
@@ -98,14 +98,13 @@ public class GameManager : Photon.MonoBehaviour {
 		ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
 		h2.Add ("Kills", 0);
 		h2.Add ("Deaths", 0);
-		h2.Add ("isHoldFlag", false);
 		PhotonNetwork.player.SetCustomProperties (h2);
 
 		if (isTeamMode) {
 			if(PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none)
 				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
 			else{
-				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [1].position, SpawnPoints [0].rotation, 0);
+				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [1].position, SpawnPoints [1].rotation, 0);
 			}
 		}else{
 			InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
@@ -116,7 +115,7 @@ public class GameManager : Photon.MonoBehaviour {
 		if(!IsMasterInitGame && sendTimes <10){
 				sendTimes++;
 				InRoomChat.AddLine ("Sending sync game request..." + sendTimes);
-				yield return new WaitForSeconds (0.4f);
+				yield return new WaitForSeconds (0.5f);
 				SendSyncInitGameRequest ();
 				yield return StartCoroutine (LateStart ());
 		}else{
@@ -131,39 +130,25 @@ public class GameManager : Photon.MonoBehaviour {
 			RedScoreText.text = (PhotonNetwork.room.CustomProperties ["RedScore"]==null)? "0" : PhotonNetwork.room.CustomProperties ["RedScore"].ToString ();
 			bluescore = int.Parse (BlueScoreText.text);
 			redscore = int.Parse (RedScoreText.text);
-
-			if (GameInfo.GameMode.Contains ("Capture")) {
-				BlueFlag = GameObject.Find ("BlueFlag(Clone)");
-				RedFlag = GameObject.Find ("RedFlag(Clone)");
-
-				//when new player joins , put the flag to the right guy
-				if (PhotonNetwork.room.CustomProperties ["BlueFlagHolder"] != null) {
-					if(int.Parse(PhotonNetwork.room.CustomProperties ["BlueFlagHolder"].ToString()) != -1){
-						playerHoldFlag (int.Parse (PhotonNetwork.room.CustomProperties ["BlueFlagHolder"].ToString ()), 0);
-					}else{
-						BlueFlag.transform.position = StringToVector3 (PhotonNetwork.room.CustomProperties ["BlueFlagPos"].ToString ());
-					}
-				}
-				if (PhotonNetwork.room.CustomProperties ["RedFlagHolder"] != null) {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["RedFlagHolder"].ToString ()) != -1) {
-						playerHoldFlag (int.Parse (PhotonNetwork.room.CustomProperties ["RedFlagHolder"].ToString ()), 1);
-					}else{
-						RedFlag.transform.position = StringToVector3 (PhotonNetwork.room.CustomProperties ["RedFlagPos"].ToString ());
-					}
-				}
-			}
+							
 		}
 	}
 
 	void SendSyncInitGameRequest(){
 		if(bool.Parse(PhotonNetwork.room.CustomProperties["GameInit"].ToString()) ==true){
-			IsMasterInitGame = true;
+			if(GameInfo.GameMode.Contains("Capture") && !flag_is_sync){
+				BlueFlag = GameObject.Find ("BlueFlag(Clone)");
+				RedFlag = GameObject.Find ("RedFlag(Clone)");
+
+				photonView.RPC ("SyncFlagRequest", PhotonTargets.MasterClient);	
+			} else {
+				IsMasterInitGame = true;
+			}
 		}
 	}
 
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
-
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech;
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
@@ -229,10 +214,6 @@ public class GameManager : Photon.MonoBehaviour {
 		h.Add ("BlueScore", 0);
 		h.Add ("RedScore", 0);
 		h.Add ("GameInit", true);//this is set to false when master pressing "start"
-		h.Add ("BlueFlagHolder", -1);
-		h.Add ("RedFlagHolder", -1);
-		h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x,0,SpawnPoints [0].position.z));
-		h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x,0,SpawnPoints [1].position.z));
 
 		PhotonNetwork.room.SetCustomProperties (h);
 		SyncTime();
@@ -246,12 +227,12 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void InstantiateFlags(){
-		GameObject BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [0].position.x , 0 , SpawnPoints [0].position.z), Quaternion.Euler(Vector3.zero), 0, null);
-		GameObject RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [1].position.x , 0 , SpawnPoints [1].position.z), Quaternion.Euler(Vector3.zero), 0, null);
-
-
+		BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [0].position.x , 0 , SpawnPoints [0].position.z), Quaternion.Euler(Vector3.zero), 0, null);
+		RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [1].position.x , 0 , SpawnPoints [1].position.z), Quaternion.Euler(Vector3.zero), 0, null);
+		/*
 		BlueFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
 		RedFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
+		*/
 	}
 
 	void SyncTime() {
@@ -405,9 +386,6 @@ public class GameManager : Photon.MonoBehaviour {
 		playerScorePanels.Remove (player.NickName);
 		playerScores.Remove (player.NickName);
 
-		if(bool.Parse(player.CustomProperties["isHoldFlag"].ToString())){
-			print("yeah he hold it.");
-		}
 		//Remove datas from scoreboard
 		Text[] Ts = Scoreboard.GetComponentsInChildren<Text> ();
 		foreach(Text text in Ts){
@@ -420,37 +398,9 @@ public class GameManager : Photon.MonoBehaviour {
 		//check if he had the flag
 		if (GameInfo.GameMode.Contains ("Capture")) {
 			if(player.NickName == BlueFlagHolderName){
-					BlueFlagHolder = null;
-					BlueFlag.transform.parent = null;
-					BlueFlag.transform.position = new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z);
-					BlueFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-					BlueFlag.GetComponent<Flag> ().isGrounded = true;
-
-				if (PhotonNetwork.isMasterClient) {
-					BlueFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
-
-					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("BlueFlagHolder", -1);
-					h.Add ("BlueFlagPos", BlueFlag.transform.position);
-					PhotonNetwork.room.SetCustomProperties (h);
-				}
-
+				SetFlagProperties (0, null, new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z), null);
 			}else if(player.NickName == RedFlagHolderName){
-					RedFlagHolder = null;
-					RedFlag.transform.parent = null;
-					RedFlag.transform.position = new Vector3 (RedFlag.transform.position.x, 0, RedFlag.transform.position.z);
-					RedFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-					RedFlag.GetComponent<Flag> ().isGrounded = true;
-
-				if (PhotonNetwork.isMasterClient) {
-					RedFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
-
-					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("RedFlagHolder", -1);
-					h.Add ("RedFlagPos", RedFlag.transform.position);
-					PhotonNetwork.room.SetCustomProperties (h);
-				}
-
+				SetFlagProperties (1, null, new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z), null);
 			}
 		}
 	}
@@ -461,143 +411,79 @@ public class GameManager : Photon.MonoBehaviour {
 		//this is always received by master
 
 		PhotonPlayer player = PhotonView.Find (player_viewID).owner;
+
 		//check the current holder
 		if(flag == 0){
-			if(BlueFlagHolder!=null&&bool.Parse(BlueFlagHolder.CustomProperties["isHoldFlag"].ToString())){
+			if(BlueFlagHolder!=null){//someone has taken it first
 				return;
 			}else{
 				//RPC all to give this flag to the player
-				photonView.RPC("playerHoldFlag",PhotonTargets.All, player_viewID, flag);
+				photonView.RPC("SetFlag",PhotonTargets.All, player_viewID, flag, Vector3.zero);
 				Debug.Log (player + " has the blue flag.");
-
-				ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-				h.Add ("isHoldFlag", true);
-				player.SetCustomProperties (h);
 			}
 		}else{
-			if(RedFlagHolder!=null&&bool.Parse(RedFlagHolder.CustomProperties["isHoldFlag"].ToString())){
+			if(RedFlagHolder!=null){
 				return;
 			}else{
 				//RPC all to give this flag to the player
-				photonView.RPC("playerHoldFlag",PhotonTargets.All, player_viewID, flag);
+				photonView.RPC("SetFlag",PhotonTargets.All, player_viewID, flag, Vector3.zero);
 				Debug.Log (player + " has the red flag.");
-
-				ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-				h.Add ("isHoldFlag", true);
-				player.SetCustomProperties (h);
 			}
+		}
+	}
+	[PunRPC]
+	void SyncFlagRequest(){
+		//always received by master
+
+		if(BlueFlagHolder==null){
+			photonView.RPC ("SetFlag", PhotonTargets.All, -1, 0, BlueFlag.transform.position);
+		}else{
+			photonView.RPC ("SetFlag", PhotonTargets.All, (BlueFlag.transform.root).GetComponent<PhotonView>().viewID, 0, Vector3.zero);
+		}
+			
+		if(RedFlagHolder==null){
+			photonView.RPC ("SetFlag", PhotonTargets.All, -1, 1, RedFlag.transform.position);
+		}else{
+			photonView.RPC ("SetFlag", PhotonTargets.All, (RedFlag.transform.root).GetComponent<PhotonView>().viewID, 1, Vector3.zero);
 		}
 	}
 
 	[PunRPC]
-	void playerHoldFlag(int player_viewID, int flag){
-		if(player_viewID == -1){//put the flag to the base
+	void SetFlag(int player_viewID, int flag, Vector3 pos){
+		if (BlueFlag == null || RedFlag == null)
+			return;
+		flag_is_sync = true;
+		if(player_viewID == -1){//put the flag to the pos 
 			if(flag == 0){
-				if(PhotonNetwork.isMasterClient){
-					ExitGames.Client.Photon.Hashtable h;
-					if(BlueFlagHolder!=null){
-					h = new ExitGames.Client.Photon.Hashtable () ;
-					h.Add ("isHoldFlag", false);
-					BlueFlagHolder.SetCustomProperties (h);
-					}
+				SetFlagProperties (0, null, pos, null);
 
-					h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("BlueFlagHolder", -1);
-					h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z));
-					PhotonNetwork.room.SetCustomProperties (h);
+				if(BlueFlag.transform.position.x == SpawnPoints[0].position.x && BlueFlag.transform.position.z == SpawnPoints[0].position.z){
+					BlueFlag.GetComponent<Flag> ().isOnBase = true;
 				}
-				BlueFlag.transform.parent = null;
-				BlueFlag.transform.position = new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z);
-				BlueFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-				BlueFlag.GetComponent<Flag> ().isGrounded = true;
-				BlueFlagHolder = null;
-				BlueFlagHolderName = "";
-				BlueFlag.GetComponent<Flag> ().isOnBase = true;
 			}else{
-				if(PhotonNetwork.isMasterClient){
-					ExitGames.Client.Photon.Hashtable h;
+				SetFlagProperties (1, null, pos, null);
 
-					if(RedFlagHolder!=null){
-					h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("isHoldFlag", false);
-					RedFlagHolder.SetCustomProperties (h);
-					}
-
-					h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("RedFlagHolder", -1);
-					h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z));
-					PhotonNetwork.room.SetCustomProperties (h);
+				if(RedFlag.transform.position.x == SpawnPoints[1].position.x && RedFlag.transform.position.z == SpawnPoints[1].position.z){
+					RedFlag.GetComponent<Flag> ().isOnBase = true;
 				}
-				RedFlag.transform.parent = null;
-				RedFlag.transform.position = new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z);
-				RedFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-				RedFlag.GetComponent<Flag> ().isGrounded = true;
-				RedFlagHolder = null;
-				RedFlagHolderName = "";
-				RedFlag.GetComponent<Flag> ().isOnBase = true;
 			}
-		
+
 		}else{
 			PhotonView pv = PhotonView.Find (player_viewID);
 			if(flag == 0){
-				BlueFlag.GetComponent<Flag> ().isGrounded = false;
-				BlueFlag.transform.SetParent (pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"));
-				BlueFlag.transform.localPosition = Vector3.zero;
-				BlueFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
-				BlueFlagHolder = pv.owner;
-				BlueFlagHolderName = pv.owner.NickName;
+				SetFlagProperties (0, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
 				BlueFlag.GetComponent<Flag> ().isOnBase = false;
-
-				if (PhotonNetwork.isMasterClient) {
-					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("BlueFlagHolder", pv.viewID);
-					PhotonNetwork.room.SetCustomProperties (h);
-				}
 			}else{
-				RedFlag.GetComponent<Flag> ().isGrounded = false;
-				RedFlag.transform.SetParent (pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"));
-				RedFlag.transform.localPosition = Vector3.zero;
-				RedFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
-				RedFlagHolder = pv.owner;
-				RedFlagHolderName = pv.owner.NickName;
+				SetFlagProperties (1, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
 				RedFlag.GetComponent<Flag> ().isOnBase = false;
-
-				if (PhotonNetwork.isMasterClient) {
-					ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-					h.Add ("RedFlagHolder", pv.viewID);
-					PhotonNetwork.room.SetCustomProperties (h);
-				}
 			}
-
 		}
 	}
+
 	[PunRPC]
-	void DropFlag(int player_viewID, int flag, Vector3 pos){
-
-		if (PhotonNetwork.isMasterClient) {
-			PhotonView pv = PhotonView.Find (player_viewID);
-
-			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ("isHoldFlag", false);
-			pv.owner.SetCustomProperties (h);
-
-			h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ((flag == 0) ? "BlueFlagHolder" : "RedFlagHolder", -1);
-			if (flag == 0) {
-				h.Add ("BlueFlagPos", new Vector3 (SpawnPoints [0].position.x, 0, SpawnPoints [0].position.z));
-			}else{
-				h.Add ("RedFlagPos", new Vector3 (SpawnPoints [1].position.x, 0, SpawnPoints [1].position.z));
-			}
-			PhotonNetwork.room.SetCustomProperties (h);
-		}
-
+	void DropFlag(int player_viewID, int flag, Vector3 pos){//also call when disable player
 		if(flag == 0){
-			BlueFlag.transform.parent = null;
-			BlueFlag.transform.position = pos;
-			BlueFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-			BlueFlagHolder = null;
-			BlueFlagHolderName = "";
-			BlueFlag.GetComponent<Flag> ().isGrounded = true;
+			SetFlagProperties (0, null, pos, null);
 
 			//when disabling player , flag's renderer gets turn off
 			Renderer[] renderers = BlueFlag.GetComponentsInChildren<Renderer> ();
@@ -605,12 +491,7 @@ public class GameManager : Photon.MonoBehaviour {
 				renderer.enabled = true;
 			}
 		}else{
-			RedFlag.transform.parent = null;
-			RedFlag.transform.position = pos;
-			RedFlag.transform.rotation = Quaternion.Euler (Vector3.zero);
-			RedFlagHolder = null;
-			RedFlagHolderName = "";
-			RedFlag.GetComponent<Flag> ().isGrounded = true;
+			SetFlagProperties (1, null, pos, null);
 
 			Renderer[] renderers = RedFlag.GetComponentsInChildren<Renderer> ();
 			foreach(Renderer renderer in renderers){
@@ -628,20 +509,21 @@ public class GameManager : Photon.MonoBehaviour {
 
 		//check if no one is taking the another flag
 		if(pv.owner.GetTeam() == PunTeams.Team.blue || pv.owner.GetTeam() == PunTeams.Team.none){
-			if ( (BlueFlagHolder != null && bool.Parse (BlueFlagHolder.CustomProperties ["isHoldFlag"].ToString ())) || !bool.Parse (RedFlagHolder.CustomProperties ["isHoldFlag"].ToString ())) {
+			if (BlueFlagHolder!=null || RedFlagHolder==null) {
 				return;
 			}else{
 				photonView.RPC ("RegisterScore", PhotonTargets.All, player_viewID);
 
 				//send back the flag
-				photonView.RPC ("playerHoldFlag", PhotonTargets.All, -1, 1);
+				photonView.RPC ("SetFlag", PhotonTargets.All, -1, 1, new Vector3 (SpawnPoints[1].transform.position.x, 0, SpawnPoints[1].transform.position.z));
 			}
 		}else{//Redteam : blue flag holder
-			if (!bool.Parse (BlueFlagHolder.CustomProperties ["isHoldFlag"].ToString ()) || (RedFlagHolder != null && bool.Parse (RedFlagHolder.CustomProperties ["isHoldFlag"].ToString ()))) {
+			if (BlueFlagHolder==null || RedFlagHolder != null) {
 				return;
 			}else{
 				photonView.RPC ("RegisterScore", PhotonTargets.All, player_viewID);
-				photonView.RPC ("playerHoldFlag", PhotonTargets.All, -1, 0);
+
+				photonView.RPC ("SetFlag", PhotonTargets.All, -1, 0, new Vector3 (SpawnPoints [0].transform.position.x, 0, SpawnPoints [0].transform.position.z));
 			}
 		}
 
@@ -671,15 +553,50 @@ public class GameManager : Photon.MonoBehaviour {
 			}
 		}
 	}
+
+	void SetFlagProperties(int flag, Transform parent, Vector3 pos, PhotonPlayer holder){
+		if(flag==0){
+			if (parent != null) {
+				BlueFlag.transform.parent = parent;
+				BlueFlag.transform.localPosition = Vector3.zero;
+				BlueFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
+				BlueFlagHolder = holder;
+				BlueFlagHolderName = holder.NickName;
+				BlueFlag.GetComponent<Flag> ().isGrounded = false;
+			}else{
+				BlueFlag.transform.parent = null;
+				BlueFlag.transform.position = pos;
+				BlueFlag.transform.rotation = Quaternion.identity;
+				BlueFlagHolder = null;
+				BlueFlagHolderName = "";
+				BlueFlag.GetComponent<Flag> ().isGrounded = true;
+			}
+		}else{
+			if (parent != null) {
+				RedFlag.transform.parent = parent;
+				RedFlag.transform.localPosition = Vector3.zero;
+				RedFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
+				RedFlagHolder = holder;
+				RedFlagHolderName = holder.NickName;
+				RedFlag.GetComponent<Flag> ().isGrounded = false;
+			}else{
+				RedFlag.transform.parent = null;
+				RedFlag.transform.position = pos;
+				RedFlag.transform.rotation = Quaternion.identity;
+				RedFlagHolder = null;
+				RedFlagHolderName = "";
+				RedFlag.GetComponent<Flag> ().isGrounded = true;
+			}
+		}
+	}
+
+
 	public static Vector3 StringToVector3(string sVector){
 		if(sVector.StartsWith("(") && sVector.EndsWith(")")){
 			sVector = sVector.Substring(1,sVector.Length-2);
 		}
-
 		string[] sArray = sVector.Split(',');
-
 		Vector3 result = new Vector3(float.Parse(sArray[0]),float.Parse(sArray[1]),float.Parse(sArray[2]));
-
 		return result;
 	}
 }
