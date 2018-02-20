@@ -39,20 +39,24 @@ public class Flag : MonoBehaviour {
 
 		PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();
 		PhotonPlayer player = pv.owner;
-		print ("flag triggered by : " + player.NickName);
 		if (!pv.isMine)
 			return;
 
 		if(player.GetTeam() == team){
 			//do I hold the other team's flag ? 
-			if(bool.Parse(player.CustomProperties["isHoldFlag"].ToString())){
+			if (isOnBase && player == ((team == PunTeams.Team.red) ? gm.BlueFlagHolder : gm.RedFlagHolder)) {
 				//Register score
-				print ("send register score");
 				gmpv.RPC ("GetScoreRequest", PhotonTargets.MasterClient, pv.viewID);
 			}else if(!isOnBase){
 				//send back the flag
 				print ("send back the flag");
-				gmpv.RPC ("playerHoldFlag", PhotonTargets.All, -1, (team == PunTeams.Team.red) ? 1 : 0);
+				if(team == PunTeams.Team.red){
+					Vector3 pos = new Vector3 (gm.SpawnPoints [1].transform.position.x, 0, gm.SpawnPoints [1].transform.position.z);
+					gmpv.RPC ("SetFlag", PhotonTargets.All, -1, 1, pos);
+				}else{
+					Vector3 pos = new Vector3 (gm.SpawnPoints [0].transform.position.x, 0, gm.SpawnPoints [0].transform.position.z);
+					gmpv.RPC ("SetFlag", PhotonTargets.All, -1, 0, pos);
+				}
 			}
 
 		}else{
