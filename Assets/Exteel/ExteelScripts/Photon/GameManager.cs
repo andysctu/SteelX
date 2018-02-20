@@ -58,7 +58,6 @@ public class GameManager : Photon.MonoBehaviour {
 			GameInfo.MaxKills = 1;
 			GameInfo.MaxTime = 1;
 		}
-
 		//Load game info
 		GameInfo.Map = PhotonNetwork.room.CustomProperties ["Map"].ToString();
 		GameInfo.GameMode = PhotonNetwork.room.CustomProperties ["GameMode"].ToString();
