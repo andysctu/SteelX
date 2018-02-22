@@ -20,9 +20,6 @@ public class GameManager : Photon.MonoBehaviour {
 	public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
 	public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
-
-	//when a player disconnects , if he is the flag holder , we can only use this name check ( can't get customproperty from a disconnected player )
-	public string BlueFlagHolderName = "",RedFlagHolderName = "";
 	private GameObject RedFlag, BlueFlag;
 
 	public int MaxTimeInSeconds = 300;
@@ -98,6 +95,7 @@ public class GameManager : Photon.MonoBehaviour {
 		ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
 		h2.Add ("Kills", 0);
 		h2.Add ("Deaths", 0);
+		h2.Add ("weaponOffset", 0);
 		PhotonNetwork.player.SetCustomProperties (h2);
 
 		if (isTeamMode) {
@@ -196,6 +194,7 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 		playerScores.Add (name, score);
 
+		//scorepanel
 		if(isTeamMode){
 			if(teamID == 0){
 				ps.transform.SetParent(Panel_BlueTeam.transform);
@@ -229,10 +228,6 @@ public class GameManager : Photon.MonoBehaviour {
 	void InstantiateFlags(){
 		BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [0].position.x , 0 , SpawnPoints [0].position.z), Quaternion.Euler(Vector3.zero), 0, null);
 		RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [1].position.x , 0 , SpawnPoints [1].position.z), Quaternion.Euler(Vector3.zero), 0, null);
-		/*
-		BlueFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
-		RedFlag.GetComponent<PhotonView> ().TransferOwnership (PhotonNetwork.masterClient);
-		*/
 	}
 
 	void SyncTime() {
@@ -397,10 +392,11 @@ public class GameManager : Photon.MonoBehaviour {
 
 		//check if he had the flag
 		if (GameInfo.GameMode.Contains ("Capture")) {
-			if(player.NickName == BlueFlagHolderName){
+			if (player.NickName == ((BlueFlagHolder == null) ? "" : BlueFlagHolder.NickName)) {
+				print (player.NickName + " " + BlueFlagHolder.NickName);
 				SetFlagProperties (0, null, new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z), null);
-			}else if(player.NickName == RedFlagHolderName){
-				SetFlagProperties (1, null, new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z), null);
+			}else if(player.NickName == ((RedFlagHolder == null) ? "" : RedFlagHolder.NickName)){
+				SetFlagProperties (1, null, new Vector3 (RedFlag.transform.position.x, 0, RedFlag.transform.position.z), null);
 			}
 		}
 	}
@@ -526,7 +522,6 @@ public class GameManager : Photon.MonoBehaviour {
 				photonView.RPC ("SetFlag", PhotonTargets.All, -1, 0, new Vector3 (SpawnPoints [0].transform.position.x, 0, SpawnPoints [0].transform.position.z));
 			}
 		}
-
 	}
 
 	[PunRPC]
@@ -561,14 +556,12 @@ public class GameManager : Photon.MonoBehaviour {
 				BlueFlag.transform.localPosition = Vector3.zero;
 				BlueFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
 				BlueFlagHolder = holder;
-				BlueFlagHolderName = holder.NickName;
 				BlueFlag.GetComponent<Flag> ().isGrounded = false;
 			}else{
 				BlueFlag.transform.parent = null;
 				BlueFlag.transform.position = pos;
 				BlueFlag.transform.rotation = Quaternion.identity;
 				BlueFlagHolder = null;
-				BlueFlagHolderName = "";
 				BlueFlag.GetComponent<Flag> ().isGrounded = true;
 			}
 		}else{
@@ -577,26 +570,14 @@ public class GameManager : Photon.MonoBehaviour {
 				RedFlag.transform.localPosition = Vector3.zero;
 				RedFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
 				RedFlagHolder = holder;
-				RedFlagHolderName = holder.NickName;
 				RedFlag.GetComponent<Flag> ().isGrounded = false;
 			}else{
 				RedFlag.transform.parent = null;
 				RedFlag.transform.position = pos;
 				RedFlag.transform.rotation = Quaternion.identity;
 				RedFlagHolder = null;
-				RedFlagHolderName = "";
 				RedFlag.GetComponent<Flag> ().isGrounded = true;
 			}
 		}
-	}
-
-
-	public static Vector3 StringToVector3(string sVector){
-		if(sVector.StartsWith("(") && sVector.EndsWith(")")){
-			sVector = sVector.Substring(1,sVector.Length-2);
-		}
-		string[] sArray = sVector.Split(',');
-		Vector3 result = new Vector3(float.Parse(sArray[0]),float.Parse(sArray[1]),float.Parse(sArray[2]));
-		return result;
 	}
 }
