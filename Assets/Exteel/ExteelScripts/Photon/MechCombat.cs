@@ -13,6 +13,8 @@ public class MechCombat : Combat {
 	[SerializeField] Sounds Sounds;
 	[SerializeField] HeatBar HeatBar;
 	[SerializeField] InRoomChat InRoomChat;
+	PlayerInZone Healthpool;
+	HealthPoolBar HealthpoolBar;
 	// Boost variables
 	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
@@ -47,7 +49,7 @@ public class MechCombat : Combat {
 	private bool fireR = false;
 	private bool shootingR = false;
 	public int isRSlashPlaying = 0;
-
+	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 
 	// Transforms
@@ -73,6 +75,10 @@ public class MechCombat : Combat {
 	private Crosshair crosshair;
 	private SlashDetector slashDetector;
 
+	//Healthpool
+	private float InZonePreTime = 0f;
+	private const float CallHealDeltaTime = 2f;
+
 	void Start() {
 		findGameManager();
 		initMechStats();
@@ -85,6 +91,8 @@ public class MechCombat : Combat {
 		initCam ();
 		initSlashDetector();
 		UpdateCurWeaponType ();
+		SyncWeaponOffset ();
+		initHealthPool ();
 	}
 
 	void initMechStats() {
@@ -132,6 +140,15 @@ public class MechCombat : Combat {
 	void initCrosshair(){
 		crosshair = cam.GetComponent<Crosshair> ();
 	}
+
+	void initHealthPool(){
+		Healthpool = GameObject.FindObjectOfType<PlayerInZone> ();
+		HealthpoolBar = Healthpool.transform.root.GetComponent<HealthPoolBar> ();
+		if(photonView.isMine){
+			Healthpool.player_viewID = photonView.viewID;
+		}
+
+	}
 	float timeOfLastShot(int handPosition) {
 		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
 	}
@@ -151,8 +168,25 @@ public class MechCombat : Combat {
 	void initSlashDetector(){
 		slashDetector = GetComponentInChildren<SlashDetector> ();
 	}
+
+	void SyncWeaponOffset (){
+		//sync other player weapon offset
+		if (!photonView.isMine) {
+			if (photonView.owner.CustomProperties ["weaponOffset"] != null) {
+				weaponOffset = int.Parse (photonView.owner.CustomProperties ["weaponOffset"].ToString ());
+			}else//the player may just initialize
+				weaponOffset = 0;
+
+			weapons [(weaponOffset)].SetActive (true);
+			weapons [(weaponOffset + 1)].SetActive (true);
+			weapons [(weaponOffset + 2) % 4].SetActive (false);
+			weapons [(weaponOffset + 3) % 4].SetActive (false);
+		}
+	}
+
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
-		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR())  ;
+		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());
+		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
 		if( target != null){
 			Debug.Log("Hit tag: " + target.tag);
 			Debug.Log("Hit name: " + target.name);
@@ -161,7 +195,7 @@ public class MechCombat : Combat {
 				
 				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, false);
 
-				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, 0f);
+				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, (isSlowDown)? 0.4f : 0);
 				Debug.Log("Damage: " + damage + ", Range: " + range);
 
 				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
@@ -179,7 +213,6 @@ public class MechCombat : Combat {
 		}else{
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1, false);
 		}
-
 	}
 
 	void SlashDetect(int damage){
@@ -290,6 +323,27 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
+	void OnHeal(int viewID, int amount){
+		if(isDead){
+			return;
+		}
+
+		if(currentHP+amount >= MAX_HP){
+			currentHP = MAX_HP;
+		}else{
+			currentHP += amount;
+		}
+	}
+
+	public void SetCurrentHp(int amount){
+		currentHP = amount;
+	}
+
+	public int GetCurrentHP(){
+		return currentHP;
+	}
+
+	[PunRPC]
 	void OnLocked(string name){
 		if (PhotonNetwork.playerName != name)
 			return;
@@ -306,14 +360,11 @@ public class MechCombat : Combat {
 	void DisablePlayer() {
 		//check if he has the flag
 		if(PhotonNetwork.isMasterClient){
-			if(bool.Parse(photonView.owner.CustomProperties["isHoldFlag"].ToString())){
+			if (photonView.owner.NickName == ((gm.BlueFlagHolder == null)? "" : gm.BlueFlagHolder.NickName)) {
 				print ("that dead man has the flag.");
-				if(photonView.owner.GetTeam() == PunTeams.Team.blue || photonView.owner.GetTeam() == PunTeams.Team.none){
-					print ("call drop flag : " + 1);
-					gm.GetComponent<PhotonView>().RPC ("DropFlag", PhotonTargets.All, photonView.viewID, 1, transform.position);
-				}else{
-					gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 0, transform.position);
-				}
+				gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 0, transform.position);
+			}else if(photonView.owner.NickName == ((gm.RedFlagHolder == null)? "" : gm.RedFlagHolder.NickName)){
+				gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 1, transform.position);
 			}
 		}
 
@@ -395,6 +446,19 @@ public class MechCombat : Combat {
 		handleAnimation(RIGHT_HAND);
 	}
 
+	void FixedUpdate(){
+		if(photonView.isMine && Healthpool != null){
+			if(Healthpool.IsThePlayerInside() && HealthpoolBar.isAvailable){
+				if(Time.time - InZonePreTime >= CallHealDeltaTime){
+					photonView.RPC ("OnHeal", PhotonTargets.All, photonView.viewID, Healthpool.healAmount);
+					InZonePreTime = Time.time;
+				}
+			}else{
+				InZonePreTime = Time.time;
+			}
+		}
+	}
+
 	void handleCombat(int handPosition) {
 
 		switch(curWeapons[handPosition]){
@@ -455,6 +519,9 @@ public class MechCombat : Combat {
 				return;
 		}
 
+		if(isSwitchingWeapon){
+			return;
+		}
 		switch(curWeapons[handPosition]){
 
 		case (int)WeaponTypes.RANGED:
@@ -462,10 +529,10 @@ public class MechCombat : Combat {
 				setIsFiring (handPosition, true);
 				FireRaycast (cam.transform.TransformPoint (0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts [weaponOffset + handPosition].Damage, weaponScripts [weaponOffset + handPosition].Range, handPosition);
 				if (handPosition == 1) {
-					HeatBar.IncreaseHeatBarR (60); 
+					HeatBar.IncreaseHeatBarR (20); 
 					timeOfLastShotR = Time.time;
 				} else {
-					HeatBar.IncreaseHeatBarL (60);
+					HeatBar.IncreaseHeatBarL (20);
 					timeOfLastShotL = Time.time;
 				}
 			}
@@ -482,13 +549,13 @@ public class MechCombat : Combat {
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
-					HeatBar.IncreaseHeatBarL (45); //25:temp
+					HeatBar.IncreaseHeatBarL (25);
 					timeOfLastShotL = Time.time;
 					if (curWeapons[1]==(int)WeaponTypes.MELEE)
 						timeOfLastShotR = timeOfLastShotL;
 
 				} else if (handPosition == 1) {
-					HeatBar.IncreaseHeatBarR (45); //25:temp
+					HeatBar.IncreaseHeatBarR (25);
 					timeOfLastShotR = Time.time;
 					if (curWeapons[0]==(int)WeaponTypes.MELEE)
 						timeOfLastShotL = timeOfLastShotR;
@@ -502,7 +569,7 @@ public class MechCombat : Combat {
 		case (int)WeaponTypes.RCL:
 			if (Time.time - timeOfLastShotL >= 1/bm.weaponScripts[weaponOffset + handPosition].Rate) {
 				setIsFiring(handPosition, true);
-				HeatBar.IncreaseHeatBarL (25); //25:temp
+				HeatBar.IncreaseHeatBarL (25);
 
 				FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts[weaponOffset + handPosition].Damage, weaponScripts[weaponOffset + handPosition].Range , handPosition);
 				timeOfLastShotL = Time.time;
@@ -513,7 +580,7 @@ public class MechCombat : Combat {
 				if (!Input.GetKeyUp (KeyCode.Mouse0) || animator.GetBool ("BCNPose") == false || mechController.grounded == false)
 					return;
 				setIsFiring (handPosition, true);
-				HeatBar.IncreaseHeatBarL (75); //25:temp
+				HeatBar.IncreaseHeatBarL (45); 
 				//**Start Position
 				FireRaycast (cam.transform.TransformPoint (0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts [weaponOffset + handPosition].Damage, weaponScripts [weaponOffset + handPosition].Range, handPosition);
 				timeOfLastShotL = Time.time;
@@ -547,7 +614,7 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.BCN:
-				animator.SetBool ("ShootL", true);
+				animator.SetBool ("ShootBCN", true);
 				animator.SetBool ("BCNPose", false);
 			break;
 			}
@@ -555,7 +622,7 @@ public class MechCombat : Combat {
 			if(curWeapons[handPosition]==(int)WeaponTypes.RANGED || curWeapons[handPosition]==(int)WeaponTypes.RCL || curWeapons[handPosition] == (int)WeaponTypes.SHIELD)
 				animator.SetBool(animationStr, false);
 			else if(curWeapons[handPosition]==(int)WeaponTypes.BCN)
-				animator.SetBool ("ShootL", false);
+				animator.SetBool ("ShootBCN", false);
 		}
 	}
 
@@ -581,23 +648,22 @@ public class MechCombat : Combat {
 	// Switching weapons will switch from set 1 (weap 1 + 2) to set 2 (weap 3 + 4)
 	[PunRPC]
 	void CallSwitchWeapons() {
-		// Stop current attacks
-		setIsFiring(LEFT_HAND, false);
-		setIsFiring(RIGHT_HAND, false);
-
-		// Stop current animations
-		animator.SetBool(animationString(LEFT_HAND), false);
-		animator.SetBool(animationString(RIGHT_HAND), false);
-
 		//Play switch weapon animation
 
 		//decrease energy
 
 		Sounds.PlaySwitchWeapon ();
+		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
 	}
 
 	void SwitchWeaponsBegin(){
+		// Stop current attacks
+		setIsFiring(LEFT_HAND, false);
+		setIsFiring(RIGHT_HAND, false);
+		// Stop current animations
+		animator.SetBool(animationString(LEFT_HAND), false);
+		animator.SetBool(animationString(RIGHT_HAND), false);
 
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
@@ -610,15 +676,23 @@ public class MechCombat : Combat {
 		HeatBar.UpdateHeatBar (weaponOffset);
 		UpdateCurWeaponType ();
 
+		//update customproperty
+		if (photonView.isMine) {
+			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+			h.Add ("weaponOffset", weaponOffset);
+			photonView.owner.SetCustomProperties (h);
+		}
 		//check if using RCL => RCLIdle
 		if(usingRCLWeapon(0) || usingBCNWeapon(0)){
 			animator.SetBool ("UsingRCL", true);
 		}else{
 			animator.SetBool ("UsingRCL", false);
+			animator.SetBool ("BCNPose", false);
 		}
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset);
+		isSwitchingWeapon = false;
 	}
 
 	bool getIsFiring(int handPosition) {
@@ -721,6 +795,10 @@ public class MechCombat : Combat {
 
 	public float MaxVerticalBoostSpeed() {
 		return maxVerticalBoostSpeed;
+	}
+
+	public bool IsHpFull(){
+		return (currentHP >= MAX_HP);
 	}
 
 	public void SetSlashLToFalse(){

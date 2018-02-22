@@ -11,7 +11,7 @@ public class HealthPoolBar : Photon.MonoBehaviour {
 	GameObject player;
 	MechCombat mechCombat;
 	PhotonView player_pv;
-	private bool isAvailable = true;
+	public bool isAvailable = true;
 	private float LastInitRequestTime = 0;
 	private float trueAmount = 1;
 	// Use this for initialization
@@ -49,7 +49,7 @@ public class HealthPoolBar : Photon.MonoBehaviour {
 				}
 
 				if (bar.fillAmount > 0 && isAvailable) {
-					bar.fillAmount -= PlayerInZone.getPlayerCount () * 0.005f;
+					bar.fillAmount -= PlayerInZone.getNotFullHPPlayerCount () * 0.005f;
 				}
 
 				if(bar.fillAmount<=0){
@@ -59,31 +59,7 @@ public class HealthPoolBar : Photon.MonoBehaviour {
 				stream.SendNext (bar.fillAmount);
 				stream.SendNext (isAvailable);
 			}
-
-
-
-
-			/*
-			if(!isAvailable && PhotonNetwork.isMasterClient){
-				bar.fillAmount += 0.005f;
-				if(bar.fillAmount >= 1){
-					isAvailable = true;
-				}
-
-				stream.SendNext (bar.fillAmount);
-				stream.SendNext (isAvailable);
-
-			}
-
-			if (bar.fillAmount > 0 && isAvailable) {
-				bar.fillAmount -= PlayerInZone.getPlayerCount () * 0.005f;
-				stream.SendNext (bar.fillAmount);
-			}
-
-			if(bar.fillAmount<=0){
-				isAvailable = false;
-			}
-			stream.SendNext (isAvailable);*/
+				
 		}else{
 			bar.fillAmount = (float)stream.ReceiveNext ();
 			isAvailable = (bool)stream.ReceiveNext ();
