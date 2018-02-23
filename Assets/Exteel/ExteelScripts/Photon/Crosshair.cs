@@ -104,7 +104,7 @@ public class Crosshair : MonoBehaviour {
 					}
 				}
 				//print ("crosshair target : " + target);
-				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position).y*0.65f);
+				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position + new Vector3(0,5,0)).y*0.65f);
 				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f * 0.65f); // due to wide screen
 
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff *  CrosshairRadiusL) { 
@@ -147,7 +147,7 @@ public class Crosshair : MonoBehaviour {
 					}
 				}
 
-				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position).y * 0.65f);
+				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position+ new Vector3(0,5,0)).y * 0.65f);
 				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f * 0.65f);
 
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 

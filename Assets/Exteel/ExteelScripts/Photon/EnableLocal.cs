@@ -4,6 +4,8 @@ using System.Collections;
 
 public class EnableLocal : MonoBehaviour {
 
+	[SerializeField]Canvas canvas;//setting the screen space
+	[SerializeField]Camera cam;
 	// Use this for initialization
 	void Start () {
 
@@ -17,13 +19,16 @@ public class EnableLocal : MonoBehaviour {
 				c.enabled = true;
 		}
 
+		canvas = GameObject.FindObjectOfType<HUD> ().GetComponent<Canvas>();
+
 		GetComponentInChildren<MechCamera>().enabled = true;
 		GetComponentInChildren<AudioListener> ().enabled = true;
 //		GetComponent<NameTags>().enabled = true;
 //		GetComponentInChildren<AudioListener>().enabled = true;
 		// Enable crosshair
 		GetComponentInChildren<Crosshair>().enabled = true;
-
+		canvas.worldCamera = cam;
+		canvas.planeDistance = 1;
 		
 		GameObject crossHairImage = transform.Find("Camera/Canvas/CrosshairImage").gameObject;
 		crossHairImage.SetActive(true);

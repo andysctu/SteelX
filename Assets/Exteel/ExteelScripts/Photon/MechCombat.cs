@@ -29,7 +29,7 @@ public class MechCombat : Combat {
 	public Score score;
 
 	// Combat variables
-	private bool isDead;
+	public bool isDead;
 	private RaycastHit hit;
 	private Weapon[] weaponScripts;
 	private int weaponOffset = 0;
@@ -385,8 +385,9 @@ public class MechCombat : Combat {
 
 	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
 	[PunRPC]
-	void EnablePlayer() {
-		transform.position = gm.SpawnPoints[0].position;
+	void EnablePlayer(int respawnPoint) {
+		gm.CloseRespawnPanel();
+		transform.position = gm.SpawnPoints[respawnPoint].position;
 		gameObject.layer = 8;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
@@ -412,12 +413,26 @@ public class MechCombat : Combat {
 		// Respawn
 		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			isDead = false;
-			photonView.RPC("EnablePlayer", PhotonTargets.All, null);
+			photonView.RPC("EnablePlayer", PhotonTargets.All, gm.GetRespawnPoint());
 		}
 
 		// Drain HP bar gradually
 		if (isDead) {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
+
+			//set the default respawn point
+			if (GameManager.isTeamMode) {
+				if(PhotonNetwork.player.GetTeam() == PunTeams.Team.red)
+					gm.SetRespawnPoint (1);
+				else{
+					gm.SetRespawnPoint (0);
+				}
+			}else{
+				gm.SetRespawnPoint (0);
+			}
+
+			gm.ShowRespawnPanel ();
+
 			return;
 		}
 

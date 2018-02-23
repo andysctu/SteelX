@@ -23,8 +23,8 @@ public class HeatBar : MonoBehaviour {
 		weaponScripts = bm.weaponScripts;
 		circleL.fillAmount = 0.25f;
 		circleR.fillAmount = 0.25f;
-		rateL = 0.5f;
-		rateR = 0.5f;
+		rateL = 0.2f;
+		rateR = 0.2f;
 
 		for (int i = 0; i < 4; i++)
 			is_overheat [i] = false;

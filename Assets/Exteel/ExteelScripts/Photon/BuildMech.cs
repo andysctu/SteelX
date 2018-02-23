@@ -23,9 +23,11 @@ public class BuildMech : Photon.MonoBehaviour {
 	private int weaponOffset = 0;
 
 	private bool inHangar = false;
+	public bool onPanel = false;
+	public float coeff = 0.02f;
 
 	void Start () {
-		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby") inHangar = true;
+		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar) return;
 
@@ -145,6 +147,11 @@ public class BuildMech : Photon.MonoBehaviour {
 		for (int i = 0; i < weaponNames.Length; i++) {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
+
+			if(onPanel){
+				weapons [i].transform.localScale *= 22;
+			}
+
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts[i] = new APS403();

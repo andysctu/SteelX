@@ -9,7 +9,7 @@ public class GameManager : Photon.MonoBehaviour {
 	public float TimeLeft;
 
 	[SerializeField] GameObject PlayerPrefab;
-	[SerializeField] GameObject Scoreboard;
+	[SerializeField] GameObject Scoreboard,RespawnPanel;
 	[SerializeField] GameObject PlayerStat;
 	[SerializeField] Text Timer;
 	[SerializeField] bool Offline;
@@ -33,12 +33,14 @@ public class GameManager : Photon.MonoBehaviour {
 	private bool showboard = false;
 	private HUD hud;
 	private Camera cam;
+	private MechCombat mcbt;
 	private bool gameEnding = false;
 	private bool OnSyncTimeRequest = false;
 	private bool IsMasterInitGame = false; 
 	private bool OnCheckInitGame = false;
 	private bool flag_is_sync = false;
 	private int sendTimes = 0;
+	private int respawnPoint;
 
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
@@ -158,8 +160,11 @@ public class GameManager : Photon.MonoBehaviour {
 		Mech m = UserData.myData.Mech;
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 
-		cam = player.transform.Find("Camera").GetComponent<Camera>();
-		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+		if(player.GetComponent<PhotonView>().isMine){
+			cam = player.transform.Find("Camera").GetComponent<Camera>();
+			hud = GameObject.Find("Canvas").GetComponent<HUD>();
+			mcbt = player.GetComponent<MechCombat> ();
+		}
 	}
 		
 	public void RegisterPlayer(int viewID, int teamID) {
@@ -255,7 +260,11 @@ public class GameManager : Photon.MonoBehaviour {
 
 	void Update() {
 		if (!GameOver ()) {
-			Cursor.lockState = CursorLockMode.Locked;
+			if (!mcbt.isDead) {
+				Cursor.lockState = CursorLockMode.Locked;
+			}else{
+				Cursor.lockState = CursorLockMode.None;
+			}
 			Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		}
 			
@@ -451,6 +460,28 @@ public class GameManager : Photon.MonoBehaviour {
 		}else{
 			photonView.RPC ("SetFlag", PhotonTargets.All, (RedFlag.transform.root).GetComponent<PhotonView>().viewID, 1, Vector3.zero);
 		}
+	}
+
+	public void SetRespawnPoint(int num){
+		print ("set point : " + num);
+		respawnPoint = num;
+	}
+
+	public int GetRespawnPoint(){
+		return respawnPoint;
+	}
+
+	public void CallRespawn(){
+		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint);
+		mcbt.isDead = false;
+	}
+
+	public void ShowRespawnPanel(){
+		RespawnPanel.SetActive (true);
+	}
+
+	public void CloseRespawnPanel(){
+		RespawnPanel.SetActive (false);
 	}
 
 	[PunRPC]

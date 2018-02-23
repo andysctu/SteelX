@@ -4,5 +4,6 @@
 		Range = 80;
 		Rate = 1;
 		radius = 10f;
+		isSlowDown = true;
 	}
 }
