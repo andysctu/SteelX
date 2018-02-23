@@ -356,6 +356,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bar: {fileID: 114604911893054376}
   PlayerInZone: {fileID: 114793780546706930}
+  isAvailable: 1
 --- !u!114 &114396206769669570
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -410,7 +411,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2c5ad3c17fa0c41af62ba45688091d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSeperateTeam: 0
+  player_viewID: 0
+  healAmount: 200
 --- !u!198 &198689516889773782
 ParticleSystem:
   m_ObjectHideFlags: 1

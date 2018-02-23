@@ -1508,7 +1508,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.2, y: 9.12, z: -13.62}
+  m_LocalPosition: {x: -1.7, y: 9.12, z: -12.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22441258}
@@ -2932,6 +2932,7 @@ MonoBehaviour:
   Sounds: {fileID: 114000010976113334}
   HeatBar: {fileID: 114328570908798246}
   InRoomChat: {fileID: 0}
+  Healthpool: {fileID: 0}
   jumpPower: 100
   moveSpeed: 35
   boostSpeed: 60
@@ -2964,6 +2965,7 @@ MonoBehaviour:
   ySpeed: 0
   zSpeed: 0
   mechCombat: {fileID: 11445986}
+  cam: {fileID: 2087740}
   boost: 0
   grounded: 1
   jump: 0
@@ -3677,7 +3679,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 119610}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 13.62}
+  m_LocalPosition: {x: 0, y: 0, z: 12.18}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 22425284}
@@ -4778,6 +4780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pv: {fileID: 11416036}
+  mcbt: {fileID: 11445986}
 --- !u!114 &114065795201682758
 MonoBehaviour:
   m_ObjectHideFlags: 1

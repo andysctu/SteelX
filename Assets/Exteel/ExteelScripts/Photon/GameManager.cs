@@ -16,6 +16,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject Panel_RedTeam, Panel_BlueTeam;
 	[SerializeField] GameObject RedScore, BlueScore;
 	[SerializeField] Text RedScoreText, BlueScoreText;
+	GreyZone Zone;
 
 	public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
@@ -98,11 +99,18 @@ public class GameManager : Photon.MonoBehaviour {
 		h2.Add ("weaponOffset", 0);
 		PhotonNetwork.player.SetCustomProperties (h2);
 
+
 		if (isTeamMode) {
 			if(PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none)
 				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
 			else{
 				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [1].position, SpawnPoints [1].rotation, 0);
+			}
+			Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
+			if (PhotonNetwork.room.CustomProperties ["Zone"] != null) {
+				Zone.ChangeZone (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()));
+			} else {
+				Zone.ChangeZone (-1);
 			}
 		}else{
 			InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
@@ -128,12 +136,11 @@ public class GameManager : Photon.MonoBehaviour {
 			RedScoreText.text = (PhotonNetwork.room.CustomProperties ["RedScore"]==null)? "0" : PhotonNetwork.room.CustomProperties ["RedScore"].ToString ();
 			bluescore = int.Parse (BlueScoreText.text);
 			redscore = int.Parse (RedScoreText.text);
-							
 		}
 	}
 
 	void SendSyncInitGameRequest(){
-		if(bool.Parse(PhotonNetwork.room.CustomProperties["GameInit"].ToString()) ==true){
+		if(bool.Parse(PhotonNetwork.room.CustomProperties["GameInit"].ToString())){
 			if(GameInfo.GameMode.Contains("Capture") && !flag_is_sync){
 				BlueFlag = GameObject.Find ("BlueFlag(Clone)");
 				RedFlag = GameObject.Find ("RedFlag(Clone)");
@@ -213,7 +220,9 @@ public class GameManager : Photon.MonoBehaviour {
 		h.Add ("BlueScore", 0);
 		h.Add ("RedScore", 0);
 		h.Add ("GameInit", true);//this is set to false when master pressing "start"
-
+		if(isTeamMode){
+			h.Add ("Zone", -1);
+		}
 		PhotonNetwork.room.SetCustomProperties (h);
 		SyncTime();
 
