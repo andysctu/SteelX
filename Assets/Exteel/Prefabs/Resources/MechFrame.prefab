@@ -2903,6 +2903,8 @@ MonoBehaviour:
   weapons: []
   bulletPrefabs: []
   ShotSounds: []
+  onPanel: 0
+  coeff: 20
 --- !u!114 &11436158
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2914,6 +2916,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ca87e29fb2ce47b3be85f2139582c1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 0}
+  cam: {fileID: 2087740}
 --- !u!114 &11445986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2932,7 +2936,7 @@ MonoBehaviour:
   Sounds: {fileID: 114000010976113334}
   HeatBar: {fileID: 114328570908798246}
   InRoomChat: {fileID: 0}
-  Healthpool: {fileID: 0}
+  RespawnPanel: {fileID: 0}
   jumpPower: 100
   moveSpeed: 35
   boostSpeed: 60

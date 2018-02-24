@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 39f5f737b91ab44c394f94453adea0b7
-timeCreated: 1517663158
+timeCreated: 1519386466
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -9,6 +9,8 @@ TextureImporter:
     21300004: DEFENSE
     21300006: FINISH
     21300008: LOCKED
+    21300010: waiting_for_other
+    21300012: Spawn
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -148,6 +150,34 @@ TextureImporter:
         height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: waiting_for_other
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 479
+        width: 613
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Spawn
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 65
+        width: 88
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

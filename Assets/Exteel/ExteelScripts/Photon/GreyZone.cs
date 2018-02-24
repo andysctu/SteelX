@@ -13,10 +13,11 @@ public class GreyZone : MonoBehaviour {
 	[SerializeField]Image bar, mark;
 	[SerializeField]Sprite bar_blue, bar_blue1, bar_red, bar_red1; //bar_blue1 is the light color one
 	[SerializeField]Sprite mark_blue, mark_red;
+	[SerializeField]Sprite Panel_bluemark, Panel_redmark, Panel_greymark;
 	[SerializeField]Material base_none, base_blue, base_red;
 	[SerializeField]PlayerInZone PlayerInZone;
 	[SerializeField]GameObject barCanvas;
-
+	[SerializeField]Image Zone_mark_onPanel;
 	Camera cam;
 	GameObject player;
 	PhotonView pv;
@@ -119,6 +120,16 @@ public class GreyZone : MonoBehaviour {
 			mark.enabled = false;
 			switchBarColor = true;
 		}
+
+		//change mark
+		if(num==0){
+			Zone_mark_onPanel.sprite = Panel_bluemark;
+		}else if(num==1){
+			Zone_mark_onPanel.sprite = Panel_redmark;
+		}else{
+			Zone_mark_onPanel.sprite = Panel_greymark;
+		}
+
 
 		//for new player to load
 		if(PhotonNetwork.isMasterClient){

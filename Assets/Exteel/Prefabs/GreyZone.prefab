@@ -45,7 +45,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1506599132841048
 GameObject:
   m_ObjectHideFlags: 1
@@ -125,7 +125,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1863944041222542}
-  m_LocalRotation: {x: 0, y: 0.55788994, z: 0, w: 0.829915}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 149.6, y: 2.95, z: -13}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_Children:
@@ -133,7 +133,7 @@ Transform:
   - {fileID: 224728792500684328}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 67.82, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4420604406708144
 Transform:
   m_ObjectHideFlags: 1
@@ -341,12 +341,15 @@ MonoBehaviour:
   bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
+  Panel_bluemark: {fileID: 21300020, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
+  Panel_redmark: {fileID: 21300022, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
+  Panel_greymark: {fileID: 21300024, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
   base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
   base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
   PlayerInZone: {fileID: 114506459204127984}
-  pv: {fileID: 114653571072719912}
   barCanvas: {fileID: 1509932500196840}
+  Zone_mark_onPanel: {fileID: 0}
 --- !u!114 &114542571211062112
 MonoBehaviour:
   m_ObjectHideFlags: 1

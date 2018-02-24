@@ -16,6 +16,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject Panel_RedTeam, Panel_BlueTeam;
 	[SerializeField] GameObject RedScore, BlueScore;
 	[SerializeField] Text RedScoreText, BlueScoreText;
+	[SerializeField] GameObject MechFrame;
 	GreyZone Zone;
 
 	public InRoomChat InRoomChat;
@@ -120,10 +121,10 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 		
 	IEnumerator LateStart(){
-		if(!IsMasterInitGame && sendTimes <10){
+		if(!IsMasterInitGame && sendTimes <10){//sometime master connects very slow
 				sendTimes++;
 				InRoomChat.AddLine ("Sending sync game request..." + sendTimes);
-				yield return new WaitForSeconds (0.5f);
+				yield return new WaitForSeconds (1f);
 				SendSyncInitGameRequest ();
 				yield return StartCoroutine (LateStart ());
 		}else{
@@ -139,6 +140,7 @@ public class GameManager : Photon.MonoBehaviour {
 			bluescore = int.Parse (BlueScoreText.text);
 			redscore = int.Parse (RedScoreText.text);
 		}
+
 	}
 
 	void SendSyncInitGameRequest(){
@@ -262,8 +264,10 @@ public class GameManager : Photon.MonoBehaviour {
 		if (!GameOver ()) {
 			if (!mcbt.isDead) {
 				Cursor.lockState = CursorLockMode.Locked;
+				Cursor.visible = false;
 			}else{
 				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
 			}
 			Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		}
@@ -463,8 +467,36 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void SetRespawnPoint(int num){
-		print ("set point : " + num);
-		respawnPoint = num;
+		if(isTeamMode){//num 2 is the grey zone
+			if(num==2){
+				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == 1) {
+						respawnPoint = num;
+						print ("set point : " + num);
+					}
+				} else {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == 0) {
+						respawnPoint = num;
+						print ("set point : " + num);
+					}
+				}
+			}else{
+				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
+					if (num==1) {
+						respawnPoint = num;
+						print ("set point : " + num);
+					}
+				} else {
+					if (num==0) {
+						respawnPoint = num;
+						print ("set point : " + num);
+					}
+				}
+			}
+		} else {
+			respawnPoint = num;
+			print ("set point : " + num);
+		}
 	}
 
 	public int GetRespawnPoint(){
@@ -472,12 +504,14 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void CallRespawn(){
+		print ("call respawn with point : " + respawnPoint);
 		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint);
 		mcbt.isDead = false;
 	}
 
 	public void ShowRespawnPanel(){
 		RespawnPanel.SetActive (true);
+		MechFrame.GetComponent<BuildMech> ().CheckAnimatorState ();
 	}
 
 	public void CloseRespawnPanel(){

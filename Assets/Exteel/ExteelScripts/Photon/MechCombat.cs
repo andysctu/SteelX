@@ -51,7 +51,7 @@ public class MechCombat : Combat {
 	public int isRSlashPlaying = 0;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
-
+	private bool isDeadFirstCall = true;
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -421,19 +421,23 @@ public class MechCombat : Combat {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
 
 			//set the default respawn point
-			if (GameManager.isTeamMode) {
-				if(PhotonNetwork.player.GetTeam() == PunTeams.Team.red)
-					gm.SetRespawnPoint (1);
-				else{
+			if(isDeadFirstCall){
+				isDeadFirstCall = false;
+				if (GameManager.isTeamMode) {
+					if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red)
+						gm.SetRespawnPoint (1);
+					else {
+						gm.SetRespawnPoint (0);
+					}
+				} else {
 					gm.SetRespawnPoint (0);
 				}
-			}else{
-				gm.SetRespawnPoint (0);
-			}
 
-			gm.ShowRespawnPanel ();
-
+				gm.ShowRespawnPanel ();}
+			
 			return;
+		}else{
+			isDeadFirstCall = true;
 		}
 
 		// Fix head to always look ahead

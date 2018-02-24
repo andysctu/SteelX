@@ -17,6 +17,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	private Transform shoulderR;
 	private Transform[] hands;
 	private Animator animator;
+	[SerializeField]private GameObject RespawnPanel;
 
 	public Weapon[] weaponScripts;
 	private String[] curWeapons = new String[4];
@@ -24,7 +25,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	private bool inHangar = false;
 	public bool onPanel = false;
-	public float coeff = 0.02f;
 
 	void Start () {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
@@ -70,6 +70,11 @@ public class BuildMech : Photon.MonoBehaviour {
 		} else { // Register my name on all clients
 			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
 		}
+
+		if(onPanel){
+			gameObject.transform.SetParent (RespawnPanel.transform);
+		}
+
 	}
 		
 	[PunRPC]
@@ -148,8 +153,9 @@ public class BuildMech : Photon.MonoBehaviour {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
 
+
 			if(onPanel){
-				weapons [i].transform.localScale *= 22;
+				weapons [i].transform.localScale *=22f;
 			}
 
 			switch (weaponNames[i]) {
@@ -202,7 +208,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			case "BCN029": {
 					weaponScripts[i] = new BCN029();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
-					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(-90,180,0));
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(0,180,-20));
 					weapons [i].transform.SetParent (hands [1]);
 					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
@@ -413,8 +419,9 @@ public class BuildMech : Photon.MonoBehaviour {
 		curWeapons [2] = UserData.myData.Mech.Weapon2L;
 		curWeapons [3] = UserData.myData.Mech.Weapon2R;
 	}
-	private void CheckAnimatorState(){
-		if(curWeapons[weaponOffset] == "RCL034"){
+	public void CheckAnimatorState(){
+		print ("call check state : " + curWeapons [weaponOffset]);
+		if(curWeapons[weaponOffset] == "RCL034" || curWeapons[weaponOffset] == "BCN029"){
 			animator.SetBool ("UsingRCL", true);
 		}else{
 			animator.SetBool ("UsingRCL", false);
