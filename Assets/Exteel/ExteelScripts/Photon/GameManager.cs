@@ -159,7 +159,7 @@ public class GameManager : Photon.MonoBehaviour {
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
 		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
 		mechBuilder = player.GetComponent<BuildMech>();
-		Mech m = UserData.myData.Mech;
+		Mech m = UserData.myData.Mech[0]; // HERE !
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 
 		if(player.GetComponent<PhotonView>().isMine){
@@ -503,9 +503,10 @@ public class GameManager : Photon.MonoBehaviour {
 		return respawnPoint;
 	}
 
-	public void CallRespawn(){
+	public void CallRespawn(int mech_num){
 		print ("call respawn with point : " + respawnPoint);
-		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint);
+		CloseRespawnPanel();
+		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint, mech_num);
 		mcbt.isDead = false;
 	}
 

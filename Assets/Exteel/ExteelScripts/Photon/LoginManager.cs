@@ -71,7 +71,9 @@ public class LoginManager : MonoBehaviour {
 		}*/
 
 		// for debug
-		UserData.myData.Mech.PopulateParts();
+		for (int i = 0; i < 4; i++) {
+			UserData.myData.Mech [i].PopulateParts ();
+		}
 		PhotonNetwork.playerName = fields [0].text;
 		Application.LoadLevel (1);
 		//

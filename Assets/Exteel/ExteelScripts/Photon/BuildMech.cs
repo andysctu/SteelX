@@ -26,37 +26,20 @@ public class BuildMech : Photon.MonoBehaviour {
 	private bool inHangar = false;
 	public bool onPanel = false;
 
+	public int Mech_Num = 0;
+
 	void Start () {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar) return;
 
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Core)){
-			UserData.myData.Mech.Core = defaultParts [0];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Arms)){
-			UserData.myData.Mech.Arms = defaultParts [1];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Legs)){
-			UserData.myData.Mech.Legs = defaultParts [2];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Head)){
-			UserData.myData.Mech.Head = defaultParts [3];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Booster)){
-			UserData.myData.Mech.Booster = defaultParts [4];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1L)){
-			UserData.myData.Mech.Weapon1L = defaultParts [9];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon1R)){
-			UserData.myData.Mech.Weapon1R = defaultParts [9];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2L)){
-			UserData.myData.Mech.Weapon2L = defaultParts [12];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech.Weapon2R)){
-			UserData.myData.Mech.Weapon2R = defaultParts [12];
+		if (inHangar) {
+			SetMechDefaultIfEmpty (Mech_Num);
+		}else{
+			for(int i=0;i<4;i++){//if in game , init all 4 datas
+				print ("all mech datas have set default");
+				SetMechDefaultIfEmpty (i);
+			}
 		}
 		if(string.IsNullOrEmpty(UserData.myData.User.PilotName)){
 			UserData.myData.User.PilotName = "Default Pilot";
@@ -65,8 +48,15 @@ public class BuildMech : Photon.MonoBehaviour {
 		Data data = UserData.myData;
 		animator = GetComponentInChildren<Animator> ();
 		weaponOffset = 0;
+
 		if (inHangar) {
-			buildMech(data.Mech);
+			buildMech(data.Mech[Mech_Num]);
+
+			if (SceneManagerHelper.ActiveSceneName == "Hangar") {
+				if(Mech_Num!=0)
+					gameObject.SetActive (false);
+			}
+
 		} else { // Register my name on all clients
 			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
 		}
@@ -74,7 +64,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		if(onPanel){
 			gameObject.transform.SetParent (RespawnPanel.transform);
 		}
-
 	}
 		
 	[PunRPC]
@@ -153,7 +142,6 @@ public class BuildMech : Photon.MonoBehaviour {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
 
-
 			if(onPanel){
 				weapons [i].transform.localScale *=22f;
 			}
@@ -217,7 +205,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
 
 					if(i==weaponOffset){
-						if(animator!=null){
+						if(inHangar){
 							//In Hangar or Lobby
 							animator.SetBool ("UsingRCL",true);
 						}else {
@@ -256,7 +244,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
 
 					if(i==weaponOffset){
-						if(animator!=null){
+						if(inHangar){
 							//In Hangar or Lobby
 							animator.SetBool ("UsingRCL",true);
 						}else {
@@ -354,15 +342,15 @@ public class BuildMech : Photon.MonoBehaviour {
 				p = new Vector3 (hands [1].position.x, hands [1].position.y - 0.4f, hands [1].position.z);
 				weapons [weapPos].transform.SetParent (hands [1]); //but the parent is always set to right hand ( for nice look)
 				weaponScripts [weapPos] = new BCN029 ();
-				weapons [weapPos].transform.rotation = Quaternion.Euler (new Vector3 (-90, 180, 0));
+				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(0,180,-20));
 				weapons [weapPos].transform.position = new Vector3 (p.x, p.y , p.z);
 
 				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
 				weapons [weapPos + 1].SetActive (false);
 
-				if(weapPos>=2)UserData.myData.Mech.Weapon2R = "EmptyWeapon";
-				else UserData.myData.Mech.Weapon1R = "EmptyWeapon";
+				if(weapPos>=2)UserData.myData.Mech[Mech_Num].Weapon2R = "EmptyWeapon";
+				else UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
 
 				break;
 			}
@@ -379,8 +367,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
 				weapons [weapPos + 1].SetActive (false);
 
-				if(weapPos>=2)UserData.myData.Mech.Weapon2R = "EmptyWeapon";
-				else UserData.myData.Mech.Weapon1R = "EmptyWeapon";
+				if(weapPos>=2)UserData.myData.Mech[Mech_Num].Weapon2R = "EmptyWeapon";
+				else UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
 
 				break;
 			}
@@ -414,10 +402,10 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	private void UpdateCurWeapons(){
-		curWeapons [0] = UserData.myData.Mech.Weapon1L;
-		curWeapons [1] = UserData.myData.Mech.Weapon1R;
-		curWeapons [2] = UserData.myData.Mech.Weapon2L;
-		curWeapons [3] = UserData.myData.Mech.Weapon2R;
+		curWeapons [0] = UserData.myData.Mech[Mech_Num].Weapon1L;
+		curWeapons [1] = UserData.myData.Mech[Mech_Num].Weapon1R;
+		curWeapons [2] = UserData.myData.Mech[Mech_Num].Weapon2L;
+		curWeapons [3] = UserData.myData.Mech[Mech_Num].Weapon2R;
 	}
 	public void CheckAnimatorState(){
 		print ("call check state : " + curWeapons [weaponOffset]);
@@ -425,6 +413,36 @@ public class BuildMech : Photon.MonoBehaviour {
 			animator.SetBool ("UsingRCL", true);
 		}else{
 			animator.SetBool ("UsingRCL", false);
+		}
+	}
+
+	void SetMechDefaultIfEmpty(int offset){
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Core)){
+			UserData.myData.Mech[offset].Core = defaultParts [0];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Arms)){
+			UserData.myData.Mech[offset].Arms = defaultParts [1];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Legs)){
+			UserData.myData.Mech[offset].Legs = defaultParts [2];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Head)){
+			UserData.myData.Mech[offset].Head = defaultParts [3];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Booster)){
+			UserData.myData.Mech[offset].Booster = defaultParts [4];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon1L)){
+			UserData.myData.Mech[offset].Weapon1L = defaultParts [9];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon1R)){
+			UserData.myData.Mech[offset].Weapon1R = defaultParts [9];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon2L)){
+			UserData.myData.Mech[offset].Weapon2L = defaultParts [12];
+		}
+		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon2R)){
+			UserData.myData.Mech[offset].Weapon2R = defaultParts [12];
 		}
 	}
 }

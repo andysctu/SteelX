@@ -385,8 +385,14 @@ public class MechCombat : Combat {
 
 	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
 	[PunRPC]
-	void EnablePlayer(int respawnPoint) {
-		gm.CloseRespawnPanel();
+	void EnablePlayer(int respawnPoint, int mech_num) {
+		Mech m = UserData.myData.Mech[mech_num];
+		print ("call bm.build num: " + mech_num);
+		print ("with 1L : " + m.Weapon1L);
+		bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		initComponents ();
+		initCombatVariables ();
+
 		transform.position = gm.SpawnPoints[respawnPoint].position;
 		gameObject.layer = 8;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
@@ -413,7 +419,7 @@ public class MechCombat : Combat {
 		// Respawn
 		if (isDead && Input.GetKeyDown(KeyCode.R)) {
 			isDead = false;
-			photonView.RPC("EnablePlayer", PhotonTargets.All, gm.GetRespawnPoint());
+	//		photonView.RPC("EnablePlayer", PhotonTargets.All, gm.GetRespawnPoint());
 		}
 
 		// Drain HP bar gradually
@@ -686,6 +692,9 @@ public class MechCombat : Combat {
 
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
+			if(weapons[i]==null){
+				weapons [i] = bm.weapons [i];//bug
+			}
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
 

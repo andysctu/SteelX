@@ -10,29 +10,19 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject UIPart;
 	[SerializeField] GameObject UIWeap;
 	[SerializeField] GameObject Mech;
+	[SerializeField] GameObject[] Mech_Display = new GameObject[4];
 	[SerializeField] Sprite buttonTexture;
-
 	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012" };
 
 	private Transform[] contents;
 	private int activeTab;
-	private Dictionary<string, string> equipped;
+	//private Dictionary<string, string> equipped;
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
-
+	public int Mech_Num = 0;
 
 	// Use this for initialization
 	void Start () {
-		equipped = new Dictionary<string, string>();
-		Mech m = UserData.myData.Mech;
-		equipped.Add("head", m.Head);
-		equipped.Add("arms", m.Arms);
-		equipped.Add("legs", m.Legs);
-		equipped.Add("core", m.Core);
-		equipped.Add("weapon1l", m.Weapon1L);
-		equipped.Add("weapon1r", m.Weapon1R);
-		equipped.Add("weapon2l", m.Weapon2L);
-		equipped.Add("weapon2r", m.Weapon2R);
-		equipped.Add("booster", m.Booster);
+		Mech m = UserData.myData.Mech[Mech_Num];
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
 		foreach (Button b in buttons) {
@@ -174,13 +164,13 @@ public class HangarManager : MonoBehaviour {
 		int parent = -1;
 		switch (part [0]) {
 		case 'C':
-			parent = 0; equipped["core"] = part;
-			UserData.myData.Mech.Core = part;
+			parent = 0;
+			UserData.myData.Mech[Mech_Num].Core = part;
 			break;
 		case 'A':
 			if (part [1] == 'E') {
-				parent = 1; equipped["arms"] = part;
-				UserData.myData.Mech.Arms = part;
+				parent = 1;
+				UserData.myData.Mech[Mech_Num].Arms = part;
 			}
 			else {
 				parent = 5;
@@ -189,18 +179,17 @@ public class HangarManager : MonoBehaviour {
 		case 'L':
 			if (part [1] != 'M') {
 				parent = 2; 
-				equipped ["legs"] = part;
-				UserData.myData.Mech.Legs = part;
+				UserData.myData.Mech[Mech_Num].Legs = part;
 			} else
 				parent = 5;
 			break;
 		case 'H':
-			parent = 3; equipped["head"] = part;
-			UserData.myData.Mech.Head = part;
+			parent = 3;
+			UserData.myData.Mech[Mech_Num].Head = part;
 			break;
 		case 'P':
-			parent = 4; equipped["booster"] = part;
-			UserData.myData.Mech.Booster = part;
+			parent = 4;
+			UserData.myData.Mech[Mech_Num].Booster = part;
 			break;
 		default:
 			parent = 5;
@@ -212,26 +201,22 @@ public class HangarManager : MonoBehaviour {
 		} else {
 				switch (weap) {
 				case 0:
-					equipped ["weapon1l"] = part;
-					UserData.myData.Mech.Weapon1L = part;
+				UserData.myData.Mech[Mech_Num].Weapon1L = part;
 					break;
 				case 1: 
-					equipped ["weapon1r"] = part; 
-					UserData.myData.Mech.Weapon1R = part;
+				UserData.myData.Mech[Mech_Num].Weapon1R = part;
 					break;
 				case 2:
-					equipped ["weapon2l"] = part;
-					UserData.myData.Mech.Weapon2L = part;
+				UserData.myData.Mech[Mech_Num].Weapon2L = part;
 					break;
 				case 3:
-					equipped ["weapon2r"] = part; 
-					UserData.myData.Mech.Weapon2R = part;
+				UserData.myData.Mech[Mech_Num].Weapon2R = part;
 					break;
 				default:
 					Debug.Log ("Should not get here");
 					break;
 				}
-				GameObject.Find("MechFrame").GetComponent<BuildMech>().EquipWeapon(part, weap);
+			Mech_Display[Mech_Num].GetComponent<BuildMech>().EquipWeapon(part, weap);
 			}
 
 
@@ -243,5 +228,11 @@ public class HangarManager : MonoBehaviour {
 //			curSMR[i].enabled = true;
 //		}
 //		arm (new string[4]{parts[5],parts[6],parts[7],parts[8]});
+	public void ChangeDisplayMech(int Num){
+			
+		Mech_Display [Mech_Num].SetActive (false);
+		Mech_Display [Num].SetActive (true);
+		Mech_Num = Num;
 	}
+}
 
