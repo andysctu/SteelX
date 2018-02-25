@@ -337,20 +337,36 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	public void EquipWeapon(string weapon, int weapPos) {
 		//if previous is two-handed => also destroy left hand 
-		if(weapPos>=2){
-			if (curWeapons[2].Contains("RCL") || curWeapons[2].Contains ("MSR") || curWeapons[2].Contains ("LCN") || curWeapons[2].Contains("BCN") ) {
-				Destroy (weapons [2]);
+		if(weapPos==3){
+			if (curWeapons [2] != null) {
+				if (curWeapons [2].Contains ("RCL") || curWeapons [2].Contains ("MSR") || curWeapons [2].Contains ("LCN") || curWeapons [2].Contains ("BCN")) {
+					UserData.myData.Mech [Mech_Num].Weapon2L = null;
+					Destroy (weapons [2]);
+				}
 			}
-		}else{
-			if (curWeapons[0].Contains("RCL") || curWeapons[0].Contains ("MSR") || curWeapons[0].Contains ("LCN") || curWeapons[2].Contains("BCN")) {
-				Destroy (weapons [0]);
+		}else if(weapPos==1){
+			if (curWeapons [0] != null) {
+				if (curWeapons [0].Contains ("RCL") || curWeapons [0].Contains ("MSR") || curWeapons [0].Contains ("LCN") || curWeapons [0].Contains ("BCN")) {
+					UserData.myData.Mech [Mech_Num].Weapon1L = null;
+					Destroy (weapons [0]);
+				}
 			}
 		}
 		//if the new one is two-handed => also destroy right hand
 		if(weapon.Contains("RCL") || weapon.Contains ("MSR") || weapon.Contains ("LCN") || weapon.Contains("BCN")){
 			Destroy (weapons[weapPos + 1]);
+			if(weapPos==0){
+				UserData.myData.Mech [Mech_Num].Weapon1R = null;
+			}else if(weapPos==2){
+				UserData.myData.Mech [Mech_Num].Weapon2L = null;
+			}
 		}
-		Destroy(weapons[weapPos]);
+
+		//destroy the current weapon on the hand position
+		if(weapons[weapPos]!=null)
+			Destroy(weapons[weapPos]);
+
+
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
 		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, p, transform.rotation) as GameObject;
 		print ("load weapon :" + weapon);
