@@ -406,11 +406,13 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void EnablePlayer(int respawnPoint, int mech_num) {
 		Mech m = UserData.myData.Mech[mech_num];
-		print ("call bm.build num: " + mech_num);
-		print ("with 1L : " + m.Weapon1L);
+		bm.SetMechNum (mech_num);
 		bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		initComponents ();
 		initCombatVariables ();
+		UpdateCurWeaponType ();
+		weaponOffset = 0;
+		crosshair.updateCrosshair (0);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
 		gameObject.layer = 8;
@@ -447,6 +449,8 @@ public class MechCombat : Combat {
 
 			//set the default respawn point
 			if(isDeadFirstCall){
+				animator.SetBool ("BCNPose", false);
+				animator.SetBool ("UsingRCL", false);
 				isDeadFirstCall = false;
 				if (GameManager.isTeamMode) {
 					if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red)

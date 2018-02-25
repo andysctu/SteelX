@@ -60,8 +60,8 @@ public class Crosshair : MonoBehaviour {
 		}
 	}
 	public void updateCrosshair(int offset){
-		if (weaponScripts == null)
-			weaponScripts = bm.weaponScripts;//sometimes it's null, don't know why
+		weaponScripts = bm.weaponScripts;//sometimes it's null, don't know why
+
 		CrosshairRadiusL = weaponScripts [offset].radius;
 		CrosshairRadiusR = weaponScripts [offset+1].radius;
 		MaxDistanceL = weaponScripts [offset].Range;
