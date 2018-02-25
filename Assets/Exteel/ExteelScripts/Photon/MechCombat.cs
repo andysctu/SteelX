@@ -38,7 +38,7 @@ public class MechCombat : Combat {
 	private float timeOfLastShotL;
 	private float timeOfLastShotR;
 	private int[] curWeapons = new int[2];
-	enum WeaponTypes {RANGED, MELEE, SHIELD, RCL, BCN, EMPTY};
+	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 
 	public bool CanSlash = true;
 	// Left
@@ -78,6 +78,10 @@ public class MechCombat : Combat {
 	//Healthpool
 	private float InZonePreTime = 0f;
 	private const float CallHealDeltaTime = 2f;
+
+
+	//for Debug
+	public bool forceDead = false;
 
 	void Start() {
 		findGameManager();
@@ -190,25 +194,33 @@ public class MechCombat : Combat {
 		if( target != null){
 			Debug.Log("Hit tag: " + target.tag);
 			Debug.Log("Hit name: " + target.name);
-
-			if (target.tag == "Player" || target.tag == "Drone"){
+			if (curWeapons [handPosition] != (int)WeaponTypes.ENG) {
+				if (target.tag == "Player" || target.tag == "Drone") {
 				
-				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, false);
+					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
-				target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, (isSlowDown)? 0.4f : 0);
-				Debug.Log("Damage: " + damage + ", Range: " + range);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, (isSlowDown) ? 0.4f : 0);
+					Debug.Log ("Damage: " + damage + ", Range: " + range);
 
-				if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
-					hud.ShowText (cam, target.position, "Kill");
-				} else {
-					hud.ShowText (cam, target.position, "Hit");
+					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
+						hud.ShowText (cam, target.position, "Kill");
+					} else {
+						hud.ShowText (cam, target.position, "Hit");
+					}
+				} else if (target.tag == "Shield") {
+					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
+
+					target.transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage / 2, photonView.viewID, 0f);
+
+					hud.ShowText (cam, target.position, "Defense");
 				}
-			} else if (target.tag == "Shield") {
-				photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction , target.transform.root.GetComponent<PhotonView>().viewID, true);
+			}else{
+				photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
-				target.transform.root.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage/2, photonView.viewID, 0f);
+				target.GetComponent<PhotonView> ().RPC ("OnHeal", PhotonTargets.All, photonView.viewID, damage);
 
-				hud.ShowText(cam, target.position, "Defense");
+				hud.ShowText (cam, target.position, "Hit");
+
 			}
 		}else{
 			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1, false);
@@ -270,7 +282,14 @@ public class MechCombat : Combat {
 			RCLbullet.hud = hud;
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
-		} else {
+		} else if(usingENGWeapon(handPosition)){
+			GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+			bullet.transform.SetParent (Hands [handPosition]);
+			bullet.GetComponent<ElectricBolt> ().dir = direction;
+			if (Target != null) {
+				bullet.GetComponent<ElectricBolt> ().Target = Target.transform;
+			}
+		}else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
 			for (i = 0; i < bN; i++) {
 				GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
@@ -446,6 +465,12 @@ public class MechCombat : Combat {
 			isDeadFirstCall = true;
 		}
 
+		//For debug
+		if(forceDead){
+			forceDead = false;
+			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, 0f);
+		}
+
 		// Fix head to always look ahead
 		head.LookAt(head.position + transform.forward * 10);
 
@@ -489,7 +514,7 @@ public class MechCombat : Combat {
 		switch(curWeapons[handPosition]){
 
 		case (int)WeaponTypes.RANGED:
-			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SGN : has a delay before putting down hands
+			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SMG : has a delay before putting down hands
 				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
 					if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
 						setIsFiring (handPosition, false);
@@ -532,6 +557,14 @@ public class MechCombat : Combat {
 				}
 			}
 		break;
+		case (int)WeaponTypes.ENG:
+			if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
+				if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
+					setIsFiring (handPosition, false);
+				return;
+			}
+		break;
+		
 		default: //Empty weapon
 			return;
 		}
@@ -547,6 +580,7 @@ public class MechCombat : Combat {
 		if(isSwitchingWeapon){
 			return;
 		}
+
 		switch(curWeapons[handPosition]){
 
 		case (int)WeaponTypes.RANGED:
@@ -611,6 +645,20 @@ public class MechCombat : Combat {
 				timeOfLastShotL = Time.time;
 			}
 		break;
+		case (int)WeaponTypes.ENG:
+			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
+				setIsFiring (handPosition, true);
+				FireRaycast (cam.transform.TransformPoint (0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, bm.weaponScripts [weaponOffset + handPosition].Damage, weaponScripts [weaponOffset + handPosition].Range, handPosition);
+				if (handPosition == 1) {
+					HeatBar.IncreaseHeatBarR (20); 
+					timeOfLastShotR = Time.time;
+				} else {
+					HeatBar.IncreaseHeatBarL (20);
+					timeOfLastShotL = Time.time;
+				}
+			}
+		break;
+		
 		}
 	}
 
@@ -642,12 +690,25 @@ public class MechCombat : Combat {
 				animator.SetBool ("ShootBCN", true);
 				animator.SetBool ("BCNPose", false);
 			break;
+			case (int)WeaponTypes.ENG:
+				if(handPosition==0)
+					animator.SetBool ("ENGShootL", true);
+				else
+					animator.SetBool ("ENGShootR", true);
+				break;
 			}
 		} else {// melee is set to false by animation
-			if(curWeapons[handPosition]==(int)WeaponTypes.RANGED || curWeapons[handPosition]==(int)WeaponTypes.RCL || curWeapons[handPosition] == (int)WeaponTypes.SHIELD)
-				animator.SetBool(animationStr, false);
-			else if(curWeapons[handPosition]==(int)WeaponTypes.BCN)
+			if (curWeapons [handPosition] == (int)WeaponTypes.RANGED || curWeapons [handPosition] == (int)WeaponTypes.RCL || curWeapons [handPosition] == (int)WeaponTypes.SHIELD)
+				animator.SetBool (animationStr, false);
+			else if (curWeapons [handPosition] == (int)WeaponTypes.BCN)
 				animator.SetBool ("ShootBCN", false);
+			else if (curWeapons [handPosition] == (int)WeaponTypes.ENG) {
+				if(handPosition==0)
+					animator.SetBool ("ENGShootL", false);
+				else{
+					animator.SetBool ("ENGShootR", false);
+				}
+			}
 		}
 	}
 
@@ -747,6 +808,8 @@ public class MechCombat : Combat {
 				curWeapons [i] = (int)WeaponTypes.RCL;
 			else if (usingBCNWeapon (i))
 				curWeapons [i] = (int)WeaponTypes.BCN;
+			else if (usingENGWeapon (i))
+				curWeapons [i] = (int)WeaponTypes.ENG;
 			else if (usingEmptyWeapon (i))
 				curWeapons [i] = (int)WeaponTypes.EMPTY;
 		}
@@ -775,6 +838,10 @@ public class MechCombat : Combat {
 	bool usingEmptyWeapon(int handPosition){
 		return weaponScripts[weaponOffset+handPosition].Animation == "";
 	}
+
+	bool usingENGWeapon(int handPosition){
+		return weaponScripts[weaponOffset+handPosition].Animation == "ENGShoot";
+	} 
 
 	string animationString(int handPosition) {
 		if(!usingRCLWeapon(handPosition))

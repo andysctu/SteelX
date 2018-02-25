@@ -7,7 +7,8 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041" };
+																																								//eng : 13
 	private GameManager gm;
 	public GameObject[] weapons;
 	public GameObject[] bulletPrefabs;
@@ -119,11 +120,19 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		// Replace all
 		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
-		for (int i = 0; i < curSMR.Length; i++){
-			if (newSMR[i] == null) Debug.Log(i + " is null");
-			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-			curSMR[i].material = materials[i];
+
+		int j = 0;
+		for (int i = 0; i < curSMR.Length; i++) {
+			print (curSMR[i].ToString ());
+			if(CheckIsWeapon(curSMR[i].ToString())){
+				continue;
+			}
+
+			if (newSMR[j] == null) Debug.Log(i + " is null");
+			curSMR[i].sharedMesh = newSMR[j].sharedMesh;
+			curSMR[i].material = materials[j];
 			curSMR[i].enabled = true;
+			j++;
 		}
 			
 		// Replace weapons
@@ -197,6 +206,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts[i] = new BCN029();
 					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
 					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(0,180,-20));
+
+					print ("has rotated.");
 					weapons [i].transform.SetParent (hands [1]);
 					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
@@ -262,6 +273,20 @@ public class BuildMech : Photon.MonoBehaviour {
 					i++;//skip the right hand
 					break;
 				}
+			case "ENG041":{
+					weaponScripts[i] = new ENG041();
+					weapons[i].transform.Rotate(0f, 0f, 8f * ((i % 2) == 0 ? -1 : 1));
+					weapons[i].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
+					weapons [i].transform.SetParent (hands [i % 2]);
+
+					bulletPrefabs [i] = Resources.Load ("ENG041B") as GameObject;
+					ShotSounds [i] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
+
+					break;
+				}
+
+
+
 			}
 		}
 		UpdateCurWeapons ();
@@ -318,6 +343,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
 				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				bulletPrefabs [weapPos] = Resources.Load ("LMG012") as GameObject;
+				ShotSounds [weapPos] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
 				break;
 			}
 		case "SGN150": {
@@ -369,6 +396,18 @@ public class BuildMech : Photon.MonoBehaviour {
 
 				if(weapPos>=2)UserData.myData.Mech[Mech_Num].Weapon2R = "EmptyWeapon";
 				else UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
+
+				break;
+			}
+
+		case "ENG041":{
+				weaponScripts[weapPos] = new ENG041();
+				weapons[weapPos].transform.Rotate(0f, 0f, 8f * ((weapPos % 2) == 0 ? -1 : 1));
+				weapons[weapPos].transform.rotation = Quaternion.Euler(new Vector3(90,180,0));
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+
+				bulletPrefabs [weapPos] = Resources.Load ("ENG041B") as GameObject;
+				ShotSounds [weapPos] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
 
 				break;
 			}
@@ -433,16 +472,24 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech[offset].Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon1L)){
-			UserData.myData.Mech[offset].Weapon1L = defaultParts [9];
+			UserData.myData.Mech[offset].Weapon1L = defaultParts [13];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon1R)){
-			UserData.myData.Mech[offset].Weapon1R = defaultParts [9];
+			UserData.myData.Mech[offset].Weapon1R = defaultParts [13];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon2L)){
 			UserData.myData.Mech[offset].Weapon2L = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[offset].Weapon2R)){
 			UserData.myData.Mech[offset].Weapon2R = defaultParts [12];
+		}
+	}
+
+	bool CheckIsWeapon(string name){
+		if(name.Contains("BCN")||name.Contains("RCL")||name.Contains("ENG")||name.Contains("BRF")||name.Contains("SHL")||name.Contains("LMG")||name.Contains("APS")){
+			return true;
+		}else{
+			return false;
 		}
 	}
 }

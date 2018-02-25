@@ -59,6 +59,7 @@ public class MechController : Photon.MonoBehaviour {
 	void Start () {
 		initComponents();
 		initTransforms();
+		animator.SetBool ("Grounded", true);
 	}
 
 	void initComponents() {

@@ -11,6 +11,7 @@ public class Crosshair : MonoBehaviour {
 	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
 	private bool isOnLocked = false;
 	private bool isTeamMode;
+	private bool isTargetAllyL = false, isTargetAllyR = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
 	public const float CAM_DISTANCE_TO_MECH = 20f;
 
@@ -66,6 +67,17 @@ public class Crosshair : MonoBehaviour {
 		MaxDistanceL = weaponScripts [offset].Range;
 		MaxDistanceR = weaponScripts [offset+1].Range;
 
+		if(weaponScripts[offset].Animation == "ENGShoot"){
+			isTargetAllyL = true;
+		}else{
+			isTargetAllyL = false;
+		}
+		if(weaponScripts[offset+1].Animation == "ENGShoot"){
+			isTargetAllyR = true;
+		}else{
+			isTargetAllyR = false;
+		}
+
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 	
 		if(CrosshairRadiusL!=0){
@@ -98,10 +110,19 @@ public class Crosshair : MonoBehaviour {
 					if (target.collider.tag == "Drone"){
 						continue;
 					}
-						
-					if(targetpv.owner.GetTeam() == pv.owner.GetTeam()){
-						continue;
+					if (!isTargetAllyL) {
+						if (targetpv.owner.GetTeam () == pv.owner.GetTeam ()) {
+							continue;
+						}
+					}else{
+						if (targetpv.owner.GetTeam () != pv.owner.GetTeam ()) {
+							continue;
+						}
 					}
+				}else{
+					//if not team mode , ignore eng
+					if (isTargetAllyL)
+						continue;
 				}
 				//print ("crosshair target : " + target);
 				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position + new Vector3(0,5,0)).y*0.65f);
@@ -115,11 +136,9 @@ public class Crosshair : MonoBehaviour {
 						LockL = true;
 					}
 					foundTargetL = true;
-					SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
+					if(!isTargetAllyL)
+						SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
 
-					//for debug
-					//if(targetpv.owner.GetTeam()!=null)
-					//	print ("target team is : " + targetpv.owner.GetTeam ());
 					break;
 				} 
 			}
@@ -142,9 +161,19 @@ public class Crosshair : MonoBehaviour {
 					if (target.collider.tag == "Drone"){
 						continue;
 					}
-					if(targetpv.owner.GetTeam() == pv.owner.GetTeam()){
-						continue;
+					if (!isTargetAllyR) {
+						if (targetpv.owner.GetTeam () == pv.owner.GetTeam ()) {
+							continue;
+						}
+					}else{
+						if (targetpv.owner.GetTeam () != pv.owner.GetTeam ()) {
+							continue;
+						}
 					}
+				}else{
+					//if not team mode , ignore eng
+					if (isTargetAllyR)
+						continue;
 				}
 
 				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, camera.WorldToViewportPoint (target.transform.position+ new Vector3(0,5,0)).y * 0.65f);
@@ -158,7 +187,9 @@ public class Crosshair : MonoBehaviour {
 						LockR = true;
 					}
 					foundTargetR = true;
-					SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
+
+					if(!isTargetAllyR)
+						SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
 
 					break;
 				}
