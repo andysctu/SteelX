@@ -11,6 +11,8 @@ public class Combo : MonoBehaviour {
 	}
 	public void CallLSlashPlaying(int isPlaying){
 		mechCombat.SetLSlashPlaying(isPlaying);
+
+		mechCombat.ShowTrailL ((isPlaying==1)? true : false);
 	}
 
 	public void CallSlashLToFalse(){
@@ -19,6 +21,8 @@ public class Combo : MonoBehaviour {
 
 	public void CallRSlashPlaying(int isPlaying){
 		mechCombat.SetRSlashPlaying(isPlaying);
+
+		mechCombat.ShowTrailR ((isPlaying==1)? true : false);
 	}
 
 	public void CallSlashRToFalse(){
@@ -28,4 +32,5 @@ public class Combo : MonoBehaviour {
 	public void ReceiveNextSlash(int receive){
 		mechCombat.SetReceiveNextSlash (receive);
 	}
+
 }

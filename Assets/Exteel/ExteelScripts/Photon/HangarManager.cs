@@ -12,6 +12,7 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject Mech;
 	[SerializeField] GameObject[] Mech_Display = new GameObject[4];
 	[SerializeField] Sprite buttonTexture;
+	[SerializeField] Button displaybutton1,displaybutton2;
 	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" };
 
 	private Transform[] contents;
@@ -23,6 +24,9 @@ public class HangarManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Mech m = UserData.myData.Mech[Mech_Num];
+
+		displaybutton1.onClick.AddListener (() => Mech_Display[Mech_Num].GetComponent<BuildMech>().DisplayFirstWeapons());
+		displaybutton2.onClick.AddListener (() => Mech_Display[Mech_Num].GetComponent<BuildMech>().DisplaySecondWeapons());
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
 		foreach (Button b in buttons) {
@@ -90,7 +94,7 @@ public class HangarManager : MonoBehaviour {
 				for (int i = 0; i < btns.Length; i++) {
 
 					//if two-handed , skip 1 &3  temp.
-					if (p == "RCL034" && (i == 1 || i == 3)){
+					if ((p == "RCL034" || p == "BCN029") && (i == 1 || i == 3)) {
 						btns [i].image.enabled = false;
 						continue;
 					}
@@ -233,6 +237,11 @@ public class HangarManager : MonoBehaviour {
 		Mech_Display [Mech_Num].SetActive (false);
 		Mech_Display [Num].SetActive (true);
 		Mech_Num = Num;
+		displaybutton1.onClick.RemoveAllListeners ();
+		displaybutton2.onClick.RemoveAllListeners ();
+
+		displaybutton1.onClick.AddListener (() => Mech_Display[Num].GetComponent<BuildMech>().DisplayFirstWeapons());
+		displaybutton2.onClick.AddListener (() => Mech_Display[Num].GetComponent<BuildMech>().DisplaySecondWeapons());
 	}
 }
 

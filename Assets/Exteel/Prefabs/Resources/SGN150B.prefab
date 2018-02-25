@@ -69,8 +69,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cb4bb06fb89a42daa1f25bfbcd1a824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletImpact: {fileID: 1000011334909706, guid: 3e6b4450b1920c845840efc9052d5dc7,
+  bulletImpact: {fileID: 1220635714619724, guid: 522e94b3f5dea524f929473a2debe7b6,
     type: 2}
+  HUD: {fileID: 0}
+  cam: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  Terrain:
+    serializedVersion: 2
+    m_Bits: 10
+  ShooterName: 
+  isTargetShield: 0
+  isLMG: 0
 --- !u!198 &198000011201848454
 ParticleSystem:
   m_ObjectHideFlags: 1

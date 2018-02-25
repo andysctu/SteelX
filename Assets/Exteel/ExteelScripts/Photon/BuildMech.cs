@@ -137,6 +137,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		// Replace weapons
 		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
+
 	private void buildWeapons (string[] weaponNames) {
 		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
@@ -245,11 +246,11 @@ public class BuildMech : Photon.MonoBehaviour {
 					if(i==weaponOffset){
 						if(inHangar){
 							//In Hangar or Lobby
-							animator.SetBool ("UsingRCL",true);
+							animator.SetBool ("UsingBCN",true);
 						}else {
 							//In game
 							animator = GetComponentInChildren<MeleeCombat> ().GetComponent<Animator> ();
-							animator.SetBool ("UsingRCL",true);
+							animator.SetBool ("UsingBCN",true);
 						}
 					}
 					weaponScripts [i + 1] = new EmptyWeapon ();
@@ -262,7 +263,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					break;
 				}
 			case "SGN150": {
-					weaponScripts [i] = new LMG012 ();
+					weaponScripts [i] = new SGN150 ();
 					weapons [i].transform.rotation = hands [i % 2].rotation;
 					weapons [i].transform.SetParent (hands [i % 2]);
 					if(i % 2 == 0){
@@ -282,7 +283,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts [i] = new RCL034 ();
 					weapons [i].transform.rotation = hands [1].rotation;
 					weapons [i].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(90,90,-15));
+					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
 					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0f - weapons [i].transform.forward*0.1f;
 
 
@@ -361,10 +362,10 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (170, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos%2].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (170, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos%2].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -375,10 +376,10 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f  + weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f  + weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -389,10 +390,10 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f  - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f  - weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -402,23 +403,23 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f + weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f + weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
 		case "SGN150": {
-				weaponScripts [weapPos] = new LMG012 ();
+				weaponScripts [weapPos] = new SGN150 ();
 				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -428,10 +429,10 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -461,7 +462,7 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos] = new RCL034 ();
 				weapons [weapPos].transform.rotation = hands [1].rotation;
 				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(90,90,-15));
+				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
 				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward*0.1f;
 
 				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
@@ -480,10 +481,10 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -524,10 +525,16 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 	public void CheckAnimatorState(){
 		print ("call check state : " + curWeapons [weaponOffset]);
-		if(curWeapons[weaponOffset] == "RCL034" || curWeapons[weaponOffset] == "BCN029"){
+		if(curWeapons[weaponOffset] == "RCL034"){
 			animator.SetBool ("UsingRCL", true);
 		}else{
 			animator.SetBool ("UsingRCL", false);
+		}
+
+		if(curWeapons[weaponOffset] == "BCN029"){
+			animator.SetBool ("UsingBCN", true);
+		}else{
+			animator.SetBool ("UsingBCN", false);
 		}
 	}
 
