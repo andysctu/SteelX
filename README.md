@@ -1,3 +1,5 @@
+*Note that if you have problems in shooting , it's because the particle effects are in .gitignore
+
 Health pool & grey zone only work when there are more than one player ( due to SerializeView )
 
 the switching mech buttons in hangar work and the datas are save in game
