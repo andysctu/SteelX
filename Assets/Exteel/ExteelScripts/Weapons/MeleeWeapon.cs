@@ -1,3 +1,2 @@
 ﻿class MeleeWeapon : Weapon {
-
 }

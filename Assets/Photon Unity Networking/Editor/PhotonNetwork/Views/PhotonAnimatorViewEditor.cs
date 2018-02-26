@@ -49,7 +49,7 @@ public class PhotonAnimatorViewEditor : Editor
         }
 
         DrawWeightInspector();
-
+       
 		if (GetLayerCount() == 0)
         {
             GUILayout.BeginVertical(GUI.skin.box);
@@ -72,7 +72,7 @@ public class PhotonAnimatorViewEditor : Editor
         //GUILayout.Label( "m_SynchronizeParameters " + serializedObject.FindProperty( "m_SynchronizeParameters" ).arraySize );
     }
 
-
+	 
     private int GetLayerCount()
     {
 		#if UNITY_5 || UNITY_5_0 || UNITY_2017
@@ -227,7 +227,7 @@ public class PhotonAnimatorViewEditor : Editor
             #endif
         }
     }
-
+	
 
     private void DrawParameterInspector()
     {

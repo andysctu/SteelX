@@ -31,12 +31,29 @@ public class LobbyManager: MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
+	}
+
+	void OnJoinedLobby(){
+		//PhotonNetwork.LoadLevel (1);
+		print ("Joined Lobby");
 	}
 
 	public void CreateRoom() {
 		Debug.Log ("Creating room: " + RoomName.text);
-		PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() { MaxPlayers = 10 }, null);
+
+		//Default settings
+		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+		h.Add ("Map", "Simulation");
+		h.Add ("GameMode", "DeathMatch");
+		h.Add ("MaxKills", 1);
+		h.Add ("MaxTime", 5); 
+		//PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() {IsVisible = true, IsOpen = true, MaxPlayers = 10 },h, TypedLobby.Default);
+		RoomOptions ro = new RoomOptions(){IsVisible = true, IsOpen = true, MaxPlayers = 4 };
+		ro.CustomRoomProperties = h;
+		string[] str = { "Map", "GameMode"};
+		ro.CustomRoomPropertiesForLobby = str;
+		PhotonNetwork.CreateRoom(RoomName.text,ro,TypedLobby.Default);
 	}
 
 	public void OnPhotonCreateRoomFailed()
@@ -59,7 +76,7 @@ public class LobbyManager: MonoBehaviour {
 
 	public void OnCreatedRoom()
 	{
-		Debug.Log("OnCreatedRoom");
+		Debug.Log("Room created successfully.");
 		PhotonNetwork.LoadLevel("GameLobby");
 	}
 

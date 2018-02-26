@@ -19,6 +19,10 @@ public class HUDText : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (cam == null) return;
+
+		if(cam.WorldToScreenPoint (originalWorldPos).z<0)
+			gameObject.SetActive (false);
+		
 		transform.position = cam.WorldToScreenPoint(originalWorldPos) + new Vector3(0, height, 0);
 		height += 0.25f;
 	}

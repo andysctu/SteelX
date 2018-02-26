@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class JumpedState : MechStateMachineBehaviour {
 
-	private bool jumpReleased = false;
+	static public bool jumpReleased = false;
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
-		jumpReleased = false;
+		//jumpReleased = false;
+
+		if(animator.GetBool (onSlash_id)==true){ //after slashing in air , shut the boost down , otherwise it will go to boost jump
+			animator.SetBool (boost_id, false);
+			animator.SetBool (onSlash_id, false);
+			mctrl.SetCanVerticalBoost (false);
+			mctrl.Boost (false);
+		}
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -20,16 +27,23 @@ public class JumpedState : MechStateMachineBehaviour {
 		}
 			
 		if (cc.isGrounded) {
-			animator.SetBool("Jump", false);
-			animator.SetBool("Grounded", true);
+			animator.SetBool(jump_id, false);
+			animator.SetBool(grounded_id, true);
+			mctrl.grounded = true;
+			mctrl.SetCanVerticalBoost (false);
+			jumpReleased = false;
+			return;
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
-
-		if (jumpReleased && mctrl.CanVerticalBoost() && Input.GetKey(KeyCode.Space)) {
-			animator.SetBool("Boost", true);
+		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
+			jumpReleased = false;
+			animator.SetBool(boost_id, true);
+			mctrl.Boost (true);
+			Sounds.PlayBoostStart ();
+			Sounds.PlayBoostLoop ();
 		}
 	}
 

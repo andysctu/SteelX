@@ -554,7 +554,7 @@ public class PhotonEditor : EditorWindow
         {
             accountServiceType = "voice";
         }
-
+        
 
         AccountService client = new AccountService();
         client.RegisterByEmail(email, RegisterOrigin, accountServiceType); // this is the synchronous variant using the static RegisterOrigin. "result" is in the client

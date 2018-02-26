@@ -9,13 +9,13 @@ public class BuildLobbyMech : MonoBehaviour {
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "APS403", "SHL009", "SHL009", "SHL009"};
 
 	private GameObject[] weapons;
-
+	/*
 	void Start() {
 		// Get parts info
 		Data data = UserData.myData;
 		data.Mech.Core = data.Mech.Core == null ? defaultParts[0] : data.Mech.Core;
 		data.Mech.Arms = data.Mech.Arms == null ? defaultParts[1] : data.Mech.Arms;
-		data.Mech.Legs = data.Mech.Legs == null ? defaultParts[2] : data.Mech.Legs;
+		data.Mech.Legs = data.Mech.Legs == null ? defaultParts[2] : data.Mech.Legs;？////?/?///d5e
 		data.Mech.Head = data.Mech.Head == null ? defaultParts[3] : data.Mech.Head;
 		data.Mech.Booster = data.Mech.Booster == null ? defaultParts[4] : data.Mech.Booster;
 		data.Mech.Weapon1L = data.Mech.Weapon1L == null ? defaultParts[5] : data.Mech.Weapon1L;
@@ -91,4 +91,5 @@ public class BuildLobbyMech : MonoBehaviour {
 		weapons [2].SetActive (false);
 		weapons [3].SetActive (false);
 	}
+	*/
 }
