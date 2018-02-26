@@ -362,9 +362,9 @@ public class BuildMech : Photon.MonoBehaviour {
 		if(weapon.Contains("RCL") || weapon.Contains ("MSR") || weapon.Contains ("LCN") || weapon.Contains("BCN")){
 			Destroy (weapons[weapPos + 1]);
 			if(weapPos==0){
-				UserData.myData.Mech [Mech_Num].Weapon1R = null;
+				UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
 			}else if(weapPos==2){
-				UserData.myData.Mech [Mech_Num].Weapon2L = null;
+				UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
 			}
 		}
 
