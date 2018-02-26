@@ -7,10 +7,7 @@ public class HUD : MonoBehaviour {
 
 	[SerializeField] GameObject Placeholder;
 	[SerializeField] Sprite Hit, Kill, Defense, GameOver;
-
-	private GameObject canvas;
 	void Start() {
-		canvas = gameObject;
 		Cursor.lockState = CursorLockMode.Confined;
 		Cursor.visible = false;
 	}
@@ -18,7 +15,7 @@ public class HUD : MonoBehaviour {
 	public void ShowText(Camera cam, Vector3 p, string Text) {
 		GameObject i = Instantiate(Placeholder, cam.WorldToScreenPoint(p), Quaternion.identity) as GameObject;
 		if (Text != "GameOver") i.GetComponent<HUDText>().Set(cam, p);
-		i.transform.SetParent(canvas.transform);
+		i.transform.SetParent(gameObject.transform);
 		Image im = i.GetComponent<Image>();
 
 		switch (Text) {

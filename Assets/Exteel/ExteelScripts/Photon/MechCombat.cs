@@ -142,7 +142,8 @@ public class MechCombat : Combat {
 	}
 
 	void initHUD() {
-		initHealthAndFuelBars();
+		if(photonView.isMine)
+			initHealthAndFuelBars();
 	}
 
 	void initCam(){
