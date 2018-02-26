@@ -272,7 +272,7 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public bool CheckIsGrounded(){
-		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 1.8f + 0.1f, Terrain);
+		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 2.0f, Terrain);
 		//return CharacterController.isGrounded;
 	}
 
