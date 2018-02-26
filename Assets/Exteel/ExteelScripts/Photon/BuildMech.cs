@@ -326,6 +326,12 @@ public class BuildMech : Photon.MonoBehaviour {
 
 					break;
 				}
+			default:{
+					weaponScripts [i] = new EmptyWeapon ();
+					weapons [i].transform.SetParent (hands [i % 2]);
+			break;
+			}
+
 			}
 		}
 
@@ -340,14 +346,14 @@ public class BuildMech : Photon.MonoBehaviour {
 		if(weapPos==3){
 			if (curWeapons [2] != null) {
 				if (curWeapons [2].Contains ("RCL") || curWeapons [2].Contains ("MSR") || curWeapons [2].Contains ("LCN") || curWeapons [2].Contains ("BCN")) {
-					UserData.myData.Mech [Mech_Num].Weapon2L = null;
+					UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
 					Destroy (weapons [2]);
 				}
 			}
 		}else if(weapPos==1){
 			if (curWeapons [0] != null) {
 				if (curWeapons [0].Contains ("RCL") || curWeapons [0].Contains ("MSR") || curWeapons [0].Contains ("LCN") || curWeapons [0].Contains ("BCN")) {
-					UserData.myData.Mech [Mech_Num].Weapon1L = null;
+					UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
 					Destroy (weapons [0]);
 				}
 			}
