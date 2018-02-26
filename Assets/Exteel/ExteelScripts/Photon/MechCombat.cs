@@ -125,7 +125,7 @@ public class MechCombat : Combat {
 
 	void initGameObjects() {
 		InRoomChat = GameObject.Find ("InRoomChat") .GetComponent<InRoomChat>();
-		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+		hud = GameObject.FindObjectOfType<HUD> ();
 	}
 
 	void initComponents() {
@@ -218,11 +218,15 @@ public class MechCombat : Combat {
 				} else if (target.tag == "Shield") {
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
 
-					target.transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage / 2, photonView.viewID, 0f);
+					//check what hand is it
+					int hand = (target.transform.parent.name [target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+
+
+					target.transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, hand);
 
 					hud.ShowText (cam, target.position, "Defense");
 				}
-			}else{
+			}else{//ENG
 				photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
 				target.GetComponent<PhotonView> ().RPC ("OnHeal", PhotonTargets.All, photonView.viewID, damage);
@@ -346,6 +350,37 @@ public class MechCombat : Combat {
 
 			string shooter = PhotonView.Find (shooter_viewID).owner.NickName;
 			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
+		}
+	}
+
+	[PunRPC]
+	void ShieldOnHit(int d, int shooter_viewID, int hand ){
+		if (isDead) {
+			return;
+		}
+
+		PhotonView pv = PhotonView.Find (shooter_viewID);
+		currentHP -= d;
+		Debug.Log ("HP: " + currentHP);
+		if (currentHP <= 0) {
+			isDead = true;
+			// UI for shooter
+
+			DisablePlayer();
+
+			// Update scoreboard
+			gm.RegisterKill(shooter_viewID, photonView.viewID);
+
+			string shooter = pv.owner.NickName;
+			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
+		}
+
+		if(photonView.isMine){//heat
+			if(hand==0){
+				HeatBar.IncreaseHeatBarL (30);
+			} else {
+				HeatBar.IncreaseHeatBarR (30);
+			}
 		}
 	}
 

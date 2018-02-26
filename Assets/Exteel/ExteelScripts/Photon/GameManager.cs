@@ -33,7 +33,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	private bool showboard = false;
 	private HUD hud;
-	private Camera cam;
+	public Camera cam;
 	private MechCombat mcbt;
 	private bool gameEnding = false;
 	private bool OnSyncTimeRequest = false;

@@ -10,13 +10,12 @@ public class HUD : MonoBehaviour {
 
 	private GameObject canvas;
 	void Start() {
-		canvas = GameObject.Find("Canvas");
+		canvas = gameObject;
 		Cursor.lockState = CursorLockMode.Confined;
 		Cursor.visible = false;
 	}
 
 	public void ShowText(Camera cam, Vector3 p, string Text) {
-
 		GameObject i = Instantiate(Placeholder, cam.WorldToScreenPoint(p), Quaternion.identity) as GameObject;
 		if (Text != "GameOver") i.GetComponent<HUDText>().Set(cam, p);
 		i.transform.SetParent(canvas.transform);
