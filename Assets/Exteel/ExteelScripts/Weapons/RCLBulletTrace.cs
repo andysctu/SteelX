@@ -33,7 +33,7 @@ public class RCLBulletTrace : MonoBehaviour {
 	}
 
 	void OnParticleCollision(GameObject other){
-		if (isCollided == true || other == Shooter)
+		if (isCollided || other == Shooter)
 			return;
 
 		if(GameManager.isTeamMode){

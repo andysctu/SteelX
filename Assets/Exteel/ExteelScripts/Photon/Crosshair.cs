@@ -131,7 +131,7 @@ public class Crosshair : MonoBehaviour {
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff *  CrosshairRadiusL) { 
 					crosshairImage.SetCurrentLImage (1);
 					targetL = target.transform;
-					if (LockL == false) {
+					if (!LockL) {
 						Sounds.PlayLock ();
 						LockL = true;
 					}
@@ -142,7 +142,7 @@ public class Crosshair : MonoBehaviour {
 					break;
 				} 
 			}
-			if (foundTargetL == false) {
+			if (!foundTargetL) {
 				crosshairImage.SetCurrentLImage (0);
 				targetL = null;
 				LockL = false;
@@ -182,7 +182,7 @@ public class Crosshair : MonoBehaviour {
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
-					if (LockR == false) {
+					if (!LockR) {
 						Sounds.PlayLock ();
 						LockR = true;
 					}
@@ -194,7 +194,7 @@ public class Crosshair : MonoBehaviour {
 					break;
 				}
 			}
-			if (foundTargetR == false) {
+			if (!foundTargetR) {
 				crosshairImage.SetCurrentRImage (0);
 				targetR = null;
 				LockR = false;
@@ -225,7 +225,7 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	public void ShowLocked(){
-		if(isOnLocked==true){
+		if(isOnLocked){
 			StopCoroutine (coroutine);
 			coroutine = StartCoroutine ("HideLockedAfterTime",LockedMsgDuration);
 		}else{

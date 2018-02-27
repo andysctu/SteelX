@@ -25,7 +25,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			mctrl.Boost (false);
 			return;
 		} else {
-			if (mctrl.grounded == true)
+			if (mctrl.grounded)
 				mctrl.Boost (true);
 		}
 			

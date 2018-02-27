@@ -36,7 +36,7 @@ public class HeatBar : MonoBehaviour {
 			curValue[i] -= ((i%2)==0)? rateL : rateR;
 
 			if (curValue [i] <= 0){
-				if(is_overheat[i]==true){ // if previous is overheated => change color
+				if(is_overheat[i]){ // if previous is overheated => change color
 					if(i==weaponOffset){
 						barL.color = new Color32 (255, 255, 0, 200);
 					}else if(i==weaponOffset+1){
@@ -56,7 +56,7 @@ public class HeatBar : MonoBehaviour {
 	public void UpdateHeatBar(int offset){
 		weaponOffset = offset;
 
-		if(bm.weaponScripts[offset].isTwoHanded == true){
+		if(bm.weaponScripts[offset].isTwoHanded){
 			barL.enabled = true;
 			circleL.enabled = true;
 			barR.enabled = false;

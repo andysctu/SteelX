@@ -23,6 +23,7 @@ public class GameManager : Photon.MonoBehaviour {
 	public Transform[] SpawnPoints;
 	public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 	private GameObject RedFlag, BlueFlag;
+	private GameObject player;
 
 	public int MaxTimeInSeconds = 300;
 	public int MaxKills = 2;
@@ -42,6 +43,9 @@ public class GameManager : Photon.MonoBehaviour {
 	private bool flag_is_sync = false;
 	private int sendTimes = 0;
 	private int respawnPoint;
+
+	//debug
+	public bool callEndGame = false;
 
 	private Dictionary<string, GameObject> playerScorePanels;
 	public Dictionary<string, Score> playerScores;
@@ -157,7 +161,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
-		GameObject player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
+		player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech[0]; // HERE !
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
@@ -261,7 +265,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void Update() {
-		if (!GameOver ()) {
+		if (!GameOver () && !gameEnding) {
 			if (!mcbt.isDead) {
 				Cursor.lockState = CursorLockMode.Locked;
 				Cursor.visible = false;
@@ -271,7 +275,8 @@ public class GameManager : Photon.MonoBehaviour {
 			}
 			Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		}
-			
+	
+
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
@@ -292,11 +297,9 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 
 		if (GameOver() && !gameEnding) {
-			gameEnding = true;
-			Cursor.lockState = CursorLockMode.None;
-			hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");
-			Scoreboard.SetActive(true);
-			StartCoroutine(ExecuteAfterTime(3));
+			if(PhotonNetwork.isMasterClient){
+				photonView.RPC ("EndGame", PhotonTargets.All);
+			}
 		}
 	}
 
@@ -312,11 +315,18 @@ public class GameManager : Photon.MonoBehaviour {
 	{
 		yield return new WaitForSeconds(time);
 
-		//Final stage
+		//destroy photon objects
+		if(PhotonNetwork.isMasterClient){//master destroy scene objects
+			if(GameInfo.GameMode.Contains("Capture")){
+				PhotonNetwork.Destroy (BlueFlag);
+				PhotonNetwork.Destroy (RedFlag);
+			}
+			PhotonNetwork.LoadLevel("GameLobby");
+		}
+		DestroyMech ();
 
 		// Code to execute after the delay
 		Cursor.visible = true;
-		PhotonNetwork.LoadLevel("GameLobby");
 	}
 
 	public void RegisterKill(int shooter_viewID, int victim_viewID) {
@@ -384,7 +394,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public bool GameOver() {
 		if (storedStartTime != 0 && storedDuration != 0) {
-			if (currentTimer <= 0) {
+			if (currentTimer <= 0 || callEndGame) {
 				return true;
 			} else {
 				return CurrentMaxKills >= MaxKills;
@@ -654,5 +664,19 @@ public class GameManager : Photon.MonoBehaviour {
 				RedFlag.GetComponent<Flag> ().isGrounded = true;
 			}
 		}
+	}
+
+	[PunRPC]
+	void EndGame(){
+		gameEnding = true;
+		Cursor.lockState = CursorLockMode.None;
+		hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");//every player's hud on Gamemanager is his
+		Scoreboard.SetActive(true);
+		StartCoroutine(ExecuteAfterTime(3));
+	}
+
+	void DestroyMech(){
+		print ("called destroy");
+		PhotonNetwork.Destroy (player);
 	}
 }

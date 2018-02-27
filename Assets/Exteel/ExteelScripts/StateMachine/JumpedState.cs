@@ -12,7 +12,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled) return;
 		//jumpReleased = false;
 
-		if(animator.GetBool (onSlash_id)==true){ //after slashing in air , shut the boost down , otherwise it will go to boost jump
+		if(animator.GetBool (onSlash_id)){ //after slashing in air , shut the boost down , otherwise it will go to boost jump
 			animator.SetBool (boost_id, false);
 			animator.SetBool (onSlash_id, false);
 			mctrl.SetCanVerticalBoost (false);

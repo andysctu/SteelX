@@ -87,7 +87,7 @@ public class MechController : Photon.MonoBehaviour {
 		// slash z-offset
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
 			if(SlashMovingSpeed >0.1f){
-				if(grounded == true){
+				if(grounded){
 					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky
 				}
 				CharacterController.Move(Slashdir * SlashMovingSpeed);
@@ -162,13 +162,13 @@ public class MechController : Photon.MonoBehaviour {
 			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
 			isBoostFlameOn = boost;
 		}
-		if (boost == true ) {
-			if(grounded == true){
+		if (boost) {
+			if(grounded){
 				xSpeed = mechCombat.BoostSpeed ();
 				zSpeed = mechCombat.BoostSpeed ();
 			}else{//boost in air
-				xSpeed = mechCombat.BoostSpeed ()*0.3f;
-				zSpeed = mechCombat.BoostSpeed ()*0.3f;
+				xSpeed = mechCombat.BoostSpeed ()*0.4f;
+				zSpeed = mechCombat.BoostSpeed ()*0.4f;
 			}
 		}
 	}

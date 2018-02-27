@@ -35,7 +35,7 @@ public class BulletTrace : MonoBehaviour {
 	}
 
 	void Update(){
-		if(isfollow==false){
+		if(!isfollow){
 			return;
 		}else{
 			if(!hasSlowdown){
@@ -59,7 +59,7 @@ public class BulletTrace : MonoBehaviour {
 				isCollided = true;
 				GetComponent<ParticleSystem> ().Stop ();
 
-				if(isLMG==true&&PhotonNetwork.playerName == ShooterName){
+				if(isLMG&&PhotonNetwork.playerName == ShooterName){
 					if (!isTargetShield)
 						HUD.ShowText (cam, other.transform.position + new Vector3 (0, 5f, 0), "Hit");
 					else {

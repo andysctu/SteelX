@@ -256,7 +256,7 @@ public class MechCombat : Combat {
 
 	void SlashDetect(int damage){
 
-		if(mechController.grounded == false){
+		if(!mechController.grounded){
 			mechController.Boost (true); // jump slash boost effect
 			mechController.SetSlashMoving(cam.transform.forward,8f);
 		}
@@ -563,7 +563,7 @@ public class MechCombat : Combat {
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
-		if (mechController.CheckIsGrounded()== true) { // CanSlash is to avoid multiple slashs in air
+		if (mechController.CheckIsGrounded()) { // CanSlash is to avoid multiple slashs in air
 			CanSlash = true;
 		}
 
@@ -678,7 +678,7 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.MELEE:
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (receiveNextSlash == false || CanSlash == false)
+				if (!receiveNextSlash|| !CanSlash)
 					return;
 
 				if (curWeapons [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
@@ -720,7 +720,7 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.BCN:
 			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!Input.GetKeyUp (KeyCode.Mouse0) || animator.GetBool ("BCNPose") == false || mechController.grounded == false)
+				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool ("BCNPose") || !mechController.grounded)
 					return;
 				setIsFiring (handPosition, true);
 				HeatBar.IncreaseHeatBarL (45); 

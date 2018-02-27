@@ -9,7 +9,7 @@ public class PlayMusic : MonoBehaviour {
 	AudioSource audiosource;
 	// Use this for initialization
 	void Start () {
-		if (isLobbyMusicExist == true) {
+		if (isLobbyMusicExist) {
 			Destroy (gameObject);
 		} else {
 
@@ -27,7 +27,7 @@ public class PlayMusic : MonoBehaviour {
 		
 	}
 	void FixedUpdate(){
-		if(isLobbyMusicExist==false){
+		if(!isLobbyMusicExist){
 			Destroy (gameObject);
 		}
 	}
