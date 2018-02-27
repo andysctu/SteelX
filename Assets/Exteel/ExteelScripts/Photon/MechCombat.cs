@@ -17,6 +17,7 @@ public class MechCombat : Combat {
 	public TrailRenderer trailRendererL,trailRendererR;
 	PlayerInZone Healthpool;
 	HealthPoolBar HealthpoolBar;
+	ParticleSystem MuzL,MuzR;
 	// Boost variables
 	private float fuelDrain = 1.0f;
 	private float fuelGain = 1.0f;
@@ -81,9 +82,11 @@ public class MechCombat : Combat {
 	private float InPoolPreTime = 0f;
 	private const float CallHealDeltaTime = 2f;
 
+	private Coroutine bulletCoroutine;
 
 	//for Debug
 	public bool forceDead = false;
+
 
 	void Start() {
 		findGameManager();
@@ -100,6 +103,7 @@ public class MechCombat : Combat {
 		SyncWeaponOffset ();
 		initHealthPool ();
 		FindTrailRenderer ();
+		UpdateMuz ();
 	}
 
 	void initMechStats() {
@@ -162,6 +166,16 @@ public class MechCombat : Combat {
 		}
 
 	}
+
+	void UpdateMuz (){
+		MuzL = weapons [weaponOffset].GetComponentInChildren<ParticleSystem> ();
+		MuzR = weapons [weaponOffset+1].GetComponentInChildren<ParticleSystem> ();
+		if(MuzL!=null)
+			MuzL.Stop ();
+		if(MuzR!=null)
+			MuzR.Stop ();
+	}
+
 	float timeOfLastShot(int handPosition) {
 		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
 	}
@@ -285,10 +299,17 @@ public class MechCombat : Combat {
 		}
 		else
 			Target = null;
-		StartCoroutine (InstantiateBulletTrace (handPosition, direction, isShield));
+		bulletCoroutine = StartCoroutine (InstantiateBulletTrace (handPosition, direction, isShield));
 	}
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, bool isShield){
 		int i;
+		if(handPosition==0){
+			if (MuzL != null)
+				MuzL.Play ();
+		}else{
+			if (MuzR != null)
+				MuzR.Play ();
+		}
 		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
@@ -430,6 +451,8 @@ public class MechCombat : Combat {
 				gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 1, transform.position);
 			}
 		}
+		if(bulletCoroutine != null)
+			StopCoroutine (bulletCoroutine);
 
 		gameObject.layer = 0;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
@@ -649,11 +672,15 @@ public class MechCombat : Combat {
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
 				if (receiveNextSlash == false || CanSlash == false)
 					return;
-				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
+
+				if (curWeapons [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
+					return;
 
 				if (((handPosition == 1) ? isLSlashPlaying : isRSlashPlaying) != 0) { // only one can play at the same time
 					return;
 				}
+
+				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
@@ -800,9 +827,13 @@ public class MechCombat : Combat {
 		// Stop current attacks
 		setIsFiring(LEFT_HAND, false);
 		setIsFiring(RIGHT_HAND, false);
+
 		// Stop current animations
 		animator.SetBool(animationString(LEFT_HAND), false);
 		animator.SetBool(animationString(RIGHT_HAND), false);
+
+		if(bulletCoroutine != null)
+			StopCoroutine (bulletCoroutine);
 
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
@@ -817,6 +848,7 @@ public class MechCombat : Combat {
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
 		UpdateCurWeaponType ();
+		UpdateMuz ();
 		FindTrailRenderer ();
 
 		//update customproperty

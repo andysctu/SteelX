@@ -13,6 +13,8 @@ public class RCLBulletTrace : MonoBehaviour {
 	private int ShooterID; // for efficiency
 	[SerializeField]
 	private LayerMask PlayerlayerMask;
+	[SerializeField]
+	private PhotonView pv;
 	private int bulletdmg = 100;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1] ;
@@ -45,6 +47,7 @@ public class RCLBulletTrace : MonoBehaviour {
 		GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 		Vector3 collisionHitLoc = collisionEvents[0].intersection;
 
+		//pv.RPC ("CallPlayImpact", PhotonTargets.All, collisionHitLoc);
 		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 		temp.GetComponent<ParticleSystem> ().Play ();//play bullet impact
 
@@ -60,6 +63,9 @@ public class RCLBulletTrace : MonoBehaviour {
 			}else{
 
 				if(GameManager.isTeamMode){
+					if(Shooter == null){
+						print ("the shooter in RCL is null.");
+					}
 					if (other.tag == "Drone" ||other.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
 						continue;
 				}
@@ -77,7 +83,8 @@ public class RCLBulletTrace : MonoBehaviour {
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 						}
-						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, 0f); 
+						int hand = (hitColliders[i].transform.parent.name [hitColliders[i].transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, ShooterID, hand); 
 					}
 
 				} else {
@@ -102,4 +109,12 @@ public class RCLBulletTrace : MonoBehaviour {
 			}
 		}
 	}
+
+	/*
+	[PunRPC]
+	void CallPlayImpact(Vector3 collisionHitLoc){
+		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+		temp.GetComponent<ParticleSystem> ().Play ();//play bullet impact
+	}
+	*/
 }

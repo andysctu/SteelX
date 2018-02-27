@@ -22,6 +22,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	public Weapon[] weaponScripts;
 	private String[] curWeapons = new String[4];
+	private ParticleSystem Muz;
 	private int weaponOffset = 0;
 
 	private bool inHangar = false;
@@ -333,8 +334,15 @@ public class BuildMech : Photon.MonoBehaviour {
 			}
 
 			}
+				
+			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
+			if (Muz != null) {
+				Muz.Stop ();
+				if(inHangar){
+					Muz.gameObject.SetActive (false);
+				}
+			}			
 		}
-
 		UpdateCurWeapons ();
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
@@ -517,6 +525,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			weapons [weapPos].SetActive (true);
 		}
 
+		Muz = weapons [weapPos].GetComponentInChildren<ParticleSystem> ();
+		if (Muz != null)
+			Muz.Stop ();
+		
 		UpdateCurWeapons ();
 		CheckAnimatorState ();
 	}
@@ -600,5 +612,9 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	public void SetMechNum(int num){
 		Mech_Num = num;
+	}
+
+	void StopMuz(){
+		
 	}
 }
