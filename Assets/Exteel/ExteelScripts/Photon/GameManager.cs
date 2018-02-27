@@ -315,7 +315,6 @@ public class GameManager : Photon.MonoBehaviour {
 	{
 		yield return new WaitForSeconds(time);
 
-		//destroy photon objects
 		if(PhotonNetwork.isMasterClient){//master destroy scene objects
 			if(GameInfo.GameMode.Contains("Capture")){
 				PhotonNetwork.Destroy (BlueFlag);
@@ -323,7 +322,6 @@ public class GameManager : Photon.MonoBehaviour {
 			}
 			PhotonNetwork.LoadLevel("GameLobby");
 		}
-		DestroyMech ();
 
 		// Code to execute after the delay
 		Cursor.visible = true;
@@ -673,10 +671,5 @@ public class GameManager : Photon.MonoBehaviour {
 		hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");//every player's hud on Gamemanager is his
 		Scoreboard.SetActive(true);
 		StartCoroutine(ExecuteAfterTime(3));
-	}
-
-	void DestroyMech(){
-		print ("called destroy");
-		PhotonNetwork.Destroy (player);
 	}
 }

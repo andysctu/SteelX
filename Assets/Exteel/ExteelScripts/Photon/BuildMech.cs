@@ -156,6 +156,19 @@ public class BuildMech : Photon.MonoBehaviour {
 			if(onPanel){
 				weapons [i].transform.localScale *=22f;
 			}
+
+			//turn off muz
+			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
+			if (Muz != null) {
+				Muz.Stop ();
+				if (inHangar) {
+					Muz.gameObject.SetActive (false);
+				}
+			}else{
+				print ("muz is null");
+			}
+
+
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts [i] = new APS403 ();
@@ -334,14 +347,6 @@ public class BuildMech : Photon.MonoBehaviour {
 			}
 
 			}
-				
-			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
-			if (Muz != null) {
-				Muz.Stop ();
-				if(inHangar){
-					Muz.gameObject.SetActive (false);
-				}
-			}			
 		}
 		UpdateCurWeapons ();
 		weapons [(weaponOffset+2)%4].SetActive (false);

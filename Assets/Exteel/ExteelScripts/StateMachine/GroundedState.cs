@@ -15,12 +15,12 @@ public class GroundedState : MechStateMachineBehaviour {
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
-		/*
-		if(animator.GetBool("Boost") == true && !Input.GetKey(KeyCode.LeftShift)){
-			animator.SetBool ("Boost", false); // not shutting down ,happens when boosting before slashing
+
+		if(animator.GetBool(boost_id)&& !Input.GetKey(KeyCode.LeftShift)){
+			animator.SetBool (boost_id, false); // not shutting down ,happens when boosting before slashing
 			mctrl.Boost(false);
 		}
-		animator.SetBool ("OnSlash", false);  // if grounded => not on slash*/
+		//animator.SetBool ("OnSlash", false);  // if grounded => not on slash
 
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			mctrl.SetCanVerticalBoost (true);

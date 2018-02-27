@@ -51,9 +51,9 @@ public class RCLBulletTrace : MonoBehaviour {
 		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 		temp.GetComponent<ParticleSystem> ().Play ();//play bullet impact
 
-		Collider[] hitColliders = Physics.OverlapSphere(transform.position, 6f, PlayerlayerMask); // get overlap targets
-
+		Collider[] hitColliders = Physics.OverlapSphere(collisionHitLoc, 6f, PlayerlayerMask); // get overlap targets
 		List<int> colliderViewIds = new List<int> ();
+
 		for (int i=0;i < hitColliders.Length;i++)
 		{
 			//check duplicated
@@ -61,12 +61,9 @@ public class RCLBulletTrace : MonoBehaviour {
 			if(colliderViewIds.Contains(colliderPV.viewID)){
 				continue;
 			}else{
-
 				if(GameManager.isTeamMode){
-					if(Shooter == null){
-						print ("the shooter in RCL is null.");
-					}
-					if (other.tag == "Drone" ||other.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
+					//PhotonView pv = other.GetComponent<PhotonView> ();
+					if (other.tag == "Drone" || colliderPV.owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
 						continue;
 				}
 

@@ -13,7 +13,7 @@ public class MechCombat : Combat {
 	[SerializeField] Sounds Sounds;
 	[SerializeField] HeatBar HeatBar;
 	[SerializeField] InRoomChat InRoomChat;
-	[SerializeField] GameObject SwitchWeaponEffectL,SwitchWeaponEffectR;
+	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	public TrailRenderer trailRendererL,trailRendererR;
 	PlayerInZone Healthpool;
 	HealthPoolBar HealthpoolBar;
@@ -122,9 +122,11 @@ public class MechCombat : Combat {
 		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
 		SwitchWeaponEffectL.transform.SetParent (Hands [0]);
 		SwitchWeaponEffectL.transform.localPosition = Vector3.zero;
+		SwitchWeaponEffectL.Stop ();
 
 		SwitchWeaponEffectR.transform.SetParent (Hands [1]);
 		SwitchWeaponEffectR.transform.localPosition = Vector3.zero;
+		SwitchWeaponEffectR.Stop ();
 	}
 
 	void initGameObjects() {
@@ -819,8 +821,8 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void CallSwitchWeapons() {
 		//Play switch weapon animation
-		SwitchWeaponEffectL.SetActive (true);
-		SwitchWeaponEffectR.SetActive (true);
+		SwitchWeaponEffectL.Play();
+		SwitchWeaponEffectR.Play();
 
 
 		//decrease energy
@@ -829,6 +831,13 @@ public class MechCombat : Combat {
 		Sounds.PlaySwitchWeapon ();
 		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
+
+		//update customproperty
+		if (photonView.isMine) {
+			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+			h.Add ("weaponOffset", (weaponOffset + 2) % 4);
+			photonView.owner.SetCustomProperties (h);
+		}
 	}
 
 	void SwitchWeaponsBegin(){
@@ -859,12 +868,6 @@ public class MechCombat : Combat {
 		UpdateMuz ();
 		FindTrailRenderer ();
 
-		//update customproperty
-		if (photonView.isMine) {
-			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ("weaponOffset", weaponOffset);
-			photonView.owner.SetCustomProperties (h);
-		}
 		//check if using RCL => RCLIdle
 		if(usingRCLWeapon(0)){
 			animator.SetBool ("UsingRCL", true);
@@ -883,8 +886,8 @@ public class MechCombat : Combat {
 		isSwitchingWeapon = false;
 
 		//Stop switch weapon animation
-		SwitchWeaponEffectL.SetActive (false);
-		SwitchWeaponEffectR.SetActive (false);
+		SwitchWeaponEffectL.Stop();
+		SwitchWeaponEffectR.Stop();
 
 
 	}

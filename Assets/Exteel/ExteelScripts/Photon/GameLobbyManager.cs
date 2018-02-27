@@ -116,7 +116,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	public void StartGame() {
 		Debug.Log ("Starting game");
-		PhotonNetwork.room.open = true;
+		PhotonNetwork.room.open = false;//join mid game
 
 		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 		h.Add ("GameInit", false);
