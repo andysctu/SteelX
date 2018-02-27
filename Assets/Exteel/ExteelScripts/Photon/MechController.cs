@@ -167,8 +167,8 @@ public class MechController : Photon.MonoBehaviour {
 				xSpeed = mechCombat.BoostSpeed ();
 				zSpeed = mechCombat.BoostSpeed ();
 			}else{//boost in air
-				xSpeed = mechCombat.BoostSpeed ()*0.6f;
-				zSpeed = mechCombat.BoostSpeed ()*0.6f;
+				xSpeed = mechCombat.BoostSpeed ()*0.3f;
+				zSpeed = mechCombat.BoostSpeed ()*0.3f;
 			}
 		}
 	}
