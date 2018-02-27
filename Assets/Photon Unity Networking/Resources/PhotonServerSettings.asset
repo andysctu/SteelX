@@ -11,15 +11,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f3758f8f58fdef43803eb9be1df0608, type: 3}
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
+  AppID: 82d36ae1-3a31-4944-8e01-8c61fcf1452a
+  VoiceAppID: 
+  ChatAppID: 
   HostType: 1
+  PreferredRegion: 0
+  EnabledRegions: -1
   Protocol: 0
   ServerAddress: 
   ServerPort: 5055
-  AppID: 93ea7c36-d395-4fa3-af3e-ff942f3bcc6d
-  PreferredRegion: 0
-  EnabledRegions: -1
+  VoiceServerPort: 5055
   JoinLobby: 1
   EnableLobbyStatistics: 0
+  PunLogging: 0
+  NetworkLogging: 1
+  RunInBackground: 1
   RpcList:
   - Chat
   - DestroyRpc
@@ -49,4 +55,30 @@ MonoBehaviour:
   - ChangeMaxPlayers
   - ChangeMaxTime
   - BulletTraceRPC
+  - RPC_CreateMaster
+  - RPC_CreatePlayer
+  - RPC_LoadedGameScene
+  - RPC_LoadGameOthers
+  - BoostFlame
+  - RegisteryBulletTrace
+  - RegisterBulletTrace
+  - SlashOnTarget
+  - CallSwitchWeapons
+  - ShowText
+  - UpdatePlayerOrderedList
+  - OnLocked
+  - RPCPlaySound
+  - ForceMove
+  - SwitchTeam
+  - GetFlagRequest
+  - playerHoldFlag
+  - RegisterScore
+  - DropFlag
+  - GetScoreRequest
+  - SetFlat
+  - SetFlag
+  - SetFlagCheck
+  - SyncFlagRequest
+  - OnHeal
+  - ChangeZone
   DisableAutoOpenWizard: 1

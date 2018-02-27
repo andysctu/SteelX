@@ -68,7 +68,7 @@ public class ServerSettingsInspector : Editor
                 {
                     settings.PreferredRegion = (CloudRegionCode)EditorGUILayout.EnumPopup("Region", settings.PreferredRegion);
                 }
-                else
+		else // Bestregion
                 {
                     string _regionFeedback = "Prefs:"+ServerSettings.BestRegionCodeInPreferences.ToString();
 
@@ -97,8 +97,34 @@ public class ServerSettingsInspector : Editor
 					EditorGUILayout.EndHorizontal ();
 
 
+				// Dashboard region settings
+				EditorGUILayout.BeginHorizontal ();
+				EditorGUILayout.PrefixLabel ("Regions");
+				Rect rect2 = GUILayoutUtility.GetRect(new GUIContent("Online WhiteList"),"Label");
+				if (!string.IsNullOrEmpty(settings.AppID))
+				{
+				int indentLevel2 = EditorGUI.indentLevel;
+				EditorGUI.indentLevel = 0;
+				EditorGUI.LabelField (rect2, "Online WhiteList");
+				EditorGUI.indentLevel = indentLevel2;
 
-                    CloudRegionFlag valRegions = (CloudRegionFlag)EditorGUILayout.EnumMaskField("Enabled Regions", settings.EnabledRegions);
+				rect2.x += rect2.width-80;
+				rect2.width = 80;
+
+				rect2.height -=2;
+				if (GUI.Button(rect2,"Dashboard",EditorStyles.miniButton))
+				{
+					Application.OpenURL("https://www.photonengine.com/en-US/Dashboard/Manage/"+settings.AppID);
+				}
+				}else{
+					GUI.Label(rect2,"n/a");
+				}
+
+				EditorGUILayout.EndHorizontal ();
+
+
+				EditorGUI.indentLevel ++;
+				CloudRegionFlag valRegions = (CloudRegionFlag)EditorGUILayout.EnumMaskField(" ", settings.EnabledRegions);
 
                     if (valRegions != settings.EnabledRegions)
                     {
@@ -109,6 +135,7 @@ public class ServerSettingsInspector : Editor
                     {
                         EditorGUILayout.HelpBox("You should enable at least two regions for 'Best Region' hosting.", MessageType.Warning);
                     }
+				EditorGUI.indentLevel --;
 
 
 

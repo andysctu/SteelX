@@ -7,10 +7,11 @@ public class MechController : Photon.MonoBehaviour {
 
 	public CharacterController CharacterController;
 	public Animator animator;
-
+	public Sounds Sounds;
+	public LayerMask Terrain;
 	[SerializeField] GameObject boostFlame;
 
-	public float Gravity = 2.0f;
+	public float Gravity = 4.0f;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
@@ -27,20 +28,29 @@ public class MechController : Photon.MonoBehaviour {
 	private Vector3 move = Vector3.zero;
 
 	private bool ableToVertBoost = false;
+	private bool isBoostFlameOn = false;
+	private bool isSlowDown = false;
+	private Coroutine coroutine = null;
 
+	[SerializeField]
 	private MechCombat mechCombat;
 	private Transform camTransform;
+	[SerializeField]
+	private Camera cam;
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
-	private bool canVerticalBoost = false;
+	private float SlashMovingSpeed;
+	private Vector3 Slashdir;
+	private bool canVerticalBoost = true;
 
 	// Animation
 	private float speed;
 	private float direction;
-	private bool boost;
-	private bool grounded;
-	private bool jump;
+	public bool boost;
+	public bool grounded = true;
+	public bool jump;
+
 
 	// Unused
 	[SerializeField] Transform[] Legs;
@@ -49,11 +59,11 @@ public class MechController : Photon.MonoBehaviour {
 	void Start () {
 		initComponents();
 		initTransforms();
+		animator.SetBool ("Grounded", true);
 	}
 
 	void initComponents() {
 		CharacterController = GetComponent<CharacterController> ();
-		mechCombat = GetComponent<MechCombat>();
 		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
 	}
 
@@ -69,15 +79,27 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		// Do nothing if CharacterController not found
-		if (CharacterController == null || !CharacterController.enabled){
+		// Do nothing if CharacterController not found & slashing
+		if (CharacterController == null || !CharacterController.enabled ){
 			return;
 		}
 
-		if (!CharacterController.isGrounded) {
+		// slash z-offset
+		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
+			if(SlashMovingSpeed >0.1f){
+				if(grounded == true){
+					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky
+				}
+				CharacterController.Move(Slashdir * SlashMovingSpeed);
+				SlashMovingSpeed /= 1.5f;
+			}
+			return;
+		}
+		if(!CheckIsGrounded()){
 			ySpeed -= Gravity;
 		} else {
-			ySpeed = 0;
+			//ySpeed = 0;
+			ySpeed = -CharacterController.stepOffset / Time.deltaTime;
 		}
 
 		if (animator == null) {
@@ -99,9 +121,18 @@ public class MechController : Photon.MonoBehaviour {
 		move.x *= xSpeed * Time.fixedDeltaTime;
 		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
+
+		if(isSlowDown){
+			move.x = move.x * 0.2f;
+			move.z = move.z * 0.2f;
+		}
+
 		CharacterController.Move(move);
 	}
-
+	public void SetSlashMoving(Vector3 dir, float speed){
+		SlashMovingSpeed = speed;
+		Slashdir = dir;
+	}
 	public void SetCanVerticalBoost(bool canVBoost) {
 		canVerticalBoost = canVBoost;
 	}
@@ -115,6 +146,8 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Jump() {
+		grounded = true;
+		transform.position = new Vector3 (transform.position.x, transform.position.y + 0.2f, transform.position.z);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
 	}
@@ -124,17 +157,54 @@ public class MechController : Photon.MonoBehaviour {
 		zSpeed = mechCombat.MoveSpeed();
 	}
 
-	public void Boost() {
-		xSpeed = mechCombat.BoostSpeed();
-		zSpeed = mechCombat.BoostSpeed();
+	public void Boost(bool boost) {
+		if(boost != isBoostFlameOn){
+			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
+			isBoostFlameOn = boost;
+		}
+		if (boost == true ) {
+			if(grounded == true){
+				xSpeed = mechCombat.BoostSpeed ();
+				zSpeed = mechCombat.BoostSpeed ();
+			}else{//boost in air
+				xSpeed = mechCombat.BoostSpeed ()*0.6f;
+				zSpeed = mechCombat.BoostSpeed ()*0.6f;
+			}
+		}
+	}
+
+	public void BCNPose(){
+		xSpeed = 0;
+		zSpeed = 0;
+	}
+
+	public void SlowDown(float duration){
+		if(isSlowDown){
+			StopCoroutine (coroutine);
+			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
+		}else{
+			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
+			isSlowDown = true;
+		}
+	}
+
+	IEnumerator SlowDownCoroutine(float duration){
+		SetCanVerticalBoost (false);
+		animator.SetBool ("Boost", false);
+		Boost (false);
+
+		yield return new WaitForSeconds (duration);
+		isSlowDown = false;
+		coroutine = null;
 	}
 
 	public void ResetCam() {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+		cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
 	}
-
+	int pre = 0;
 	public void DynamicCam() {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = camTransform.localPosition;
@@ -142,15 +212,26 @@ public class MechController : Photon.MonoBehaviour {
 		if (direction > 0) {
 			newPos = new Vector3(-7, curPos.y, curPos.z);
 		} else if (direction < 0) {
-			newPos = new Vector3(7, curPos.y, curPos.z);
+			newPos = new Vector3(7, curPos.y,  curPos.z);
 		} else {
-			newPos = new Vector3(0, curPos.y, curPos.z);
+			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
+
+
+		float speed = animator.GetFloat ("Speed");
+		if (speed > 0 && grounded)
+			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 70, 0.07f);
+		else if (speed<0 && grounded)
+			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 50, 0.07f);
+		else
+			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
+		
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}
 
 	[PunRPC]
-	void Boost(bool boost) {
+	void BoostFlame(bool boost) {
+		//print ("set to : " + boost);
 		boostFlame.SetActive(boost);
 	}
 
@@ -189,4 +270,11 @@ public class MechController : Photon.MonoBehaviour {
 //			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
 //		}
 	}
+
+	public bool CheckIsGrounded(){
+		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 2.0f, Terrain);
+		//return CharacterController.isGrounded;
+	}
+
+
 }

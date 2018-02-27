@@ -24,12 +24,12 @@ public class InRoomChat : Photon.MonoBehaviour
 
     public void OnGUI()
     {
-        if (!this.IsVisible || !PhotonNetwork.inRoom)
+		if (!this.IsVisible || !PhotonNetwork.inRoom)
         {
-            return;
+           return;
         }
 
-        if (Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return))
+		if (Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return ))
         {
             if (!string.IsNullOrEmpty(this.inputLine))
             {
@@ -49,6 +49,10 @@ public class InRoomChat : Photon.MonoBehaviour
 
         scrollPos = GUILayout.BeginScrollView(scrollPos);
         GUILayout.FlexibleSpace();
+
+		if (messages.Count >= 6)
+			messages.RemoveAt (messages.Count - 1);
+
         for (int i = messages.Count - 1; i >= 0; i--)
         {
             GUILayout.Label(messages[i]);
@@ -85,11 +89,13 @@ public class InRoomChat : Photon.MonoBehaviour
             }
         }
 
-        this.messages.Add(senderName +": " + newLine);
+		this.messages.Insert(0, senderName +": " + newLine);
+        //this.messages.Add(senderName +": " + newLine);
     }
 
     public void AddLine(string newLine)
     {
-        this.messages.Add(newLine);
+		this.messages.Insert (0, newLine);
+       // this.messages.Add(newLine);
     }
 }

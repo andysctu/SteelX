@@ -8,17 +8,23 @@ public class DroneCombat : Combat {
 	void Start () {
 		currentHP = MAX_HP;
 		findGameManager();
-		gm.RegisterPlayer("Drone");
+		gm.RegisterPlayer(photonView.viewID, 0);
 	}
 
 	[PunRPC]
-	public override void OnHit(int d, string shooter) {
+	public override void OnHit(int d, int shooter_viewID, float slowdownDuration = 0) {
 		currentHP -= d;
 		if (currentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
-			gm.RegisterKill(PhotonNetwork.playerName, "Drone");
+			//gm.RegisterKill(PhotonNetwork.playerName, "Drone");
+			gm.RegisterKill(shooter_viewID, photonView.viewID);
 		}
+	}
+
+	[PunRPC]
+	void ForceMove(Vector3 dir, float length){
+		transform.position += dir * length;
 	}
 
 	void DisableDrone() {

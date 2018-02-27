@@ -7,11 +7,14 @@ public class Sync : Photon.MonoBehaviour {
 	//sync vals
 	Vector3 trueLoc;
 	Quaternion trueRot;
-	PhotonView pv;
 
+	[SerializeField]
+	PhotonView pv; // if use getcomponent, pv sometimes is null (don't know why , too slow? )
+	[SerializeField]
+	MechCombat mcbt;
 	// Use this for initialization
 	void Start () {
-		pv = GetComponent<PhotonView>();
+		//pv = GetComponent<PhotonView>();
 	}
 	
 	// Update is called once per frame
@@ -31,15 +34,19 @@ public class Sync : Photon.MonoBehaviour {
 			if(!pv.isMine){//do we own this photonView?????
 				this.trueLoc = (Vector3)stream.ReceiveNext(); //the stream send data types of "object" we must typecast the data into a Vector3 format
 				this.trueRot = (Quaternion)stream.ReceiveNext();
+				//mcbt.SetCurrentHp((int)stream.ReceiveNext());
 			}
 		}
 		//we need to send our data
 		else
 		{
 			//send our posistion in the data stream
+	//		if (pv == null)
+				//print (photonView.ownerId);
 			if(pv.isMine){
 				stream.SendNext(transform.position);
 				stream.SendNext(transform.rotation);
+				//stream.SendNext (mcbt.GetCurrentHP ());
 			}
 		}
 	}

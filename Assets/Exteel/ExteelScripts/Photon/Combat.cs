@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Combat : Photon.MonoBehaviour {
-	public const int MAX_HP = 100;
+	public const int MAX_HP = 2000;
 	public const float MAX_FUEL = 300.0f;
 
 	protected int currentHP;
@@ -9,7 +9,7 @@ public class Combat : Photon.MonoBehaviour {
 	protected GameManager gm;
 
 	[PunRPC]
-	public virtual void OnHit(int d, string shooter) {}
+	public virtual void OnHit(int d, int shooter_viewID, float slowdownDuration) {}
 
 	protected void findGameManager() {
 		if (gm == null) {
