@@ -11,12 +11,13 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled) return;
 		//jumpReleased = false;
 
+		/*
 		if(animator.GetBool (onSlash_id)){ //after slashing in air , shut the boost down , otherwise it will go to boost jump
 			animator.SetBool (boost_id, false);
 			animator.SetBool (onSlash_id, false);
 			mctrl.SetCanVerticalBoost (false);
 			mctrl.Boost (false);
-		}
+		}*/
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -36,14 +37,21 @@ public class JumpedState : MechStateMachineBehaviour {
 
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
+			Debug.Log("jr");
 		}
 
 		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
+			mctrl.SetCanVerticalBoost (false);
 			jumpReleased = false;
 			animator.SetBool(boost_id, true);
 			mctrl.Boost (true);
 			Sounds.PlayBoostStart ();
 			Sounds.PlayBoostLoop ();
+		}
+
+		if(mctrl.CanVerticalBoost()){
+			animator.SetBool(boost_id, false);
+			mctrl.Boost (false);
 		}
 	}
 

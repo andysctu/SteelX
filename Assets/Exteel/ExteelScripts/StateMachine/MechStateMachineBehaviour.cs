@@ -15,6 +15,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected int speed_id;
 	protected int direction_id;
 	protected int onSlash_id;
+	protected int SpaceUp_id;
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -29,5 +30,6 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		direction_id = Animator.StringToHash ("Direction");
 		onSlash_id = Animator.StringToHash ("OnSlash");
 		speed_id = Animator.StringToHash ("Speed");
+		SpaceUp_id = Animator.StringToHash ("SpaceUp");
 	}
 }
