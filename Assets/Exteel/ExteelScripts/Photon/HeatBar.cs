@@ -91,6 +91,7 @@ public class HeatBar : MonoBehaviour {
 			barR.color =new Color32 (255, 255, 0, 200);
 		}
 	}
+
 	public void IncreaseHeatBarL(float value){ //value : [0,100]
 		curValue [weaponOffset] += value;
 		if (curValue [weaponOffset] >= 100) {
@@ -106,6 +107,11 @@ public class HeatBar : MonoBehaviour {
 			curValue[weaponOffset + 1] = 100;
 			is_overheat [weaponOffset + 1] = true;
 			barR.color = new Color32 (255, 0, 0, 200);
+		}
+	}
+	public void ResetHeatBar(){
+		for(int i=0;i<4;i++){
+			curValue [i] = 0;
 		}
 	}
 

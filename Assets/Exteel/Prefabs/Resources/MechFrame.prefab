@@ -2850,18 +2850,6 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: BCNPose
   - Type: 4
-    SynchronizeType: 1
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR3
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL3
-  - Type: 4
     SynchronizeType: 0
     Name: ShootBCN
   - Type: 4
@@ -2873,6 +2861,9 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: UsingBCN
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -2953,6 +2944,8 @@ MonoBehaviour:
   InRoomChat: {fileID: 0}
   SwitchWeaponEffectL: {fileID: 1085712841537316}
   SwitchWeaponEffectR: {fileID: 1879708178152414}
+  trailRendererL: {fileID: 0}
+  trailRendererR: {fileID: 0}
   jumpPower: 100
   moveSpeed: 35
   boostSpeed: 60

@@ -454,6 +454,9 @@ public class MechCombat : Combat {
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
 
+		setIsFiring (0, false);
+		setIsFiring (1, false);
+
 		gameObject.layer = 0;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		if(ch!=null){
@@ -472,14 +475,19 @@ public class MechCombat : Combat {
 	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
 	[PunRPC]
 	void EnablePlayer(int respawnPoint, int mech_num) {
-		Mech m = UserData.myData.Mech[mech_num];
 		bm.SetMechNum (mech_num);
-		bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		if (photonView.isMine) {
+			Mech m = UserData.myData.Mech [mech_num];
+			bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		}
+
+
+		weaponOffset = 0;
 		initComponents ();
 		initCombatVariables ();
 		UpdateCurWeaponType ();
 		FindTrailRenderer ();
-		weaponOffset = 0;
+		HeatBar.ResetHeatBar ();
 		crosshair.updateCrosshair (0);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
@@ -1016,14 +1024,16 @@ public class MechCombat : Combat {
 	void FindTrailRenderer(){
 		if(curWeapons[0] == (int)WeaponTypes.MELEE){
 			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
-			trailRendererL.enabled = false;
+			if(trailRendererL!=null)
+				trailRendererL.enabled = false;
 		}else{
 			trailRendererL = null;
 		}
 
 		if(curWeapons[1] == (int)WeaponTypes.MELEE){
 			trailRendererR = weapons [weaponOffset+1].GetComponentInChildren<TrailRenderer> ();
-			trailRendererR.enabled = false;
+			if(trailRendererR!=null)
+				trailRendererR.enabled = false;
 		}else{
 			trailRendererR = null;
 		}
@@ -1035,7 +1045,7 @@ public class MechCombat : Combat {
 	}
 	public void ShowTrailR(bool show){
 		if(trailRendererR!=null)
-		trailRendererR.enabled = show;
+			trailRendererR.enabled = show;
 	}
 		
 //	public void BulletTraceEvent() {
