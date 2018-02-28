@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MechStateMachineBehaviour : StateMachineBehaviour {
 
+	protected AnimatorVars animatorVars;
 	protected CharacterController cc;
 	protected MechController mctrl;
 	protected MechCombat mcbt;
@@ -18,16 +19,17 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		cc = animator.transform.parent.gameObject.GetComponent<CharacterController>();
-		mctrl = animator.transform.parent.gameObject.GetComponent<MechController>();
-		mcbt = animator.transform.parent.gameObject.GetComponent<MechCombat>();
-		Sounds = animator.GetComponent<Sounds>();
-
-		boost_id = Animator.StringToHash ("Boost");
-		grounded_id = Animator.StringToHash ("Grounded");
-		jump_id = Animator.StringToHash ("Jump");
-		direction_id = Animator.StringToHash ("Direction");
-		onSlash_id = Animator.StringToHash ("OnSlash");
-		speed_id = Animator.StringToHash ("Speed");
+		animatorVars = animator.GetComponent<AnimatorVars> ();
+		cc = animatorVars.cc;
+		mctrl = animatorVars.mctrl;
+		mcbt = animatorVars.mcbt;
+		Sounds = animatorVars.Sounds;
+	
+		boost_id = animatorVars.boost_id;
+		grounded_id = animatorVars.grounded_id;
+		jump_id = animatorVars.jump_id;
+		direction_id = animatorVars.direction_id;
+		onSlash_id = animatorVars.onSlash_id;
+		speed_id = animatorVars.speed_id;
 	}
 }

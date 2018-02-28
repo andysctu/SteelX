@@ -116,7 +116,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	public void StartGame() {
 		Debug.Log ("Starting game");
-		PhotonNetwork.room.open = true;
+		PhotonNetwork.room.open = false;//join mid game
 
 		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 		h.Add ("GameInit", false);
@@ -138,11 +138,16 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 	public void OnPhotonPlayerDisconnected(PhotonPlayer disconnectedPlayer) {
 		Debug.Log ("Player disconnected: " + disconnectedPlayer.name);
+		GameObject player = null;
 		foreach (GameObject lobbyPlayer in players) {
 			if (lobbyPlayer.name == disconnectedPlayer.name) {
-				PhotonNetwork.Destroy(lobbyPlayer);
-				players.Remove(lobbyPlayer);
+				player = lobbyPlayer;
 			}
+		}
+
+		if(player!=null){
+			PhotonNetwork.Destroy(player);
+			players.Remove(player);
 		}
 	}
 

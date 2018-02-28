@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 8dedeb87efaf4477b807a7078caca9d8
-timeCreated: 1519383537
+timeCreated: 1519783904
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -17,6 +17,7 @@ TextureImporter:
     21300020: map_bluezone
     21300022: map_redzone
     21300024: map_greyzone
+    21300026: HUDcorner
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -268,6 +269,20 @@ TextureImporter:
         height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: HUDcorner
+      rect:
+        serializedVersion: 2
+        x: 907
+        y: 791
+        width: 61
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

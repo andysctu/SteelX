@@ -34,7 +34,7 @@ public class Sync : Photon.MonoBehaviour {
 			if(!pv.isMine){//do we own this photonView?????
 				this.trueLoc = (Vector3)stream.ReceiveNext(); //the stream send data types of "object" we must typecast the data into a Vector3 format
 				this.trueRot = (Quaternion)stream.ReceiveNext();
-				//mcbt.SetCurrentHp((int)stream.ReceiveNext());
+				mcbt.SetCurrentHp((int)stream.ReceiveNext());
 			}
 		}
 		//we need to send our data
@@ -46,7 +46,7 @@ public class Sync : Photon.MonoBehaviour {
 			if(pv.isMine){
 				stream.SendNext(transform.position);
 				stream.SendNext(transform.rotation);
-				//stream.SendNext (mcbt.GetCurrentHP ());
+				stream.SendNext (mcbt.GetCurrentHP ());
 			}
 		}
 	}

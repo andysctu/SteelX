@@ -13,13 +13,14 @@ public class MechCombat : Combat {
 	[SerializeField] Sounds Sounds;
 	[SerializeField] HeatBar HeatBar;
 	[SerializeField] InRoomChat InRoomChat;
-	[SerializeField] GameObject SwitchWeaponEffectL,SwitchWeaponEffectR;
+	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	public TrailRenderer trailRendererL,trailRendererR;
 	PlayerInZone Healthpool;
 	HealthPoolBar HealthpoolBar;
+	ParticleSystem MuzL,MuzR;
 	// Boost variables
-	private float fuelDrain = 1.0f;
-	private float fuelGain = 1.0f;
+	private float fuelDrain = 5.0f;
+	private float fuelGain = 5.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
 	public float jumpPower = 100.0f;
@@ -69,6 +70,7 @@ public class MechCombat : Combat {
 	// HUD
 	private Slider healthBar;
 	private Slider fuelBar;
+	Text healthtext,fueltext;
 	private HUD hud;
 	private Camera cam; //*
 
@@ -81,9 +83,11 @@ public class MechCombat : Combat {
 	private float InPoolPreTime = 0f;
 	private const float CallHealDeltaTime = 2f;
 
+	private Coroutine bulletCoroutine;
 
 	//for Debug
 	public bool forceDead = false;
+
 
 	void Start() {
 		findGameManager();
@@ -100,6 +104,7 @@ public class MechCombat : Combat {
 		SyncWeaponOffset ();
 		initHealthPool ();
 		FindTrailRenderer ();
+		UpdateMuz ();
 	}
 
 	void initMechStats() {
@@ -118,14 +123,16 @@ public class MechCombat : Combat {
 		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
 		SwitchWeaponEffectL.transform.SetParent (Hands [0]);
 		SwitchWeaponEffectL.transform.localPosition = Vector3.zero;
+		SwitchWeaponEffectL.Stop ();
 
 		SwitchWeaponEffectR.transform.SetParent (Hands [1]);
 		SwitchWeaponEffectR.transform.localPosition = Vector3.zero;
+		SwitchWeaponEffectR.Stop ();
 	}
 
 	void initGameObjects() {
 		InRoomChat = GameObject.Find ("InRoomChat") .GetComponent<InRoomChat>();
-		hud = GameObject.Find("Canvas").GetComponent<HUD>();
+		hud = GameObject.FindObjectOfType<HUD> ();
 	}
 
 	void initComponents() {
@@ -142,7 +149,8 @@ public class MechCombat : Combat {
 	}
 
 	void initHUD() {
-		initHealthAndFuelBars();
+		if(photonView.isMine)
+			initHealthAndFuelBars();
 	}
 
 	void initCam(){
@@ -161,6 +169,16 @@ public class MechCombat : Combat {
 		}
 
 	}
+
+	void UpdateMuz (){
+		MuzL = weapons [weaponOffset].GetComponentInChildren<ParticleSystem> ();
+		MuzR = weapons [weaponOffset+1].GetComponentInChildren<ParticleSystem> ();
+		if(MuzL!=null)
+			MuzL.Stop ();
+		if(MuzR!=null)
+			MuzR.Stop ();
+	}
+
 	float timeOfLastShot(int handPosition) {
 		return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
 	}
@@ -170,10 +188,11 @@ public class MechCombat : Combat {
 		if (sliders.Length > 0) {
 			healthBar = sliders[0];
 			healthBar.value = 1;
-
+			healthtext = healthBar.GetComponentInChildren<Text> ();
 			if (sliders.Length > 1) {
 				fuelBar = sliders[1];
 				fuelBar.value = 1;
+				fueltext = fuelBar.GetComponentInChildren<Text> ();
 			}
 		}
 	}
@@ -218,11 +237,15 @@ public class MechCombat : Combat {
 				} else if (target.tag == "Shield") {
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
 
-					target.transform.root.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage / 2, photonView.viewID, 0f);
+					//check what hand is it
+					int hand = (target.transform.parent.name [target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+
+
+					target.transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, hand);
 
 					hud.ShowText (cam, target.position, "Defense");
 				}
-			}else{
+			}else{//ENG
 				photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
 				target.GetComponent<PhotonView> ().RPC ("OnHeal", PhotonTargets.All, photonView.viewID, damage);
@@ -237,7 +260,7 @@ public class MechCombat : Combat {
 
 	void SlashDetect(int damage){
 
-		if(mechController.grounded == false){
+		if(!mechController.grounded){
 			mechController.Boost (true); // jump slash boost effect
 			mechController.SetSlashMoving(cam.transform.forward,8f);
 		}
@@ -280,10 +303,17 @@ public class MechCombat : Combat {
 		}
 		else
 			Target = null;
-		StartCoroutine (InstantiateBulletTrace (handPosition, direction, isShield));
+		bulletCoroutine = StartCoroutine (InstantiateBulletTrace (handPosition, direction, isShield));
 	}
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, bool isShield){
 		int i;
+		if(handPosition==0){
+			if (MuzL != null)
+				MuzL.Play ();
+		}else{
+			if (MuzR != null)
+				MuzR.Play ();
+		}
 		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
@@ -350,6 +380,37 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
+	void ShieldOnHit(int d, int shooter_viewID, int hand ){
+		if (isDead) {
+			return;
+		}
+
+		PhotonView pv = PhotonView.Find (shooter_viewID);
+		currentHP -= d;
+		Debug.Log ("HP: " + currentHP);
+		if (currentHP <= 0) {
+			isDead = true;
+			// UI for shooter
+
+			DisablePlayer();
+
+			// Update scoreboard
+			gm.RegisterKill(shooter_viewID, photonView.viewID);
+
+			string shooter = pv.owner.NickName;
+			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
+		}
+
+		if(photonView.isMine){//heat
+			if(hand==0){
+				HeatBar.IncreaseHeatBarL (30);
+			} else {
+				HeatBar.IncreaseHeatBarR (30);
+			}
+		}
+	}
+
+	[PunRPC]
 	void OnHeal(int viewID, int amount){
 		if(isDead){
 			return;
@@ -394,6 +455,11 @@ public class MechCombat : Combat {
 				gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 1, transform.position);
 			}
 		}
+		if(bulletCoroutine != null)
+			StopCoroutine (bulletCoroutine);
+
+		setIsFiring (0, false);
+		setIsFiring (1, false);
 
 		gameObject.layer = 0;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
@@ -413,14 +479,19 @@ public class MechCombat : Combat {
 	// Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
 	[PunRPC]
 	void EnablePlayer(int respawnPoint, int mech_num) {
-		Mech m = UserData.myData.Mech[mech_num];
 		bm.SetMechNum (mech_num);
-		bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		if (photonView.isMine) {
+			Mech m = UserData.myData.Mech [mech_num];
+			bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		}
+
+
+		weaponOffset = 0;
 		initComponents ();
 		initCombatVariables ();
 		UpdateCurWeaponType ();
 		FindTrailRenderer ();
-		weaponOffset = 0;
+		HeatBar.ResetHeatBar ();
 		crosshair.updateCrosshair (0);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
@@ -496,7 +567,7 @@ public class MechCombat : Combat {
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
-		if (mechController.CheckIsGrounded()== true) { // CanSlash is to avoid multiple slashs in air
+		if (mechController.CheckIsGrounded()) { // CanSlash is to avoid multiple slashs in air
 			CanSlash = true;
 		}
 
@@ -611,13 +682,17 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.MELEE:
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (receiveNextSlash == false || CanSlash == false)
+				if (!receiveNextSlash|| !CanSlash)
 					return;
-				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
+
+				if (curWeapons [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
+					return;
 
 				if (((handPosition == 1) ? isLSlashPlaying : isRSlashPlaying) != 0) { // only one can play at the same time
 					return;
 				}
+
+				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
@@ -649,7 +724,7 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.BCN:
 			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!Input.GetKeyUp (KeyCode.Mouse0) || animator.GetBool ("BCNPose") == false || mechController.grounded == false)
+				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool ("BCNPose") || !mechController.grounded)
 					return;
 				setIsFiring (handPosition, true);
 				HeatBar.IncreaseHeatBarL (45); 
@@ -727,17 +802,20 @@ public class MechCombat : Combat {
 
 	void updateHUD() {
 		// Update Health bar gradually
-		healthBar.value = calculateSliderPercent(healthBar.value, currentHP/(float)MAX_HP);
-
+		healthBar.value = calculateSliderPercent (healthBar.value, currentHP / (float)MAX_HP );
+		healthtext.text = BarValueToString (currentHP, MAX_HP);
 		// Update Fuel bar gradually
 		fuelBar.value = calculateSliderPercent(fuelBar.value, currentFuel/(float)MAX_FUEL);
+		fueltext.text = BarValueToString ((int)currentFuel, (int)MAX_FUEL);
 	}
 
 	// Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
 	float calculateSliderPercent(float currentPercent, float targetPercent) {
-		float err = 0.01f;
+		float err = 0.005f;
 		if (Mathf.Abs(currentPercent - targetPercent) > err) {
-			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.005f : 0.005f);
+		}else{
+			currentPercent = targetPercent;
 		}
 		return currentPercent;
 	}
@@ -748,8 +826,8 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void CallSwitchWeapons() {
 		//Play switch weapon animation
-		SwitchWeaponEffectL.SetActive (true);
-		SwitchWeaponEffectR.SetActive (true);
+		SwitchWeaponEffectL.Play();
+		SwitchWeaponEffectR.Play();
 
 
 		//decrease energy
@@ -758,15 +836,26 @@ public class MechCombat : Combat {
 		Sounds.PlaySwitchWeapon ();
 		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
+
+		//update customproperty
+		if (photonView.isMine) {
+			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+			h.Add ("weaponOffset", (weaponOffset + 2) % 4);
+			photonView.owner.SetCustomProperties (h);
+		}
 	}
 
 	void SwitchWeaponsBegin(){
 		// Stop current attacks
 		setIsFiring(LEFT_HAND, false);
 		setIsFiring(RIGHT_HAND, false);
+
 		// Stop current animations
 		animator.SetBool(animationString(LEFT_HAND), false);
 		animator.SetBool(animationString(RIGHT_HAND), false);
+
+		if(bulletCoroutine != null)
+			StopCoroutine (bulletCoroutine);
 
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
@@ -781,14 +870,9 @@ public class MechCombat : Combat {
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
 		UpdateCurWeaponType ();
+		UpdateMuz ();
 		FindTrailRenderer ();
 
-		//update customproperty
-		if (photonView.isMine) {
-			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ("weaponOffset", weaponOffset);
-			photonView.owner.SetCustomProperties (h);
-		}
 		//check if using RCL => RCLIdle
 		if(usingRCLWeapon(0)){
 			animator.SetBool ("UsingRCL", true);
@@ -807,8 +891,8 @@ public class MechCombat : Combat {
 		isSwitchingWeapon = false;
 
 		//Stop switch weapon animation
-		SwitchWeaponEffectL.SetActive (false);
-		SwitchWeaponEffectR.SetActive (false);
+		SwitchWeaponEffectL.Stop();
+		SwitchWeaponEffectR.Stop();
 
 
 	}
@@ -948,14 +1032,16 @@ public class MechCombat : Combat {
 	void FindTrailRenderer(){
 		if(curWeapons[0] == (int)WeaponTypes.MELEE){
 			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
-			trailRendererL.enabled = false;
+			if(trailRendererL!=null)
+				trailRendererL.enabled = false;
 		}else{
 			trailRendererL = null;
 		}
 
 		if(curWeapons[1] == (int)WeaponTypes.MELEE){
 			trailRendererR = weapons [weaponOffset+1].GetComponentInChildren<TrailRenderer> ();
-			trailRendererR.enabled = false;
+			if(trailRendererR!=null)
+				trailRendererR.enabled = false;
 		}else{
 			trailRendererR = null;
 		}
@@ -967,7 +1053,29 @@ public class MechCombat : Combat {
 	}
 	public void ShowTrailR(bool show){
 		if(trailRendererR!=null)
-		trailRendererR.enabled = show;
+			trailRendererR.enabled = show;
+	}
+
+	private string BarValueToString(int curvalue, int maxvalue){
+		string curvalueStr = curvalue.ToString ();
+		string maxvalueStr = maxvalue.ToString ();
+
+		string finalStr = string.Empty;
+		for(int i=0;i<4-curvalueStr.Length;i++){
+				finalStr += "0 ";
+		}
+
+		for(int i=0;i<curvalueStr.Length;i++){
+			finalStr += (curvalueStr [i] + " ");
+			
+		}
+		finalStr += "/ ";
+		for(int i=0;i<3;i++){
+			finalStr += (maxvalueStr [i] + " ");
+		}
+		finalStr += maxvalueStr [3];
+
+		return finalStr;
 	}
 		
 //	public void BulletTraceEvent() {
