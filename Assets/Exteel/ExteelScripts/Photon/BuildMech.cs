@@ -531,8 +531,13 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
 		Muz = weapons [weapPos].GetComponentInChildren<ParticleSystem> ();
-		if (Muz != null)
-			Muz.Stop ();
+		if (Muz != null) {
+			if(!inHangar)
+				Muz.Stop ();
+			else{
+				Muz.gameObject.SetActive(false);
+			}
+		}
 		
 		UpdateCurWeapons ();
 		CheckAnimatorState ();
@@ -556,7 +561,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		for(int i=0;i<4;i++)if(curWeapons[i]!="EmptyWeapon")EquipWeapon (curWeapons [i],i);
 	}
 
-	private void UpdateCurWeapons(){
+	public void UpdateCurWeapons(){
 		curWeapons [0] = UserData.myData.Mech[Mech_Num].Weapon1L;
 		curWeapons [1] = UserData.myData.Mech[Mech_Num].Weapon1R;
 		curWeapons [2] = UserData.myData.Mech[Mech_Num].Weapon2L;
@@ -617,9 +622,5 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	public void SetMechNum(int num){
 		Mech_Num = num;
-	}
-
-	void StopMuz(){
-		
 	}
 }

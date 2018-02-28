@@ -1113,7 +1113,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 236393243}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -518.2301, y: 256, z: 0}
+  m_LocalPosition: {x: -512, y: 256, z: 0}
   m_LocalScale: {x: 1, y: 0.9165611, z: 1}
   m_Children:
   - {fileID: 1523021234}
@@ -1827,10 +1827,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 428959974}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ee075c276e2d41689c69ad32c268c68, type: 3}
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  cc: {fileID: 0}
+  mctrl: {fileID: 0}
+  mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
+  boost_id: 0
+  grounded_id: 0
+  jump_id: 0
+  speed_id: 0
+  direction_id: 0
+  onSlash_id: 0
+  inHangar: 1
 --- !u!4 &428959976
 Transform:
   m_ObjectHideFlags: 0
@@ -1928,22 +1938,19 @@ MonoBehaviour:
     Name: BCNPose
   - Type: 4
     SynchronizeType: 0
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 0
-    Name: SlashR3
-  - Type: 4
-    SynchronizeType: 0
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 0
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 0
     Name: ShootBCN
   - Type: 4
     SynchronizeType: 0
     Name: OnBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootL
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: UsingBCN
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -6987,7 +6994,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1000983479}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -518.2301, y: -26, z: -16}
+  m_LocalPosition: {x: -512, y: -26, z: -16}
   m_LocalScale: {x: 1.0001067, y: 0.91648, z: 1.0001067}
   m_Children:
   - {fileID: 502838250}
@@ -13556,7 +13563,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1950139391}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -797.5158, y: 25, z: 0}
+  m_LocalPosition: {x: -791.2857, y: 25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 217981201}
@@ -14167,7 +14174,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2116817709}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -687.5158, y: 25, z: 0}
+  m_LocalPosition: {x: -681.2857, y: 25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1741659495}

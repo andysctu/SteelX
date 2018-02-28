@@ -2091,7 +2091,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 110760517}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -52.930115, y: 235.5, z: -11.1}
+  m_LocalPosition: {x: -46.700012, y: 235.5, z: -11.1}
   m_LocalScale: {x: 0.40021333, y: 1.0001067, z: 1.0001067}
   m_Children:
   - {fileID: 1586517883}
@@ -3079,7 +3079,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 153797371}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -498.2301, y: 251, z: 0}
+  m_LocalPosition: {x: -492, y: 251, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1835605586}
@@ -5327,6 +5327,7 @@ GameObject:
   - component: {fileID: 292688473}
   - component: {fileID: 292688472}
   - component: {fileID: 292688471}
+  - component: {fileID: 292688478}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -5540,18 +5541,6 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 2
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR3
-  - Type: 4
-    SynchronizeType: 2
     Name: OnSlash
   - Type: 4
     SynchronizeType: 2
@@ -5559,6 +5548,24 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: ShootRCL
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNPose
+  - Type: 4
+    SynchronizeType: 0
+    Name: ShootBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootL
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: UsingBCN
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -5612,6 +5619,28 @@ Transform:
   m_Father: {fileID: 554151909}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &292688478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 292688469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cc: {fileID: 0}
+  mctrl: {fileID: 0}
+  mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
+  boost_id: 0
+  grounded_id: 0
+  jump_id: 0
+  speed_id: 0
+  direction_id: 0
+  onSlash_id: 0
+  inHangar: 1
 --- !u!1 &294045203
 GameObject:
   m_ObjectHideFlags: 0
@@ -23307,6 +23336,7 @@ GameObject:
   - component: {fileID: 884241023}
   - component: {fileID: 884241022}
   - component: {fileID: 884241021}
+  - component: {fileID: 884241028}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -23520,18 +23550,6 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 2
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR3
-  - Type: 4
-    SynchronizeType: 2
     Name: OnSlash
   - Type: 4
     SynchronizeType: 2
@@ -23539,6 +23557,24 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: ShootRCL
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNPose
+  - Type: 4
+    SynchronizeType: 0
+    Name: ShootBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootL
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: UsingBCN
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -23592,6 +23628,28 @@ Transform:
   m_Father: {fileID: 1746986517}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &884241028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 884241019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cc: {fileID: 0}
+  mctrl: {fileID: 0}
+  mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
+  boost_id: 0
+  grounded_id: 0
+  jump_id: 0
+  speed_id: 0
+  direction_id: 0
+  onSlash_id: 0
+  inHangar: 1
 --- !u!1 &895220370
 GameObject:
   m_ObjectHideFlags: 0
@@ -31224,6 +31282,7 @@ GameObject:
   - component: {fileID: 1211057272}
   - component: {fileID: 1211057271}
   - component: {fileID: 1211057270}
+  - component: {fileID: 1211057277}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -31437,18 +31496,6 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 2
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR3
-  - Type: 4
-    SynchronizeType: 2
     Name: OnSlash
   - Type: 4
     SynchronizeType: 2
@@ -31456,6 +31503,24 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: ShootRCL
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNPose
+  - Type: 4
+    SynchronizeType: 0
+    Name: ShootBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootL
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: UsingBCN
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -31509,6 +31574,28 @@ Transform:
   m_Father: {fileID: 1323358518}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1211057277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1211057268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cc: {fileID: 0}
+  mctrl: {fileID: 0}
+  mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
+  boost_id: 0
+  grounded_id: 0
+  jump_id: 0
+  speed_id: 0
+  direction_id: 0
+  onSlash_id: 0
+  inHangar: 1
 --- !u!1001 &1211613024
 Prefab:
   m_ObjectHideFlags: 0
@@ -48707,6 +48794,7 @@ GameObject:
   - component: {fileID: 1449948370}
   - component: {fileID: 1449948369}
   - component: {fileID: 1449948368}
+  - component: {fileID: 1449948375}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -48920,18 +49008,6 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 2
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 2
-    Name: SlashR3
-  - Type: 4
-    SynchronizeType: 2
     Name: OnSlash
   - Type: 4
     SynchronizeType: 2
@@ -48939,6 +49015,24 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: ShootRCL
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNPose
+  - Type: 4
+    SynchronizeType: 0
+    Name: ShootBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootL
+  - Type: 4
+    SynchronizeType: 0
+    Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: UsingBCN
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -48992,6 +49086,28 @@ Transform:
   m_Father: {fileID: 841308228}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1449948375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1449948366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cc: {fileID: 0}
+  mctrl: {fileID: 0}
+  mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
+  boost_id: 0
+  grounded_id: 0
+  jump_id: 0
+  speed_id: 0
+  direction_id: 0
+  onSlash_id: 0
+  inHangar: 1
 --- !u!1 &1455555386
 GameObject:
   m_ObjectHideFlags: 0
@@ -49046,7 +49162,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1457195501}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 293.7699, y: 199, z: 0}
+  m_LocalPosition: {x: 300, y: 199, z: 0}
   m_LocalScale: {x: 0.4, y: 1, z: 1}
   m_Children:
   - {fileID: 708642444}
@@ -57879,7 +57995,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1655710229}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -260.5301, y: 235.5, z: -10.8}
+  m_LocalPosition: {x: -254.29999, y: 235.5, z: -10.8}
   m_LocalScale: {x: 0.40021333, y: 1.0001067, z: 1.0001067}
   m_Children:
   - {fileID: 958958750}
@@ -59388,7 +59504,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1773951822}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 365.7699, y: 199, z: 0}
+  m_LocalPosition: {x: 372, y: 199, z: 0}
   m_LocalScale: {x: 0.40021333, y: 1.0001067, z: 1.0001067}
   m_Children:
   - {fileID: 2147263830}
@@ -75810,7 +75926,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1976943319}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -121.2301, y: 235.5, z: -10.8}
+  m_LocalPosition: {x: -115, y: 235.5, z: -10.8}
   m_LocalScale: {x: 0.40021333, y: 1.0001067, z: 1.0001067}
   m_Children:
   - {fileID: 1868906224}
@@ -81651,7 +81767,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2147239883}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -190.53009, y: 235.5, z: -8.3}
+  m_LocalPosition: {x: -184.29999, y: 235.5, z: -8.3}
   m_LocalScale: {x: 0.40021333, y: 1.0001067, z: 1.0001067}
   m_Children:
   - {fileID: 690122897}
