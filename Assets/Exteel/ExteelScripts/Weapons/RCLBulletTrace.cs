@@ -15,7 +15,7 @@ public class RCLBulletTrace : MonoBehaviour {
 	private LayerMask PlayerlayerMask;
 	[SerializeField]
 	private PhotonView pv;
-	private int bulletdmg = 100;
+	private int bulletdmg = 450;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1] ;
 	private Transform Target;
@@ -35,12 +35,14 @@ public class RCLBulletTrace : MonoBehaviour {
 	void OnParticleCollision(GameObject other){
 		if (isCollided || other == Shooter)
 			return;
-
+		
 		if(GameManager.isTeamMode){
-			if(other.layer == PlayerlayerMask)
-				if (other.tag == "Drone"|| other.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
+			if (other.layer == 8) {
+				print (other.transform.root.GetComponent<PhotonView> ().owner.GetTeam () +" "+ Shooter.GetComponent<PhotonView> ().owner.GetTeam ());
+				if (other.tag == "Drone" || other.transform.root.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
 					return;
-		}
+			}
+		}	
 
 		isCollided = true;
 		ps.Stop ();

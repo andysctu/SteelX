@@ -1,12 +1,13 @@
 fileFormatVersion: 2
 guid: 00429edee359949d9955d2393313fad6
-timeCreated: 1519528064
+timeCreated: 1519792432
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: bar_green
     21300002: BCN029
     21300004: RCL034
+    21300006: Commander
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -103,7 +104,7 @@ TextureImporter:
         width: 100
         height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -116,6 +117,20 @@ TextureImporter:
         y: 695
         width: 102
         height: 50
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Commander
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 546
+        width: 126
+        height: 98
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

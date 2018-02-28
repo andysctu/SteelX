@@ -219,15 +219,15 @@ public class MechCombat : Combat {
 		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());
 		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
 		if( target != null){
-			Debug.Log("Hit tag: " + target.tag);
-			Debug.Log("Hit name: " + target.name);
+			//Debug.Log("Hit tag: " + target.tag);
+			//Debug.Log("Hit name: " + target.name);
 			if (curWeapons [handPosition] != (int)WeaponTypes.ENG) {
 				if (target.tag == "Player" || target.tag == "Drone") {
 				
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
 					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, (isSlowDown) ? 0.4f : 0);
-					Debug.Log ("Damage: " + damage + ", Range: " + range);
+					//Debug.Log ("Damage: " + damage + ", Range: " + range);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -299,7 +299,6 @@ public class MechCombat : Combat {
 	void RegisterBulletTrace(int handPosition, Vector3 direction , int playerPVid , bool isShield) {
 		if (playerPVid != -1) {
 			Target = PhotonView.Find (playerPVid).gameObject;
-			print ("the target is :" + Target);
 		}
 		else
 			Target = null;
@@ -352,7 +351,7 @@ public class MechCombat : Combat {
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
 	public override void OnHit(int d, int shooter_viewID, float slowdownDuration = 0) {
-		Debug.Log ("OnHit, isDead: " + isDead);
+		//Debug.Log ("OnHit, isDead: " + isDead);
 		// If already dead, do nothing
 		if (isDead) {
 			return;
@@ -362,7 +361,7 @@ public class MechCombat : Combat {
 		}
 		// Apply damage
 		currentHP -= d;
-		Debug.Log ("HP: " + currentHP);
+		//Debug.Log ("HP: " + currentHP);
 
 		// If fatal hit,
 		if (currentHP <= 0) {

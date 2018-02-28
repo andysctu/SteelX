@@ -1,11 +1,13 @@
 fileFormatVersion: 2
 guid: e2da79d0a159c4f38b97daa57ebc0636
-timeCreated: 1519386722
+timeCreated: 1519791657
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: Respawn_Panel01
     21300002: bluebackground
+    21300004: standingZone
+    21300006: Tab
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -101,6 +103,34 @@ TextureImporter:
         y: 192
         width: 554
         height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: standingZone
+      rect:
+        serializedVersion: 2
+        x: 654
+        y: 0
+        width: 370
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Tab
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 712
+        width: 52
+        height: 34
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

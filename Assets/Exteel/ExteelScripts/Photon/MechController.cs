@@ -35,6 +35,7 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField]
 	private MechCombat mechCombat;
 	private Transform camTransform;
+	private GameManager gm;
 	[SerializeField]
 	private Camera cam;
 	private Vector3 originalCamPos;
@@ -65,6 +66,7 @@ public class MechController : Photon.MonoBehaviour {
 	void initComponents() {
 		CharacterController = GetComponent<CharacterController> ();
 		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
+		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 
 	void initTransforms() {
@@ -80,7 +82,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	void FixedUpdate() {
 		// Do nothing if CharacterController not found & slashing
-		if (CharacterController == null || !CharacterController.enabled ){
+		if (CharacterController == null || !CharacterController.enabled){
 			return;
 		}
 
@@ -127,6 +129,10 @@ public class MechController : Photon.MonoBehaviour {
 			move.z = move.z * 0.2f;
 		}
 
+		if(!gm.GameIsBegin){
+			move.x = 0;
+			move.z = 0;
+		}
 		CharacterController.Move(move);
 	}
 	public void SetSlashMoving(Vector3 dir, float speed){

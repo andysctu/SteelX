@@ -38,7 +38,7 @@ public class LoginManager : MonoBehaviour {
 
 		if (fields [0].text.Length == 0) {
 			fields [0].text = "andysctu";
-			fields [1].text = "password";
+			//fields [1].text = "password";
 		} else {
 			PhotonNetwork.playerName = fields [0].text;
 		}
@@ -47,6 +47,9 @@ public class LoginManager : MonoBehaviour {
 
 		//WWW www = new WWW(LoginURL, form);
 
+		if (fields [1].text [0] != '0')
+			return;
+		
 		Debug.Log("Authenticating...");
 
 		print ("PlayerName :" + PhotonNetwork.playerName);

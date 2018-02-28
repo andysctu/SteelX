@@ -7,6 +7,8 @@ public class HUD : MonoBehaviour {
 
 	[SerializeField] GameObject Placeholder;
 	[SerializeField] Sprite Hit, Kill, Defense, GameOver;
+	[SerializeField] GameObject WaitOtherPlayer;
+	[SerializeField] GameObject GameStart;
 	void Start() {
 		Cursor.lockState = CursorLockMode.Confined;
 		Cursor.visible = false;
@@ -30,5 +32,17 @@ public class HUD : MonoBehaviour {
 		i.transform.localScale = new Vector3(1,1,1);
 
 		if (Text != "GameOver") Destroy(i, 0.5f);
+	}
+
+	public void ShowWaitOtherPlayer(bool b){
+		if(b){
+			WaitOtherPlayer.SetActive (true);
+		}else{
+			WaitOtherPlayer.SetActive (false);
+		}
+	}
+
+	public void ShowGameStart(){
+		GameStart.SetActive(true);
 	}
 }

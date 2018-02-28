@@ -20,7 +20,6 @@ public class HangarManager : MonoBehaviour {
 	//private Dictionary<string, string> equipped;
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
 	public int Mech_Num = 0;
-
 	// Use this for initialization
 	void Start () {
 		Mech m = UserData.myData.Mech[Mech_Num];

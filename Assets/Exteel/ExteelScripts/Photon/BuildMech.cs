@@ -147,14 +147,18 @@ public class BuildMech : Photon.MonoBehaviour {
 		ShotSounds = new AudioClip[4];
 
 		MechCombat mechCombat = GetComponent<MechCombat>();
-		gameObject.transform.rotation = Quaternion.Euler (new Vector3 (0, 180, 0));
+		//gameObject.transform.rotation = Quaternion.Euler (new Vector3 (0, 180, 0));
 
 		for (int i = 0; i < weaponNames.Length; i++) {
 			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
 			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
 
-			if(onPanel){
+			if(onPanel){//resize
 				weapons [i].transform.localScale *=22f;
+			}else if(SceneManagerHelper.ActiveSceneName == "Lobby"){
+				weapons [i].transform.localScale *= 0.7f;
+			}else if(SceneManagerHelper.ActiveSceneName == "Hangar"){
+				
 			}
 
 			//turn off muz

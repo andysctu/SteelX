@@ -11,6 +11,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
 	[SerializeField] private InRoomChat InRoomChat;
 
+	private bool callStartgame = false;
 	private string[] Maps = new string[3]{"Simulation", "V-Hill", "City"};
 	List<GameObject> players ;
 	// Use this for initialization
@@ -93,6 +94,9 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	}
 
 	public void SwitchTeamBlue(){
+		if(callStartgame){
+			return;
+		}
 		if(PunTeams.Team.blue == PhotonNetwork.player.GetTeam()){
 			return;
 		}else{
@@ -101,6 +105,9 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		}
 	}
 	public void SwitchTeamRed(){
+		if(callStartgame){
+			return;
+		}
 		if(PunTeams.Team.red == PhotonNetwork.player.GetTeam()){
 			return;
 		}else{
@@ -115,6 +122,9 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	}
 
 	public void StartGame() {
+		if(callStartgame){
+			return;
+		}
 		Debug.Log ("Starting game");
 		PhotonNetwork.room.open = false;//join mid game
 
@@ -122,6 +132,13 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		h.Add ("GameInit", false);
 		PhotonNetwork.room.SetCustomProperties (h);
 
+		photonView.RPC ("CallStartGame", PhotonTargets.AllBuffered);
+
+		Invoke ("MasterLoadLevel", 3f);
+		//PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
+	}
+
+	void MasterLoadLevel(){
 		PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
 	}
 
@@ -252,5 +269,11 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		}
 
 		addPlayer (name, (teamID == 0) ? PunTeams.Team.blue : PunTeams.Team.red);
+	}
+
+	[PunRPC]
+	void CallStartGame(){
+		callStartgame = true;
+		InRoomChat.AddLine ("Game will start in 3 sec.");
 	}
 }

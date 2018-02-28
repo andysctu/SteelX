@@ -17,6 +17,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject RedScore, BlueScore;
 	[SerializeField] Text RedScoreText, BlueScoreText;
 	[SerializeField] GameObject MechFrame;
+
 	GreyZone Zone;
 
 	public InRoomChat InRoomChat;
@@ -41,9 +42,17 @@ public class GameManager : Photon.MonoBehaviour {
 	private bool IsMasterInitGame = false; 
 	private bool OnCheckInitGame = false;
 	private bool flag_is_sync = false;
+	private bool canStart = false; // this is true when all player finish loading
+	private int waitTimes = 0;
+	private float lastCheckCanStartTime = 0;
+
+	public  bool GameIsBegin = false; 
+	private bool callGameBegin = false;
+	private int GameBeginTime = 0; 
+
 	private int sendTimes = 0;
 	private int respawnPoint;
-
+	private int playerfinishedloading = 0;
 	//debug
 	public bool callEndGame = false;
 
@@ -109,9 +118,9 @@ public class GameManager : Photon.MonoBehaviour {
 
 		if (isTeamMode) {
 			if(PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none)
-				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
 			else{
-				InstantiatePlayer (PlayerPrefab.name, SpawnPoints [1].position, SpawnPoints [1].rotation, 0);
+				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [1].position, 20),SpawnPoints [1].rotation, 0);
 			}
 			Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
 			if (PhotonNetwork.room.CustomProperties ["Zone"] != null) {
@@ -120,8 +129,10 @@ public class GameManager : Photon.MonoBehaviour {
 				Zone.ChangeZone (-1);
 			}
 		}else{
-			InstantiatePlayer (PlayerPrefab.name, SpawnPoints [0].position, SpawnPoints [0].rotation, 0);
+			InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
 		}
+
+		hud.ShowWaitOtherPlayer (true);
 	}
 		
 	IEnumerator LateStart(){
@@ -137,12 +148,14 @@ public class GameManager : Photon.MonoBehaviour {
 				Debug.Log ("master not connected");
 			}else{
 				InRoomChat.AddLine ("Game is sync.");
+				photonView.RPC ("PlayerFinishedLoading", PhotonTargets.AllBuffered);
 			}
 
 			BlueScoreText.text = (PhotonNetwork.room.CustomProperties ["BlueScore"]==null)? "0" : PhotonNetwork.room.CustomProperties ["BlueScore"].ToString();
 			RedScoreText.text = (PhotonNetwork.room.CustomProperties ["RedScore"]==null)? "0" : PhotonNetwork.room.CustomProperties ["RedScore"].ToString ();
 			bluescore = int.Parse (BlueScoreText.text);
 			redscore = int.Parse (RedScoreText.text);
+
 		}
 
 	}
@@ -165,6 +178,7 @@ public class GameManager : Photon.MonoBehaviour {
 		mechBuilder = player.GetComponent<BuildMech>();
 		Mech m = UserData.myData.Mech[0]; // HERE !
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+
 
 		if(player.GetComponent<PhotonView>().isMine){
 			cam = player.transform.Find("Camera").GetComponent<Camera>();
@@ -302,6 +316,35 @@ public class GameManager : Photon.MonoBehaviour {
 			}
 		}
 	}
+
+	void FixedUpdate(){
+		if(!GameIsBegin){
+			if(currentTimer <= GameBeginTime){
+				SetGameBegin ();
+				hud.ShowWaitOtherPlayer (false);
+				Debug.Log ("set game begin");
+			}
+
+			if(PhotonNetwork.isMasterClient && !callGameBegin){
+				if (!canStart) {
+					if (waitTimes <= 5) {// check if all player finish loading every 2 sec
+						if (Time.time - lastCheckCanStartTime >= 2f) {
+							waitTimes++;
+							lastCheckCanStartTime = Time.time;
+						}
+					} else {//wait too long
+						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer - 2);
+						callGameBegin = true;
+					}
+				}
+				else{//all player finish loading
+					photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer-2);
+					callGameBegin = true;
+				}
+			}
+		}	
+	}
+
 
 	IEnumerator SyncTimeRequest(float time){
 		OnSyncTimeRequest = true;
@@ -671,5 +714,39 @@ public class GameManager : Photon.MonoBehaviour {
 		hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");//every player's hud on Gamemanager is his
 		Scoreboard.SetActive(true);
 		StartCoroutine(ExecuteAfterTime(3));
+	}
+
+	[PunRPC]
+	void PlayerFinishedLoading(){
+		playerfinishedloading++;//in case master switches
+
+		if(!PhotonNetwork.isMasterClient){
+			return;
+		}
+
+		if(playerfinishedloading >= PhotonNetwork.room.PlayerCount){
+			canStart = true;
+			print ("can start now.");
+		}
+	}
+
+	[PunRPC]
+	void CallGameBeginAtTime(int time){
+		GameBeginTime = time;
+	}
+
+	void SetGameBegin(){
+		GameIsBegin = true;
+	}
+
+	Vector3 RandomXZposition(Vector3 pos, float radius){
+		float x = Random.Range (pos.x - radius, pos.x + radius);
+		float z = Random.Range (pos.z - radius, pos.z + radius);
+		return new Vector3 (x, pos.y, z);
+	}
+
+	Quaternion RandomYrotation(Quaternion qua){
+		Vector3 euler = qua.eulerAngles;
+		return Quaternion.Euler (new Vector3 (euler.x, Random.Range (0, 180), euler.z));
 	}
 }

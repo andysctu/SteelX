@@ -13,7 +13,7 @@ public class Crosshair : MonoBehaviour {
 	private bool isTeamMode;
 	private bool isTargetAllyL = false, isTargetAllyR = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
-	public const float CAM_DISTANCE_TO_MECH = 20f;
+	public const float CAM_DISTANCE_TO_MECH = 12f;//org 20
 
 	public float SphereRadiusCoeff;
 	public float DistanceCoeff;
@@ -101,6 +101,7 @@ public class Crosshair : MonoBehaviour {
 	void Update () {
 		if (CrosshairRadiusL > 0) {
 			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, camera.transform.forward,MaxDistanceL, playerlayer);
+			//print ("cast start pos : " + camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH));
 			foreach(RaycastHit target in targets){
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)

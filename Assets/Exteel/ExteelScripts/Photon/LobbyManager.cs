@@ -6,6 +6,11 @@ public class LobbyManager: MonoBehaviour {
 
 	[SerializeField] Text RoomName;
 
+	//just to see how many player in lobby
+	[SerializeField] Text playercountText;
+	private float checkPlayerTime = 0;
+	private const float checkPlayerDeltaTime = 6f;
+
 	// Use this for initialization
 	void Start () {
 		// For debugging, so we don't have to login each time
@@ -32,6 +37,13 @@ public class LobbyManager: MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	void FixedUpdate(){
+		if(Time.time - checkPlayerTime >= checkPlayerDeltaTime){
+			checkPlayerTime = Time.time;
+			playercountText.text = PhotonNetwork.countOfPlayers.ToString();
+		}
 	}
 
 	void OnJoinedLobby(){
