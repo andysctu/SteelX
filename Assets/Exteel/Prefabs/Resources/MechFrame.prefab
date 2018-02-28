@@ -744,6 +744,7 @@ GameObject:
   - component: {fileID: 114000010976113334}
   - component: {fileID: 82000013355623540}
   - component: {fileID: 114895722533198232}
+  - component: {fileID: 114137985907184306}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -5257,6 +5258,27 @@ MonoBehaviour:
   m_FillAmount: 0.108
   m_FillClockwise: 1
   m_FillOrigin: 1
+--- !u!114 &114137985907184306
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cc: {fileID: 0}
+  mctrl: {fileID: 0}
+  mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
+  boost_id: 0
+  grounded_id: 0
+  jump_id: 0
+  speed_id: 0
+  direction_id: 0
+  onSlash_id: 0
 --- !u!114 &114189640356066892
 MonoBehaviour:
   m_ObjectHideFlags: 1

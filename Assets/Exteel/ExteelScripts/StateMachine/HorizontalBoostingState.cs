@@ -11,11 +11,15 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+		if (cc == null || !cc.enabled)
+			return;
+		
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			JumpedState.jumpReleased = true;
-			Debug.Log("jr ");
 		}
-		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
+
+		if (!cc.isGrounded)
+			return;
 
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
