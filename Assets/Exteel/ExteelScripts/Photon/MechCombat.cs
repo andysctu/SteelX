@@ -19,8 +19,8 @@ public class MechCombat : Combat {
 	HealthPoolBar HealthpoolBar;
 	ParticleSystem MuzL,MuzR;
 	// Boost variables
-	private float fuelDrain = 1.0f;
-	private float fuelGain = 1.0f;
+	private float fuelDrain = 5.0f;
+	private float fuelGain = 5.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
 	public float jumpPower = 100.0f;
@@ -70,6 +70,7 @@ public class MechCombat : Combat {
 	// HUD
 	private Slider healthBar;
 	private Slider fuelBar;
+	Text healthtext,fueltext;
 	private HUD hud;
 	private Camera cam; //*
 
@@ -187,10 +188,11 @@ public class MechCombat : Combat {
 		if (sliders.Length > 0) {
 			healthBar = sliders[0];
 			healthBar.value = 1;
-
+			healthtext = healthBar.GetComponentInChildren<Text> ();
 			if (sliders.Length > 1) {
 				fuelBar = sliders[1];
 				fuelBar.value = 1;
+				fueltext = fuelBar.GetComponentInChildren<Text> ();
 			}
 		}
 	}
@@ -800,17 +802,20 @@ public class MechCombat : Combat {
 
 	void updateHUD() {
 		// Update Health bar gradually
-		healthBar.value = calculateSliderPercent(healthBar.value, currentHP/(float)MAX_HP);
-
+		healthBar.value = calculateSliderPercent (healthBar.value, currentHP / (float)MAX_HP );
+		healthtext.text = BarValueToString (currentHP, MAX_HP);
 		// Update Fuel bar gradually
 		fuelBar.value = calculateSliderPercent(fuelBar.value, currentFuel/(float)MAX_FUEL);
+		fueltext.text = BarValueToString ((int)currentFuel, (int)MAX_FUEL);
 	}
 
 	// Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
 	float calculateSliderPercent(float currentPercent, float targetPercent) {
-		float err = 0.01f;
+		float err = 0.005f;
 		if (Mathf.Abs(currentPercent - targetPercent) > err) {
-			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.01f : 0.01f);
+			currentPercent = currentPercent + (currentPercent > targetPercent ? -0.005f : 0.005f);
+		}else{
+			currentPercent = targetPercent;
 		}
 		return currentPercent;
 	}
@@ -1049,6 +1054,28 @@ public class MechCombat : Combat {
 	public void ShowTrailR(bool show){
 		if(trailRendererR!=null)
 			trailRendererR.enabled = show;
+	}
+
+	private string BarValueToString(int curvalue, int maxvalue){
+		string curvalueStr = curvalue.ToString ();
+		string maxvalueStr = maxvalue.ToString ();
+
+		string finalStr = string.Empty;
+		for(int i=0;i<4-curvalueStr.Length;i++){
+				finalStr += "0 ";
+		}
+
+		for(int i=0;i<curvalueStr.Length;i++){
+			finalStr += (curvalueStr [i] + " ");
+			
+		}
+		finalStr += "/ ";
+		for(int i=0;i<3;i++){
+			finalStr += (maxvalueStr [i] + " ");
+		}
+		finalStr += maxvalueStr [3];
+
+		return finalStr;
 	}
 		
 //	public void BulletTraceEvent() {
