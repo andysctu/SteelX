@@ -242,6 +242,8 @@ public class HangarManager : MonoBehaviour {
 
 		displaybutton1.onClick.AddListener (() => Mech_Display[Num].GetComponent<BuildMech>().DisplayFirstWeapons());
 		displaybutton2.onClick.AddListener (() => Mech_Display[Num].GetComponent<BuildMech>().DisplaySecondWeapons());
+
+		Mech_Display [Mech_Num].GetComponent<BuildMech> ().CheckAnimatorState ();
 	}
 }
 

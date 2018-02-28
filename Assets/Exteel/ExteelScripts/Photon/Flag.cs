@@ -34,7 +34,7 @@ public class Flag : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider collider){
-		if (isGrounded == false || collider.gameObject.layer == Terrain)
+		if (!isGrounded|| collider.gameObject.layer == Terrain)
 			return;
 
 		PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();

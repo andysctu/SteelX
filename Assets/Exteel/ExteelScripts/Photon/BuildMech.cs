@@ -22,6 +22,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	public Weapon[] weaponScripts;
 	private String[] curWeapons = new String[4];
+	private ParticleSystem Muz;
 	private int weaponOffset = 0;
 
 	private bool inHangar = false;
@@ -155,6 +156,19 @@ public class BuildMech : Photon.MonoBehaviour {
 			if(onPanel){
 				weapons [i].transform.localScale *=22f;
 			}
+
+			//turn off muz
+			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
+			if (Muz != null) {
+				Muz.Stop ();
+				if (inHangar) {
+					Muz.gameObject.SetActive (false);
+				}
+			}else{
+				print ("muz is null");
+			}
+
+
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts [i] = new APS403 ();
@@ -334,7 +348,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
 			}
 		}
-
 		UpdateCurWeapons ();
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
@@ -517,6 +530,15 @@ public class BuildMech : Photon.MonoBehaviour {
 			weapons [weapPos].SetActive (true);
 		}
 
+		Muz = weapons [weapPos].GetComponentInChildren<ParticleSystem> ();
+		if (Muz != null) {
+			if(!inHangar)
+				Muz.Stop ();
+			else{
+				Muz.gameObject.SetActive(false);
+			}
+		}
+		
 		UpdateCurWeapons ();
 		CheckAnimatorState ();
 	}
@@ -539,7 +561,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		for(int i=0;i<4;i++)if(curWeapons[i]!="EmptyWeapon")EquipWeapon (curWeapons [i],i);
 	}
 
-	private void UpdateCurWeapons(){
+	public void UpdateCurWeapons(){
 		curWeapons [0] = UserData.myData.Mech[Mech_Num].Weapon1L;
 		curWeapons [1] = UserData.myData.Mech[Mech_Num].Weapon1R;
 		curWeapons [2] = UserData.myData.Mech[Mech_Num].Weapon2L;

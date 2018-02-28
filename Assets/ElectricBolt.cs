@@ -32,7 +32,7 @@ public class ElectricBolt : MonoBehaviour {
     {
 		yield return customFrame;
 		points[point_Begin] = transform.position + transform.forward;
-		print ("begin :" + points [point_Begin]);
+		//print ("begin :" + points [point_Begin]);
 		if (Target != null) {
 			lineEnd.position = Target.position + new Vector3(0,5f,0);
 			points [point_End] = lineEnd.position;
