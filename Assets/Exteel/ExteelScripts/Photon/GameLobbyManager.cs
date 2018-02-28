@@ -134,7 +134,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 		photonView.RPC ("CallStartGame", PhotonTargets.AllBuffered);
 
-		Invoke ("MasterLoadLevel", 3f);
+		Invoke ("MasterLoadLevel", 0f);
 		//PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
 	}
 
@@ -274,6 +274,6 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	[PunRPC]
 	void CallStartGame(){
 		callStartgame = true;
-		InRoomChat.AddLine ("Game will start in 3 sec.");
+		InRoomChat.AddLine ("Game is starting.");
 	}
 }

@@ -224,13 +224,13 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 
-		float speed = animator.GetFloat ("Speed");
-		if (speed > 0 && grounded)
-			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 70, 0.07f);
-		else if (speed<0 && grounded)
-			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 50, 0.07f);
-		else
-			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
+//		float speed = animator.GetFloat ("Speed");
+//		if (speed > 0 && grounded)
+//			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 70, 0.07f);
+//		else if (speed<0 && grounded)
+//			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 50, 0.07f);
+//		else
+//			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
 		
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}
