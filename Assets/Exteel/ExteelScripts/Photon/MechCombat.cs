@@ -329,7 +329,7 @@ public class MechCombat : Combat {
 		}
 
 		if(bullets[weaponOffset]==null){//it happens when player die when shooting or switching weapons
-			return;
+			yield break;
 		}
 
 		if (usingRCLWeapon (handPosition)) { 
@@ -997,7 +997,7 @@ public class MechCombat : Combat {
 			return "";
 			break;
 		default:
-			weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
+			return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
 		}
 	}
 

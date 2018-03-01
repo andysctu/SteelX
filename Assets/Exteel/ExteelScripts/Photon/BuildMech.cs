@@ -629,7 +629,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void ShutDownTrail(GameObject weapon){
-		LineRenderer lineRenderer = weapon.GetComponentInChildren<LineRenderer> ().gameObject;
+		LineRenderer lineRenderer = weapon.GetComponentInChildren<LineRenderer> ();
 		if(inHangar){//set active to false
 			if(lineRenderer!=null){
 				lineRenderer.gameObject.SetActive (false);
