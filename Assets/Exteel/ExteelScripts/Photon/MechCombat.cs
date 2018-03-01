@@ -884,6 +884,7 @@ public class MechCombat : Combat {
 		}else{
 			animator.SetBool ("UsingBCN", false);
 		}
+		animator.SetBool ("BCNPose", false);
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset);
