@@ -635,7 +635,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		if(inHangar){//set active to false
 			if(trailRenderer!=null){
 				trailRenderer.gameObject.SetActive (false);
-				print ("shut donw");
 			}
 		}else{//in game -> disable
 			trailRenderer.enabled = false;

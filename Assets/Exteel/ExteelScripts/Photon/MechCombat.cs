@@ -1087,8 +1087,9 @@ public class MechCombat : Combat {
 	}
 
 	public void ShowTrailL(bool show){
-		if(trailRendererL!=null)
+		if (trailRendererL != null) {
 			trailRendererL.enabled = show;
+		}
 	}
 	public void ShowTrailR(bool show){
 		if(trailRendererR!=null)
