@@ -771,10 +771,10 @@ public class MechCombat : Combat {
 				shoulderR.Rotate (0, x, 0);
 			break;
 			case (int)WeaponTypes.RCL:
-				animator.SetBool(animationStr, true);
+				animator.SetBool (animationStr, true);
 			break;
 			case (int)WeaponTypes.BCN:
-				animator.SetBool ("ShootBCN", true);
+				animator.SetBool (animationStr, true);
 				animator.SetBool ("BCNPose", false);
 			break;
 			case (int)WeaponTypes.ENG:
@@ -850,8 +850,14 @@ public class MechCombat : Combat {
 		setIsFiring(RIGHT_HAND, false);
 
 		// Stop current animations
-		animator.SetBool(animationString(LEFT_HAND), false);
-		animator.SetBool(animationString(RIGHT_HAND), false);
+		string strL = animationString(LEFT_HAND), strR = animationString(RIGHT_HAND);
+		if(strL != ""){ // not empty weapon
+			animator.SetBool(animationString(LEFT_HAND), false);
+		}
+		if(strR != ""){
+			animator.SetBool(animationString(RIGHT_HAND), false);
+		}
+
 
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
@@ -859,7 +865,7 @@ public class MechCombat : Combat {
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
 			if(weapons[i]==null){
-				weapons [i] = bm.weapons [i];//bug
+				weapons [i] = bm.weapons [i];//bug : someimes weapons[i] doesn't update
 			}
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
@@ -873,13 +879,13 @@ public class MechCombat : Combat {
 		FindTrailRenderer ();
 
 		//check if using RCL => RCLIdle
-		if(usingRCLWeapon(0)){
+		if(curWeapons[0] == (int)WeaponTypes.RCL){
 			animator.SetBool ("UsingRCL", true);
 		}else{
 			animator.SetBool ("UsingRCL", false);
 		}
 
-		if(usingBCNWeapon(0)){
+		if(curWeapons[0] == (int)WeaponTypes.BCN){
 			animator.SetBool ("UsingBCN", true);
 		}else{
 			animator.SetBool ("UsingBCN", false);
@@ -888,11 +894,12 @@ public class MechCombat : Combat {
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset);
-		isSwitchingWeapon = false;
 
 		//Stop switch weapon animation
 		SwitchWeaponEffectL.Stop();
 		SwitchWeaponEffectR.Stop();
+
+		isSwitchingWeapon = false;
 
 
 	}
@@ -957,9 +964,19 @@ public class MechCombat : Combat {
 	} 
 
 	string animationString(int handPosition) {
-		if(!usingRCLWeapon(handPosition))
-			return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
-		else return "ShootRCL";
+		switch(curWeapons[handPosition]){
+		case (int)WeaponTypes.RCL:
+			return "ShootRCL";
+			break;
+		case (int)WeaponTypes.BCN:
+			return "ShootBCN";
+			break;
+		case (int)WeaponTypes.EMPTY:
+			return "";
+			break;
+		default:
+			weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
+		}
 	}
 
 	public void updataBullet(){// no need , change weaponOffset is done in switch Weapon
