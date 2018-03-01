@@ -218,6 +218,7 @@ public class BuildMech : Photon.MonoBehaviour {
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = null;
+
 					break;
 				}
 			case "LMG012": {
@@ -542,7 +543,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				Muz.gameObject.SetActive(false);
 			}
 		}
-		
+
+		ShutDownTrail (weapons[weapPos]);
 		UpdateCurWeapons ();
 		CheckAnimatorState ();
 	}
@@ -629,13 +631,14 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void ShutDownTrail(GameObject weapon){
-		LineRenderer lineRenderer = weapon.GetComponentInChildren<LineRenderer> ();
+		TrailRenderer trailRenderer = weapon.GetComponentInChildren<TrailRenderer> ();
 		if(inHangar){//set active to false
-			if(lineRenderer!=null){
-				lineRenderer.gameObject.SetActive (false);
+			if(trailRenderer!=null){
+				trailRenderer.gameObject.SetActive (false);
+				print ("shut donw");
 			}
 		}else{//in game -> disable
-			lineRenderer.enabled = false;
+			trailRenderer.enabled = false;
 		}
 	}
 }
