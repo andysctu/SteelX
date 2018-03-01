@@ -55,6 +55,7 @@ public class MechCombat : Combat {
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 	private bool isDeadFirstCall = true;
+	private bool isOverHeat = false;//used to check if it is just overheat
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -142,10 +143,23 @@ public class MechCombat : Combat {
 		Sounds.ShotSounds = bm.ShotSounds;
 	}
 
-	void initCombatVariables() {
+	void initCombatVariables() {// this will be called also when respawn
 		weaponScripts = bm.weaponScripts;
+		fireL = false;
+		fireR = false;
+		shootingL = false;
+		shootingR = false;
 		timeOfLastShotL = Time.time;
 		timeOfLastShotR = Time.time;
+		isOverHeat = false;
+		isSwitchingWeapon = false;
+		CanSlash = true;
+		receiveNextSlash = true;
+		isDeadFirstCall = true;
+
+		//init mctrl vars
+		mechController.grounded = true;//when respawn, this has to be true
+		//**add initvar() in mechcontroller
 	}
 
 	void initHUD() {
@@ -313,6 +327,11 @@ public class MechCombat : Combat {
 			if (MuzR != null)
 				MuzR.Play ();
 		}
+
+		if(bullets[weaponOffset]==null){//it happens when player die when shooting or switching weapons
+			return;
+		}
+
 		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
@@ -328,8 +347,9 @@ public class MechCombat : Combat {
 			}
 		}else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
+			GameObject b = bullets [weaponOffset + handPosition];
 			for (i = 0; i < bN; i++) {
-				GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+				GameObject bullet = Instantiate (b , Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
 				bulletTrace.HUD = hud;
 				bulletTrace.cam = cam;
@@ -835,16 +855,18 @@ public class MechCombat : Combat {
 		Sounds.PlaySwitchWeapon ();
 		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
+	}
 
+	void SwitchWeaponsBegin(){
+		if(isDead){
+			return;
+		}
 		//update customproperty
 		if (photonView.isMine) {
 			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 			h.Add ("weaponOffset", (weaponOffset + 2) % 4);
 			photonView.owner.SetCustomProperties (h);
 		}
-	}
-
-	void SwitchWeaponsBegin(){
 		// Stop current attacks
 		setIsFiring(LEFT_HAND, false);
 		setIsFiring(RIGHT_HAND, false);

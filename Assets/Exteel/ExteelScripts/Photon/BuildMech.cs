@@ -203,7 +203,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 
 					//Load sound 
-
+					ShutDownTrail (weapons [i]);
 					break;
 				}
 			case "SHS309": {
@@ -626,5 +626,16 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	public void SetMechNum(int num){
 		Mech_Num = num;
+	}
+
+	void ShutDownTrail(GameObject weapon){
+		LineRenderer lineRenderer = weapon.GetComponentInChildren<LineRenderer> ().gameObject;
+		if(inHangar){//set active to false
+			if(lineRenderer!=null){
+				lineRenderer.gameObject.SetActive (false);
+			}
+		}else{//in game -> disable
+			lineRenderer.enabled = false;
+		}
 	}
 }
