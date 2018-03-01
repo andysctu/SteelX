@@ -233,8 +233,8 @@ public class StoreManager : MonoBehaviour {
 	public void Buy(string part){
 		WWWForm form = new WWWForm();
 
-		form.AddField("username", PhotonNetwork.playerName);
-		form.AddField("part", part);
+		form.AddField("uid", PhotonNetwork.playerName);
+		form.AddField("eid", 6);
 
 		WWW www = new WWW(MechHandlerURL, form);
 
@@ -244,25 +244,24 @@ public class StoreManager : MonoBehaviour {
 		foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
 			Debug.Log(entry.Key + ": " + entry.Value);
 		}
+		string str = www.text;
 
+		//debug
+		print ("get str : "+str);
 		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
-			string json = www.text;
+			
 
-			//debug
-			Data test = new Data();
-			print(JsonUtility.ToJson (test));
 
-			Data d = JsonUtility.FromJson<Data>(json);
-
-			int i;
+			/*int i;
 			string[] newOwns = new string[UserData.myData.Owns.Length + 1];
 			for(i=0;i<UserData.myData.Owns.Length;i++){
 				newOwns[i] = UserData.myData.Owns[i];
 			}
 			newOwns [i] = part;
-			UserData.myData.Owns = newOwns;
+			UserData.myData.Owns = newOwns;*/
 
 		} else {
+			print ("buy failed.");
 			//error.SetActive(true);
 		}
 

@@ -84,4 +84,8 @@ public class UIManager : MonoBehaviour {
 	public void GoToHangar() {
 		SceneManager.LoadScene ("Hangar");
 	}
+
+	public void GoToStore(){
+		SceneManager.LoadScene ("Store");
+	}
 }
