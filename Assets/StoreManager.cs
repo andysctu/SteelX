@@ -163,12 +163,10 @@ public class StoreManager : MonoBehaviour {
 		switch (part [0]) {
 		case 'C':
 			parent = 0;
-			UserData.myData.Mech[Mech_Num].Core = part;
 			break;
 		case 'A':
 			if (part [1] == 'E') {
 				parent = 1;
-				UserData.myData.Mech[Mech_Num].Arms = part;
 			}
 			else {
 				parent = 5;
@@ -177,17 +175,14 @@ public class StoreManager : MonoBehaviour {
 		case 'L':
 			if (part [1] != 'M') {
 				parent = 2; 
-				UserData.myData.Mech[Mech_Num].Legs = part;
 			} else
 				parent = 5;
 			break;
 		case 'H':
 			parent = 3;
-			UserData.myData.Mech[Mech_Num].Head = part;
 			break;
 		case 'P':
 			parent = 4;
-			UserData.myData.Mech[Mech_Num].Booster = part;
 			break;
 		default:
 			parent = 5;
@@ -197,27 +192,8 @@ public class StoreManager : MonoBehaviour {
 			curSMR[parent].sharedMesh = newSMR.sharedMesh;
 			curSMR [parent].material = material;
 		} else {
-			switch (weap) {
-			case 0:
-				UserData.myData.Mech[Mech_Num].Weapon1L = part;
-				break;
-			case 1: 
-				UserData.myData.Mech[Mech_Num].Weapon1R = part;
-				break;
-			case 2:
-				UserData.myData.Mech[Mech_Num].Weapon2L = part;
-				break;
-			case 3:
-				UserData.myData.Mech[Mech_Num].Weapon2R = part;
-				break;
-			default:
-				Debug.Log ("Should not get here");
-				break;
-			}
 			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
 		}
-
-
 	}
 	//			curSMR[i].enabled = true;
 	//		for (int i = 0; i < curSMR.Length; i++){
