@@ -53,10 +53,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (inHangar) {
 			buildMech(data.Mech[Mech_Num]);
 
-			/*if (SceneManagerHelper.ActiveSceneName == "Hangar") {
+			if (SceneManagerHelper.ActiveSceneName == "Hangar") {
 				if(Mech_Num!=0)
 					gameObject.SetActive (false);
-			}*/
+			}
 
 		} else { // Register my name on all clients
 			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);

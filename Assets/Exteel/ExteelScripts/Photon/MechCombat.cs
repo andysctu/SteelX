@@ -23,7 +23,7 @@ public class MechCombat : Combat {
 	private float fuelGain = 5.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
-	public float jumpPower = 100.0f;
+	public float jumpPower = 90.0f;
 	public float moveSpeed = 35.0f;
 	public float boostSpeed = 60f;
 	private float verticalBoostSpeed = 1f;
@@ -89,7 +89,6 @@ public class MechCombat : Combat {
 	//for Debug
 	public bool forceDead = false;
 
-
 	void Start() {
 		findGameManager();
 		initMechStats();
@@ -145,6 +144,7 @@ public class MechCombat : Combat {
 
 	void initCombatVariables() {// this will be called also when respawn
 		weaponScripts = bm.weaponScripts;
+		weaponOffset = 0;
 		fireL = false;
 		fireR = false;
 		shootingL = false;
@@ -156,10 +156,6 @@ public class MechCombat : Combat {
 		CanSlash = true;
 		receiveNextSlash = true;
 		isDeadFirstCall = true;
-
-		//init mctrl vars
-		mechController.grounded = true;//when respawn, this has to be true
-		//**add initvar() in mechcontroller
 	}
 
 	void initHUD() {
@@ -328,7 +324,7 @@ public class MechCombat : Combat {
 				MuzR.Play ();
 		}
 
-		if(bullets[weaponOffset]==null){//it happens when player die when shooting or switching weapons
+		if(bullets[weaponOffset+handPosition]==null){//it happens when player die when shooting or switching weapons
 			yield break;
 		}
 
@@ -503,13 +499,12 @@ public class MechCombat : Combat {
 			Mech m = UserData.myData.Mech [mech_num];
 			bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		}
-
-
-		weaponOffset = 0;
+			
+		initMechStats ();
 		initComponents ();
 		initCombatVariables ();
 		UpdateCurWeaponType ();
-		FindTrailRenderer ();
+		mechController.initControllerVar ();
 		HeatBar.ResetHeatBar ();
 		crosshair.updateCrosshair (0);
 
@@ -519,7 +514,8 @@ public class MechCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
-		currentHP = MAX_HP;
+
+		FindTrailRenderer ();
 		isDead = false;
 		if (!photonView.isMine) return;
 
@@ -536,33 +532,15 @@ public class MechCombat : Combat {
 	void Update () {
 		if (!photonView.isMine || gm.GameOver()) return;
 
-		// Respawn
-		if (isDead && Input.GetKeyDown(KeyCode.R)) {
-			isDead = false;
-	//		photonView.RPC("EnablePlayer", PhotonTargets.All, gm.GetRespawnPoint());
-		}
-
 		// Drain HP bar gradually
 		if (isDead) {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
 
-			//set the default respawn point
 			if(isDeadFirstCall){
 				animator.SetBool ("BCNPose", false);
 				animator.SetBool ("UsingRCL", false);
 				isDeadFirstCall = false;
-				if (GameManager.isTeamMode) {
-					if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red)
-						gm.SetRespawnPoint (1);
-					else {
-						gm.SetRespawnPoint (0);
-					}
-				} else {
-					gm.SetRespawnPoint (0);
-				}
-
 				gm.ShowRespawnPanel ();}
-			
 			return;
 		}else{
 			isDeadFirstCall = true;
@@ -573,10 +551,12 @@ public class MechCombat : Combat {
 			forceDead = false;
 			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, 0f);
 		}
-
+			
 		// Fix head to always look ahead
 		head.LookAt(head.position + transform.forward * 10);
 
+		if (!gm.GameIsBegin)
+			return;
 		// Animate left and right combat
 		handleCombat(LEFT_HAND);
 		handleCombat(RIGHT_HAND);
@@ -1071,8 +1051,9 @@ public class MechCombat : Combat {
 	void FindTrailRenderer(){
 		if(curWeapons[0] == (int)WeaponTypes.MELEE){
 			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
-			if(trailRendererL!=null)
+			if (trailRendererL != null) {
 				trailRendererL.enabled = false;
+			}
 		}else{
 			trailRendererL = null;
 		}

@@ -115,11 +115,12 @@ public class GameManager : Photon.MonoBehaviour {
 		h2.Add ("weaponOffset", 0);
 		PhotonNetwork.player.SetCustomProperties (h2);
 
-
 		if (isTeamMode) {
-			if(PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none)
+			if (PhotonNetwork.player.GetTeam () == PunTeams.Team.blue || PhotonNetwork.player.GetTeam () == PunTeams.Team.none) {
+				SetRespawnPoint (0);//set default
 				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
-			else{
+			}else{
+				SetRespawnPoint (1);
 				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [1].position, 20),SpawnPoints [1].rotation, 0);
 			}
 			Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
