@@ -38,10 +38,10 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	
 	public GameObject missingAppIdErrorPanel;
 	
-	public GameObject ConnectingLabel;
+	//public GameObject ConnectingLabel;
 	
 	public RectTransform ChatPanel;     // set in inspector (to enable/disable panel)
-	public GameObject UserIdFormPanel;
+	//public GameObject UserIdFormPanel;
 	public InputField InputFieldChat;   // set in inspector
 	public Text CurrentChannelText;     // set in inspector
 	public Toggle ChannelToggleToInstantiate; // set in inspector
@@ -54,9 +54,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	private readonly Dictionary<string,FriendItem> friendListItemLUT =  new Dictionary<string, FriendItem>();
 	
 	public bool ShowState = true;
-	public GameObject Title;
 	public Text StateText; // set in inspector
-	public Text UserIdText; // set in inspector
 	
 	// private static string WelcomeText = "Welcome to chat. Type \\help to list commands.";
 	private static string HelpText = "\n    -- HELP --\n" +
@@ -95,15 +93,11 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	public void Start()
 	{
 		DontDestroyOnLoad(gameObject);
-		
-		
-		UserIdText.text = "";
+
 		StateText.text  = "";
-		StateText.gameObject.SetActive(true);
-		UserIdText.gameObject.SetActive(true);
-		Title.SetActive(true);
-		ChatPanel.gameObject.SetActive(false);
-		ConnectingLabel.SetActive(false);
+		//StateText.gameObject.SetActive(true);
+		//ChatPanel.gameObject.SetActive(false);
+		//ConnectingLabel.SetActive(false);
 		
 		if (string.IsNullOrEmpty(UserName))
 		{
@@ -113,7 +107,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		bool _AppIdPresent = string.IsNullOrEmpty(ChatSettings.Instance.AppId);
 		this.missingAppIdErrorPanel.SetActive(_AppIdPresent);
 		
-		this.UserIdFormPanel.gameObject.SetActive(!_AppIdPresent);
+		//this.UserIdFormPanel.gameObject.SetActive(!_AppIdPresent);
 		
 		if (string.IsNullOrEmpty(ChatSettings.Instance.AppId))
 		{
@@ -124,7 +118,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	
 	public void Connect()
 	{
-		this.UserIdFormPanel.gameObject.SetActive(false);
+		//this.UserIdFormPanel.gameObject.SetActive(false);
 		
 		this.chatClient = new ChatClient(this);
 		this.chatClient.Connect(ChatSettings.Instance.AppId, "1.0", new ExitGames.Client.Photon.Chat.AuthenticationValues(UserName));
@@ -132,7 +126,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		this.ChannelToggleToInstantiate.gameObject.SetActive(false);
 		Debug.Log("Connecting as: " + UserName);
 		
-		ConnectingLabel.SetActive(true);
+		//ConnectingLabel.SetActive(true);
 	}
 	
 	/// <summary>To avoid that the Editor becomes unresponsive, disconnect all Photon connections in OnApplicationQuit.</summary>
@@ -334,9 +328,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 			this.chatClient.Subscribe(this.ChannelsToJoinOnConnect, this.HistoryLengthToFetch);
 		}
 		
-		ConnectingLabel.SetActive(false);
-		
-		UserIdText.text = "Connected as "+ this.UserName;
+		//ConnectingLabel.SetActive(false);
 		
 		this.ChatPanel.gameObject.SetActive(true);
 		
@@ -367,7 +359,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	
 	public void OnDisconnected()
 	{
-		ConnectingLabel.SetActive(false);
+		//ConnectingLabel.SetActive(false);
 	}
 	
 	public void OnChatStateChange(ChatState state)
@@ -376,6 +368,9 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		// this method might become more useful in the future, when more complex states are being used.
 		
 		this.StateText.text = state.ToString();
+		if(state.ToString().Contains("ConnectedToFrontEnd")){
+			ShowState = false;
+		}
 	}
 	
 	public void OnSubscribed(string[] channels, bool[] results)
