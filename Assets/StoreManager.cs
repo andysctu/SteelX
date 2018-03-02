@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.Networking;
 //Data uid , eid
 
 public class StoreManager : MonoBehaviour {
@@ -16,12 +16,14 @@ public class StoreManager : MonoBehaviour {
 	[SerializeField] Sprite buttonTexture;
 	private string[] AvailableParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" };
 
+	private string[] PartsInOrder = { "AES104", "CES301", "LTN411", "HDS003", "AES707", "PBS000", "SHS309" };
 	private Transform[] contents;
+
 	private int activeTab;
-	//private Dictionary<string, string> equipped;
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/purchase";
+	private int eid_to_pass;
 	public int Mech_Num = 0;
-	// Use this for initialization
+
 	void Start () {
 		Mech m = UserData.myData.Mech[Mech_Num];
 
@@ -44,8 +46,7 @@ public class StoreManager : MonoBehaviour {
 			pane.SetActive (i == 0);
 			contents[i] = pane.transform.Find("Viewport/Content");
 		}
-
-		// Debug, take out
+			
 		foreach (string part in AvailableParts) {
 			int parent = -1;
 			switch (part[0]) {
@@ -74,6 +75,7 @@ public class StoreManager : MonoBehaviour {
 				parent = 5;
 				break;
 			}
+
 			GameObject uiPart;
 			if (parent != 5) uiPart = Instantiate(UIPart, new Vector3(0,0,0), Quaternion.identity) as GameObject;
 			else uiPart = Instantiate(UIWeap, new Vector3(0,0,0), Quaternion.identity) as GameObject;
@@ -84,9 +86,14 @@ public class StoreManager : MonoBehaviour {
 			uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
 			uiPart.GetComponentInChildren<Text>().text = part;
 			string p = part;
-			//if (parent !=5) uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Equip(p,-1));
-			if (parent !=5) uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Buy(p));
-			else {
+			if (parent != 5) {
+				uiPart.transform.Find("BuyButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Buy (p));
+				uiPart.transform.Find("EquipButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
+			}else {
+				uiPart.transform.Find("BuyButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Buy (p));
+				uiPart.transform.Find("EquipLButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
+				uiPart.transform.Find("EquipRButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
+
 				Button[] btns = uiPart.GetComponentsInChildren<Button>();
 				for (int i = 0; i < btns.Length; i++) {
 
@@ -233,12 +240,11 @@ public class StoreManager : MonoBehaviour {
 	public void Buy(string part){
 		WWWForm form = new WWWForm();
 
-		form.AddField("uid", PhotonNetwork.playerName);
+		print ("my id is : " + UserData.myData.User.Uid);
+		form.AddField("uid", UserData.myData.User.Uid);
 		form.AddField("eid", 6);
 
 		WWW www = new WWW(MechHandlerURL, form);
-
-		Debug.Log("Authenticating...");
 
 		while (!www.isDone) {}
 		foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
@@ -246,25 +252,21 @@ public class StoreManager : MonoBehaviour {
 		}
 		string str = www.text;
 
-		//debug
 		print ("get str : "+str);
-		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
-			
-
-
-			/*int i;
+		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK" && bool.Parse(str)) {
+			int i;
 			string[] newOwns = new string[UserData.myData.Owns.Length + 1];
 			for(i=0;i<UserData.myData.Owns.Length;i++){
 				newOwns[i] = UserData.myData.Owns[i];
 			}
 			newOwns [i] = part;
-			UserData.myData.Owns = newOwns;*/
-
+			UserData.myData.Owns = newOwns;
+			print ("buy success");
 		} else {
 			print ("buy failed.");
 			//error.SetActive(true);
 		}
-
+		
 	}
 }
 

@@ -61,7 +61,7 @@ public class LoginManager : MonoBehaviour {
 			//print(JsonUtility.ToJson (test));
 			Data d = JsonUtility.FromJson<Data>(json);
 			UserData.myData = d;
-			UserData.myData.Mech[0].PopulateParts();
+			UserData.myData.Mech0.PopulateParts();
 			PhotonNetwork.playerName = fields [0].text;
 			Application.LoadLevel (1);
 		} else {
