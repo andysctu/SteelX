@@ -10,6 +10,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 		//jumpReleased = false;
+		animator.SetBool(onSlash_id,false);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

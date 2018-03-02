@@ -52,7 +52,10 @@ public class SlashState : MechStateMachineBehaviour {
 	}
 	public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		animator.SetBool (boost_id, false);
-		animator.SetBool (onSlash_id, false);
+
+		if(!animator.GetBool("Grounded"))
+			animator.SetBool (onSlash_id, false);
+		
 		mctrl.SetCanVerticalBoost (false);
 		mctrl.Boost (false);
 	}

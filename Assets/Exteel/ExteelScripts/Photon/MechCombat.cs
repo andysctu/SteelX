@@ -695,13 +695,13 @@ public class MechCombat : Combat {
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
-					HeatBar.IncreaseHeatBarL (25);
+					HeatBar.IncreaseHeatBarL (5);
 					timeOfLastShotL = Time.time;
 					if (curWeapons[1]==(int)WeaponTypes.MELEE)
 						timeOfLastShotR = timeOfLastShotL;
 
 				} else if (handPosition == 1) {
-					HeatBar.IncreaseHeatBarR (25);
+					HeatBar.IncreaseHeatBarR (5);
 					timeOfLastShotR = Time.time;
 					if (curWeapons[0]==(int)WeaponTypes.MELEE)
 						timeOfLastShotL = timeOfLastShotR;
