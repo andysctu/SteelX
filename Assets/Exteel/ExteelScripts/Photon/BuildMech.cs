@@ -39,7 +39,6 @@ public class BuildMech : Photon.MonoBehaviour {
 			SetMechDefaultIfEmpty (Mech_Num);
 		}else{
 			for(int i=0;i<4;i++){//if in game , init all 4 datas
-				print ("all mech datas have set default");
 				SetMechDefaultIfEmpty (i);
 			}
 		}
@@ -203,7 +202,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 
 					//Load sound 
-
+					ShutDownTrail (weapons [i]);
 					break;
 				}
 			case "SHS309": {
@@ -218,6 +217,7 @@ public class BuildMech : Photon.MonoBehaviour {
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = null;
+
 					break;
 				}
 			case "LMG012": {
@@ -362,21 +362,21 @@ public class BuildMech : Photon.MonoBehaviour {
 		//if previous is two-handed => also destroy left hand 
 		if(weapPos==3){
 			if (curWeapons [2] != null) {
-				if (curWeapons [2].Contains ("RCL") || curWeapons [2].Contains ("MSR") || curWeapons [2].Contains ("LCN") || curWeapons [2].Contains ("BCN")) {
+				if (CheckIsTwoHanded(curWeapons [2])) {
 					UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
 					Destroy (weapons [2]);
 				}
 			}
 		}else if(weapPos==1){
 			if (curWeapons [0] != null) {
-				if (curWeapons [0].Contains ("RCL") || curWeapons [0].Contains ("MSR") || curWeapons [0].Contains ("LCN") || curWeapons [0].Contains ("BCN")) {
+				if (CheckIsTwoHanded(curWeapons [0])) {
 					UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
 					Destroy (weapons [0]);
 				}
 			}
 		}
 		//if the new one is two-handed => also destroy right hand
-		if(weapon.Contains("RCL") || weapon.Contains ("MSR") || weapon.Contains ("LCN") || weapon.Contains("BCN")){
+		if(CheckIsTwoHanded(weapon)){
 			Destroy (weapons[weapPos + 1]);
 			if(weapPos==0){
 				UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
@@ -542,7 +542,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				Muz.gameObject.SetActive(false);
 			}
 		}
-		
+
+		ShutDownTrail (weapons[weapPos]);
 		UpdateCurWeapons ();
 		CheckAnimatorState ();
 	}
@@ -617,14 +618,24 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	bool CheckIsWeapon(string name){
-		if(name.Contains("BCN")||name.Contains("RCL")||name.Contains("ENG")||name.Contains("BRF")||name.Contains("SHL")||name.Contains("LMG")||name.Contains("APS")){
-			return true;
-		}else{
-			return false;
-		}
+		return (name.Contains ("BCN") || name.Contains ("RCL") || name.Contains ("ENG") || name.Contains ("BRF") || name.Contains ("SHL") || name.Contains ("LMG") || name.Contains ("APS") || name.Contains ("SHS"));
+	}
+	bool CheckIsTwoHanded(string name){
+		return (name.Contains ("RCL") || name.Contains ("MSR") || name.Contains ("LCN") || name.Contains ("BCN"));
 	}
 
 	public void SetMechNum(int num){
 		Mech_Num = num;
+	}
+
+	void ShutDownTrail(GameObject weapon){
+		TrailRenderer trailRenderer = weapon.GetComponentInChildren<TrailRenderer> ();
+		if(inHangar){//set active to false
+			if(trailRenderer!=null){
+				trailRenderer.gameObject.SetActive (false);
+			}
+		}else{//in game -> disable
+			trailRenderer.enabled = false;
+		}
 	}
 }
