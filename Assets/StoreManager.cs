@@ -12,7 +12,6 @@ public class StoreManager : MonoBehaviour {
 	[SerializeField] GameObject UIPart;
 	[SerializeField] GameObject UIWeap;
 	[SerializeField] GameObject Mech;
-	[SerializeField] GameObject Mech_Display;
 	[SerializeField] Sprite buttonTexture;
 	private string[] AvailableParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" };
 
@@ -91,22 +90,10 @@ public class StoreManager : MonoBehaviour {
 				uiPart.transform.Find("EquipButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
 			}else {
 				uiPart.transform.Find("BuyButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Buy (p));
-				uiPart.transform.Find("EquipLButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
-				uiPart.transform.Find("EquipRButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
+				uiPart.transform.Find("EquipLButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,0));
 
-				Button[] btns = uiPart.GetComponentsInChildren<Button>();
-				for (int i = 0; i < btns.Length; i++) {
-
-					//if two-handed , skip 1 &3  temp.
-					if ((p == "RCL034" || p == "BCN029") && (i == 1 || i == 3)) {
-						btns [i].image.enabled = false;
-						continue;
-					}
-
-					int copy = i;
-					Button b = btns[i];
-					b.onClick.AddListener(() => Equip(p,copy));
-				}
+				if (!(p == "RCL034" || p == "BCN029"))
+					uiPart.transform.Find ("EquipRButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p, 1));
 			}
 		}
 
@@ -224,7 +211,7 @@ public class StoreManager : MonoBehaviour {
 				Debug.Log ("Should not get here");
 				break;
 			}
-			Mech_Display.GetComponent<BuildMech>().EquipWeapon(part, weap);
+			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
 		}
 
 
@@ -240,9 +227,8 @@ public class StoreManager : MonoBehaviour {
 	public void Buy(string part){
 		WWWForm form = new WWWForm();
 
-		print ("my id is : " + UserData.myData.User.Uid);
 		form.AddField("uid", UserData.myData.User.Uid);
-		form.AddField("eid", 6);
+		form.AddField("eid", PartToEid(part));
 
 		WWW www = new WWW(MechHandlerURL, form);
 
@@ -266,7 +252,18 @@ public class StoreManager : MonoBehaviour {
 			print ("buy failed.");
 			//error.SetActive(true);
 		}
-		
+	}
+
+	int PartToEid(string part){
+		int eid = -1;
+		for(int i=0;i<PartsInOrder.Length;i++){
+			if(PartsInOrder[i] == part){
+				eid = i;
+				break;
+			}
+		}
+
+		return eid;
 	}
 }
 
