@@ -26,22 +26,23 @@ public class BuildMech : Photon.MonoBehaviour {
 	private int weaponOffset = 0;
 
 	private bool inHangar = false;
+	private bool inStore = false;
 	public bool onPanel = false;
 
 	public int Mech_Num = 0;
 
 	void Start () {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
-		// If this is not me, don't build this mech. Someone else will RPC build it
-		if (!photonView.isMine && !inHangar) return;
 
-		if (inHangar) {
-			SetMechDefaultIfEmpty (Mech_Num);
-		}else{
-			for(int i=0;i<4;i++){//if in game , init all 4 datas
-				SetMechDefaultIfEmpty (i);
-			}
+		if (SceneManagerHelper.ActiveSceneName == "Store")inStore = true;
+
+		// If this is not me, don't build this mech. Someone else will RPC build it
+		if (!photonView.isMine && !inHangar && !inStore) return;
+
+		for(int i=0;i<4;i++){//init all 4 datas
+			SetMechDefaultIfEmpty (i);
 		}
+
 		if(string.IsNullOrEmpty(UserData.myData.User.PilotName)){
 			UserData.myData.User.PilotName = "Default Pilot";
 		}
@@ -50,7 +51,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		animator = GetComponentInChildren<Animator> ();
 		weaponOffset = 0;
 
-		if (inHangar) {
+		if (inHangar || inStore) {
 			buildMech(data.Mech[Mech_Num]);
 
 			if (SceneManagerHelper.ActiveSceneName == "Hangar") {
@@ -361,33 +362,49 @@ public class BuildMech : Photon.MonoBehaviour {
 	public void EquipWeapon(string weapon, int weapPos) {
 		//if previous is two-handed => also destroy left hand 
 		if(weapPos==3){
-			if (curWeapons [2] != null) {
+			if (weapons [2] != null) {
 				if (CheckIsTwoHanded(curWeapons [2])) {
-					UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
-					Destroy (weapons [2]);
+					if (!inStore) {
+						UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
+						Destroy (weapons [2]);
+					}else{
+						Destroy (weapons [2]);
+					}
+					curWeapons [2] = "EmptyWeapon";
 				}
 			}
 		}else if(weapPos==1){
-			if (curWeapons [0] != null) {
+			if (weapons [0] != null) {
 				if (CheckIsTwoHanded(curWeapons [0])) {
-					UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
-					Destroy (weapons [0]);
+					if (!inStore) {
+						UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
+						Destroy (weapons [0]);
+					}else{
+						Destroy (weapons [0]);
+					}
+					curWeapons [0] = "EmptyWeapon";
 				}
 			}
 		}
 		//if the new one is two-handed => also destroy right hand
 		if(CheckIsTwoHanded(weapon)){
-			Destroy (weapons[weapPos + 1]);
+			if(weapons[weapPos+1]!=null)
+				Destroy (weapons[weapPos + 1]);
 			if(weapPos==0){
-				UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
+				if(!inStore)
+					UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
+				curWeapons [1] = "EmptyWeapon";
 			}else if(weapPos==2){
-				UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
+				if(!inStore)
+					UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
+				curWeapons [3] = "EmptyWeapon";
 			}
 		}
 
 		//destroy the current weapon on the hand position
-		if(weapons[weapPos]!=null)
-			Destroy(weapons[weapPos]);
+		if (weapons [weapPos] != null) 
+			Destroy (weapons [weapPos]);
+		
 
 
 		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
@@ -489,8 +506,16 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
 				weapons [weapPos + 1].SetActive (false);
 
-				if(weapPos>=2)UserData.myData.Mech[Mech_Num].Weapon2R = "EmptyWeapon";
-				else UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
+				if (weapPos >= 2) {
+					if(!inStore)
+						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
+					curWeapons[3] = "EmptyWeapon";
+				} else {
+					if(!inStore)
+						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
+					curWeapons[1] = "EmptyWeapon";
+				}
+				
 
 				break;
 			}
@@ -508,8 +533,15 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
 				weapons [weapPos + 1].SetActive (false);
 
-				if(weapPos>=2)UserData.myData.Mech[Mech_Num].Weapon2R = "EmptyWeapon";
-				else UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
+				if (weapPos >= 2) {
+					if(!inStore)
+						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
+					curWeapons[3] = "EmptyWeapon";
+				} else {
+					if(!inStore)
+						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
+					curWeapons[1] = "EmptyWeapon";
+				}
 
 				break;
 			}
@@ -543,8 +575,11 @@ public class BuildMech : Photon.MonoBehaviour {
 			}
 		}
 
+		if (!inStore) {
+			UpdateCurWeapons ();
+		}
+		curWeapons [weapPos] = weapon;
 		ShutDownTrail (weapons[weapPos]);
-		UpdateCurWeapons ();
 		CheckAnimatorState ();
 	}
 		
@@ -618,7 +653,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	bool CheckIsWeapon(string name){
-		return (name.Contains ("BCN") || name.Contains ("RCL") || name.Contains ("ENG") || name.Contains ("BRF") || name.Contains ("SHL") || name.Contains ("LMG") || name.Contains ("APS") || name.Contains ("SHS"));
+		return (name.Contains ("BCN") || name.Contains ("RCL") || name.Contains ("ENG") || name.Contains ("BRF") || name.Contains ("SHL") || name.Contains ("LMG") || name.Contains ("APS") || name.Contains ("SHS") || name.Contains ("SGN"));
 	}
 	bool CheckIsTwoHanded(string name){
 		return (name.Contains ("RCL") || name.Contains ("MSR") || name.Contains ("LCN") || name.Contains ("BCN"));
@@ -630,10 +665,12 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	void ShutDownTrail(GameObject weapon){
 		TrailRenderer trailRenderer = weapon.GetComponentInChildren<TrailRenderer> ();
-		if(inHangar){//set active to false
-			if(trailRenderer!=null){
+
+		if (trailRenderer == null)
+			return;
+
+		if(inHangar || inStore){//set active to false
 				trailRenderer.gameObject.SetActive (false);
-			}
 		}else{//in game -> disable
 			trailRenderer.enabled = false;
 		}

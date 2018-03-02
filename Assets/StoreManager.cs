@@ -92,8 +92,11 @@ public class StoreManager : MonoBehaviour {
 				uiPart.transform.Find("BuyButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Buy (p));
 				uiPart.transform.Find("EquipLButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,0));
 
-				if (!(p == "RCL034" || p == "BCN029"))
+				if (!(p == "RCL034" || p == "BCN029")) {
 					uiPart.transform.Find ("EquipRButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p, 1));
+				}else{
+					uiPart.transform.Find ("EquipRButton").gameObject.SetActive (false);//close equip R button
+				}
 			}
 		}
 

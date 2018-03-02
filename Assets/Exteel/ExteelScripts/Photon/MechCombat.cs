@@ -538,6 +538,7 @@ public class MechCombat : Combat {
 
 			if(isDeadFirstCall){
 				animator.SetBool ("BCNPose", false);
+				animator.SetBool ("UsingBCN", false);
 				animator.SetBool ("UsingRCL", false);
 				isDeadFirstCall = false;
 				gm.ShowRespawnPanel ();}
@@ -881,17 +882,9 @@ public class MechCombat : Combat {
 		FindTrailRenderer ();
 
 		//check if using RCL => RCLIdle
-		if(curWeapons[0] == (int)WeaponTypes.RCL){
-			animator.SetBool ("UsingRCL", true);
-		}else{
-			animator.SetBool ("UsingRCL", false);
-		}
+		animator.SetBool ("UsingRCL", curWeapons[0] == (int)WeaponTypes.RCL);
+		animator.SetBool ("UsingBCN", curWeapons[0] == (int)WeaponTypes.BCN);
 
-		if(curWeapons[0] == (int)WeaponTypes.BCN){
-			animator.SetBool ("UsingBCN", true);
-		}else{
-			animator.SetBool ("UsingBCN", false);
-		}
 		animator.SetBool ("BCNPose", false);
 
 		//Check crosshair
