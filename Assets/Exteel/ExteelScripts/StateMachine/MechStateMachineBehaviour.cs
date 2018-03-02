@@ -20,6 +20,8 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		animatorVars = animator.GetComponent<AnimatorVars> ();
+		if (animatorVars == null)//find too slow ?
+			return;
 		cc = animatorVars.cc;
 		mctrl = animatorVars.mctrl;
 		mcbt = animatorVars.mcbt;

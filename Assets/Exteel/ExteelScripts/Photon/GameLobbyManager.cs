@@ -132,7 +132,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		h.Add ("GameInit", false);
 		PhotonNetwork.room.SetCustomProperties (h);
 
-		photonView.RPC ("CallStartGame", PhotonTargets.AllBuffered);
+		photonView.RPC ("CallStartGame", PhotonTargets.All);
 
 		Invoke ("MasterLoadLevel", 0f);
 		//PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());

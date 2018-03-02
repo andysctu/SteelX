@@ -2947,7 +2947,7 @@ MonoBehaviour:
   SwitchWeaponEffectR: {fileID: 198771028345185282}
   trailRendererL: {fileID: 0}
   trailRendererR: {fileID: 0}
-  jumpPower: 100
+  jumpPower: 90
   moveSpeed: 30
   boostSpeed: 50
   maxVerticalBoostSpeed: 45
@@ -2976,6 +2976,7 @@ MonoBehaviour:
   boostFlame: {fileID: 1094051500879738}
   Gravity: 6
   jumped: 0
+  InAirSpeedCoeff: 0.55
   TimeBetweenFire: 0.25
   xSpeed: 0
   ySpeed: 0
@@ -5279,6 +5280,7 @@ MonoBehaviour:
   speed_id: 0
   direction_id: 0
   onSlash_id: 0
+  inHangar: 0
 --- !u!114 &114189640356066892
 MonoBehaviour:
   m_ObjectHideFlags: 1

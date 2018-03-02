@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AnimatorVars : MonoBehaviour {
-	public CharacterController cc;
-	public MechController mctrl;
-	public MechCombat mcbt;
-	public Sounds Sounds;
+	public CharacterController cc = null;
+	public MechController mctrl = null;
+	public MechCombat mcbt = null;
+	public Sounds Sounds = null;
 
 	public int boost_id;
 	public int grounded_id;
