@@ -519,8 +519,8 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void SetRespawnPoint(int num){
-		if(isTeamMode){//num 2 is the grey zone
-			if(num==2){
+		if(isTeamMode){
+			if(num==2){//num 2 is the grey zone
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
 					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == 1) {
 						respawnPoint = num;
