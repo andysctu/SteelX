@@ -608,7 +608,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		curWeapons [3] = UserData.myData.Mech[Mech_Num].Weapon2R;
 	}
 	public void CheckAnimatorState(){
-		print ("call check state : " + curWeapons [weaponOffset]);
 		if(curWeapons[weaponOffset] == "RCL034"){
 			animator.SetBool ("UsingRCL", true);
 		}else{

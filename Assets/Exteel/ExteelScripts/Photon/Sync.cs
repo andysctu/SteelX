@@ -46,7 +46,7 @@ public class Sync : Photon.MonoBehaviour {
 			if(pv.isMine){
 				stream.SendNext(transform.position);
 				stream.SendNext(transform.rotation);
-				stream.SendNext (mcbt.GetCurrentHP ());
+				stream.SendNext (mcbt.CurrentHP ());
 			}
 		}
 	}

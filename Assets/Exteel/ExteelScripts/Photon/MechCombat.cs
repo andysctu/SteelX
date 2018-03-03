@@ -14,6 +14,7 @@ public class MechCombat : Combat {
 	[SerializeField] HeatBar HeatBar;
 	[SerializeField] InRoomChat InRoomChat;
 	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
+	[SerializeField] DisplayPlayerHP displayPlayerHP;
 	public TrailRenderer trailRendererL,trailRendererR;
 	PlayerInZone Healthpool;
 	HealthPoolBar HealthpoolBar;
@@ -133,6 +134,7 @@ public class MechCombat : Combat {
 	void initGameObjects() {
 		InRoomChat = GameObject.Find ("InRoomChat") .GetComponent<InRoomChat>();
 		hud = GameObject.FindObjectOfType<HUD> ();
+		displayPlayerHP.gameObject.SetActive (!photonView.isMine);
 	}
 
 	void initComponents() {
@@ -442,9 +444,9 @@ public class MechCombat : Combat {
 		currentHP = amount;
 	}
 
-	public int GetCurrentHP(){
+	/*public int GetCurrentHP(){
 		return currentHP;
-	}
+	}*/
 
 	[PunRPC]
 	void OnLocked(string name){
@@ -475,6 +477,8 @@ public class MechCombat : Combat {
 
 		setIsFiring (0, false);
 		setIsFiring (1, false);
+
+		displayPlayerHP.gameObject.SetActive (false);
 
 		gameObject.layer = 0;
 		Crosshair ch = GetComponentInChildren<Crosshair>();
@@ -507,6 +511,7 @@ public class MechCombat : Combat {
 		mechController.initControllerVar ();
 		HeatBar.ResetHeatBar ();
 		crosshair.updateCrosshair (0);
+		displayPlayerHP.gameObject.SetActive (!photonView.isMine);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
 		gameObject.layer = 8;
