@@ -48,6 +48,7 @@ public class Crosshair : MonoBehaviour {
 		isTeamMode = GameManager.isTeamMode;
 		SphereRadiusCoeff = 0.04f;
 		DistanceCoeff = 0.008f;
+		crosshairImage.targetMark.enabled = false;
 	}
 
 	public void NoCrosshair() {
@@ -57,6 +58,7 @@ public class Crosshair : MonoBehaviour {
 
 			targetL = null;	
 			targetR = null;
+			crosshairImage.targetMark.enabled = false;
 		}
 	}
 	public void updateCrosshair(int offset){
@@ -96,6 +98,8 @@ public class Crosshair : MonoBehaviour {
 		}
 		targetL = null;
 		targetR = null; 
+
+		crosshairImage.targetMark.enabled = false;
 	}
 
 	void Update () {
@@ -132,6 +136,11 @@ public class Crosshair : MonoBehaviour {
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff *  CrosshairRadiusL) { 
 					crosshairImage.SetCurrentLImage (1);
 					targetL = target.transform;
+
+					//move target mark
+					crosshairImage.targetMark.enabled = true;
+					crosshairImage.targetMark.transform.position = camera.WorldToScreenPoint (target.transform.position + new Vector3(0,5,0));
+
 					if (!LockL) {
 						Sounds.PlayLock ();
 						LockL = true;
@@ -145,6 +154,7 @@ public class Crosshair : MonoBehaviour {
 			}
 			if (!foundTargetL) {
 				crosshairImage.SetCurrentLImage (0);
+				crosshairImage.targetMark.enabled = false;
 				targetL = null;
 				LockL = false;
 			}else{
@@ -183,6 +193,11 @@ public class Crosshair : MonoBehaviour {
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
+
+					//move target mark
+					crosshairImage.targetMark.enabled = true;
+					crosshairImage.targetMark.transform.position =  camera.WorldToScreenPoint (target.transform.position + new Vector3(0,5,0));
+
 					if (!LockR) {
 						Sounds.PlayLock ();
 						LockR = true;
@@ -197,6 +212,7 @@ public class Crosshair : MonoBehaviour {
 			}
 			if (!foundTargetR) {
 				crosshairImage.SetCurrentRImage (0);
+				crosshairImage.targetMark.enabled = false;
 				targetR = null;
 				LockR = false;
 			}else{

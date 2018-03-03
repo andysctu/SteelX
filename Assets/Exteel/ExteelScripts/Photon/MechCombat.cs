@@ -78,7 +78,7 @@ public class MechCombat : Combat {
 
 	// Components
 	private BuildMech bm;
-	private Crosshair crosshair;
+	public Crosshair crosshair;
 	private SlashDetector slashDetector;
 
 	//Healthpool
@@ -137,15 +137,20 @@ public class MechCombat : Combat {
 		displayPlayerInfo.gameObject.SetActive (!photonView.isMine);
 	}
 
-	void initComponents() {
+	public void initComponents() {
 		bm = GetComponent<BuildMech>();
 		weapons = bm.weapons;
 		bullets = bm.bulletPrefabs;
+		for(int i=0;i<4;i++){
+			if(bullets[i]!=null){
+				print ("bullet name : "+bullets [i].ToString ());
+			}
+		}
+		weaponScripts = bm.weaponScripts;
 		Sounds.ShotSounds = bm.ShotSounds;
 	}
 
 	void initCombatVariables() {// this will be called also when respawn
-		weaponScripts = bm.weaponScripts;
 		weaponOffset = 0;
 		fireL = false;
 		fireR = false;
@@ -196,7 +201,7 @@ public class MechCombat : Combat {
 	}
 
 	void initHealthAndFuelBars() {
-		Slider[] sliders = GameObject.Find("Canvas").GetComponentsInChildren<Slider>();
+		Slider[] sliders = GameObject.Find("PanelCanvas").GetComponentsInChildren<Slider>();
 		if (sliders.Length > 0) {
 			healthBar = sliders[0];
 			healthBar.value = 1;
@@ -503,24 +508,26 @@ public class MechCombat : Combat {
 			Mech m = UserData.myData.Mech [mech_num];
 			bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		}
-			
-		initMechStats ();
-		initComponents ();
+
 		initCombatVariables ();
-		UpdateCurWeaponType ();
+		initMechStats ();
+
+		//These part are move to BuildMech , such that other player won't get the wrong ones due to RPC(Build) too slow 
+		//initComponents ();   
+		// UpdateCurWeaponType (); 
+		//crosshair.updateCrosshair (0); 
+		//FindTrailRenderer ();
+		/*Renderer[] renderers = GetComponentsInChildren<Renderer> ();
+		foreach (Renderer renderer in renderers) {
+			renderer.enabled = true;
+		}*/
+
 		mechController.initControllerVar ();
 		HeatBar.ResetHeatBar ();
-		crosshair.updateCrosshair (0);
 		displayPlayerInfo.gameObject.SetActive (!photonView.isMine);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
 		gameObject.layer = 8;
-		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-		foreach (Renderer renderer in renderers) {
-			renderer.enabled = true;
-		}
-
-		FindTrailRenderer ();
 		isDead = false;
 		if (!photonView.isMine) return;
 
@@ -916,7 +923,7 @@ public class MechCombat : Combat {
 		}
 	}
 
-	void UpdateCurWeaponType(){
+	public void UpdateCurWeaponType(){
 		for(int i=0;i<2;i++){
 			if (usingRangedWeapon (i))
 				curWeapons [i] = (int)WeaponTypes.RANGED;
@@ -976,9 +983,13 @@ public class MechCombat : Combat {
 		}
 	}
 
-	public void updataBullet(){// no need , change weaponOffset is done in switch Weapon
-		
+	public void EnableAllRenderers(bool b){
+		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
+		foreach (Renderer renderer in renderers) {
+			renderer.enabled = b;
+		}
 	}
+
 	// Public functions
 	public void IncrementFuel() {
 		currentFuel += fuelGain;
@@ -1043,7 +1054,7 @@ public class MechCombat : Combat {
 		receiveNextSlash = (receive == 1) ? true : false;
 	}
 
-	void FindTrailRenderer(){
+	public void FindTrailRenderer(){
 		if(curWeapons[0] == (int)WeaponTypes.MELEE){
 			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
 			if (trailRendererL != null) {

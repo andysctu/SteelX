@@ -185,7 +185,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 		if(player.GetComponent<PhotonView>().isMine){
 			cam = player.transform.Find("Camera").GetComponent<Camera>();
-			hud = GameObject.Find("Canvas").GetComponent<HUD>();
+			hud = GameObject.Find("PanelCanvas").GetComponent<HUD>();
 			mcbt = player.GetComponent<MechCombat> ();
 		}
 	}

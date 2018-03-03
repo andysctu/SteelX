@@ -19,7 +19,7 @@ public class EnableLocal : MonoBehaviour {
 				c.enabled = true;
 		}
 
-		canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+		canvas = GameObject.Find("PanelCanvas").GetComponent<Canvas>();
 
 		GetComponentInChildren<MechCamera>().enabled = true;
 		GetComponentInChildren<AudioListener> ().enabled = true;

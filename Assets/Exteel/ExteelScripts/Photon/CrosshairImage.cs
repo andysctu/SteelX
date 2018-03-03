@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CrosshairImage : MonoBehaviour {
 
@@ -18,7 +19,7 @@ public class CrosshairImage : MonoBehaviour {
 	private RectTransform[] crosshairsR0;
 	[SerializeField]
 	private RectTransform[] crosshairsR1;
-
+	public Image targetMark;
 
 	public bool noCrosshairL = false;
 	public bool noCrosshairR = false;

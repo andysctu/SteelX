@@ -23,6 +23,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	public Weapon[] weaponScripts;
 	private String[] curWeapons = new String[4];
 	private ParticleSystem Muz;
+	[SerializeField]private MechCombat mcbt = null;
 	private int weaponOffset = 0;
 
 	private bool inHangar = false;
@@ -146,7 +147,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		bulletPrefabs = new GameObject[4];
 		ShotSounds = new AudioClip[4];
 
-		MechCombat mechCombat = GetComponent<MechCombat>();
 		//gameObject.transform.rotation = Quaternion.Euler (new Vector3 (0, 180, 0));
 
 		for (int i = 0; i < weaponNames.Length; i++) {
@@ -172,7 +172,7 @@ public class BuildMech : Photon.MonoBehaviour {
 				print ("muz is null");
 			}
 
-
+			print ("build with weapon " + i + " : " + weaponNames [i]);
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts [i] = new APS403 ();
@@ -353,9 +353,11 @@ public class BuildMech : Photon.MonoBehaviour {
 
 			}
 		}
-		UpdateCurWeapons ();
+		UpdateCurWeapons (weaponNames);
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
+
+		UpdateMechCombatVars ();
 	}
 
 
@@ -575,9 +577,9 @@ public class BuildMech : Photon.MonoBehaviour {
 			}
 		}
 
-		if (!inStore) {
+		/*if (!inStore) {
 			UpdateCurWeapons ();
-		}
+		}*/
 		curWeapons [weapPos] = weapon;
 		ShutDownTrail (weapons[weapPos]);
 		CheckAnimatorState ();
@@ -601,11 +603,11 @@ public class BuildMech : Photon.MonoBehaviour {
 		for(int i=0;i<4;i++)if(curWeapons[i]!="EmptyWeapon")EquipWeapon (curWeapons [i],i);
 	}
 
-	public void UpdateCurWeapons(){
-		curWeapons [0] = UserData.myData.Mech[Mech_Num].Weapon1L;
-		curWeapons [1] = UserData.myData.Mech[Mech_Num].Weapon1R;
-		curWeapons [2] = UserData.myData.Mech[Mech_Num].Weapon2L;
-		curWeapons [3] = UserData.myData.Mech[Mech_Num].Weapon2R;
+	public void UpdateCurWeapons(string[] weaponNames){
+		curWeapons [0] = weaponNames[0];
+		curWeapons [1] = weaponNames[1];
+		curWeapons [2] = weaponNames[2];
+		curWeapons [3] = weaponNames[3];
 	}
 	public void CheckAnimatorState(){
 		if(curWeapons[weaponOffset] == "RCL034"){
@@ -673,5 +675,21 @@ public class BuildMech : Photon.MonoBehaviour {
 		}else{//in game -> disable
 			trailRenderer.enabled = false;
 		}
+	}
+
+	void UpdateMechCombatVars(){
+		if (mcbt == null)
+			return;
+		print ("this func is called");
+		for (int i = 0; i < 4; i++)
+			if (bulletPrefabs [i] != null)
+				print ("in bm bullet " + i + " : " + bulletPrefabs [i].ToString ());
+
+		mcbt.initComponents ();
+		mcbt.UpdateCurWeaponType ();
+		if(mcbt.crosshair!=null)
+			mcbt.crosshair.updateCrosshair (0);
+		mcbt.FindTrailRenderer ();
+		mcbt.EnableAllRenderers (true);
 	}
 }
