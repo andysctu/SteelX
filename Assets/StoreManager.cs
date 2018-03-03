@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.Networking;
 //Data uid , eid
 
 public class StoreManager : MonoBehaviour {
@@ -12,16 +12,17 @@ public class StoreManager : MonoBehaviour {
 	[SerializeField] GameObject UIPart;
 	[SerializeField] GameObject UIWeap;
 	[SerializeField] GameObject Mech;
-	[SerializeField] GameObject Mech_Display;
 	[SerializeField] Sprite buttonTexture;
 	private string[] AvailableParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" };
 
+	private string[] PartsInOrder = { "AES104", "CES301", "LTN411", "HDS003", "AES707", "PBS000", "SHS309" };
 	private Transform[] contents;
+
 	private int activeTab;
-	//private Dictionary<string, string> equipped;
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/purchase";
+	private int eid_to_pass;
 	public int Mech_Num = 0;
-	// Use this for initialization
+
 	void Start () {
 		Mech m = UserData.myData.Mech[Mech_Num];
 
@@ -44,8 +45,7 @@ public class StoreManager : MonoBehaviour {
 			pane.SetActive (i == 0);
 			contents[i] = pane.transform.Find("Viewport/Content");
 		}
-
-		// Debug, take out
+			
 		foreach (string part in AvailableParts) {
 			int parent = -1;
 			switch (part[0]) {
@@ -74,6 +74,7 @@ public class StoreManager : MonoBehaviour {
 				parent = 5;
 				break;
 			}
+
 			GameObject uiPart;
 			if (parent != 5) uiPart = Instantiate(UIPart, new Vector3(0,0,0), Quaternion.identity) as GameObject;
 			else uiPart = Instantiate(UIWeap, new Vector3(0,0,0), Quaternion.identity) as GameObject;
@@ -84,21 +85,17 @@ public class StoreManager : MonoBehaviour {
 			uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
 			uiPart.GetComponentInChildren<Text>().text = part;
 			string p = part;
-			//if (parent !=5) uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Equip(p,-1));
-			if (parent !=5) uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Buy(p));
-			else {
-				Button[] btns = uiPart.GetComponentsInChildren<Button>();
-				for (int i = 0; i < btns.Length; i++) {
+			if (parent != 5) {
+				uiPart.transform.Find("BuyButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Buy (p));
+				uiPart.transform.Find("EquipButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,-1));
+			}else {
+				uiPart.transform.Find("BuyButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Buy (p));
+				uiPart.transform.Find("EquipLButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p,0));
 
-					//if two-handed , skip 1 &3  temp.
-					if ((p == "RCL034" || p == "BCN029") && (i == 1 || i == 3)) {
-						btns [i].image.enabled = false;
-						continue;
-					}
-
-					int copy = i;
-					Button b = btns[i];
-					b.onClick.AddListener(() => Equip(p,copy));
+				if (!(p == "RCL034" || p == "BCN029")) {
+					uiPart.transform.Find ("EquipRButton").GetComponentInChildren<Button> ().onClick.AddListener (() => Equip (p, 1));
+				}else{
+					uiPart.transform.Find ("EquipRButton").gameObject.SetActive (false);//close equip R button
 				}
 			}
 		}
@@ -166,12 +163,10 @@ public class StoreManager : MonoBehaviour {
 		switch (part [0]) {
 		case 'C':
 			parent = 0;
-			UserData.myData.Mech[Mech_Num].Core = part;
 			break;
 		case 'A':
 			if (part [1] == 'E') {
 				parent = 1;
-				UserData.myData.Mech[Mech_Num].Arms = part;
 			}
 			else {
 				parent = 5;
@@ -180,17 +175,14 @@ public class StoreManager : MonoBehaviour {
 		case 'L':
 			if (part [1] != 'M') {
 				parent = 2; 
-				UserData.myData.Mech[Mech_Num].Legs = part;
 			} else
 				parent = 5;
 			break;
 		case 'H':
 			parent = 3;
-			UserData.myData.Mech[Mech_Num].Head = part;
 			break;
 		case 'P':
 			parent = 4;
-			UserData.myData.Mech[Mech_Num].Booster = part;
 			break;
 		default:
 			parent = 5;
@@ -200,27 +192,8 @@ public class StoreManager : MonoBehaviour {
 			curSMR[parent].sharedMesh = newSMR.sharedMesh;
 			curSMR [parent].material = material;
 		} else {
-			switch (weap) {
-			case 0:
-				UserData.myData.Mech[Mech_Num].Weapon1L = part;
-				break;
-			case 1: 
-				UserData.myData.Mech[Mech_Num].Weapon1R = part;
-				break;
-			case 2:
-				UserData.myData.Mech[Mech_Num].Weapon2L = part;
-				break;
-			case 3:
-				UserData.myData.Mech[Mech_Num].Weapon2R = part;
-				break;
-			default:
-				Debug.Log ("Should not get here");
-				break;
-			}
-			Mech_Display.GetComponent<BuildMech>().EquipWeapon(part, weap);
+			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
 		}
-
-
 	}
 	//			curSMR[i].enabled = true;
 	//		for (int i = 0; i < curSMR.Length; i++){
@@ -233,27 +206,19 @@ public class StoreManager : MonoBehaviour {
 	public void Buy(string part){
 		WWWForm form = new WWWForm();
 
-		form.AddField("username", PhotonNetwork.playerName);
-		form.AddField("part", part);
+		form.AddField("uid", UserData.myData.User.Uid);
+		form.AddField("eid", PartToEid(part));
 
 		WWW www = new WWW(MechHandlerURL, form);
-
-		Debug.Log("Authenticating...");
 
 		while (!www.isDone) {}
 		foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
 			Debug.Log(entry.Key + ": " + entry.Value);
 		}
+		string str = www.text;
 
-		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
-			string json = www.text;
-
-			//debug
-			Data test = new Data();
-			print(JsonUtility.ToJson (test));
-
-			Data d = JsonUtility.FromJson<Data>(json);
-
+		print ("get str : "+str);
+		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK" && bool.Parse(str)) {
 			int i;
 			string[] newOwns = new string[UserData.myData.Owns.Length + 1];
 			for(i=0;i<UserData.myData.Owns.Length;i++){
@@ -261,11 +226,23 @@ public class StoreManager : MonoBehaviour {
 			}
 			newOwns [i] = part;
 			UserData.myData.Owns = newOwns;
-
+			print ("buy success");
 		} else {
+			print ("buy failed.");
 			//error.SetActive(true);
 		}
+	}
 
+	int PartToEid(string part){
+		int eid = -1;
+		for(int i=0;i<PartsInOrder.Length;i++){
+			if(PartsInOrder[i] == part){
+				eid = i;
+				break;
+			}
+		}
+
+		return eid;
 	}
 }
 

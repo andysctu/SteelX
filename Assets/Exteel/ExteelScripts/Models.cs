@@ -47,7 +47,9 @@ public struct Mech {
 
 [System.Serializable]
 public struct Data {
-	public Mech[] Mech;
+	public Mech Mech0;
 	public User User;
 	public string[] Owns;
+
+	public Mech[] Mech;
 }

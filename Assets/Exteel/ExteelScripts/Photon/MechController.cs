@@ -20,6 +20,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	public bool jumped = false;
 
+	public float InAirSpeedCoeff = 0.55f;
 	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 
@@ -27,7 +28,6 @@ public class MechController : Photon.MonoBehaviour {
 
 	private Vector3 move = Vector3.zero;
 
-	private bool ableToVertBoost = false;
 	private bool isBoostFlameOn = false;
 	private bool isSlowDown = false;
 	private Coroutine coroutine = null;
@@ -43,7 +43,7 @@ public class MechController : Photon.MonoBehaviour {
 	private float characterControllerSpeed;
 	private float SlashMovingSpeed;
 	private Vector3 Slashdir;
-	private bool canVerticalBoost = true;
+	private bool canVerticalBoost = false;
 
 	// Animation
 	private float speed;
@@ -60,6 +60,13 @@ public class MechController : Photon.MonoBehaviour {
 	void Start () {
 		initComponents();
 		initTransforms();
+		initControllerVar ();
+	}
+
+	public void initControllerVar(){
+		grounded = true;
+		canVerticalBoost = false;
+		isSlowDown = false;
 		animator.SetBool ("Grounded", true);
 	}
 
@@ -129,7 +136,7 @@ public class MechController : Photon.MonoBehaviour {
 			move.z = move.z * 0.2f;
 		}
 
-		if(!gm.GameIsBegin){
+		if(!gm.GameIsBegin){//player can't move but can rotate
 			move.x = 0;
 			move.z = 0;
 		}
@@ -173,8 +180,8 @@ public class MechController : Photon.MonoBehaviour {
 				xSpeed = mechCombat.BoostSpeed ();
 				zSpeed = mechCombat.BoostSpeed ();
 			}else{//boost in air
-				xSpeed = mechCombat.BoostSpeed ()*0.4f;
-				zSpeed = mechCombat.BoostSpeed ()*0.4f;
+				xSpeed = mechCombat.BoostSpeed ()*InAirSpeedCoeff;
+				zSpeed = mechCombat.BoostSpeed ()*InAirSpeedCoeff;
 			}
 		}
 	}

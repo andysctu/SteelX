@@ -28,6 +28,7 @@ public class UserData : NetworkBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
+		myData.Mech0 = new Mech();
 		myData.Mech = new Mech[4];
 		data = new Dictionary<int,Data>(); 
 	}

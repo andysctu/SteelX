@@ -557,7 +557,7 @@ public class PhotonEditor : EditorWindow
         
 
         AccountService client = new AccountService();
-        client.RegisterByEmail(email, RegisterOrigin, accountServiceType); // this is the synchronous variant using the static RegisterOrigin. "result" is in the client
+        client.RegisterByEmail(email, RegisterOrigin); // this is the synchronous variant using the static RegisterOrigin. "result" is in the client
 
         EditorUtility.ClearProgressBar();
         if (client.ReturnCode == 0)
@@ -566,7 +566,7 @@ public class PhotonEditor : EditorWindow
             PhotonNetwork.PhotonServerSettings.UseCloud(this.mailOrAppId, 0);
             if (PhotonEditorUtils.HasVoice)
             {
-                PhotonNetwork.PhotonServerSettings.VoiceAppID = client.AppId2;
+                PhotonNetwork.PhotonServerSettings.VoiceAppID = client.AppId;
             }
             PhotonEditor.SaveSettings();
 

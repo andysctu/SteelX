@@ -23,7 +23,7 @@ public class MechCombat : Combat {
 	private float fuelGain = 5.0f;
 	private float minFuelRequired = 25f;
 	private float currentFuel;
-	public float jumpPower = 100.0f;
+	public float jumpPower = 90.0f;
 	public float moveSpeed = 35.0f;
 	public float boostSpeed = 60f;
 	private float verticalBoostSpeed = 1f;
@@ -55,6 +55,7 @@ public class MechCombat : Combat {
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 	private bool isDeadFirstCall = true;
+	private bool isOverHeat = false;//used to check if it is just overheat
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -87,7 +88,6 @@ public class MechCombat : Combat {
 
 	//for Debug
 	public bool forceDead = false;
-
 
 	void Start() {
 		findGameManager();
@@ -142,10 +142,20 @@ public class MechCombat : Combat {
 		Sounds.ShotSounds = bm.ShotSounds;
 	}
 
-	void initCombatVariables() {
+	void initCombatVariables() {// this will be called also when respawn
 		weaponScripts = bm.weaponScripts;
+		weaponOffset = 0;
+		fireL = false;
+		fireR = false;
+		shootingL = false;
+		shootingR = false;
 		timeOfLastShotL = Time.time;
 		timeOfLastShotR = Time.time;
+		isOverHeat = false;
+		isSwitchingWeapon = false;
+		CanSlash = true;
+		receiveNextSlash = true;
+		isDeadFirstCall = true;
 	}
 
 	void initHUD() {
@@ -313,6 +323,11 @@ public class MechCombat : Combat {
 			if (MuzR != null)
 				MuzR.Play ();
 		}
+
+		if(bullets[weaponOffset+handPosition]==null){//it happens when player die when shooting or switching weapons
+			yield break;
+		}
+
 		if (usingRCLWeapon (handPosition)) { 
 			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
@@ -328,8 +343,9 @@ public class MechCombat : Combat {
 			}
 		}else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
+			GameObject b = bullets [weaponOffset + handPosition];
 			for (i = 0; i < bN; i++) {
-				GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+				GameObject bullet = Instantiate (b , Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
 				bulletTrace.HUD = hud;
 				bulletTrace.cam = cam;
@@ -483,13 +499,12 @@ public class MechCombat : Combat {
 			Mech m = UserData.myData.Mech [mech_num];
 			bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		}
-
-
-		weaponOffset = 0;
+			
+		initMechStats ();
 		initComponents ();
 		initCombatVariables ();
 		UpdateCurWeaponType ();
-		FindTrailRenderer ();
+		mechController.initControllerVar ();
 		HeatBar.ResetHeatBar ();
 		crosshair.updateCrosshair (0);
 
@@ -499,7 +514,8 @@ public class MechCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
-		currentHP = MAX_HP;
+
+		FindTrailRenderer ();
 		isDead = false;
 		if (!photonView.isMine) return;
 
@@ -516,33 +532,16 @@ public class MechCombat : Combat {
 	void Update () {
 		if (!photonView.isMine || gm.GameOver()) return;
 
-		// Respawn
-		if (isDead && Input.GetKeyDown(KeyCode.R)) {
-			isDead = false;
-	//		photonView.RPC("EnablePlayer", PhotonTargets.All, gm.GetRespawnPoint());
-		}
-
 		// Drain HP bar gradually
 		if (isDead) {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
 
-			//set the default respawn point
 			if(isDeadFirstCall){
 				animator.SetBool ("BCNPose", false);
+				animator.SetBool ("UsingBCN", false);
 				animator.SetBool ("UsingRCL", false);
 				isDeadFirstCall = false;
-				if (GameManager.isTeamMode) {
-					if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red)
-						gm.SetRespawnPoint (1);
-					else {
-						gm.SetRespawnPoint (0);
-					}
-				} else {
-					gm.SetRespawnPoint (0);
-				}
-
 				gm.ShowRespawnPanel ();}
-			
 			return;
 		}else{
 			isDeadFirstCall = true;
@@ -553,10 +552,12 @@ public class MechCombat : Combat {
 			forceDead = false;
 			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, 0f);
 		}
-
+			
 		// Fix head to always look ahead
 		head.LookAt(head.position + transform.forward * 10);
 
+		if (!gm.GameIsBegin)
+			return;
 		// Animate left and right combat
 		handleCombat(LEFT_HAND);
 		handleCombat(RIGHT_HAND);
@@ -771,10 +772,10 @@ public class MechCombat : Combat {
 				shoulderR.Rotate (0, x, 0);
 			break;
 			case (int)WeaponTypes.RCL:
-				animator.SetBool(animationStr, true);
+				animator.SetBool (animationStr, true);
 			break;
 			case (int)WeaponTypes.BCN:
-				animator.SetBool ("ShootBCN", true);
+				animator.SetBool (animationStr, true);
 				animator.SetBool ("BCNPose", false);
 			break;
 			case (int)WeaponTypes.ENG:
@@ -835,23 +836,31 @@ public class MechCombat : Combat {
 		Sounds.PlaySwitchWeapon ();
 		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
+	}
 
+	void SwitchWeaponsBegin(){
+		if(isDead){
+			return;
+		}
 		//update customproperty
 		if (photonView.isMine) {
 			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 			h.Add ("weaponOffset", (weaponOffset + 2) % 4);
 			photonView.owner.SetCustomProperties (h);
 		}
-	}
-
-	void SwitchWeaponsBegin(){
 		// Stop current attacks
 		setIsFiring(LEFT_HAND, false);
 		setIsFiring(RIGHT_HAND, false);
 
 		// Stop current animations
-		animator.SetBool(animationString(LEFT_HAND), false);
-		animator.SetBool(animationString(RIGHT_HAND), false);
+		string strL = animationString(LEFT_HAND), strR = animationString(RIGHT_HAND);
+		if(strL != ""){ // not empty weapon
+			animator.SetBool(animationString(LEFT_HAND), false);
+		}
+		if(strR != ""){
+			animator.SetBool(animationString(RIGHT_HAND), false);
+		}
+
 
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
@@ -859,7 +868,7 @@ public class MechCombat : Combat {
 		// Switch weapons by toggling each weapon's activeSelf
 		for (int i = 0; i < weapons.Length; i++) {
 			if(weapons[i]==null){
-				weapons [i] = bm.weapons [i];//bug
+				weapons [i] = bm.weapons [i];//bug : someimes weapons[i] doesn't update
 			}
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
@@ -873,25 +882,19 @@ public class MechCombat : Combat {
 		FindTrailRenderer ();
 
 		//check if using RCL => RCLIdle
-		if(usingRCLWeapon(0)){
-			animator.SetBool ("UsingRCL", true);
-		}else{
-			animator.SetBool ("UsingRCL", false);
-		}
+		animator.SetBool ("UsingRCL", curWeapons[0] == (int)WeaponTypes.RCL);
+		animator.SetBool ("UsingBCN", curWeapons[0] == (int)WeaponTypes.BCN);
 
-		if(usingBCNWeapon(0)){
-			animator.SetBool ("UsingBCN", true);
-		}else{
-			animator.SetBool ("UsingBCN", false);
-		}
+		animator.SetBool ("BCNPose", false);
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset);
-		isSwitchingWeapon = false;
 
 		//Stop switch weapon animation
 		SwitchWeaponEffectL.Stop();
 		SwitchWeaponEffectR.Stop();
+
+		isSwitchingWeapon = false;
 
 
 	}
@@ -956,9 +959,19 @@ public class MechCombat : Combat {
 	} 
 
 	string animationString(int handPosition) {
-		if(!usingRCLWeapon(handPosition))
+		switch(curWeapons[handPosition]){
+		case (int)WeaponTypes.RCL:
+			return "ShootRCL";
+			break;
+		case (int)WeaponTypes.BCN:
+			return "ShootBCN";
+			break;
+		case (int)WeaponTypes.EMPTY:
+			return "";
+			break;
+		default:
 			return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
-		else return "ShootRCL";
+		}
 	}
 
 	public void updataBullet(){// no need , change weaponOffset is done in switch Weapon
@@ -1031,8 +1044,9 @@ public class MechCombat : Combat {
 	void FindTrailRenderer(){
 		if(curWeapons[0] == (int)WeaponTypes.MELEE){
 			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
-			if(trailRendererL!=null)
+			if (trailRendererL != null) {
 				trailRendererL.enabled = false;
+			}
 		}else{
 			trailRendererL = null;
 		}
@@ -1047,8 +1061,9 @@ public class MechCombat : Combat {
 	}
 
 	public void ShowTrailL(bool show){
-		if(trailRendererL!=null)
+		if (trailRendererL != null) {
 			trailRendererL.enabled = show;
+		}
 	}
 	public void ShowTrailR(bool show){
 		if(trailRendererR!=null)

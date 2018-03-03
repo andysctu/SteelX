@@ -33,7 +33,7 @@ public class LoginManager : MonoBehaviour {
 	}
 
 	public void Login(){
-		/*WWWForm form = new WWWForm();
+		WWWForm form = new WWWForm();
 
 		if (fields [0].text.Length == 0) {
 			fields [0].text = "andysctu";
@@ -61,20 +61,21 @@ public class LoginManager : MonoBehaviour {
 			//print(JsonUtility.ToJson (test));
 			Data d = JsonUtility.FromJson<Data>(json);
 			UserData.myData = d;
-			UserData.myData.Mech[0].PopulateParts();
+			UserData.myData.Mech0.PopulateParts();
 			PhotonNetwork.playerName = fields [0].text;
 			Application.LoadLevel (1);
 		} else {
 			//error.SetActive(true);
-		}*/
+		}
 
 		// for debug
+		UserData.myData.Mech = new Mech[4]; // receiving Json will set the array to null
 		for (int i = 0; i < 4; i++) {
 			UserData.myData.Mech [i].PopulateParts ();
 		}
-		PhotonNetwork.playerName = fields [0].text;
-		Application.LoadLevel (1);
-//		
+		//PhotonNetwork.playerName = fields [0].text;
+		//Application.LoadLevel (1);
+
 
 
 	}

@@ -29,6 +29,8 @@ public class GameManager : Photon.MonoBehaviour {
 	public int MaxTimeInSeconds = 300;
 	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
+	public const int GREY_ZONE = 2;
+	public const int BLUE = 0, RED = 1;
 	private int bluescore = 0, redscore = 0;
 	private int timerDuration;
 	private int currentTimer = 999;
@@ -115,12 +117,13 @@ public class GameManager : Photon.MonoBehaviour {
 		h2.Add ("weaponOffset", 0);
 		PhotonNetwork.player.SetCustomProperties (h2);
 
-
 		if (isTeamMode) {
-			if(PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none)
-				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
-			else{
-				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [1].position, 20),SpawnPoints [1].rotation, 0);
+			if (PhotonNetwork.player.GetTeam () == PunTeams.Team.blue || PhotonNetwork.player.GetTeam () == PunTeams.Team.none) {
+				SetRespawnPoint (BLUE);//set default
+				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [BLUE].position, 20), SpawnPoints [BLUE].rotation, 0);
+			}else{
+				SetRespawnPoint (RED);
+				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [RED].position, 20),SpawnPoints [RED].rotation, 0);
 			}
 			Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
 			if (PhotonNetwork.room.CustomProperties ["Zone"] != null) {
@@ -176,7 +179,7 @@ public class GameManager : Photon.MonoBehaviour {
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
 		player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
 		mechBuilder = player.GetComponent<BuildMech>();
-		Mech m = UserData.myData.Mech[0]; // HERE !
+		Mech m = UserData.myData.Mech[0];//default 0
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 
 
@@ -187,7 +190,7 @@ public class GameManager : Photon.MonoBehaviour {
 		}
 	}
 		
-	public void RegisterPlayer(int viewID, int teamID) {
+	public void RegisterPlayer(int viewID, int team) {
 		PhotonView pv = PhotonView.Find (viewID);
 		string name;
 		if(viewID == 2){//Drone
@@ -196,7 +199,7 @@ public class GameManager : Photon.MonoBehaviour {
 			name = pv.owner.NickName;
 		}
 
-		//bug : client is not ini. K/D even if ini. in start
+		//bug : ini here in case not ini. in start ( happens all the time )
 		if(pv.isMine){
 			ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
 			h2.Add ("Kills", 0);
@@ -228,7 +231,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 		//scorepanel
 		if(isTeamMode){
-			if(teamID == 0){
+			if(team == BLUE){
 				ps.transform.SetParent(Panel_BlueTeam.transform);
 			}else{
 				ps.transform.SetParent(Panel_RedTeam.transform);
@@ -260,8 +263,8 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void InstantiateFlags(){
-		BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [0].position.x , 0 , SpawnPoints [0].position.z), Quaternion.Euler(Vector3.zero), 0, null);
-		RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [1].position.x , 0 , SpawnPoints [1].position.z), Quaternion.Euler(Vector3.zero), 0, null);
+		BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [BLUE].position.x , 0 , SpawnPoints [BLUE].position.z), Quaternion.Euler(Vector3.zero), 0, null);
+		RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [RED].position.x , 0 , SpawnPoints [RED].position.z), Quaternion.Euler(Vector3.zero), 0, null);
 	}
 
 	void SyncTime() {
@@ -444,8 +447,6 @@ public class GameManager : Photon.MonoBehaviour {
 			return false;
 	}
 	void OnPhotonPlayerConnected(PhotonPlayer newPlayer){
-		//if (!PhotonNetwork.isMasterClient)
-		//	return;
 		InRoomChat.AddLine (newPlayer + " is connected.");
 	}
 
@@ -466,10 +467,9 @@ public class GameManager : Photon.MonoBehaviour {
 		//check if he had the flag
 		if (GameInfo.GameMode.Contains ("Capture")) {
 			if (player.NickName == ((BlueFlagHolder == null) ? "" : BlueFlagHolder.NickName)) {
-				print (player.NickName + " " + BlueFlagHolder.NickName);
-				SetFlagProperties (0, null, new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z), null);
+				SetFlagProperties (BLUE, null, new Vector3 (BlueFlag.transform.position.x, 0, BlueFlag.transform.position.z), null);
 			}else if(player.NickName == ((RedFlagHolder == null) ? "" : RedFlagHolder.NickName)){
-				SetFlagProperties (1, null, new Vector3 (RedFlag.transform.position.x, 0, RedFlag.transform.position.z), null);
+				SetFlagProperties (RED, null, new Vector3 (RedFlag.transform.position.x, 0, RedFlag.transform.position.z), null);
 			}
 		}
 	}
@@ -482,7 +482,7 @@ public class GameManager : Photon.MonoBehaviour {
 		PhotonPlayer player = PhotonView.Find (player_viewID).owner;
 
 		//check the current holder
-		if(flag == 0){
+		if(flag == BLUE){
 			if(BlueFlagHolder!=null){//someone has taken it first
 				return;
 			}else{
@@ -505,48 +505,48 @@ public class GameManager : Photon.MonoBehaviour {
 		//always received by master
 
 		if(BlueFlagHolder==null){
-			photonView.RPC ("SetFlag", PhotonTargets.All, -1, 0, BlueFlag.transform.position);
+			photonView.RPC ("SetFlag", PhotonTargets.All, -1, BLUE, BlueFlag.transform.position);
 		}else{
-			photonView.RPC ("SetFlag", PhotonTargets.All, (BlueFlag.transform.root).GetComponent<PhotonView>().viewID, 0, Vector3.zero);
+			photonView.RPC ("SetFlag", PhotonTargets.All, (BlueFlag.transform.root).GetComponent<PhotonView>().viewID, BLUE, Vector3.zero);
 		}
 			
 		if(RedFlagHolder==null){
-			photonView.RPC ("SetFlag", PhotonTargets.All, -1, 1, RedFlag.transform.position);
+			photonView.RPC ("SetFlag", PhotonTargets.All, -1, RED, RedFlag.transform.position);
 		}else{
-			photonView.RPC ("SetFlag", PhotonTargets.All, (RedFlag.transform.root).GetComponent<PhotonView>().viewID, 1, Vector3.zero);
+			photonView.RPC ("SetFlag", PhotonTargets.All, (RedFlag.transform.root).GetComponent<PhotonView>().viewID, RED, Vector3.zero);
 		}
 	}
 
 	public void SetRespawnPoint(int num){
-		if(isTeamMode){//num 2 is the grey zone
-			if(num==2){
+		if(isTeamMode){
+			if(num==GREY_ZONE){
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == 1) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == BLUE) {
 						respawnPoint = num;
-						print ("set point : " + num);
+						print ("set respawn point : " + num);
 					}
 				} else {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == 0) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == RED) {
 						respawnPoint = num;
-						print ("set point : " + num);
+						print ("set respawn point : " + num);
 					}
 				}
 			}else{
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
-					if (num==1) {
+					if (num==RED) {
 						respawnPoint = num;
-						print ("set point : " + num);
+						print ("set respawn point : " + num);
 					}
 				} else {
-					if (num==0) {
+					if (num==BLUE) {
 						respawnPoint = num;
-						print ("set point : " + num);
+						print ("set respawn point : " + num);
 					}
 				}
 			}
 		} else {
 			respawnPoint = num;
-			print ("set point : " + num);
+			print ("set respawn point : " + num);
 		}
 	}
 
@@ -555,7 +555,6 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void CallRespawn(int mech_num){
-		print ("call respawn with point : " + respawnPoint);
 		CloseRespawnPanel();
 		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint, mech_num);
 		mcbt.isDead = false;
@@ -576,27 +575,27 @@ public class GameManager : Photon.MonoBehaviour {
 			return;
 		flag_is_sync = true;
 		if(player_viewID == -1){//put the flag to the pos 
-			if(flag == 0){
-				SetFlagProperties (0, null, pos, null);
+			if(flag == BLUE){
+				SetFlagProperties (BLUE, null, pos, null);
 
-				if(BlueFlag.transform.position.x == SpawnPoints[0].position.x && BlueFlag.transform.position.z == SpawnPoints[0].position.z){
+				if(BlueFlag.transform.position.x == SpawnPoints[BLUE].position.x && BlueFlag.transform.position.z == SpawnPoints[BLUE].position.z){
 					BlueFlag.GetComponent<Flag> ().isOnBase = true;
 				}
 			}else{
-				SetFlagProperties (1, null, pos, null);
+				SetFlagProperties (RED, null, pos, null);
 
-				if(RedFlag.transform.position.x == SpawnPoints[1].position.x && RedFlag.transform.position.z == SpawnPoints[1].position.z){
+				if(RedFlag.transform.position.x == SpawnPoints[RED].position.x && RedFlag.transform.position.z == SpawnPoints[RED].position.z){
 					RedFlag.GetComponent<Flag> ().isOnBase = true;
 				}
 			}
 
 		}else{
 			PhotonView pv = PhotonView.Find (player_viewID);
-			if(flag == 0){
-				SetFlagProperties (0, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
+			if(flag == BLUE){
+				SetFlagProperties (BLUE, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
 				BlueFlag.GetComponent<Flag> ().isOnBase = false;
 			}else{
-				SetFlagProperties (1, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
+				SetFlagProperties (RED, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
 				RedFlag.GetComponent<Flag> ().isOnBase = false;
 			}
 		}
@@ -605,7 +604,7 @@ public class GameManager : Photon.MonoBehaviour {
 	[PunRPC]
 	void DropFlag(int player_viewID, int flag, Vector3 pos){//also call when disable player
 		if(flag == 0){
-			SetFlagProperties (0, null, pos, null);
+			SetFlagProperties (BLUE, null, pos, null);
 
 			//when disabling player , flag's renderer gets turn off
 			Renderer[] renderers = BlueFlag.GetComponentsInChildren<Renderer> ();
@@ -613,7 +612,7 @@ public class GameManager : Photon.MonoBehaviour {
 				renderer.enabled = true;
 			}
 		}else{
-			SetFlagProperties (1, null, pos, null);
+			SetFlagProperties (RED, null, pos, null);
 
 			Renderer[] renderers = RedFlag.GetComponentsInChildren<Renderer> ();
 			foreach(Renderer renderer in renderers){
@@ -637,7 +636,7 @@ public class GameManager : Photon.MonoBehaviour {
 				photonView.RPC ("RegisterScore", PhotonTargets.All, player_viewID);
 
 				//send back the flag
-				photonView.RPC ("SetFlag", PhotonTargets.All, -1, 1, new Vector3 (SpawnPoints[1].transform.position.x, 0, SpawnPoints[1].transform.position.z));
+				photonView.RPC ("SetFlag", PhotonTargets.All, -1, RED, new Vector3 (SpawnPoints[RED].transform.position.x, 0, SpawnPoints[RED].transform.position.z));
 			}
 		}else{//Redteam : blue flag holder
 			if (BlueFlagHolder==null || RedFlagHolder != null) {
@@ -645,7 +644,7 @@ public class GameManager : Photon.MonoBehaviour {
 			}else{
 				photonView.RPC ("RegisterScore", PhotonTargets.All, player_viewID);
 
-				photonView.RPC ("SetFlag", PhotonTargets.All, -1, 0, new Vector3 (SpawnPoints [0].transform.position.x, 0, SpawnPoints [0].transform.position.z));
+				photonView.RPC ("SetFlag", PhotonTargets.All, -1, BLUE, new Vector3 (SpawnPoints [BLUE].transform.position.x, 0, SpawnPoints [BLUE].transform.position.z));
 			}
 		}
 	}
@@ -676,7 +675,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void SetFlagProperties(int flag, Transform parent, Vector3 pos, PhotonPlayer holder){
-		if(flag==0){
+		if(flag==BLUE){
 			if (parent != null) {
 				BlueFlag.transform.parent = parent;
 				BlueFlag.transform.localPosition = Vector3.zero;
