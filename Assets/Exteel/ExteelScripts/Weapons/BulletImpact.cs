@@ -8,7 +8,7 @@ public class BulletImpact : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		//print ("bulletimpact is called.");
-		ParticleSystem ps = GetComponent<ParticleSystem>();
+		//ParticleSystem ps = GetComponent<ParticleSystem>();
 		//ps.Emit(1);
 		if (ImpactSound != null)
 			AudioSource.PlayClipAtPoint (ImpactSound, transform.position);

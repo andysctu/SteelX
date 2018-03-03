@@ -962,13 +962,10 @@ public class MechCombat : Combat {
 		switch(curWeapons[handPosition]){
 		case (int)WeaponTypes.RCL:
 			return "ShootRCL";
-			break;
 		case (int)WeaponTypes.BCN:
 			return "ShootBCN";
-			break;
 		case (int)WeaponTypes.EMPTY:
 			return "";
-			break;
 		default:
 			return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
 		}

@@ -92,6 +92,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	
 	public void Start()
 	{
+		print ("in start again");
 		DontDestroyOnLoad(gameObject);
 
 		StateText.text  = "";
@@ -134,6 +135,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	{
 		if (this.chatClient != null)
 		{
+			print ("chat client has disconnected");
 			this.chatClient.Disconnect();
 		}
 	}
@@ -148,6 +150,7 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		// check if we are missing context, which means we got kicked out to get back to the Photon Demo hub.
 		if ( this.StateText == null)
 		{
+			OnApplicationQuit ();
 			Destroy(this.gameObject);
 			return;
 		}
@@ -366,11 +369,8 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	{
 		// use OnConnected() and OnDisconnected()
 		// this method might become more useful in the future, when more complex states are being used.
-		
+
 		this.StateText.text = state.ToString();
-		if(state.ToString().Contains("ConnectedToFrontEnd")){
-			ShowState = false;
-		}
 	}
 	
 	public void OnSubscribed(string[] channels, bool[] results)
@@ -554,7 +554,9 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		}
 		
 		this.selectedChannelName = channelName;
-		this.CurrentChannelText.text = channel.ToStringMessages();
+
+		if(this.CurrentChannelText!=null)
+			this.CurrentChannelText.text = channel.ToStringMessages();
 		Debug.Log("ShowChannel: " + this.selectedChannelName);
 		
 		foreach (KeyValuePair<string, Toggle> pair in channelToggles)
