@@ -8,7 +8,7 @@ public class HeatBar : MonoBehaviour {
 	[SerializeField]
 	public Image barL,barR;
 	[SerializeField]
-	private Image circleL,circleR;
+	private Image barL_fill,barR_fill;
 	[SerializeField]
 	private BuildMech bm;
 	private Weapon[] weaponScripts;
@@ -21,8 +21,8 @@ public class HeatBar : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		weaponScripts = bm.weaponScripts;
-		circleL.fillAmount = 0.25f;
-		circleR.fillAmount = 0.25f;
+		barL_fill.fillAmount = 0;
+		barR_fill.fillAmount = 0;
 		rateL = 0.2f;
 		rateR = 0.2f;
 
@@ -38,9 +38,9 @@ public class HeatBar : MonoBehaviour {
 			if (curValue [i] <= 0){
 				if(is_overheat[i]){ // if previous is overheated => change color
 					if(i==weaponOffset){
-						barL.color = new Color32 (255, 255, 0, 200);
+						barL_fill.color = new Color32 (255, 255, 85, 200);
 					}else if(i==weaponOffset+1){
-						barR.color = new Color32 (255, 255, 0, 200);
+						barR_fill.color = new Color32 (255, 255, 85, 200);
 					}
 				}
 				is_overheat [i] = false;
@@ -58,37 +58,37 @@ public class HeatBar : MonoBehaviour {
 
 		if(bm.weaponScripts[offset].isTwoHanded){
 			barL.enabled = true;
-			circleL.enabled = true;
+			barL_fill.enabled = true;
 			barR.enabled = false;
-			circleR.enabled = false;
+			barR_fill.enabled = false;
 		}else{
 			if (bm.weaponScripts [offset].Animation != "") {//Empty weapon 
 				barL.enabled = true;
-				circleL.enabled = true;
+				barL_fill.enabled = true;
 			} else {
 				barL.enabled = false;
-				circleL.enabled = false;
+				barL_fill.enabled = false;
 			}
 
 			if (bm.weaponScripts [offset + 1].Animation != "") {
 				barR.enabled = true;
-				circleR.enabled = true;
+				barR_fill.enabled = true;
 			} else {
 				barR.enabled = false;
-				circleR.enabled = false;
+				barR_fill.enabled = false;
 			}
 		}
 
 		if(is_overheat[offset]){//update color
-			barL.color =new Color32 (255, 0, 0, 200);
+			barL_fill.color =new Color32 (255, 0, 0, 200);
 		}else{
-			barL.color =new Color32 (255, 255, 0, 200);
+			barL_fill.color =new Color32 (255, 255, 85, 200);
 		}
 
 		if(is_overheat[offset+1]){
-			barR.color =new Color32 (255, 0, 0, 200);
+			barR_fill.color =new Color32 (255, 0, 0, 200);
 		}else{
-			barR.color =new Color32 (255, 255, 0, 200);
+			barR_fill.color =new Color32 (255, 255, 85, 200);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class HeatBar : MonoBehaviour {
 		if (curValue [weaponOffset] >= 100) {
 			curValue[weaponOffset] = 100;
 			is_overheat [weaponOffset] = true;
-			barL.color =new Color32 (255, 0, 0, 200);
+			barL_fill.color =new Color32 (255, 0, 0, 200);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class HeatBar : MonoBehaviour {
 		if (curValue [weaponOffset + 1] >= 100) {
 			curValue[weaponOffset + 1] = 100;
 			is_overheat [weaponOffset + 1] = true;
-			barR.color = new Color32 (255, 0, 0, 200);
+			barR_fill.color = new Color32 (255, 0, 0, 200);
 		}
 	}
 	public void ResetHeatBar(){
@@ -125,19 +125,19 @@ public class HeatBar : MonoBehaviour {
 
 	public void NoHeatBarL(){
 		barL.enabled = false;
-		circleL.enabled = false;
+		barL_fill.enabled = false;
 	}
 
 	public void NoHeatBarR(){
 		barR.enabled = false;
-		circleR.enabled = false;
+		barR_fill.enabled = false;
 	}
 
-	private void DrawBarL(){//heat value : [0,100] -> [0.25,0]
-		circleL.fillAmount = 0.25f - curValue[weaponOffset] * 0.0025f;
+	private void DrawBarL(){
+		barL_fill.fillAmount =curValue[weaponOffset] * 0.01f;
 	}
 
 	private void DrawBarR(){
-		circleR.fillAmount = 0.25f - curValue[weaponOffset+1] * 0.0025f;
+		barR_fill.fillAmount = curValue[weaponOffset+1] * 0.01f;
 	}
 }
