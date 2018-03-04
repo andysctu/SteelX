@@ -15,6 +15,7 @@ public class MechCombat : Combat {
 	[SerializeField] InRoomChat InRoomChat;
 	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	[SerializeField] DisplayPlayerInfo displayPlayerInfo;
+	[SerializeField] Combo Combo;
 	public TrailRenderer trailRendererL,trailRendererR;
 	PlayerInZone Healthpool;
 	HealthPoolBar HealthpoolBar;
@@ -777,7 +778,7 @@ public class MechCombat : Combat {
 			break;
 			case (int)WeaponTypes.MELEE:
 				SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage);
-				animator.SetBool(animationStr, true);
+				Combo.Slash (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:
 				animator.SetBool(animationStr, true);
@@ -1034,16 +1035,8 @@ public class MechCombat : Combat {
 		return (currentHP >= MAX_HP);
 	}
 
-	public void SetSlashLToFalse(){
-		animator.SetBool ("SlashL", false);
-	}
-
 	public void SetLSlashPlaying(int isPlaying){
 		isLSlashPlaying = isPlaying;
-	}
-
-	public void SetSlashRToFalse(){
-		animator.SetBool ("SlashR", false);
 	}
 
 	public void SetRSlashPlaying(int isPlaying){// this is true when RSlash is playing ( slashR1 , ... )

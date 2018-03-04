@@ -16157,25 +16157,25 @@ AnimationClip:
     intParameter: 1
     messageOptions: 0
   - time: 0
-    functionName: ReceiveNextSlash
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 1
-    messageOptions: 0
-  - time: 0
     functionName: PlaySlash
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
     messageOptions: 0
-  - time: 0.2
+  - time: 0
+    functionName: ReceiveNextSlash
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 1
+    messageOptions: 0
+  - time: 0.3
     functionName: CallSlashRToFalse
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 1
     messageOptions: 0
   - time: 0.43333334
     functionName: CallRSlashPlaying

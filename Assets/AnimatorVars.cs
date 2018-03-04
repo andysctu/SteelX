@@ -15,7 +15,7 @@ public class AnimatorVars : MonoBehaviour {
 	public int direction_id;
 	public int onSlash_id;
 
-	public bool inHangar = false;
+	public bool inHangar = false;//in Store also manually set this to false
 	// Use this for initialization
 	void Start () {
 		cc = transform.parent.gameObject.GetComponent<CharacterController> ();
