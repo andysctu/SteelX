@@ -369,8 +369,8 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	{
 		// use OnConnected() and OnDisconnected()
 		// this method might become more useful in the future, when more complex states are being used.
-
-		this.StateText.text = state.ToString();
+		if(this.StateText!=null)
+			this.StateText.text = state.ToString();
 	}
 	
 	public void OnSubscribed(string[] channels, bool[] results)

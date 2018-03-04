@@ -52,17 +52,27 @@ public class SlashState : MechStateMachineBehaviour {
 		mcbt.SetReceiveNextSlash (1);
 	}
 	public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		if ( cc == null || !cc.enabled) return;
+		if (cc == null)
+			return;
 
-		if (!animator.GetBool (grounded_id)) {//exit not through stateMachineExit ( directly go to falling state )
-			animator.SetBool (onSlash_id, false);
-			mcbt.ShowTrailL (false);
-			mcbt.ShowTrailR (false);
+		if(!cc.enabled){
+			if (!animator.GetBool (grounded_id)) {//exit not through stateMachineExit ( directly go to falling state )
+				mcbt.ShowTrailL (false);
+				mcbt.ShowTrailR (false);
+				return;
+			}
+		}else{
+			if (!animator.GetBool (grounded_id)) {
+				mcbt.ShowTrailL (false);
+				mcbt.ShowTrailR (false);
+				animator.SetBool (onSlash_id, false);
+			}
 		}
 
 		animator.SetBool (boost_id, false);
-		if(!animator.GetBool("SlashR3")&&!animator.GetBool("SlashL3"))
+		if(!animator.GetBool(slashL3_id)&&!animator.GetBool(slashR3_id)) //do not receive next slash when in slash 3
 			mcbt.SetReceiveNextSlash (1);
+		
 		mctrl.SetCanVerticalBoost (false);
 		mctrl.Boost (false);
 	}

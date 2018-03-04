@@ -10,7 +10,8 @@ public class MechController : Photon.MonoBehaviour {
 	public Sounds Sounds;
 	public LayerMask Terrain;
 	[SerializeField] GameObject boostFlame;
-
+	[SerializeField] AnimatorVars AnimatorVars;
+	private int boost_id;
 	public float Gravity = 4.0f;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
@@ -52,7 +53,6 @@ public class MechController : Photon.MonoBehaviour {
 	public bool grounded = true;
 	public bool jump;
 
-
 	// Unused
 	[SerializeField] Transform[] Legs;
 
@@ -68,6 +68,10 @@ public class MechController : Photon.MonoBehaviour {
 		canVerticalBoost = false;
 		isSlowDown = false;
 		animator.SetBool ("Grounded", true);
+	}
+
+	public void InitVars(){//this is called by AniamtorVars
+		boost_id = AnimatorVars.boost_id;
 	}
 
 	void initComponents() {
@@ -115,7 +119,7 @@ public class MechController : Photon.MonoBehaviour {
 			return;
 		}
 
-		if (animator.GetBool("Boost")) {
+		if (animator.GetBool(boost_id)) {
 			DynamicCam();
 			mechCombat.DecrementFuel();
 		} else {

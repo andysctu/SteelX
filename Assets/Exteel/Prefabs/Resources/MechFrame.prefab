@@ -2991,6 +2991,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   boostFlame: {fileID: 1094051500879738}
+  AnimatorVars: {fileID: 114137985907184306}
   Gravity: 6
   jumped: 0
   InAirSpeedCoeff: 0.55
@@ -5443,6 +5444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Combo: {fileID: 114895722533198232}
   cc: {fileID: 0}
   mctrl: {fileID: 0}
   mcbt: {fileID: 0}
@@ -5453,6 +5455,12 @@ MonoBehaviour:
   speed_id: 0
   direction_id: 0
   onSlash_id: 0
+  SlashL_id: 0
+  SlashL2_id: 0
+  SlashL3_id: 0
+  SlashR_id: 0
+  SlashR2_id: 0
+  SlashR3_id: 0
   inHangar: 0
 --- !u!114 &114189640356066892
 MonoBehaviour:
@@ -6163,6 +6171,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mechCombat: {fileID: 11445986}
+  animator: {fileID: 9563454}
+  AnimatorVars: {fileID: 114137985907184306}
 --- !u!114 &114911369149093332
 MonoBehaviour:
   m_ObjectHideFlags: 1

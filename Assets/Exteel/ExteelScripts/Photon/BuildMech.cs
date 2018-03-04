@@ -321,13 +321,13 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
 		if (animator != null)CheckAnimatorState ();
-		for (int i = 0; i < 4; i++)
-			ShutDownTrail (weapons [i]);
-
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
 
-		if(mcbt!=null)UpdateMechCombatVars ();
+		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
+
+		for (int i = 0; i < 4; i++)
+			ShutDownTrail (weapons [i]);
 	}
 
 
@@ -627,7 +627,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			return;
 
 		if(inHangar || inStore){//set active to false
-				trailRenderer.gameObject.SetActive (false);
+			trailRenderer.gameObject.SetActive (false);
 		}else{//in game -> disable
 			trailRenderer.enabled = false;
 		}

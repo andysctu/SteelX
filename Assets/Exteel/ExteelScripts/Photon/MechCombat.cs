@@ -343,9 +343,11 @@ public class MechCombat : Combat {
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
 		} else if(usingENGWeapon(handPosition)){
+			yield return new WaitForSeconds (0.1f);//in case the wrong start position makes glitch
 			GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 			bullet.transform.SetParent (Hands [handPosition]);
 			bullet.GetComponent<ElectricBolt> ().dir = direction;
+			bullet.GetComponent<ElectricBolt> ().cam = cam;
 			if (Target != null) {
 				bullet.GetComponent<ElectricBolt> ().Target = Target.transform;
 			}
@@ -355,6 +357,7 @@ public class MechCombat : Combat {
 			for (i = 0; i < bN; i++) {
 				GameObject bullet = Instantiate (b , Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
+				bulletTrace.direction = cam.transform.forward;
 				bulletTrace.HUD = hud;
 				bulletTrace.cam = cam;
 				bulletTrace.ShooterName = gameObject.name;

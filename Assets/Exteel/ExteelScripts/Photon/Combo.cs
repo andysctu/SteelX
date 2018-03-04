@@ -4,13 +4,26 @@ using UnityEngine;
 
 public class Combo : MonoBehaviour {
 
-	private MechCombat mechCombat;
-	private Animator animator;
+	[SerializeField]private MechCombat mechCombat;
+	[SerializeField]private Animator animator;
+	[SerializeField]private AnimatorVars AnimatorVars;
 
-	void Start(){
-		mechCombat = GetComponentInParent<MechCombat> ();
-		animator = GetComponent<Animator> ();
+	private int slashL_id;
+	private int slashL2_id;
+	private int slashL3_id;
+	private int slashR_id;
+	private int slashR2_id;
+	private int slashR3_id;
+
+	public void InitVars(){// called by AnimatorVars
+		slashL_id = AnimatorVars.SlashL_id;
+		slashL2_id = AnimatorVars.SlashL2_id;
+		slashL3_id = AnimatorVars.SlashL3_id;
+		slashR_id = AnimatorVars.SlashR_id;
+		slashR2_id = AnimatorVars.SlashR2_id;
+		slashR3_id = AnimatorVars.SlashR3_id;
 	}
+
 	public void CallLSlashPlaying(int isPlaying){
 		mechCombat.SetLSlashPlaying(isPlaying);
 		mechCombat.ShowTrailL (isPlaying==1);
@@ -23,26 +36,27 @@ public class Combo : MonoBehaviour {
 	public void CallSlashLToFalse(int num){
 		switch(num){
 		case 1:
-			animator.SetBool ("SlashL", false);
+			animator.SetBool (slashL_id, false);
 			break;
 		case 2:
-			animator.SetBool ("SlashL2", false);
+			animator.SetBool (slashL2_id, false);
 			break;
 		case 3:
-			animator.SetBool ("SlashL3", false);
+			animator.SetBool (slashL3_id, false);
 			break;
 		}
 	}
+
 	public void CallSlashRToFalse(int num){
 		switch(num){
 		case 1:
-			animator.SetBool ("SlashR", false);
+			animator.SetBool (slashR_id, false);
 			break;
 		case 2:
-			animator.SetBool ("SlashR2", false);
+			animator.SetBool (slashR2_id, false);
 			break;
 		case 3:
-			animator.SetBool ("SlashR3", false);
+			animator.SetBool (slashR3_id, false);
 			break;
 		}
 	}
@@ -53,23 +67,23 @@ public class Combo : MonoBehaviour {
 
 	public void Slash(int handposition){
 		if(handposition==0){
-			if(animator.GetBool("SlashL2")){
-				animator.SetBool ("SlashL3",true);
+			if(animator.GetBool(slashL2_id)){
+				animator.SetBool (slashL3_id,true);
 			}else{
-				if(animator.GetBool("SlashL")){
-					animator.SetBool ("SlashL2", true);
+				if(animator.GetBool(slashL_id)){
+					animator.SetBool (slashL2_id, true);
 				}else{
-					animator.SetBool ("SlashL", true);
+					animator.SetBool (slashL_id, true);
 				}
 			}
 		}else{
-			if(animator.GetBool("SlashR2")){
-				animator.SetBool ("SlashR3",true);
+			if(animator.GetBool(slashR2_id)){
+				animator.SetBool (slashR3_id,true);
 			}else{
-				if(animator.GetBool("SlashR")){
-					animator.SetBool ("SlashR2", true);
+				if(animator.GetBool(slashR_id)){
+					animator.SetBool (slashR2_id, true);
 				}else{
-					animator.SetBool ("SlashR", true);
+					animator.SetBool (slashR_id, true);
 				}
 			}
 		}

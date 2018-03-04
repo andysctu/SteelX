@@ -8,6 +8,7 @@ public class BulletTrace : MonoBehaviour {
 	public HUD HUD;
 	public Camera cam;
 	public LayerMask layerMask = 8, Terrain = 10;
+	public Vector3 direction;
 	private Rigidbody rb;
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
 	private Transform Target;
@@ -25,10 +26,12 @@ public class BulletTrace : MonoBehaviour {
 		ps.Play();
 
 		if(gameObject.transform.parent == null){//no target => move directly
-			GetComponent<Rigidbody> ().velocity = transform.forward * bulletSpeed;
+			GetComponent<Rigidbody> ().velocity = direction * bulletSpeed;
+			transform.LookAt (direction*9999);
 			Destroy(gameObject, 2f);
 		}else{//target exists
 			Target = gameObject.transform.parent.GetComponent<Transform>();
+			transform.LookAt (Target);
 			isfollow = true;
 			Destroy(gameObject, 2f);
 		}
@@ -46,6 +49,7 @@ public class BulletTrace : MonoBehaviour {
 			}
 			Vector3 dir = -(transform.position - Target.position - new Vector3(0,5,0)).normalized;
 			GetComponent<Rigidbody> ().velocity = bulletSpeed*dir;
+			transform.LookAt (Target);
 		}
 	}
 
