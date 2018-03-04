@@ -13,7 +13,7 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 		
-		if (Input.GetKeyUp(KeyCode.Space)) {
+		if (Input.GetKeyUp(KeyCode.Space) && !animator.GetBool(onSlash_id)) {
 			JumpedState.jumpReleased = true;
 		}
 
@@ -30,7 +30,7 @@ public class GroundedState : MechStateMachineBehaviour {
 		}
 		//animator.SetBool ("OnSlash", false);  // if grounded => not on slash
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
+		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onSlash_id)) {
 			mctrl.SetCanVerticalBoost (true);
 			mctrl.Jump();
 			animator.SetBool(grounded_id, false);

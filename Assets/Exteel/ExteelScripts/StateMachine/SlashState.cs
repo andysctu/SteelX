@@ -55,7 +55,8 @@ public class SlashState : MechStateMachineBehaviour {
 
 		if(!animator.GetBool("Grounded"))
 			animator.SetBool (onSlash_id, false);
-		
+
+		mcbt.SetReceiveNextSlash (1);
 		mctrl.SetCanVerticalBoost (false);
 		mctrl.Boost (false);
 	}

@@ -41,7 +41,7 @@ public class MechCombat : Combat {
 	private const int RIGHT_HAND = 1;
 	private float timeOfLastShotL;
 	private float timeOfLastShotR;
-	private int[] curWeapons = new int[2];
+	private int[] curWeaponNames = new int[2];
 	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 
 	public bool CanSlash = true;
@@ -238,7 +238,7 @@ public class MechCombat : Combat {
 		if( target != null){
 			//Debug.Log("Hit tag: " + target.tag);
 			//Debug.Log("Hit name: " + target.name);
-			if (curWeapons [handPosition] != (int)WeaponTypes.ENG) {
+			if (curWeaponNames [handPosition] != (int)WeaponTypes.ENG) {
 				if (target.tag == "Player" || target.tag == "Drone") {
 				
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
@@ -607,7 +607,7 @@ public class MechCombat : Combat {
 
 	void handleCombat(int handPosition) {
 
-		switch(curWeapons[handPosition]){
+		switch(curWeaponNames[handPosition]){
 
 		case (int)WeaponTypes.RANGED:
 			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SMG : has a delay before putting down hands
@@ -677,7 +677,7 @@ public class MechCombat : Combat {
 			return;
 		}
 
-		switch(curWeapons[handPosition]){
+		switch(curWeaponNames[handPosition]){
 
 		case (int)WeaponTypes.RANGED:
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
@@ -697,7 +697,7 @@ public class MechCombat : Combat {
 				if (!receiveNextSlash|| !CanSlash)
 					return;
 
-				if (curWeapons [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
+				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
 				if (((handPosition == 1) ? isLSlashPlaying : isRSlashPlaying) != 0) { // only one can play at the same time
@@ -710,13 +710,13 @@ public class MechCombat : Combat {
 				if (handPosition == 0) {
 					HeatBar.IncreaseHeatBarL (5);
 					timeOfLastShotL = Time.time;
-					if (curWeapons[1]==(int)WeaponTypes.MELEE)
+					if (curWeaponNames[1]==(int)WeaponTypes.MELEE)
 						timeOfLastShotR = timeOfLastShotL;
 
 				} else if (handPosition == 1) {
 					HeatBar.IncreaseHeatBarR (5);
 					timeOfLastShotR = Time.time;
-					if (curWeapons[0]==(int)WeaponTypes.MELEE)
+					if (curWeaponNames[0]==(int)WeaponTypes.MELEE)
 						timeOfLastShotL = timeOfLastShotR;
 				}
 			}
@@ -771,7 +771,7 @@ public class MechCombat : Combat {
 			float x = cam.transform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
 
 			// Tweaks
-			switch(curWeapons[handPosition]){
+			switch(curWeaponNames[handPosition]){
 			case (int)WeaponTypes.RANGED:
 				animator.SetBool(animationStr, true);
 			break;
@@ -798,11 +798,11 @@ public class MechCombat : Combat {
 				break;
 			}
 		} else {// melee is set to false by animation
-			if (curWeapons [handPosition] == (int)WeaponTypes.RANGED || curWeapons [handPosition] == (int)WeaponTypes.RCL || curWeapons [handPosition] == (int)WeaponTypes.SHIELD)
+			if (curWeaponNames [handPosition] == (int)WeaponTypes.RANGED || curWeaponNames [handPosition] == (int)WeaponTypes.RCL || curWeaponNames [handPosition] == (int)WeaponTypes.SHIELD)
 				animator.SetBool (animationStr, false);
-			else if (curWeapons [handPosition] == (int)WeaponTypes.BCN)
+			else if (curWeaponNames [handPosition] == (int)WeaponTypes.BCN)
 				animator.SetBool ("ShootBCN", false);
-			else if (curWeapons [handPosition] == (int)WeaponTypes.ENG) {
+			else if (curWeaponNames [handPosition] == (int)WeaponTypes.ENG) {
 				if(handPosition==0)
 					animator.SetBool ("ENGShootL", false);
 				else{
@@ -894,8 +894,8 @@ public class MechCombat : Combat {
 		FindTrailRenderer ();
 
 		//check if using RCL => RCLIdle
-		animator.SetBool ("UsingRCL", curWeapons[0] == (int)WeaponTypes.RCL);
-		animator.SetBool ("UsingBCN", curWeapons[0] == (int)WeaponTypes.BCN);
+		animator.SetBool ("UsingRCL", curWeaponNames[0] == (int)WeaponTypes.RCL);
+		animator.SetBool ("UsingBCN", curWeaponNames[0] == (int)WeaponTypes.BCN);
 
 		animator.SetBool ("BCNPose", false);
 
@@ -926,19 +926,19 @@ public class MechCombat : Combat {
 	public void UpdateCurWeaponType(){
 		for(int i=0;i<2;i++){
 			if (usingRangedWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.RANGED;
+				curWeaponNames [i] = (int)WeaponTypes.RANGED;
 			else if (usingMeleeWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.MELEE;
+				curWeaponNames [i] = (int)WeaponTypes.MELEE;
 			else if (usingShieldWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.SHIELD;
+				curWeaponNames [i] = (int)WeaponTypes.SHIELD;
 			else if (usingRCLWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.RCL;
+				curWeaponNames [i] = (int)WeaponTypes.RCL;
 			else if (usingBCNWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.BCN;
+				curWeaponNames [i] = (int)WeaponTypes.BCN;
 			else if (usingENGWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.ENG;
+				curWeaponNames [i] = (int)WeaponTypes.ENG;
 			else if (usingEmptyWeapon (i))
-				curWeapons [i] = (int)WeaponTypes.EMPTY;
+				curWeaponNames [i] = (int)WeaponTypes.EMPTY;
 		}
 	}
 
@@ -971,7 +971,7 @@ public class MechCombat : Combat {
 	} 
 
 	string animationString(int handPosition) {
-		switch(curWeapons[handPosition]){
+		switch(curWeaponNames[handPosition]){
 		case (int)WeaponTypes.RCL:
 			return "ShootRCL";
 		case (int)WeaponTypes.BCN:
@@ -1055,7 +1055,7 @@ public class MechCombat : Combat {
 	}
 
 	public void FindTrailRenderer(){
-		if(curWeapons[0] == (int)WeaponTypes.MELEE){
+		if(curWeaponNames[0] == (int)WeaponTypes.MELEE){
 			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
 			if (trailRendererL != null) {
 				trailRendererL.enabled = false;
@@ -1064,7 +1064,7 @@ public class MechCombat : Combat {
 			trailRendererL = null;
 		}
 
-		if(curWeapons[1] == (int)WeaponTypes.MELEE){
+		if(curWeaponNames[1] == (int)WeaponTypes.MELEE){
 			trailRendererR = weapons [weaponOffset+1].GetComponentInChildren<TrailRenderer> ();
 			if(trailRendererR!=null)
 				trailRendererR.enabled = false;

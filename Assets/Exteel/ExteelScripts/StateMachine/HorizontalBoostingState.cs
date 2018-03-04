@@ -27,7 +27,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if ((mcbt.FuelEmpty () || !Input.GetKey (KeyCode.LeftShift)) || animator.GetBool(jump_id)) {
+		if ((mcbt.FuelEmpty () || !Input.GetKey (KeyCode.LeftShift)) || animator.GetBool(jump_id) ||animator.GetBool(onSlash_id)) {
 			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
@@ -37,7 +37,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 				mctrl.Boost (true);
 		}
 			
-		if (Input.GetKey(KeyCode.Space)) {	
+		if (Input.GetKey(KeyCode.Space) && !animator.GetBool(onSlash_id)) {	
 			Sounds.StopBoostLoop ();
 			mctrl.Boost (false);
 			mctrl.SetCanVerticalBoost(true);
