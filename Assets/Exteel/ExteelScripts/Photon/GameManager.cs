@@ -240,6 +240,9 @@ public class GameManager : Photon.MonoBehaviour {
 			ps.transform.SetParent(Panel_BlueTeam.transform);
 
 		ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+		ps.transform.localPosition = Vector3.zero;
+		ps.transform.localRotation = Quaternion.identity;
+
 		playerScorePanels.Add(name, ps);
 	}
 

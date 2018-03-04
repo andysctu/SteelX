@@ -180,7 +180,7 @@ public class MechCombat : Combat {
 	}
 
 	void initHealthPool(){
-		Healthpool = GameObject.FindObjectOfType<PlayerInZone> ();
+		Healthpool = GameObject.Find ("HealthZone").GetComponent<PlayerInZone> ();
 		HealthpoolBar = Healthpool.transform.root.GetComponent<HealthPoolBar> ();
 		if(photonView.isMine){
 			Healthpool.player_viewID = photonView.viewID;
@@ -622,7 +622,8 @@ public class MechCombat : Combat {
 				}
 			}else{
 				if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-					setIsFiring (handPosition, false);
+					if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 0.25f)//0.25 < time of playing shoot animation once , to make sure other player catch this
+						setIsFiring (handPosition, false);
 					return;
 				}
 			}
@@ -641,12 +642,14 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.RCL:
 			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-				setIsFiring (handPosition, false);
+				if (Time.time - timeOfLastShotL >= 0.4f)//0.4 < time of playing shoot animation once , to make sure other player catch this
+					setIsFiring (handPosition, false);
 				return;
 			}
 		break;
 		case (int)WeaponTypes.BCN:
-			setIsFiring (handPosition, false);
+			if (Time.time - timeOfLastShotL >= 0.5f)
+				setIsFiring (handPosition, false);
 			if(Input.GetKeyDown(KeyCode.Mouse1)){//right click cancel BCNPose
 				animator.SetBool ("BCNPose", false);
 				return;
@@ -792,7 +795,7 @@ public class MechCombat : Combat {
 			break;
 			case (int)WeaponTypes.BCN:
 				animator.SetBool (animationStr, true);
-				animator.SetBool ("BCNPose", false);
+				//animator.SetBool ("BCNPose", false);
 			break;
 			case (int)WeaponTypes.ENG:
 				if(handPosition==0)

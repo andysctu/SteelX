@@ -7,8 +7,8 @@ public class BCNstate : MechStateMachineBehaviour {
 
 	public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.OnStateEnter(animator, stateInfo, layerIndex);
-		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 		animator.SetBool ("OnBCN", true);
+		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 	}
 
 	public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -19,8 +19,8 @@ public class BCNstate : MechStateMachineBehaviour {
 	}
 
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
-		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 		animator.SetBool ("OnBCN", false);
+		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 	}
 		
 }
