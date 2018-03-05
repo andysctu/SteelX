@@ -7,17 +7,12 @@ public class GroundedState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled || !cc.isGrounded) return;
+		mcbt.CanSlash = true;
+		mcbt.SetReceiveNextSlash (1);
 	}
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled)
-			return;
-		
-		if (Input.GetKeyUp(KeyCode.Space) && !animator.GetBool(onSlash_id)) {
-			JumpedState.jumpReleased = true;
-		}
-
-		if (!cc.isGrounded) 
+		if (cc == null || !cc.enabled || !cc.isGrounded)
 			return;
 		
 		float speed = Input.GetAxis("Vertical");
@@ -28,7 +23,6 @@ public class GroundedState : MechStateMachineBehaviour {
 			animator.SetBool (boost_id, false); // not shutting down ,happens when boosting before slashing
 			mctrl.Boost(false);
 		}
-		//animator.SetBool ("OnSlash", false);  // if grounded => not on slash
 
 		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onSlash_id)) {
 			mctrl.SetCanVerticalBoost (true);

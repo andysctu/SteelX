@@ -142,11 +142,6 @@ public class MechCombat : Combat {
 		bm = GetComponent<BuildMech>();
 		weapons = bm.weapons;
 		bullets = bm.bulletPrefabs;
-		for(int i=0;i<4;i++){
-			if(bullets[i]!=null){
-				print ("bullet name : "+bullets [i].ToString ());
-			}
-		}
 		weaponScripts = bm.weaponScripts;
 		Sounds.ShotSounds = bm.ShotSounds;
 	}
@@ -581,10 +576,6 @@ public class MechCombat : Combat {
 		// Switch weapons
 		if (Input.GetKeyDown (KeyCode.R) && !isDead) {
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
-		}
-
-		if (mechController.CheckIsGrounded()) { // CanSlash is to avoid multiple slashs in air
-			CanSlash = true;
 		}
 
 		updateHUD();

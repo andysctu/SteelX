@@ -11,6 +11,10 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled) return;
 		//jumpReleased = false;
 		animator.SetBool(onSlash_id,false);
+		mcbt.isRSlashPlaying = 0;
+		mcbt.isLSlashPlaying = 0;
+		animator.SetBool (slashR2_id, false);
+		animator.SetBool (slashL2_id, false);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

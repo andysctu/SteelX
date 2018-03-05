@@ -24,27 +24,31 @@ public class SlashState : MechStateMachineBehaviour {
 		mcbt.isLSlashPlaying = 0;
 		mcbt.SetReceiveNextSlash (1);
 	}
+
+	public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+		mcbt.CanSlash = mctrl.CheckIsGrounded ();
+	}
+
 	public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (cc == null)
 			return;
 
-		if(!cc.enabled){
-			if (!animator.GetBool (grounded_id)) {//exit not through stateMachineExit ( directly go to falling state )
+		if (!cc.enabled) {
+			if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {//exit slash state not through stateMachineExit ( directly go to falling state )
 				mcbt.ShowTrailL (false);
 				mcbt.ShowTrailR (false);
-				return;
 			}
 		}else{
-			if (!animator.GetBool (grounded_id)) {
+			if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {
 				mcbt.ShowTrailL (false);
 				mcbt.ShowTrailR (false);
+				mcbt.isRSlashPlaying = 0;
+				mcbt.isLSlashPlaying = 0;
 				animator.SetBool (onSlash_id, false);
 			}
 		}
 
 		animator.SetBool (boost_id, false);
-		if(!animator.GetBool(slashL3_id)&&!animator.GetBool(slashR3_id)) //do not receive next slash when in slash 3
-			mcbt.SetReceiveNextSlash (1);
 		
 		mctrl.SetCanVerticalBoost (false);
 		mctrl.Boost (false);
