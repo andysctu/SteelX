@@ -16150,6 +16150,13 @@ AnimationClip:
   m_GenerateMotionCurves: 0
   m_Events:
   - time: 0
+    functionName: PlaySlash
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 2
+    messageOptions: 0
+  - time: 0
     functionName: ReceiveNextSlash
     data: 
     objectReferenceParameter: {fileID: 0}
@@ -16163,12 +16170,12 @@ AnimationClip:
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
-  - time: 0
-    functionName: PlaySlash
+  - time: 0.033333335
+    functionName: CallSetSlashMoving
     data: 
     objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 2
+    floatParameter: 12
+    intParameter: 0
     messageOptions: 0
   - time: 0.4
     functionName: CallRSlashPlaying

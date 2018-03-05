@@ -9,7 +9,6 @@ public class JumpedState : MechStateMachineBehaviour {
 	public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
-		//jumpReleased = false;
 		animator.SetBool(onSlash_id,false);
 		mcbt.isRSlashPlaying = 0;
 		mcbt.isLSlashPlaying = 0;
@@ -45,7 +44,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			Sounds.PlayBoostLoop ();
 		}
 
-		if(mctrl.CanVerticalBoost()){
+		if(mctrl.CanVerticalBoost() && (!animator.GetBool(slashL_id) && !animator.GetBool(slashR_id))){
 			animator.SetBool(boost_id, false);
 			mctrl.Boost (false);
 		}

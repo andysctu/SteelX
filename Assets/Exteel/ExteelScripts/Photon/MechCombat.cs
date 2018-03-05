@@ -275,7 +275,7 @@ public class MechCombat : Combat {
 
 		if(!mechController.grounded){
 			mechController.Boost (true); // jump slash boost effect
-			mechController.SetSlashMoving(cam.transform.forward,8f);
+			//mechController.SetSlashMoving(cam.transform.forward,8f);
 		}
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
 
@@ -302,7 +302,7 @@ public class MechCombat : Combat {
 
 		} else{
 			//the first one does not move
-			mechController.SetSlashMoving(cam.transform.forward,8f);
+			//mechController.SetSlashMoving(cam.transform.forward,8f);
 
 		}
 			

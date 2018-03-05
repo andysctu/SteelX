@@ -5,6 +5,7 @@ using UnityEngine;
 public class Combo : MonoBehaviour {
 
 	[SerializeField]private MechCombat mechCombat;
+	[SerializeField]private MechController mctrl;
 	[SerializeField]private Animator animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
 
@@ -87,5 +88,9 @@ public class Combo : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	public void CallSetSlashMoving(float speed){//called by animation
+		mctrl.SetSlashMoving(speed);
 	}
 }

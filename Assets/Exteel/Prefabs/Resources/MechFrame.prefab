@@ -2839,7 +2839,7 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: SlashL
   - Type: 4
-    SynchronizeType: 1
+    SynchronizeType: 0
     Name: OnSlash
   - Type: 4
     SynchronizeType: 1
@@ -6322,6 +6322,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mechCombat: {fileID: 11445986}
+  mctrl: {fileID: 11462782}
   animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
 --- !u!114 &114911369149093332

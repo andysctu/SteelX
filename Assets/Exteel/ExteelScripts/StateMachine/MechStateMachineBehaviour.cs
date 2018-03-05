@@ -15,6 +15,9 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected int speed_id;
 	protected int direction_id;
 	protected int onSlash_id;
+
+	protected int slashL_id;
+	protected int slashR_id;
 	protected int slashL2_id;
 	protected int slashR2_id;
 	protected int slashL3_id;
@@ -40,6 +43,9 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		direction_id = animatorVars.direction_id;
 		onSlash_id = animatorVars.onSlash_id;
 		speed_id = animatorVars.speed_id;
+
+		slashL_id = animatorVars.SlashL_id;
+		slashR_id = animatorVars.SlashR_id;
 		slashL2_id = animatorVars.SlashL2_id;
 		slashR2_id = animatorVars.SlashR2_id;
 		slashL3_id = animatorVars.SlashL3_id;

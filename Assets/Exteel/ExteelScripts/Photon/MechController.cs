@@ -50,9 +50,11 @@ public class MechController : Photon.MonoBehaviour {
 	private float speed;
 	private float direction;
 	public bool boost;
-	public bool grounded = true;
+	public bool grounded = true; //this is the fastest way to check if not grounded , and also depends on characterController.isgrounded
 	public bool jump;
 
+
+	//public float DecreaseSlashMScoeff = 1.5f;//test 
 	// Unused
 	[SerializeField] Transform[] Legs;
 
@@ -97,17 +99,6 @@ public class MechController : Photon.MonoBehaviour {
 			return;
 		}
 
-		// slash z-offset
-		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
-			if(SlashMovingSpeed >0.1f){
-				if(grounded){
-					Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky
-				}
-				CharacterController.Move(Slashdir * SlashMovingSpeed);
-				SlashMovingSpeed /= 1.5f;
-			}
-			return;
-		}
 		if(!CheckIsGrounded()){
 			ySpeed -= Gravity;
 		} else {
@@ -131,6 +122,21 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void UpdateSpeed() {
+		// slash z-offset
+		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
+			if(grounded){
+				Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky
+			}else{
+
+			}
+			SlashMovingSpeed /= 1.6f;
+			if (SlashMovingSpeed > 0.05f)
+				ySpeed = 0;
+			CharacterController.Move(Slashdir * SlashMovingSpeed);
+			move.x = 0;
+			move.z = 0;
+		}
+
 		move.x *= xSpeed * Time.fixedDeltaTime;
 		move.z *= zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
@@ -144,11 +150,12 @@ public class MechController : Photon.MonoBehaviour {
 			move.x = 0;
 			move.z = 0;
 		}
+
 		CharacterController.Move(move);
 	}
-	public void SetSlashMoving(Vector3 dir, float speed){
+	public void SetSlashMoving(float speed){//called by animation
 		SlashMovingSpeed = speed;
-		Slashdir = dir;
+		Slashdir = cam.transform.forward;
 	}
 	public void SetCanVerticalBoost(bool canVBoost) {
 		canVerticalBoost = canVBoost;
@@ -163,7 +170,6 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Jump() {
-		grounded = true;
 		transform.position = new Vector3 (transform.position.x, transform.position.y + 0.2f, transform.position.z);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
