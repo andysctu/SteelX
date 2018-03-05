@@ -10,7 +10,6 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject UIPart;
 	[SerializeField] GameObject UIWeap;
 	[SerializeField] GameObject Mech;
-	[SerializeField] GameObject[] Mech_Display = new GameObject[4];
 	[SerializeField] Sprite buttonTexture;
 	[SerializeField] Button displaybutton1,displaybutton2;
 	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" };
@@ -22,10 +21,10 @@ public class HangarManager : MonoBehaviour {
 	public int Mech_Num = 0;
 	// Use this for initialization
 	void Start () {
-		Mech m = UserData.myData.Mech[Mech_Num];
+		Mech m = UserData.myData.Mech[0];
 
-		displaybutton1.onClick.AddListener (() => Mech_Display[Mech_Num].GetComponent<BuildMech>().DisplayFirstWeapons());
-		displaybutton2.onClick.AddListener (() => Mech_Display[Mech_Num].GetComponent<BuildMech>().DisplaySecondWeapons());
+		displaybutton1.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
+		displaybutton2.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
 		foreach (Button b in buttons) {
@@ -219,30 +218,22 @@ public class HangarManager : MonoBehaviour {
 					Debug.Log ("Should not get here");
 					break;
 				}
-			Mech_Display[Mech_Num].GetComponent<BuildMech>().EquipWeapon(part, weap);
+			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
 			}
 
 
 		}
-		//			curSMR[i].enabled = true;
-//		for (int i = 0; i < curSMR.Length; i++){
-//			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-//			curSMR[i].material = materials[i];
-//			curSMR[i].enabled = true;
-//		}
-//		arm (new string[4]{parts[5],parts[6],parts[7],parts[8]});
+
 	public void ChangeDisplayMech(int Num){
-			
-		Mech_Display [Mech_Num].SetActive (false);
-		Mech_Display [Num].SetActive (true);
+		BuildMech bm = Mech.GetComponent<BuildMech> ();
+		if (bm == null)
+			return;
 		Mech_Num = Num;
-		displaybutton1.onClick.RemoveAllListeners ();
-		displaybutton2.onClick.RemoveAllListeners ();
-
-		displaybutton1.onClick.AddListener (() => Mech_Display[Num].GetComponent<BuildMech>().DisplayFirstWeapons());
-		displaybutton2.onClick.AddListener (() => Mech_Display[Num].GetComponent<BuildMech>().DisplaySecondWeapons());
-
-		Mech_Display [Mech_Num].GetComponent<BuildMech> ().CheckAnimatorState ();
+		Mech m = UserData.myData.Mech [Num];
+		bm.Mech_Num = Num;
+		bm.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		bm.DisplayFirstWeapons ();
+		bm.CheckAnimatorState ();
 	}
 }
 
