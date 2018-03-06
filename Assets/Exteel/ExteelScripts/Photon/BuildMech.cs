@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000" };
 																																								//eng : 13
 	[SerializeField]private GameObject RespawnPanel;
 	[SerializeField]private MechCombat mcbt = null;
@@ -186,6 +186,22 @@ public class BuildMech : Photon.MonoBehaviour {
 					}else{
 						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.5f - weapons [i].transform.right*0.2f;
+					}
+					bulletPrefabs [i] = null;
+
+					//Load sound 
+					break;
+				}
+			case "ADR000": {
+					weaponScripts [i] = new ADR000 ();
+					weapons [i].transform.rotation = hands [i % 2].rotation;
+					weapons [i].transform.SetParent (hands [i % 2]);
+					if(i % 2 == 0){
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
+						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f  + weapons [i].transform.right*0.2f;
+					}else{
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
+						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = null;
 
@@ -402,6 +418,20 @@ public class BuildMech : Photon.MonoBehaviour {
 				}
 				break;
 			}
+		case "ADR000":
+			{
+				weaponScripts [weapPos] = new ADR000 ();
+				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				if(weapPos % 2 == 0){
+					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f  + weapons [weapPos].transform.right*0.2f;
+				}else{
+					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f - weapons [weapPos].transform.right*0.2f;
+				}
+				break;
+			}
 		case "SHS309":
 			{
 				weaponScripts [weapPos] = new SHS309 ();
@@ -596,10 +626,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech[mehc_num].Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1L)){
-			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [12];
+			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [14];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1R)){
-			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [5];
+			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [14];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2L)){
 			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [10];

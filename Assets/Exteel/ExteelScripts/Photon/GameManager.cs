@@ -339,11 +339,13 @@ public class GameManager : Photon.MonoBehaviour {
 							lastCheckCanStartTime = Time.time;
 						}
 					} else {//wait too long
+						print ("start time :" + (currentTimer - 2)); 
 						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer - 2);
 						callGameBegin = true;
 					}
 				}
 				else{//all player finish loading
+					print ("start time :" + (currentTimer - 2)); 
 					photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer-2);
 					callGameBegin = true;
 				}

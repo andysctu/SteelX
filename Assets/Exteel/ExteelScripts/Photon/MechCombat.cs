@@ -23,7 +23,7 @@ public class MechCombat : Combat {
 	// Boost variables
 	private float fuelDrain = 5.0f;
 	private float fuelGain = 5.0f;
-	private float minFuelRequired = 25f;
+	private float minFuelRequired = 300f;
 	private float currentFuel;
 	public float jumpPower = 90.0f;
 	public float moveSpeed = 35.0f;
@@ -73,9 +73,12 @@ public class MechCombat : Combat {
 	// HUD
 	private Slider healthBar;
 	private Slider fuelBar;
+	private Image fuelBar_fill;
+	private bool isNotEnoughEffectPlaying = false;
+	private bool isFuelAvailable = true;
 	Text healthtext,fueltext;
 	private HUD hud;
-	private Camera cam; //*
+	private Camera cam;
 
 	// Components
 	private BuildMech bm;
@@ -204,6 +207,7 @@ public class MechCombat : Combat {
 			healthtext = healthBar.GetComponentInChildren<Text> ();
 			if (sliders.Length > 1) {
 				fuelBar = sliders[1];
+				fuelBar_fill = fuelBar.transform.Find ("Fill Area/Fill").GetComponent<Image> ();
 				fuelBar.value = 1;
 				fueltext = fuelBar.GetComponentInChildren<Text> ();
 			}
@@ -1001,9 +1005,36 @@ public class MechCombat : Combat {
 	}
 
 	public bool EnoughFuelToBoost() {
-		return currentFuel >= minFuelRequired;
+		
+		if(currentFuel >= minFuelRequired){
+			isFuelAvailable = true;
+			return true;
+		}else{//false -> play effect if not already playing
+			if(!isNotEnoughEffectPlaying){
+				StartCoroutine (FuelNotEnoughEffect());
+			}
+			return false;
+		}
 	}
 
+	IEnumerator FuelNotEnoughEffect(){
+		isNotEnoughEffectPlaying = true;
+		for (int i = 0; i < 4; i++) {
+			fuelBar_fill.color = new Color32 (133, 133, 133, 255);
+			yield return new WaitForSeconds (0.15f);
+			fuelBar_fill.color = new Color32 (255, 255, 255, 255);
+			yield return new WaitForSeconds (0.15f);
+		}
+		isNotEnoughEffectPlaying = false;
+	}
+
+	public bool IsFuelAvailable(){
+		if(FuelEmpty()){
+			isFuelAvailable = false;
+		}
+
+		return isFuelAvailable;
+	}
 	public bool FuelEmpty() {
 		return currentFuel <= 0;
 	}

@@ -49,7 +49,6 @@ public class SlashState : MechStateMachineBehaviour {
 		}
 
 		animator.SetBool (boost_id, false);
-		
 		mctrl.SetCanVerticalBoost (false);
 		mctrl.Boost (false);
 	}
