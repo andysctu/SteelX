@@ -45,7 +45,8 @@ public class MechController : Photon.MonoBehaviour {
 	private float SlashMovingSpeed;
 	private Vector3 Slashdir;
 	private bool canVerticalBoost = false;
-
+	private float v_boost_start_time = 0;
+	private const float v_boost_time_upperbound = 1.25f;
 	// Animation
 	private float speed;
 	private float direction;
@@ -166,10 +167,20 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void VerticalBoost() {
-		ySpeed = mechCombat.MaxVerticalBoostSpeed();
+		if(v_boost_start_time==0){
+			v_boost_start_time = Time.time;
+			ySpeed = mechCombat.MaxVerticalBoostSpeed();
+		}else{
+			if(Time.time - v_boost_start_time >= v_boost_time_upperbound){
+				ySpeed = Gravity;
+			}else{
+				ySpeed = mechCombat.MaxVerticalBoostSpeed();
+			}
+		}
 	}
 
 	public void Jump() {
+		v_boost_start_time = 0;
 		transform.position = new Vector3 (transform.position.x, transform.position.y + 0.2f, transform.position.z);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();

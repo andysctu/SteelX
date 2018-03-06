@@ -2992,7 +2992,7 @@ MonoBehaviour:
     m_Bits: 1024
   boostFlame: {fileID: 1094051500879738}
   AnimatorVars: {fileID: 114137985907184306}
-  Gravity: 6
+  Gravity: 6.5
   jumped: 0
   InAirSpeedCoeff: 0.55
   TimeBetweenFire: 0.25
@@ -19569,7 +19569,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: -1780787661
+  randomSeed: -203627759
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -26155,7 +26155,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: 1938391618
+  randomSeed: -969442046
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -28612,7 +28612,7 @@ ParticleSystem:
     subEmitters:
     - serializedVersion: 2
       emitter: {fileID: 0}
-      type: 0
+      type: 2
       properties: 0
   LightsModule:
     enabled: 0
