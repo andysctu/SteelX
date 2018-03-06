@@ -42,8 +42,8 @@ public class MechController : Photon.MonoBehaviour {
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
-	private float SlashMovingSpeed;
-	private Vector3 Slashdir;
+	private float forcemove_speed;
+	private Vector3 forcemove_dir;
 	private bool canVerticalBoost = false;
 	private float v_boost_start_time = 0;
 	private const float v_boost_time_upperbound = 1.25f;
@@ -53,7 +53,7 @@ public class MechController : Photon.MonoBehaviour {
 	public bool boost;
 	public bool grounded = true; //this is the fastest way to check if not grounded , and also depends on characterController.isgrounded
 	public bool jump;
-
+	public bool on_BCNShoot = false;
 
 	//public float DecreaseSlashMScoeff = 1.5f;//test 
 	// Unused
@@ -124,16 +124,16 @@ public class MechController : Photon.MonoBehaviour {
 
 	public void UpdateSpeed() {
 		// slash z-offset
-		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1) {
+		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1 || on_BCNShoot) {
 			if(grounded){
-				Slashdir = new Vector3 (Slashdir.x, 0, Slashdir.z);	// make sure not slashing to the sky
+				forcemove_dir = new Vector3 (forcemove_dir.x, 0, forcemove_dir.z);	// make sure not slashing to the sky
 			}else{
 
 			}
-			SlashMovingSpeed /= 1.6f;
-			if (SlashMovingSpeed > 0.05f)
+			forcemove_speed /= 1.6f;
+			if (Mathf.Abs(forcemove_speed)> 0.05f)
 				ySpeed = 0;
-			CharacterController.Move(Slashdir * SlashMovingSpeed);
+			CharacterController.Move(forcemove_dir * forcemove_speed);
 			move.x = 0;
 			move.z = 0;
 		}
@@ -155,8 +155,8 @@ public class MechController : Photon.MonoBehaviour {
 		CharacterController.Move(move);
 	}
 	public void SetSlashMoving(float speed){//called by animation
-		SlashMovingSpeed = speed;
-		Slashdir = cam.transform.forward;
+		forcemove_speed = speed;
+		forcemove_dir = cam.transform.forward;
 	}
 	public void SetCanVerticalBoost(bool canVBoost) {
 		canVerticalBoost = canVBoost;

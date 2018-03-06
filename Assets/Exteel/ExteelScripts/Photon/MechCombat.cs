@@ -464,7 +464,7 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
-	void ForceMove(Vector3 dir, float length){
+	public void ForceMove(Vector3 dir, float length){
 		transform.position += dir * length;
 	}
 
@@ -645,13 +645,17 @@ public class MechCombat : Combat {
 		case (int)WeaponTypes.BCN:
 			if (Time.time - timeOfLastShotL >= 0.5f)
 				setIsFiring (handPosition, false);
-			if(Input.GetKeyDown(KeyCode.Mouse1)){//right click cancel BCNPose
+			if (Input.GetKeyDown (KeyCode.Mouse1)) {//right click cancel BCNPose
 				animator.SetBool ("BCNPose", false);
 				return;
-			}else if(Input.GetKeyDown(KeyCode.Mouse0)){
-				if (!animator.GetBool ("BCNPose")) {
-					animator.SetBool ("BCNPose", true);
-					timeOfLastShotL = Time.time - 1 / bm.weaponScripts [weaponOffset + handPosition].Rate / 2;
+			} else if (Input.GetKeyDown (KeyCode.Mouse0)) {
+				if (!HeatBar.Is_HeatBarL_Overheat ()) {
+					if (!animator.GetBool ("BCNPose")) {
+						animator.SetBool ("BCNPose", true);
+						timeOfLastShotL = Time.time - 1 / bm.weaponScripts [weaponOffset + handPosition].Rate / 2;
+					}
+				} else {
+					animator.SetBool ("BCNPose", false);
 				}
 			}
 		break;

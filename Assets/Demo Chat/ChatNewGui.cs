@@ -332,8 +332,8 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		}
 		
 		//ConnectingLabel.SetActive(false);
-		
-		this.ChatPanel.gameObject.SetActive(true);
+		if(ChatPanel!=null)
+		    this.ChatPanel.gameObject.SetActive(true);
 		
 		if (FriendsList!=null  && FriendsList.Length>0)
 		{
