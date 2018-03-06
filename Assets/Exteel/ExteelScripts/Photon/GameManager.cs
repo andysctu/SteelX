@@ -34,6 +34,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private int bluescore = 0, redscore = 0;
 	private int timerDuration;
 	private int currentTimer = 999;
+	private bool is_Time_init = false;
 
 	private bool showboard = false;
 	private HUD hud;
@@ -275,6 +276,8 @@ public class GameManager : Photon.MonoBehaviour {
 		ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", MaxTimeInSeconds } };
 		Debug.Log("Setting " + startTime + ", " + MaxTimeInSeconds);
 		PhotonNetwork.room.SetCustomProperties(ht);
+		currentTimer = storedDuration - (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
+		is_Time_init = true;
 	}
 
 	public void OnPhotonCustomRoomPropertiesChanged(ExitGames.Client.Photon.Hashtable propertiesThatChanged) {
@@ -345,9 +348,11 @@ public class GameManager : Photon.MonoBehaviour {
 					}
 				}
 				else{//all player finish loading
-					print ("start time :" + (currentTimer - 2)); 
-					photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer-2);
-					callGameBegin = true;
+					if (is_Time_init) {
+						print ("start time :" + (currentTimer - 2)); 
+						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer - 2);
+						callGameBegin = true;
+					}
 				}
 			}
 		}	
@@ -360,6 +365,8 @@ public class GameManager : Photon.MonoBehaviour {
 		storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
 		yield return new WaitForSeconds (time);
 		OnSyncTimeRequest = false;
+		if (storedStartTime != 0)
+			is_Time_init = true;
 	}
 
 	IEnumerator ExecuteAfterTime(float time)

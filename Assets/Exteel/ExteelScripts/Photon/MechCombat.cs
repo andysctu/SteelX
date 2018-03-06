@@ -23,7 +23,7 @@ public class MechCombat : Combat {
 	// Boost variables
 	private float fuelDrain = 5.0f;
 	private float fuelGain = 5.0f;
-	private float minFuelRequired = 300f;
+	private float minFuelRequired = 450;
 	private float currentFuel;
 	public float jumpPower = 90.0f;
 	public float moveSpeed = 35.0f;
@@ -1005,7 +1005,6 @@ public class MechCombat : Combat {
 	}
 
 	public bool EnoughFuelToBoost() {
-		
 		if(currentFuel >= minFuelRequired){
 			isFuelAvailable = true;
 			return true;
@@ -1013,6 +1012,8 @@ public class MechCombat : Combat {
 			if(!isNotEnoughEffectPlaying){
 				StartCoroutine (FuelNotEnoughEffect());
 			}
+			if(!animator.GetBool("Boost"))//can set to false in transition to grounded state but not in transition from grounded state to boost state 
+				isFuelAvailable = false;
 			return false;
 		}
 	}
@@ -1032,7 +1033,6 @@ public class MechCombat : Combat {
 		if(FuelEmpty()){
 			isFuelAvailable = false;
 		}
-
 		return isFuelAvailable;
 	}
 	public bool FuelEmpty() {

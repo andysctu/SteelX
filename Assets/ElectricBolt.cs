@@ -18,8 +18,8 @@ public class ElectricBolt : MonoBehaviour {
 	public Vector3 dir;
 
     private readonly float randomPosOffset = 1.3f;
-    private readonly float randomWithOffsetMax = 5f;
-    private readonly float randomWithOffsetMin = 3f;
+    private readonly float randomWithOffsetMax = 8f;
+    private readonly float randomWithOffsetMin = 6f;
 
     private readonly WaitForSeconds customFrame = new WaitForSeconds(0.05f);
 
