@@ -5,6 +5,7 @@ using UnityEngine;
 public class RCLBulletTrace : MonoBehaviour {
 
 	public GameObject bulletImpact;
+	private GameObject bulletImpact_onShield;
 
 	public HUD hud;
 	public Camera cam;
@@ -23,6 +24,9 @@ public class RCLBulletTrace : MonoBehaviour {
 	private bool isCollided = false;
 	ParticleSystem ps ;
 
+	void Awake(){
+		bulletImpact_onShield = Resources.Load ("HitShieldEffect") as GameObject;
+	}
 
 	void Start () {
 		ps = GetComponent<ParticleSystem>();
@@ -50,8 +54,15 @@ public class RCLBulletTrace : MonoBehaviour {
 		Vector3 collisionHitLoc = collisionEvents[0].intersection;
 
 		//pv.RPC ("CallPlayImpact", PhotonTargets.All, collisionHitLoc);
-		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-		temp.GetComponent<ParticleSystem> ().Play ();//play bullet impact
+
+		GameObject BI;
+		if(other.tag == "Shield"){
+			BI = Instantiate (bulletImpact_onShield, collisionHitLoc, Quaternion.identity);
+		}else{
+			BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+		}
+		BI.transform.LookAt (cam.transform);
+		BI.GetComponent<ParticleSystem> ().Play ();//play bullet impact
 
 		Collider[] hitColliders = Physics.OverlapSphere(collisionHitLoc, 6f, PlayerlayerMask); // get overlap targets
 		List<int> colliderViewIds = new List<int> ();

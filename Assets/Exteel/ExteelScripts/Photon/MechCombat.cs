@@ -35,6 +35,7 @@ public class MechCombat : Combat {
 
 	// Combat variables
 	public bool isDead;
+	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it  
 	private RaycastHit hit;
 	private Weapon[] weaponScripts;
 	private int weaponOffset = 0;
@@ -257,8 +258,17 @@ public class MechCombat : Combat {
 					//check what hand is it
 					int hand = (target.transform.parent.name [target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
 
+					MechCombat targetMcbt = target.transform.root.GetComponent<MechCombat> ();
 
-					target.transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, hand);
+					if(targetMcbt!=null){
+						if(targetMcbt.is_overheat[targetMcbt.weaponOffset + hand]){
+							Debug.Log ("onHitShield is overheat");
+							targetMcbt.photonView.RPC ("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, hand);
+						}else{
+							Debug.Log ("onHitShield is not overheat");
+							targetMcbt.photonView.RPC ("ShieldOnHit", PhotonTargets.All, damage/2, photonView.viewID, hand);
+						}
+					}
 
 					hud.ShowText (cam, target.position, "Defense");
 				}
@@ -426,7 +436,7 @@ public class MechCombat : Combat {
 			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
 		}
 
-		if(photonView.isMine){//heat
+		if(photonView.isMine && !is_overheat[weaponOffset+hand]){//heat
 			if(hand==0){
 				HeatBar.IncreaseHeatBarL (30);
 			} else {
@@ -488,17 +498,16 @@ public class MechCombat : Combat {
 
 		displayPlayerInfo.gameObject.SetActive (false);
 
-		gameObject.layer = 0;
+		gameObject.layer = 2;//2 : ignore ray cast
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		if(ch!=null){
 			ch.NoCrosshair();
 			ch.enabled = false;
 		}
 		GetComponent<MechController>().enabled = false;
-		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-		foreach (Renderer renderer in renderers) {
-			renderer.enabled = false;
-		}
+		EnableAllRenderers (false);
+		EnableAllColliders (false);
+
 		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
 		transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(false);
 	}
@@ -958,6 +967,11 @@ public class MechCombat : Combat {
 		}
 	}
 
+	[PunRPC]
+	void SetOverHeat(bool b, int weaponOffset){
+		is_overheat [weaponOffset] = b;
+	}
+
 	bool usingRangedWeapon(int handPosition) {
 		return weaponScripts[weaponOffset+handPosition].Animation == "Shoot";
 	}
@@ -1006,6 +1020,12 @@ public class MechCombat : Combat {
 		}
 	}
 
+	public void EnableAllColliders(bool b){
+		Collider[] colliders = GetComponentsInChildren<Collider> ();
+		foreach(Collider collider in colliders){
+			collider.enabled = b;
+		}
+	}
 	// Public functions
 	public void IncrementFuel() {
 		currentFuel += fuelGain;

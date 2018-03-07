@@ -5,18 +5,16 @@ using UnityEngine;
 
 public class HeatBar : MonoBehaviour {
 
-	[SerializeField]
-	public Image barL,barR;
-	[SerializeField]
-	private Image barL_fill,barR_fill;
-	[SerializeField]
-	private BuildMech bm;
+	[SerializeField]public Image barL,barR;
+	[SerializeField]private Image barL_fill,barR_fill;
+	[SerializeField]private BuildMech bm;
+	[SerializeField]private MechCombat mcbt;
+	[SerializeField]private PhotonView pv;//mech combat's pv
+
 	private Weapon[] weaponScripts;
 	private float[] curValue = new float[4]; // [0,100]
 	private int weaponOffset = 0;
 	private float rateL,rateR;
-	//private float FillAmountMin = 0.25f, FillAmountMax = 0;
-	private bool[] is_overheat = new bool[4];
 
 	// Use this for initialization
 	void Start () {
@@ -27,25 +25,25 @@ public class HeatBar : MonoBehaviour {
 		rateR = 0.2f;
 
 		for (int i = 0; i < 4; i++)
-			is_overheat [i] = false;
+			mcbt.is_overheat [i] = false;
 	}
 
 	void FixedUpdate(){
-
+		
 		for(int i=0;i<4;i++){
 			curValue[i] -= ((i%2)==0)? rateL : rateR;
 
 			if (curValue [i] <= 0){
-				if(is_overheat[i]){ // if previous is overheated => change color
+				if(mcbt.is_overheat[i]){ // if previous is overheated => change color
 					if(i==weaponOffset){
 						barL_fill.color = new Color32 (255, 255, 85, 200);
 					}else if(i==weaponOffset+1){
 						barR_fill.color = new Color32 (255, 255, 85, 200);
 					}
+					pv.RPC ("SetOverHeat", PhotonTargets.All, false, i);
 				}
-				is_overheat [i] = false;
-				curValue [i] = 0;
-
+					mcbt.is_overheat [i] = false;
+					curValue [i] = 0;
 			}
 		}
 
@@ -79,13 +77,13 @@ public class HeatBar : MonoBehaviour {
 			}
 		}
 
-		if(is_overheat[offset]){//update color
+		if(mcbt.is_overheat[offset]){//update color
 			barL_fill.color =new Color32 (255, 0, 0, 200);
 		}else{
 			barL_fill.color =new Color32 (255, 255, 85, 200);
 		}
 
-		if(is_overheat[offset+1]){
+		if(mcbt.is_overheat[offset+1]){
 			barR_fill.color =new Color32 (255, 0, 0, 200);
 		}else{
 			barR_fill.color =new Color32 (255, 255, 85, 200);
@@ -96,7 +94,10 @@ public class HeatBar : MonoBehaviour {
 		curValue [weaponOffset] += value;
 		if (curValue [weaponOffset] >= 100) {
 			curValue[weaponOffset] = 100;
-			is_overheat [weaponOffset] = true;
+			mcbt.is_overheat [weaponOffset] = true;
+
+			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset);
+
 			barL_fill.color =new Color32 (255, 0, 0, 200);
 		}
 	}
@@ -105,7 +106,10 @@ public class HeatBar : MonoBehaviour {
 		curValue [weaponOffset+1] += value;
 		if (curValue [weaponOffset + 1] >= 100) {
 			curValue[weaponOffset + 1] = 100;
-			is_overheat [weaponOffset + 1] = true;
+			mcbt.is_overheat [weaponOffset + 1] = true;
+
+			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset+1);
+
 			barR_fill.color = new Color32 (255, 0, 0, 200);
 		}
 	}
@@ -116,11 +120,11 @@ public class HeatBar : MonoBehaviour {
 	}
 
 	public bool Is_HeatBarL_Overheat(){
-		return is_overheat [weaponOffset];
+		return mcbt.is_overheat [weaponOffset];
 	}
 
 	public bool Is_HeatBarR_Overheat(){
-		return is_overheat [weaponOffset+1];
+		return mcbt.is_overheat [weaponOffset+1];
 	}
 
 	public void NoHeatBarL(){
@@ -134,7 +138,7 @@ public class HeatBar : MonoBehaviour {
 	}
 
 	private void DrawBarL(){
-		barL_fill.fillAmount =curValue[weaponOffset] * 0.01f;
+		barL_fill.fillAmount = curValue[weaponOffset] * 0.01f;
 	}
 
 	private void DrawBarR(){

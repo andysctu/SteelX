@@ -29,9 +29,13 @@ public class Sounds : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		MovementSource.clip = BoostLoop;
-		MovementSource.volume = 0.3f;
-		Source.volume = 0.1f;
+		if (MovementSource != null) {
+			MovementSource.clip = BoostLoop;
+			MovementSource.volume = 0.3f;
+		}
+
+		if(Source!=null)
+			Source.volume = 0.1f;
 	}
 
 	public void UpdateSounds(int Offset){

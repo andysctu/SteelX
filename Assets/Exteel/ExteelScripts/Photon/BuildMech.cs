@@ -672,5 +672,6 @@ public class BuildMech : Photon.MonoBehaviour {
 			mcbt.crosshair.updateCrosshair (0);
 		mcbt.FindTrailRenderer ();
 		mcbt.EnableAllRenderers (true);
+		mcbt.EnableAllColliders (true);
 	}
 }

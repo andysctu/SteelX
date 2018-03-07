@@ -139,7 +139,7 @@ public class Crosshair : MonoBehaviour {
 
 					//move target mark
 					crosshairImage.targetMark.enabled = true;
-					crosshairImage.targetMark.transform.position = camera.WorldToScreenPoint (target.transform.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position = camera.WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockL) {
 						Sounds.PlayLock ();
@@ -196,7 +196,7 @@ public class Crosshair : MonoBehaviour {
 
 					//move target mark
 					crosshairImage.targetMark.enabled = true;
-					crosshairImage.targetMark.transform.position =  camera.WorldToScreenPoint (target.transform.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position =  camera.WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockR) {
 						Sounds.PlayLock ();

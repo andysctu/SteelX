@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletTrace : MonoBehaviour {
 
 	public GameObject bulletImpact;
+	private GameObject bulletImpact_onShield;
 	public HUD HUD;
 	public Camera cam;
 	public LayerMask layerMask = 8, Terrain = 10;
@@ -21,6 +22,9 @@ public class BulletTrace : MonoBehaviour {
 	private bool isCollided = false;
 	private bool hasSlowdown = false;
 
+	void Awake(){
+		bulletImpact_onShield = Resources.Load ("HitShieldEffect") as GameObject;
+	}
 	void Start () {
 		ParticleSystem ps = GetComponent<ParticleSystem>();
 		ps.Play();
@@ -74,8 +78,15 @@ public class BulletTrace : MonoBehaviour {
 				GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
 				Vector3 collisionHitLoc = collisionEvents [0].intersection;
 
-				GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-				temp.GetComponent<ParticleSystem> ().Play ();
+				GameObject BI;
+				if (!isTargetShield) {
+					BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+				}else{
+					BI = Instantiate (bulletImpact_onShield, collisionHitLoc, Quaternion.identity);
+				}
+				BI.transform.LookAt (cam.transform);
+
+				BI.GetComponent<ParticleSystem> ().Play ();
 
 				Destroy (gameObject, 0.5f);
 			}
