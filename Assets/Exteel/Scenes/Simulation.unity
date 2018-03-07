@@ -6026,7 +6026,6 @@ GameObject:
   - component: {fileID: 557477572}
   - component: {fileID: 557477575}
   - component: {fileID: 557477574}
-  - component: {fileID: 557477573}
   m_Layer: 8
   m_Name: Glow
   m_TagString: Untagged
@@ -6047,17 +6046,6 @@ Transform:
   m_Father: {fileID: 1910984136}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &557477573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 557477571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!198 &557477574
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -6286,7 +6274,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -6327,7 +6315,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -13376,26 +13364,6 @@ Prefab:
     - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_Name
       value: MechFrame (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 224783139219114250, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224783139219114250, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224949977324422166, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224949977324422166, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: viewIdField
@@ -24066,7 +24034,6 @@ GameObject:
   - component: {fileID: 1910984136}
   - component: {fileID: 1910984139}
   - component: {fileID: 1910984138}
-  - component: {fileID: 1910984137}
   m_Layer: 8
   m_Name: Afterburner
   m_TagString: Untagged
@@ -24088,17 +24055,6 @@ Transform:
   m_Father: {fileID: 2026716978}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 58.477997, y: -180, z: 0}
---- !u!114 &1910984137
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1910984135}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!198 &1910984138
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -24339,7 +24295,7 @@ ParticleSystem:
         m_RotationOrder: 0
     startSizeY:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -24380,7 +24336,7 @@ ParticleSystem:
         m_RotationOrder: 4
     startSizeZ:
       serializedVersion: 2
-      minMaxState: 0
+      minMaxState: 3
       scalar: 1
       minScalar: 1
       maxCurve:
@@ -29139,6 +29095,18 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 19920468, guid: cda62685c1bd22148933e193e12a4425, type: 2}
       propertyPath: m_SelectedEditorRenderState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 19843154, guid: cda62685c1bd22148933e193e12a4425, type: 2}
+      propertyPath: InitialModule.startRotationX.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 19843154, guid: cda62685c1bd22148933e193e12a4425, type: 2}
+      propertyPath: InitialModule.startRotationY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 19843154, guid: cda62685c1bd22148933e193e12a4425, type: 2}
+      propertyPath: randomSeed
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

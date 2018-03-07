@@ -91,7 +91,11 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void CallSetSlashMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
-		mctrl.SetSlashMoving(speed);
+		if(speed >0 && Input.GetAxis("Vertical")>0)
+			mctrl.SetSlashMoving(speed);
+		else if(speed < 0){
+			mctrl.SetSlashMoving(speed);
+		}
 	}
 
 	public void CallBCNShoot(int b){

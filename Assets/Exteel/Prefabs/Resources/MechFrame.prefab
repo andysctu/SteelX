@@ -745,6 +745,7 @@ GameObject:
   - component: {fileID: 82000013355623540}
   - component: {fileID: 114895722533198232}
   - component: {fileID: 114137985907184306}
+  - component: {fileID: 82915054223986856}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -2783,7 +2784,7 @@ MonoBehaviour:
   synchronization: 3
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
-  ownershipTransfer: 0
+  ownershipTransfer: 2
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
@@ -3007,7 +3008,10 @@ MonoBehaviour:
   boost: 0
   grounded: 1
   jump: 0
-  Legs: []
+  on_BCNShoot: 0
+  Legs:
+  - {fileID: 462424}
+  - {fileID: 407428}
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3075,7 +3079,7 @@ MonoBehaviour:
   synchronization: 3
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
-  ownershipTransfer: 0
+  ownershipTransfer: 2
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
@@ -3788,7 +3792,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1053854061902060
 GameObject:
   m_ObjectHideFlags: 1
@@ -4237,7 +4241,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4359591274195748}
   - component: {fileID: 108903838849621684}
-  - component: {fileID: 114724460042190566}
   m_Layer: 0
   m_Name: Point light
   m_TagString: Untagged
@@ -4505,7 +4508,6 @@ GameObject:
   - component: {fileID: 4274810826209076}
   - component: {fileID: 199044965156395472}
   - component: {fileID: 198588144650610358}
-  - component: {fileID: 114641033447217692}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -4539,7 +4541,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4218844600937020}
   - component: {fileID: 108922689001892178}
-  - component: {fileID: 114754711399867556}
   m_Layer: 0
   m_Name: Point light
   m_TagString: Untagged
@@ -5219,6 +5220,86 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!82 &82915054223986856
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 144000}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!95 &95000010712001338
 Animator:
   serializedVersion: 3
@@ -5383,6 +5464,8 @@ MonoBehaviour:
   RPCsounds:
   - {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
   - {fileID: 8300000, guid: f3d33979487d1417f9fe5d1e02aa7c58, type: 3}
+  Source: {fileID: 82000013355623540}
+  MovementSource: {fileID: 82915054223986856}
 --- !u!114 &114000012410893822
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6055,17 +6138,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114641033447217692
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1832886172064532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114663030337761212
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6129,17 +6201,6 @@ MonoBehaviour:
   targetMark: {fileID: 114308529597384706}
   noCrosshairL: 0
   noCrosshairR: 0
---- !u!114 &114724460042190566
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1488095143604836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114746188837826856
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6194,17 +6255,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114754711399867556
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1856705773513878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114777531502691040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6508,7 +6558,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1521843672
+  randomSeed: -380864114
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -9821,7 +9871,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1232403082
+  randomSeed: -214248512
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -13128,7 +13178,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 2112203246
+  randomSeed: -225112622
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -16435,7 +16485,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1817464389
+  randomSeed: 671945544
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -23073,7 +23123,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1883534073
+  randomSeed: -1660922225
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -29759,7 +29809,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1911788687
+  randomSeed: -1449418564
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -33072,7 +33122,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 2025314260
+  randomSeed: 1841203489
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -36421,7 +36471,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 2115044634
+  randomSeed: -722857069
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -44351,10 +44401,10 @@ RectTransform:
   m_Father: {fileID: 224664867978541124}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 220, y: -129}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224823188230006832
 RectTransform:
@@ -44464,10 +44514,10 @@ RectTransform:
   m_Father: {fileID: 224664867978541124}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -220, y: -143.41582}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -220, y: -129}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224951573682841620
 RectTransform:

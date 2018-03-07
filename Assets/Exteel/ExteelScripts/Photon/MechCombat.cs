@@ -611,9 +611,15 @@ public class MechCombat : Combat {
 		case (int)WeaponTypes.RANGED:
 			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SMG : has a delay before putting down hands
 				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-					if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
-						setIsFiring (handPosition, false);
-					return;
+					if(handPosition == LEFT_HAND){
+						if(Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
+							setIsFiring (handPosition, false);
+						return;
+					}else{
+						if(Time.time - timeOfLastShotR >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
+							setIsFiring (handPosition, false);
+						return;
+					}
 				}
 			}else{
 				if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
@@ -672,11 +678,15 @@ public class MechCombat : Combat {
 		}
 
 		if(handPosition==0){
-			if (HeatBar.Is_HeatBarL_Overheat ())
+			if (HeatBar.Is_HeatBarL_Overheat ()) {
+				setIsFiring (handPosition, false);
 				return;
+			}
 		}else{
-			if (HeatBar.Is_HeatBarR_Overheat ())
+			if (HeatBar.Is_HeatBarR_Overheat ()) {
+				setIsFiring (handPosition, false);
 				return;
+			}
 		}
 
 		if(isSwitchingWeapon){

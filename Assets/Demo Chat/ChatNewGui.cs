@@ -92,7 +92,6 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 	
 	public void Start()
 	{
-		print ("in start again");
 		DontDestroyOnLoad(gameObject);
 
 		StateText.text  = "";
