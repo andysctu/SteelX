@@ -38,6 +38,7 @@ GameObject:
   - component: {fileID: 4988716497389362}
   - component: {fileID: 198168233035627212}
   - component: {fileID: 199781468432253360}
+  - component: {fileID: 114945826862046042}
   m_Layer: 0
   m_Name: HitShieldEffect
   m_TagString: Untagged
@@ -72,6 +73,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114945826862046042
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1518667112189634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e6924f4484a4bf0acf2e79f0289f10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ImpactSound: {fileID: 0}
 --- !u!198 &198168233035627212
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -132,7 +145,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 562622873
+  randomSeed: -2145983226
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3424,7 +3437,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -746062417
+  randomSeed: 909555406
   InitialModule:
     serializedVersion: 3
     enabled: 1

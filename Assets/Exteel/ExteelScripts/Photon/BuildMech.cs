@@ -216,10 +216,21 @@ public class BuildMech : Photon.MonoBehaviour {
 						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f  - weapons [i].transform.right*0.2f;
 					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 80, 0));
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = null;
+
+					//also rotate the child collider
+					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
+					if(i % 2 == 0){
+						collider.transform.localRotation = Quaternion.identity;
+						collider.transform.localPosition = new Vector3(0.05f,0,0);
+					}else{
+						collider.transform.localRotation = Quaternion.identity;
+						collider.transform.localPosition =  new Vector3(0.05f,0,0);
+					}
+
 
 					break;
 				}
@@ -235,7 +246,7 @@ public class BuildMech : Photon.MonoBehaviour {
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f + weapons [i].transform.forward*0.6f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = Resources.Load ("LMG012B") as GameObject;
-					//ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					ShotSounds [i] = Resources.Load ("Sounds/beam_fire 2") as AudioClip;
 					break;
 				}
 			case "BRF025": {
@@ -626,16 +637,16 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech[mehc_num].Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1L)){
-			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [14];
+			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [7];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1R)){
-			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [14];
+			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2L)){
-			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [10];
+			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2R)){
-			UserData.myData.Mech[mehc_num].Weapon2R = defaultParts [10];
+			UserData.myData.Mech[mehc_num].Weapon2R = defaultParts [11];
 		}
 	}
 
