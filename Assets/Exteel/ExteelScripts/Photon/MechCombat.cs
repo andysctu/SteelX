@@ -536,6 +536,7 @@ public class MechCombat : Combat {
 
 		mechController.initControllerVar ();
 		HeatBar.ResetHeatBar ();
+		Sounds.UpdateSounds (weaponOffset);
 		displayPlayerInfo.gameObject.SetActive (!photonView.isMine);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
