@@ -221,14 +221,14 @@ public class BuildMech : Photon.MonoBehaviour {
 					}
 					bulletPrefabs [i] = null;
 
-					//also rotate the child collider
+					//also set the child collider
 					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
 					if(i % 2 == 0){
 						collider.transform.localRotation = Quaternion.identity;
-						collider.transform.localPosition = new Vector3(0.05f,0,0);
+						collider.transform.localPosition = new Vector3(0.15f,0,0);
 					}else{
 						collider.transform.localRotation = Quaternion.identity;
-						collider.transform.localPosition =  new Vector3(0.05f,0,0);
+						collider.transform.localPosition =  new Vector3(0.15f,0,0);
 					}
 
 
@@ -684,5 +684,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.FindTrailRenderer ();
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);
+		mcbt.UpdateMuz ();
 	}
 }

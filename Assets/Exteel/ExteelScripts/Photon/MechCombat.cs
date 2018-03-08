@@ -187,7 +187,7 @@ public class MechCombat : Combat {
 
 	}
 
-	void UpdateMuz (){
+	public void UpdateMuz (){
 		MuzL = weapons [weaponOffset].GetComponentInChildren<ParticleSystem> ();
 		MuzR = weapons [weaponOffset+1].GetComponentInChildren<ParticleSystem> ();
 		if(MuzL!=null)
@@ -238,7 +238,8 @@ public class MechCombat : Combat {
 		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
 		if( target != null){
 			//Debug.Log("Hit tag: " + target.tag);
-			//Debug.Log("Hit name: " + target.name);
+			Debug.Log("Hit name: " + target.name);
+			Debug.Log ("Hit layer: " + target.gameObject.layer);
 			if (curWeaponNames [handPosition] != (int)WeaponTypes.ENG) {
 				if (target.tag == "Player" || target.tag == "Drone") {
 				
@@ -256,7 +257,7 @@ public class MechCombat : Combat {
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
 
 					//check what hand is it
-					int hand = (target.transform.parent.name [target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+					int hand = (target.transform.parent.parent.name [target.transform.parent.parent.name.Length - 1] == 'L') ? 0 : 1;
 
 					MechCombat targetMcbt = target.transform.root.GetComponent<MechCombat> ();
 
@@ -490,6 +491,9 @@ public class MechCombat : Combat {
 				gm.GetComponent<PhotonView>().RPC ("DropFlag",  PhotonTargets.All, photonView.viewID, 1, transform.position);
 			}
 		}
+
+		gameObject.transform.position = new Vector3 (0, 80, 0);
+
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
 
@@ -507,6 +511,8 @@ public class MechCombat : Combat {
 		GetComponent<MechController>().enabled = false;
 		EnableAllRenderers (false);
 		EnableAllColliders (false);
+
+		gameObject.GetComponent<Collider> ().enabled = true;
 
 		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
 		transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(false);
@@ -1024,7 +1030,13 @@ public class MechCombat : Combat {
 	public void EnableAllColliders(bool b){
 		Collider[] colliders = GetComponentsInChildren<Collider> ();
 		foreach(Collider collider in colliders){
-			collider.enabled = b;
+			//collider.enabled = b;
+			if(!b){
+				if(collider.gameObject.name != "Slash Detector")
+					collider.gameObject.layer = 2;
+			}else if (collider.gameObject.name != "Slash Detector")
+				collider.gameObject.layer = 8;
+			
 		}
 	}
 	// Public functions
