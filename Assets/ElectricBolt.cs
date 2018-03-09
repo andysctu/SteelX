@@ -26,7 +26,7 @@ public class ElectricBolt : MonoBehaviour {
     void Start () {
         lRend = GetComponent<LineRenderer>();
         StartCoroutine(Beam());
-		Destroy (gameObject, 1.25f);
+		Destroy (gameObject, 1.675f);
 	}
 
     private IEnumerator Beam()

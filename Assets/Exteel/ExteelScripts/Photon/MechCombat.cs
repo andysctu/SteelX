@@ -615,18 +615,18 @@ public class MechCombat : Combat {
 			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SMG : has a delay before putting down hands
 				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
 					if(handPosition == LEFT_HAND){
-						if(Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
+						if(Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.95f)
 							setIsFiring (handPosition, false);
 						return;
 					}else{
-						if(Time.time - timeOfLastShotR >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
+						if(Time.time - timeOfLastShotR >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.95f)
 							setIsFiring (handPosition, false);
 						return;
 					}
 				}
 			}else{
 				if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-					if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 0.25f)//0.25 < time of playing shoot animation once , to make sure other player catch this
+					if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 0.1f)//0.1 < time of playing shoot animation once , to make sure other player catch this
 						setIsFiring (handPosition, false);
 					return;
 				}
@@ -670,7 +670,7 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.ENG:
 			if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
-				if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.9f)
+				if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate )
 					setIsFiring (handPosition, false);
 				return;
 			}
