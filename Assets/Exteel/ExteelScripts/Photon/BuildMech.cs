@@ -224,11 +224,11 @@ public class BuildMech : Photon.MonoBehaviour {
 					//also set the child collider
 					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
 					if(i % 2 == 0){
-						collider.transform.localRotation = Quaternion.identity;
-						collider.transform.localPosition = new Vector3(0.15f,0,0);
+						collider.transform.localRotation = Quaternion.Euler(0,10,10);
+						collider.transform.localPosition = new Vector3(0.12f,0,0);
 					}else{
-						collider.transform.localRotation = Quaternion.identity;
-						collider.transform.localPosition =  new Vector3(0.15f,0,0);
+						collider.transform.localRotation = Quaternion.Euler(0,15,-10);
+						collider.transform.localPosition =  new Vector3(0.12f,0,0);
 					}
 
 
@@ -678,6 +678,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (mcbt == null)
 			return;
 		mcbt.initComponents ();
+		mcbt.initCombatVariables ();
 		mcbt.UpdateCurWeaponType ();
 		if(mcbt.crosshair!=null)
 			mcbt.crosshair.updateCrosshair (0);

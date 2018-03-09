@@ -236,7 +236,7 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
-		cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
+		//cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
 	}
 	int pre = 0;
 	public void DynamicCam() {
@@ -250,15 +250,6 @@ public class MechController : Photon.MonoBehaviour {
 		} else {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
-
-
-//		float speed = animator.GetFloat ("Speed");
-//		if (speed > 0 && grounded)
-//			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 70, 0.07f);
-//		else if (speed<0 && grounded)
-//			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 50, 0.07f);
-//		else
-//			cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
 		
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}

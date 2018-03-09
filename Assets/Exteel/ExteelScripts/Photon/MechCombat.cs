@@ -150,7 +150,7 @@ public class MechCombat : Combat {
 		Sounds.ShotSounds = bm.ShotSounds;
 	}
 
-	void initCombatVariables() {// this will be called also when respawn
+	public void initCombatVariables() {// this will be called also when respawn
 		weaponOffset = 0;
 		fireL = false;
 		fireR = false;
@@ -522,23 +522,12 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void EnablePlayer(int respawnPoint, int mech_num) {
 		bm.SetMechNum (mech_num);
-		if (photonView.isMine) {
+		if (photonView.isMine) { // build mech also init MechCombat
 			Mech m = UserData.myData.Mech [mech_num];
 			bm.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 		}
-
-		initCombatVariables ();
+			
 		initMechStats ();
-
-		//These part are move to BuildMech , such that other player won't get the wrong ones due to RPC(Build) too slow 
-		//initComponents ();   
-		// UpdateCurWeaponType (); 
-		//crosshair.updateCrosshair (0); 
-		//FindTrailRenderer ();
-		/*Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-		foreach (Renderer renderer in renderers) {
-			renderer.enabled = true;
-		}*/
 
 		mechController.initControllerVar ();
 		HeatBar.ResetHeatBar ();
@@ -621,9 +610,7 @@ public class MechCombat : Combat {
 	}
 
 	void handleCombat(int handPosition) {
-
 		switch(curWeaponNames[handPosition]){
-
 		case (int)WeaponTypes.RANGED:
 			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SMG : has a delay before putting down hands
 				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1)) {
@@ -692,7 +679,6 @@ public class MechCombat : Combat {
 		default: //Empty weapon
 			return;
 		}
-
 		if(handPosition==0){
 			if (HeatBar.Is_HeatBarL_Overheat ()) {
 				setIsFiring (handPosition, false);
@@ -704,7 +690,6 @@ public class MechCombat : Combat {
 				return;
 			}
 		}
-
 		if(isSwitchingWeapon){
 			return;
 		}
@@ -754,7 +739,7 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.SHIELD:
-			if(!getIsFiring((handPosition+1)%2))
+			if (!getIsFiring ((handPosition + 1) % 2))
 				setIsFiring (handPosition, true);
 		break;
 		case (int)WeaponTypes.RCL:
