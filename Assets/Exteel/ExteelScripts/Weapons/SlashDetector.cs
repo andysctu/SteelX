@@ -49,7 +49,6 @@ public class SlashDetector : MonoBehaviour {
 				if ( target.tag == "Drone" || target.transform.root.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
 					return;
 			}
-			print ("add target : " + target);
 			Target.Add (target.transform);
 		}
 	}

@@ -365,7 +365,7 @@ public class GameManager : Photon.MonoBehaviour {
 		storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
 		yield return new WaitForSeconds (time);
 		OnSyncTimeRequest = false;
-		if (storedStartTime != 0)
+		if (storedStartTime != 0 && storedDuration != 0)
 			is_Time_init = true;
 	}
 
@@ -533,12 +533,12 @@ public class GameManager : Photon.MonoBehaviour {
 		if(isTeamMode){
 			if(num==GREY_ZONE){
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == BLUE) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == RED) {
 						respawnPoint = num;
 						print ("set respawn point : " + num);
 					}
 				} else {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == RED) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == BLUE) {
 						respawnPoint = num;
 						print ("set respawn point : " + num);
 					}

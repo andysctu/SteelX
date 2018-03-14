@@ -196,7 +196,7 @@ public class Crosshair : MonoBehaviour {
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
 
-					//Debug.DrawRay (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0, 3, 0)) - camera.transform.position, Color.red, 1f);
+					//Debug.DrawRay (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0, 5, 0)) - camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), Color.red, 1f);
 
 					//move target mark
 					crosshairImage.targetMark.enabled = true;
@@ -229,7 +229,7 @@ public class Crosshair : MonoBehaviour {
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
-			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))- camera.transform.position, MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
+			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
 			foreach(RaycastHit hit in hitpoints){
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
@@ -248,7 +248,7 @@ public class Crosshair : MonoBehaviour {
 		if (targetR != null && !isTargetAllyR) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
-			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0,5,0)) - camera.transform.position, MaxDistanceR, playerlayer).OrderBy (h => h.distance).ToArray ();
+			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0,5,0)) - camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceR, playerlayer).OrderBy (h => h.distance).ToArray ();
 			foreach(RaycastHit hit in hitpoints){
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();

@@ -26,6 +26,7 @@ public class BulletTrace : MonoBehaviour {
 		bulletImpact_onShield = Resources.Load ("HitShieldEffect") as GameObject;
 	}
 	void Start () {
+		bulletImpact_onShield.GetComponent<BulletImpact> ().ImpactSound = bulletImpact.GetComponent<BulletImpact> ().ImpactSound;
 		ParticleSystem ps = GetComponent<ParticleSystem>();
 		ps.Play();
 

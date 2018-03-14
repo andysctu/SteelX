@@ -224,11 +224,11 @@ public class BuildMech : Photon.MonoBehaviour {
 					//also set the child collider
 					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
 					if(i % 2 == 0){
-						collider.transform.localRotation = Quaternion.Euler(0,10,10);
-						collider.transform.localPosition = new Vector3(0.12f,0,0);
+						collider.transform.localRotation = Quaternion.Euler(0,5,10);
+						collider.transform.localPosition = new Vector3(0.10f,0,0);
 					}else{
-						collider.transform.localRotation = Quaternion.Euler(0,15,-10);
-						collider.transform.localPosition =  new Vector3(0.12f,0,0);
+						collider.transform.localRotation = Quaternion.Euler(0,5,-10);
+						collider.transform.localPosition =  new Vector3(0.10f,0,0);
 					}
 
 
