@@ -3902,6 +3902,7 @@ MonoBehaviour:
   boostSpeed: 60
   maxVerticalBoostSpeed: 30
   isDead: 0
+  is_overheat: 00000000
   CanSlash: 1
   isLSlashPlaying: 0
   isRSlashPlaying: 0
@@ -20954,6 +20955,8 @@ MonoBehaviour:
   BoostStart: {fileID: 0}
   BoostLoop: {fileID: 0}
   RPCsounds: []
+  Source: {fileID: 0}
+  MovementSource: {fileID: 0}
 --- !u!114 &1211057273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21918,6 +21921,7 @@ MonoBehaviour:
   boostSpeed: 60
   maxVerticalBoostSpeed: 30
   isDead: 0
+  is_overheat: 00000000
   CanSlash: 1
   isLSlashPlaying: 0
   isRSlashPlaying: 0
@@ -25795,6 +25799,8 @@ MonoBehaviour:
   BoostStart: {fileID: 0}
   BoostLoop: {fileID: 0}
   RPCsounds: []
+  Source: {fileID: 0}
+  MovementSource: {fileID: 0}
 --- !u!114 &1397864229
 MonoBehaviour:
   m_ObjectHideFlags: 0

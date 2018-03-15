@@ -9,6 +9,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000" };
 																																								//eng : 13
+
 	[SerializeField]private GameObject RespawnPanel;
 	[SerializeField]private MechCombat mcbt = null;
 
@@ -35,6 +36,25 @@ public class BuildMech : Photon.MonoBehaviour {
 	public int Total_Mech = 4;
 	public int Mech_Num = 0;
 	private const int BLUE = 0, RED = 1;
+
+	//mech properties
+	int HP,EN,SP,MPU;
+	int ENOutputRate;
+	int MinENRequired;
+	int Size, Weight;
+	int EnergyDrain;
+
+	int MaxHeat, CooldownRate;
+	int Marksmanship;
+
+	int ScanRange;
+
+	int BasicSpeed;
+	int Capacity;
+	int Deceleration;
+
+	int DashOutput;
+	int DashENDrain, JumpENDrain;
 
 	void Start () {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
@@ -128,9 +148,121 @@ public class BuildMech : Photon.MonoBehaviour {
 			curSMR[i].enabled = true;
 			j++;
 		}
-			
+
+		//set all properties to 0
+		initMechProperties ();
+		//Load parts info
+		LoadCoreInfo (parts [0]);
+		LoadHandInfo (parts [1]);
+		LoadLegInfo (parts [2]);
+		LoadHeadInfo (parts [3]);
+		LoadBoosterInfo (parts [4]);
+
 		// Replace weapons
 		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
+	}
+
+	private void initMechProperties(){
+		HP = EN = SP = MPU = 0;
+		ENOutputRate = 0;
+		MinENRequired = 0;
+		Size = Weight = 0;
+		EnergyDrain = 0;
+
+		MaxHeat = CooldownRate = 0;
+		Marksmanship = 0;
+
+		ScanRange = 0;
+
+		BasicSpeed = 0;
+		Capacity = 0;
+		Deceleration = 0;
+
+		DashOutput = 0;
+		DashENDrain = JumpENDrain = 0;
+	}
+
+	private void LoadCoreInfo(string part){
+		switch(part){
+		case "CES301":
+			CoreProperties (new CES301 ());
+			break;
+		}
+	}
+	private void CoreProperties(Core core){
+		EN += core.EN;
+		ENOutputRate += core.ENOutputRate;
+		MinENRequired += core.MinENRequired;
+		HP += core.HP;
+		Size += core.Size;
+		Weight += core.Weight;
+		EnergyDrain += core.EnergyDrain;
+	}
+
+	private void LoadHandInfo(string part){
+		switch(part){
+		case "AES104":
+			HandProperties (new AES104 ());
+			break;
+		}
+	}
+	private void HandProperties(Hand hand){
+		HP += hand.HP;
+		MaxHeat += hand.MaxHeat;
+		CooldownRate += hand.CooldownRate;
+		Marksmanship += hand.Marksmanship;
+		Size += hand.Size;
+		Weight += hand.Weight;
+	}
+
+	private void LoadHeadInfo(string part){
+		switch(part){
+		case "HDS003":
+			HeadProperties (new HDS003 ());
+			break;
+		}
+	}
+	private void HeadProperties(Head head){
+		SP += head.SP;
+		MPU += head.MPU;
+		ScanRange += head.ScanRange;
+		HP += head.HP;
+		Weight += head.Weight;
+		EnergyDrain += head.EnergyDrain;
+		Size += head.Size;
+	}
+
+	private void LoadLegInfo(string part){
+		switch(part){
+		case "LTN411":
+			LegProperties (new LTN411 ());
+			break;
+		}
+	}
+	private void LegProperties(Leg leg){
+		BasicSpeed += leg.BasicSpeed;
+		Capacity += leg.Capacity;
+		Deceleration += leg.Deceleration;
+		HP += leg.HP;
+		Size += leg.Size;
+		Weight += leg.Weight;
+	}
+
+	private void LoadBoosterInfo(string part){
+		switch(part){
+		case "PBS000":
+			BoosterProperties (new PBS000 ());
+			break;
+		}
+	}
+	private void BoosterProperties(Booster booster){
+		DashOutput += booster.DashOutput;
+		DashENDrain += booster.DashENDrain;
+		JumpENDrain += booster.JumpENDrain;
+		HP += booster.HP;
+		Size += booster.Size;
+		Weight += booster.Weight;
+		EnergyDrain += booster.EnergyDrain;
 	}
 
 	private void buildWeapons (string[] weaponNames) {
@@ -353,8 +485,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
 
-		for (int i = 0; i < 4; i++)
-			ShutDownTrail (weapons [i]);
 	}
 
 
@@ -686,5 +816,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();
+
+		for (int i = 0; i < 4; i++)//turn off trail
+			ShutDownTrail (weapons [i]);
 	}
 }
