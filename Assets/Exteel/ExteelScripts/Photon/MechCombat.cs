@@ -193,7 +193,10 @@ public class MechCombat : Combat {
 
 	}
 
-	void FindGunEnds(){
+	public void FindGunEnds(){
+		if (Gun_ends == null)//mcbt is not initialized ( in BuildMech )
+			return;
+		
 		if(weapons [weaponOffset]!=null)
 			Gun_ends [0] = weapons [weaponOffset].transform.Find ("End");
 

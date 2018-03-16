@@ -117,17 +117,13 @@ public class BuildMech : Photon.MonoBehaviour {
 		// Replace all
 		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
 
-		int j = 0;//if call build when it's already build , we need to make sure not selecting weapons
-		for (int i = 0; i < curSMR.Length; i++) {
-			if(CheckIsWeapon(curSMR[i].ToString())){
-				continue;
-			}
+		for (int i = 0; i < 5; i++) {
+			//Note the order of parts in MechFrame.prefab matters
 
-			if (newSMR[j] == null) Debug.LogError(i + " is null.");
-			curSMR[i].sharedMesh = newSMR[j].sharedMesh;
-			curSMR[i].material = materials[j];
+			if (newSMR[i] == null) Debug.LogError(i + " is null.");
+			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
+			curSMR[i].material = materials[i];
 			curSMR[i].enabled = true;
-			j++;
 		}
 			
 		// Replace weapons
@@ -651,9 +647,9 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 	}
 
-	bool CheckIsWeapon(string name){
+	/*bool CheckIsWeapon(string name){
 		return (name.Contains ("BCN") || name.Contains ("RCL") || name.Contains ("ENG") || name.Contains ("BRF") || name.Contains ("SHL") || name.Contains ("LMG") || name.Contains ("APS") || name.Contains ("SHS") || name.Contains ("SGN"));
-	}
+	}*/
 	bool CheckIsTwoHanded(string name){
 		return (name.Contains ("RCL") || name.Contains ("MSR") || name.Contains ("LCN") || name.Contains ("BCN"));
 	}
@@ -667,12 +663,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		if (trail == null)
 			return;
-
-		/*if(inHangar || inStore){//set active to false
-			trail.gameObject.SetActive(false);
-		}else{//in game -> disable
-			trail.gameObject.SetActive(false);
-		}*/
 
 		trail.Deactivate ();
 	}
@@ -689,5 +679,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();
+		mcbt.FindGunEnds ();
 	}
 }
