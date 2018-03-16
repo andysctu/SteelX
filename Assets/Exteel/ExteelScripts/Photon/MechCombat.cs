@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using XftWeapon;
 
 public class MechCombat : Combat {
 
@@ -16,7 +17,7 @@ public class MechCombat : Combat {
 	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	[SerializeField] DisplayPlayerInfo displayPlayerInfo;
 	[SerializeField] Combo Combo;
-	public TrailRenderer trailRendererL,trailRendererR;
+	public XWeaponTrail trailL,trailR;
 	PlayerInZone Healthpool;
 	HealthPoolBar HealthpoolBar;
 	ParticleSystem MuzL,MuzR;
@@ -64,6 +65,7 @@ public class MechCombat : Combat {
 	private Transform shoulderR;
 	private Transform head;
 	private Transform[] Hands;
+	private Transform[] Gun_ends;
 
 	// GameObjects
 	private GameObject[] weapons;
@@ -98,10 +100,10 @@ public class MechCombat : Combat {
 	void Start() {
 		findGameManager();
 		initMechStats();
+		initCombatVariables();
 		initTransforms();
 		initGameObjects();
 		initComponents();
-		initCombatVariables();
 		initHUD();
 		initCam ();
 		initCrosshair();
@@ -109,7 +111,7 @@ public class MechCombat : Combat {
 		UpdateCurWeaponType ();
 		SyncWeaponOffset ();
 		initHealthPool ();
-		FindTrailRenderer ();
+		FindTrail();
 		UpdateMuz ();
 	}
 
@@ -122,6 +124,10 @@ public class MechCombat : Combat {
 		head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
 		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+
+		Gun_ends = new Transform[2];
+		FindGunEnds ();
+
 		Hands = new Transform[2];
 		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
 		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
@@ -185,6 +191,14 @@ public class MechCombat : Combat {
 			Healthpool.player_viewID = photonView.viewID;
 		}
 
+	}
+
+	void FindGunEnds(){
+		if(weapons [weaponOffset]!=null)
+			Gun_ends [0] = weapons [weaponOffset].transform.Find ("End");
+
+		if(weapons [weaponOffset+1]!=null)
+			Gun_ends [1] = weapons [weaponOffset+1].transform.Find ("End");
 	}
 
 	public void UpdateMuz (){
@@ -323,6 +337,10 @@ public class MechCombat : Combat {
 	}
 	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, bool isShield){
 		int i;
+
+		if(curWeaponNames[handPosition] != (int)WeaponTypes.BCN) //BCN shoot with 0 delay
+			yield return new WaitForSeconds (0.05f);
+
 		if(handPosition==0){
 			if (MuzL != null)
 				MuzL.Play ();
@@ -335,16 +353,15 @@ public class MechCombat : Combat {
 			yield break;
 		}
 
-		if (usingRCLWeapon (handPosition)) { 
-			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
+		if (curWeaponNames[handPosition] == (int)WeaponTypes.RCL) { 
+			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands[handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
 			RCLbullet.hud = hud;
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
-		} else if(usingENGWeapon(handPosition)){
-			yield return new WaitForSeconds (0.1f);//in case the wrong start position makes glitch
-			GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
-			bullet.transform.SetParent (Hands [handPosition]);
+		} else if(curWeaponNames[handPosition] == (int)WeaponTypes.ENG){
+			GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Gun_ends[handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+			bullet.transform.SetParent (Gun_ends[handPosition]);
 			bullet.GetComponent<ElectricBolt> ().dir = direction;
 			bullet.GetComponent<ElectricBolt> ().cam = cam;
 			if (Target != null) {
@@ -354,7 +371,7 @@ public class MechCombat : Combat {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
 			GameObject b = bullets [weaponOffset + handPosition];
 			for (i = 0; i < bN; i++) {
-				GameObject bullet = Instantiate (b , Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+				GameObject bullet = Instantiate (b , Gun_ends[handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
 				bulletTrace.direction = cam.transform.forward;
 				bulletTrace.HUD = hud;
@@ -898,8 +915,9 @@ public class MechCombat : Combat {
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
 		UpdateCurWeaponType ();
+		FindGunEnds ();
 		UpdateMuz ();
-		FindTrailRenderer ();
+		FindTrail();
 
 		//check if using RCL => RCLIdle
 		animator.SetBool ("UsingRCL", curWeaponNames[0] == (int)WeaponTypes.RCL);
@@ -1098,33 +1116,42 @@ public class MechCombat : Combat {
 		receiveNextSlash = (receive == 1) ? true : false;
 	}
 
-	public void FindTrailRenderer(){
+	public void FindTrail(){
 		if(curWeaponNames[0] == (int)WeaponTypes.MELEE){
-			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
-			if (trailRendererL != null) {
-				trailRendererL.enabled = false;
+			trailL = weapons [weaponOffset].GetComponentInChildren<XWeaponTrail> (true);
+			if (trailL != null) {
+				trailL.Deactivate ();
 			}
 		}else{
-			trailRendererL = null;
+			trailL = null;
 		}
 
 		if(curWeaponNames[1] == (int)WeaponTypes.MELEE){
-			trailRendererR = weapons [weaponOffset+1].GetComponentInChildren<TrailRenderer> ();
-			if(trailRendererR!=null)
-				trailRendererR.enabled = false;
+			trailR = weapons [weaponOffset+1].GetComponentInChildren<XWeaponTrail> (true);
+			if (trailR != null)
+				trailR.Deactivate ();
 		}else{
-			trailRendererR = null;
+			trailR = null;
 		}
 	}
 
 	public void ShowTrailL(bool show){
-		if (trailRendererL != null) {
-			trailRendererL.enabled = show;
+		if (trailL != null) {
+			if(show){
+				trailL.Activate ();
+			}else{
+				trailL.Deactivate ();
+			}
 		}
 	}
 	public void ShowTrailR(bool show){
-		if(trailRendererR!=null)
-			trailRendererR.enabled = show;
+		if (trailR != null) {
+			if (show) {
+				trailR.Activate ();
+			} else {
+				trailR.Deactivate ();
+			}
+		}
 	}
 
 	private string BarValueToString(int curvalue, int maxvalue){

@@ -12,11 +12,6 @@ public class SlashState : MechStateMachineBehaviour {
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
-		if (mcbt != null) {
-			mcbt.ShowTrailL (false);
-			mcbt.ShowTrailR (false);
-		}
-
 		if ( cc == null || !cc.enabled) return;
 		animator.SetBool (onSlash_id, false);
 
@@ -34,14 +29,12 @@ public class SlashState : MechStateMachineBehaviour {
 			return;
 
 		if (!cc.enabled) {
-			if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {//exit slash state not through stateMachineExit ( directly go to falling state )
+			/*if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {//exit slash state not through stateMachineExit ( directly go to falling state )
 				mcbt.ShowTrailL (false);
 				mcbt.ShowTrailR (false);
-			}
+			}*/
 		}else{
 			if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {
-				mcbt.ShowTrailL (false);
-				mcbt.ShowTrailR (false);
 				mcbt.isRSlashPlaying = 0;
 				mcbt.isLSlashPlaying = 0;
 				animator.SetBool (onSlash_id, false);

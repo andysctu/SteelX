@@ -16177,12 +16177,12 @@ AnimationClip:
     floatParameter: 12
     intParameter: 0
     messageOptions: 0
-  - time: 0.4
-    functionName: CallRSlashPlaying
+  - time: 0.1
+    functionName: CallShowTrailR
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 1
     messageOptions: 0
   - time: 0.4
     functionName: CallSlashRToFalse
@@ -16190,4 +16190,18 @@ AnimationClip:
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 1
+    messageOptions: 0
+  - time: 0.4
+    functionName: CallRSlashPlaying
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.43333334
+    functionName: CallShowTrailR
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
     messageOptions: 0

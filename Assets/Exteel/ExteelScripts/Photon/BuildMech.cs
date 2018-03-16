@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
 
@@ -662,16 +663,18 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void ShutDownTrail(GameObject weapon){
-		TrailRenderer trailRenderer = weapon.GetComponentInChildren<TrailRenderer> ();
+		XWeaponTrail trail = weapon.GetComponentInChildren<XWeaponTrail> ();
 
-		if (trailRenderer == null)
+		if (trail == null)
 			return;
 
-		if(inHangar || inStore){//set active to false
-			trailRenderer.gameObject.SetActive (false);
+		/*if(inHangar || inStore){//set active to false
+			trail.gameObject.SetActive(false);
 		}else{//in game -> disable
-			trailRenderer.enabled = false;
-		}
+			trail.gameObject.SetActive(false);
+		}*/
+
+		trail.Deactivate ();
 	}
 
 	void UpdateMechCombatVars(){
@@ -682,7 +685,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.UpdateCurWeaponType ();
 		if(mcbt.crosshair!=null)
 			mcbt.crosshair.updateCrosshair (0);
-		mcbt.FindTrailRenderer ();
+		mcbt.FindTrail();
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();

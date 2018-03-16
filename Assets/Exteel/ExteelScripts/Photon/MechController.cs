@@ -116,6 +116,7 @@ public class MechController : Photon.MonoBehaviour {
 			mechCombat.DecrementFuel();
 		} else {
 			ResetCam();
+			print ("cam local z :" + cam.transform.localPosition.z);
 			mechCombat.IncrementFuel();
 		}
 

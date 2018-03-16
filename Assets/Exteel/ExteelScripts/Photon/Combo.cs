@@ -27,11 +27,17 @@ public class Combo : MonoBehaviour {
 
 	public void CallLSlashPlaying(int isPlaying){
 		mechCombat.SetLSlashPlaying(isPlaying);
-		mechCombat.ShowTrailL (isPlaying==1);
 	}
 	public void CallRSlashPlaying(int isPlaying){
 		mechCombat.SetRSlashPlaying(isPlaying);
-		mechCombat.ShowTrailR (isPlaying==1);
+	}
+
+	public void CallShowTrailL(int show){
+		mechCombat.ShowTrailL (show==1);
+	}
+
+	public void CallShowTrailR(int show){
+		mechCombat.ShowTrailR (show==1);
 	}
 		
 	public void CallSlashLToFalse(int num){
