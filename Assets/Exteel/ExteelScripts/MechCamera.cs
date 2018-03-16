@@ -75,7 +75,8 @@ public class MechCamera : MonoBehaviour
 
 
 		float outerRotate = ( - inputV) * rotationSpeed;
-		transform.RotateAround(transform.parent.position + transform.parent.up * 3, transform.parent.right, outerRotate);
+		transform.RotateAround(transform.parent.position + transform.parent.up * 5, transform.parent.right, outerRotate);
+		//transform.RotateAround(transform.parent.position , transform.parent.right, outerRotate);
 
 		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
 		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_FollowAngles.x, 0, 0);

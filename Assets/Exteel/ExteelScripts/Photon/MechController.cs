@@ -116,7 +116,6 @@ public class MechController : Photon.MonoBehaviour {
 			mechCombat.DecrementFuel();
 		} else {
 			ResetCam();
-			print ("cam local z :" + cam.transform.localPosition.z);
 			mechCombat.IncrementFuel();
 		}
 
@@ -237,7 +236,9 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
-		//cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
+
+		Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 15 + transform.position + new Vector3 (0, 5, 0);//15 : radius
+		cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
 	}
 	int pre = 0;
 	public void DynamicCam() {
@@ -251,13 +252,27 @@ public class MechController : Photon.MonoBehaviour {
 		} else {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
-		
+
+		if (grounded) {
+			if (speed > 0) {
+				Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 20 + transform.position + new Vector3 (0, 5, 0);
+				cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 6f);
+			} else if (speed < 0) {
+				if(direction > 0 || direction < 0){
+					Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 14 + transform.position + new Vector3 (0, 5, 0);
+					cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
+				} else {
+					Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 12 + transform.position + new Vector3 (0, 5, 0);
+					cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
+				}
+			}
+		}
+
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}
 
 	[PunRPC]
 	void BoostFlame(bool boost) {
-		//print ("set to : " + boost);
 		boostFlame.SetActive(boost);
 	}
 
@@ -279,7 +294,7 @@ public class MechController : Photon.MonoBehaviour {
 			move = Vector3.Normalize(move);
 		}
 			
-//		speed = v;
+		speed = v;
 		direction = h;
 
 		/*Debug.Log("Speed: " + v);
