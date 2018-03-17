@@ -307,7 +307,7 @@ public class GameManager : Photon.MonoBehaviour {
 			SceneManager.LoadScene("Lobby");
 		}
 		// Update time
-		if (storedStartTime != 0 && storedDuration != 0) {
+		if (storedStartTime != 0 || storedDuration != 0) {//sometimes storedStartTime is 0 but duration is not
 			timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
 			currentTimer = storedDuration - timerDuration;
 
@@ -365,7 +365,7 @@ public class GameManager : Photon.MonoBehaviour {
 		storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
 		yield return new WaitForSeconds (time);
 		OnSyncTimeRequest = false;
-		if (storedStartTime != 0 && storedDuration != 0)
+		if (storedStartTime != 0 || storedDuration != 0)
 			is_Time_init = true;
 	}
 
@@ -449,7 +449,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public bool GameOver() {
-		if (storedStartTime != 0 && storedDuration != 0) {
+		if (storedStartTime != 0 || storedDuration != 0) {
 			if (currentTimer <= 0 || callEndGame) {
 				return true;
 			} else {

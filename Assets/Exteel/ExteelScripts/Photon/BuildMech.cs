@@ -634,10 +634,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech[mehc_num].Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1L)){
-			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [7];
+			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1R)){
-			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [12];
+			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2L)){
 			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [5];
