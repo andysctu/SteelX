@@ -592,7 +592,9 @@ public class MechCombat : Combat {
 		handleCombat(RIGHT_HAND);
 
 		// Switch weapons
-		if (Input.GetKeyDown (KeyCode.R) && !isDead) {
+		if (Input.GetKeyDown (KeyCode.R) && !isSwitchingWeapon &&!isDead) {
+			currentFuel -= (currentFuel >= MAX_FUEL / 3) ? MAX_FUEL / 3 : currentFuel;
+
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
