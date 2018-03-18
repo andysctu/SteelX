@@ -335,11 +335,14 @@ public class MechCombat : Combat {
 		}
 	}
 
-	void SlashDetect(int damage, int handPosition){
-
+	public void SlashDetect(int handPosition){//called by animation event (Combo.cs) 
+		if (!photonView.isMine)
+			return;
+		
 		if(!mechController.grounded){
 			mechController.Boost (true); // jump slash boost effect
 		}
+
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
 
 			Sounds.PlaySlashOnHit ();
@@ -349,7 +352,7 @@ public class MechCombat : Combat {
 				}
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], 0.4f);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bm.weaponScripts[weaponOffset+handPosition].Damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], 0.4f);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -823,7 +826,7 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.MELEE:
-				SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage, handPosition);
+				//SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage, handPosition);
 				Combo.Slash (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:

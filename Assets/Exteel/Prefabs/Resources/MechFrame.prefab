@@ -2964,7 +2964,6 @@ MonoBehaviour:
   SwitchWeaponEffectL: {fileID: 198874021016501722}
   SwitchWeaponEffectR: {fileID: 198771028345185282}
   displayPlayerInfo: {fileID: 114619718678987610}
-  bm: {fileID: 11422958}
   jumpPower: 90
   moveSpeed: 30
   boostSpeed: 50
@@ -2976,6 +2975,7 @@ MonoBehaviour:
   isRSlashPlaying: 0
   crosshair: {fileID: 0}
   forceDead: 0
+  isInitFinished: 0
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5669,6 +5669,7 @@ MonoBehaviour:
   SlashR_id: 0
   SlashR2_id: 0
   SlashR3_id: 0
+  BCNPose_id: 0
   inHangar: 0
 --- !u!114 &114189640356066892
 MonoBehaviour:
@@ -6379,6 +6380,7 @@ MonoBehaviour:
   mctrl: {fileID: 11462782}
   animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
+  SlashDetector: {fileID: 114361624446557588}
 --- !u!114 &114911369149093332
 MonoBehaviour:
   m_ObjectHideFlags: 1

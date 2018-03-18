@@ -481,6 +481,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		weapons [(weaponOffset+3)%4].SetActive (false);
 
 		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
+		for (int i = 0; i < 4; i++)//turn off trail
+			ShutDownTrail (weapons [i]);
 
 	}
 
@@ -810,9 +812,5 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();
 		mcbt.FindGunEnds ();
-
-
-		for (int i = 0; i < 4; i++)//turn off trail
-			ShutDownTrail (weapons [i]);
 	}
 }
