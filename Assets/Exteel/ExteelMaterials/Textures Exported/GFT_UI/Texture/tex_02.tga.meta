@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 8dedeb87efaf4477b807a7078caca9d8
-timeCreated: 1519783904
+timeCreated: 1520161390
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -18,6 +18,16 @@ TextureImporter:
     21300022: map_redzone
     21300024: map_greyzone
     21300026: HUDcorner
+    21300028: playerhpbar
+    21300030: bar_yellow
+    21300032: crosshair_r
+    21300034: crosshair_b
+    21300036: smallblueL
+    21300038: smallblueR
+    21300040: smallredL
+    21300042: smallredR
+    21300044: heatbar
+    21300046: heatbar_fill
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -109,7 +119,7 @@ TextureImporter:
       name: hppoolbar
       rect:
         serializedVersion: 2
-        x: 299
+        x: 300
         y: 759
         width: 114
         height: 16
@@ -281,6 +291,146 @@ TextureImporter:
         y: 791
         width: 61
         height: 62
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: playerhpbar
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 811
+        width: 110
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: bar_yellow
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 945
+        width: 3
+        height: 3
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: crosshair_r
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 1000
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: crosshair_b
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 1000
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: smallblueL
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 856
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: smallblueR
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 856
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: smallredL
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 856
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: smallredR
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 856
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: heatbar
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 271
+        width: 100
+        height: 168
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: heatbar_fill
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 104
+        width: 101
+        height: 167
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

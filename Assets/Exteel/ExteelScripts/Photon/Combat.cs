@@ -20,4 +20,8 @@ public class Combat : Photon.MonoBehaviour {
 	public int CurrentHP() {
 		return currentHP;
 	}
+
+	public int GetMaxHp(){
+		return MAX_HP;
+	}
 }

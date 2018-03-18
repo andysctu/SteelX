@@ -12,7 +12,7 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject Mech;
 	[SerializeField] Sprite buttonTexture;
 	[SerializeField] Button displaybutton1,displaybutton2;
-	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" };
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" , "ADR000"};
 
 	private Transform[] contents;
 	private int activeTab;

@@ -7,18 +7,14 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
+
+		mcbt.CanSlash = true;
+		mcbt.SetReceiveNextSlash (1);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled)
-			return;
-		
-		if (Input.GetKeyUp(KeyCode.Space)) {
-			JumpedState.jumpReleased = true;
-		}
-
-		if (!cc.isGrounded)
+		if (cc == null || !cc.enabled || !cc.isGrounded)
 			return;
 
 		float speed = Input.GetAxis("Vertical");
@@ -27,7 +23,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if ((mcbt.FuelEmpty () || !Input.GetKey (KeyCode.LeftShift)) || animator.GetBool(jump_id)) {
+		if (!Input.GetKey (KeyCode.LeftShift) || animator.GetBool(jump_id) ||animator.GetBool(onSlash_id) || !mcbt.IsFuelAvailable ()) {
 			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
@@ -37,7 +33,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 				mctrl.Boost (true);
 		}
 			
-		if (Input.GetKey(KeyCode.Space)) {	
+		if (Input.GetKey(KeyCode.Space) && !animator.GetBool(onSlash_id)) {	
 			Sounds.StopBoostLoop ();
 			mctrl.Boost (false);
 			mctrl.SetCanVerticalBoost(true);

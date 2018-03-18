@@ -12,7 +12,6 @@ public class PlayerInZone : MonoBehaviour {
 	List<Collider> players = new List<Collider>();
 	// Use this for initialization
 	void Start () {
-		
 	}
 	
 	// Update is called once per frame

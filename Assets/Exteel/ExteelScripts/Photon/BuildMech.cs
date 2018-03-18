@@ -7,29 +7,54 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000" };
 																																								//eng : 13
+
+	[SerializeField]private GameObject RespawnPanel;
+	[SerializeField]private MechCombat mcbt = null;
+
 	private GameManager gm;
-	public GameObject[] weapons;
-	public GameObject[] bulletPrefabs;
 	public AudioClip[] ShotSounds;
+	private Animator animator;
 
 	private Transform shoulderL;
 	private Transform shoulderR;
 	private Transform[] hands;
-	private Animator animator;
-	[SerializeField]private GameObject RespawnPanel;
+
 
 	public Weapon[] weaponScripts;
-	private String[] curWeapons = new String[4];
+	public GameObject[] weapons;
+	public GameObject[] bulletPrefabs;
+	private String[] curWeaponNames = new String[4]; //this is the weapon name array
+
 	private ParticleSystem Muz;
 	private int weaponOffset = 0;
 
 	private bool inHangar = false;
 	private bool inStore = false;
 	public bool onPanel = false;
-
+	public int Total_Mech = 4;
 	public int Mech_Num = 0;
+	private const int BLUE = 0, RED = 1;
+
+	//mech properties
+	int HP,EN,SP,MPU;
+	int ENOutputRate;
+	int MinENRequired;
+	int Size, Weight;
+	int EnergyDrain;
+
+	int MaxHeat, CooldownRate;
+	int Marksmanship;
+
+	int ScanRange;
+
+	int BasicSpeed;
+	int Capacity;
+	int Deceleration;
+
+	int DashOutput;
+	int DashENDrain, JumpENDrain;
 
 	void Start () {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
@@ -39,26 +64,17 @@ public class BuildMech : Photon.MonoBehaviour {
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !inHangar && !inStore) return;
 
-		for(int i=0;i<4;i++){//init all 4 datas
+		for(int i=0;i<Total_Mech;i++){//init all datas
 			SetMechDefaultIfEmpty (i);
 		}
 
-		if(string.IsNullOrEmpty(UserData.myData.User.PilotName)){
-			UserData.myData.User.PilotName = "Default Pilot";
-		}
 		// Get parts info
 		Data data = UserData.myData;
-		animator = GetComponentInChildren<Animator> ();
+		animator = transform.Find("CurrentMech").GetComponent<Animator> ();
 		weaponOffset = 0;
 
 		if (inHangar || inStore) {
 			buildMech(data.Mech[Mech_Num]);
-
-			if (SceneManagerHelper.ActiveSceneName == "Hangar") {
-				if(Mech_Num!=0)
-					gameObject.SetActive (false);
-			}
-
 		} else { // Register my name on all clients
 			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
 		}
@@ -72,8 +88,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	void SetName(string name) {
 		gameObject.name = name;
 		findGameManager();
-		print ("the team is : " + photonView.owner.GetTeam ());
-		gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam()==PunTeams.Team.red)? 1 : 0);// blue & none team => set to blue
+		gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam()==PunTeams.Team.red)? RED : BLUE);// blue & none team => set to blue
 	}
 		
 	public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
@@ -97,7 +112,6 @@ public class BuildMech : Photon.MonoBehaviour {
 	public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
 		findHands ();
 		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
-
 
 		//intentionally not checking if weapon is null 
 		for (int i = 0; i < parts.Length-4; i++) {
@@ -128,15 +142,127 @@ public class BuildMech : Photon.MonoBehaviour {
 				continue;
 			}
 
-			if (newSMR[j] == null) Debug.Log(i + " is null");
+			if (newSMR[j] == null) Debug.LogError(i + " is null.");
 			curSMR[i].sharedMesh = newSMR[j].sharedMesh;
 			curSMR[i].material = materials[j];
 			curSMR[i].enabled = true;
 			j++;
 		}
-			
+
+		//set all properties to 0
+		initMechProperties ();
+		//Load parts info
+		LoadCoreInfo (parts [0]);
+		LoadHandInfo (parts [1]);
+		LoadLegInfo (parts [2]);
+		LoadHeadInfo (parts [3]);
+		LoadBoosterInfo (parts [4]);
+
 		// Replace weapons
 		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
+	}
+
+	private void initMechProperties(){
+		HP = EN = SP = MPU = 0;
+		ENOutputRate = 0;
+		MinENRequired = 0;
+		Size = Weight = 0;
+		EnergyDrain = 0;
+
+		MaxHeat = CooldownRate = 0;
+		Marksmanship = 0;
+
+		ScanRange = 0;
+
+		BasicSpeed = 0;
+		Capacity = 0;
+		Deceleration = 0;
+
+		DashOutput = 0;
+		DashENDrain = JumpENDrain = 0;
+	}
+
+	private void LoadCoreInfo(string part){
+		switch(part){
+		case "CES301":
+			CoreProperties (new CES301 ());
+			break;
+		}
+	}
+	private void CoreProperties(Core core){
+		EN += core.EN;
+		ENOutputRate += core.ENOutputRate;
+		MinENRequired += core.MinENRequired;
+		HP += core.HP;
+		Size += core.Size;
+		Weight += core.Weight;
+		EnergyDrain += core.EnergyDrain;
+	}
+
+	private void LoadHandInfo(string part){
+		switch(part){
+		case "AES104":
+			HandProperties (new AES104 ());
+			break;
+		}
+	}
+	private void HandProperties(Hand hand){
+		HP += hand.HP;
+		MaxHeat += hand.MaxHeat;
+		CooldownRate += hand.CooldownRate;
+		Marksmanship += hand.Marksmanship;
+		Size += hand.Size;
+		Weight += hand.Weight;
+	}
+
+	private void LoadHeadInfo(string part){
+		switch(part){
+		case "HDS003":
+			HeadProperties (new HDS003 ());
+			break;
+		}
+	}
+	private void HeadProperties(Head head){
+		SP += head.SP;
+		MPU += head.MPU;
+		ScanRange += head.ScanRange;
+		HP += head.HP;
+		Weight += head.Weight;
+		EnergyDrain += head.EnergyDrain;
+		Size += head.Size;
+	}
+
+	private void LoadLegInfo(string part){
+		switch(part){
+		case "LTN411":
+			LegProperties (new LTN411 ());
+			break;
+		}
+	}
+	private void LegProperties(Leg leg){
+		BasicSpeed += leg.BasicSpeed;
+		Capacity += leg.Capacity;
+		Deceleration += leg.Deceleration;
+		HP += leg.HP;
+		Size += leg.Size;
+		Weight += leg.Weight;
+	}
+
+	private void LoadBoosterInfo(string part){
+		switch(part){
+		case "PBS000":
+			BoosterProperties (new PBS000 ());
+			break;
+		}
+	}
+	private void BoosterProperties(Booster booster){
+		DashOutput += booster.DashOutput;
+		DashENDrain += booster.DashENDrain;
+		JumpENDrain += booster.JumpENDrain;
+		HP += booster.HP;
+		Size += booster.Size;
+		Weight += booster.Weight;
+		EnergyDrain += booster.EnergyDrain;
 	}
 
 	private void buildWeapons (string[] weaponNames) {
@@ -146,12 +272,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		bulletPrefabs = new GameObject[4];
 		ShotSounds = new AudioClip[4];
 
-		MechCombat mechCombat = GetComponent<MechCombat>();
-		//gameObject.transform.rotation = Quaternion.Euler (new Vector3 (0, 180, 0));
-
 		for (int i = 0; i < weaponNames.Length; i++) {
-			Vector3 p = new Vector3(hands[i%2].position.x, hands[i%2].position.y - 0.4f, hands[i%2].position.z);
-			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, p, transform.rotation) as GameObject;
+			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, Vector3.zero, transform.rotation) as GameObject;
 
 			if(onPanel){//resize
 				weapons [i].transform.localScale *=22f;
@@ -165,14 +287,11 @@ public class BuildMech : Photon.MonoBehaviour {
 			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
 			if (Muz != null) {
 				Muz.Stop ();
-				if (inHangar) {
+				if (inHangar||inStore) {
 					Muz.gameObject.SetActive (false);
 				}
-			}else{
-				print ("muz is null");
 			}
-
-
+				
 			switch (weaponNames[i]) {
 			case "APS403": {
 					weaponScripts [i] = new APS403 ();
@@ -203,7 +322,22 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 
 					//Load sound 
-					ShutDownTrail (weapons [i]);
+					break;
+				}
+			case "ADR000": {
+					weaponScripts [i] = new ADR000 ();
+					weapons [i].transform.rotation = hands [i % 2].rotation;
+					weapons [i].transform.SetParent (hands [i % 2]);
+					if(i % 2 == 0){
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
+						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f  + weapons [i].transform.right*0.2f;
+					}else{
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
+						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f - weapons [i].transform.right*0.2f;
+					}
+					bulletPrefabs [i] = null;
+
+					//Load sound 
 					break;
 				}
 			case "SHS309": {
@@ -214,10 +348,21 @@ public class BuildMech : Photon.MonoBehaviour {
 						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f  - weapons [i].transform.right*0.2f;
 					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 80, 0));
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = null;
+
+					//also set the child collider
+					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
+					if(i % 2 == 0){
+						collider.transform.localRotation = Quaternion.Euler(0,5,10);
+						collider.transform.localPosition = new Vector3(0.10f,0,0);
+					}else{
+						collider.transform.localRotation = Quaternion.Euler(0,5,-10);
+						collider.transform.localPosition =  new Vector3(0.10f,0,0);
+					}
+
 
 					break;
 				}
@@ -233,7 +378,7 @@ public class BuildMech : Photon.MonoBehaviour {
 						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f + weapons [i].transform.forward*0.6f - weapons [i].transform.right*0.2f;
 					}
 					bulletPrefabs [i] = Resources.Load ("LMG012B") as GameObject;
-					//ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire") as AudioClip;
+					ShotSounds [i] = Resources.Load ("Sounds/beam_fire 2") as AudioClip;
 					break;
 				}
 			case "BRF025": {
@@ -261,19 +406,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
 
-
-					if(i==weaponOffset){
-						if(inHangar){
-							//In Hangar or Lobby
-							animator.SetBool ("UsingBCN",true);
-						}else {
-							//In game
-							animator = GetComponentInChildren<MeleeCombat> ().GetComponent<Animator> ();
-							animator.SetBool ("UsingBCN",true);
-						}
-					}
 					weaponScripts [i + 1] = new EmptyWeapon ();
-					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
+					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, Vector3.zero, transform.rotation) as GameObject;
 					weapons [i+1].transform.SetParent (hands [i % 2]);
 					weapons [i + 1].SetActive (false);
 					bulletPrefabs [i+1] = null;
@@ -298,29 +432,17 @@ public class BuildMech : Photon.MonoBehaviour {
 					break;
 				}
 			case "RCL034":{
-					//Since the launch button is on right hand
 					weaponScripts [i] = new RCL034 ();
 					weapons [i].transform.rotation = hands [1].rotation;
 					weapons [i].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
 					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
 					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0f - weapons [i].transform.forward*0.1f;
 
-
 					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
 
-					if(i==weaponOffset){
-						if(inHangar){
-							//In Hangar or Lobby
-							animator.SetBool ("UsingRCL",true);
-						}else {
-							//In game
-							animator = GetComponentInChildren<MeleeCombat> ().GetComponent<Animator> ();
-							animator.SetBool ("UsingRCL",true);
-						}
-					}
 					weaponScripts [i + 1] = new EmptyWeapon ();
-					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, p, transform.rotation) as GameObject;
+					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, Vector3.zero, transform.rotation) as GameObject;
 					weapons [i+1].transform.SetParent (hands [i % 2]);
 					weapons [i + 1].SetActive (false);
 					bulletPrefabs [i+1] = null;
@@ -353,9 +475,16 @@ public class BuildMech : Photon.MonoBehaviour {
 
 			}
 		}
-		UpdateCurWeapons ();
+
+		UpdateCurWeaponNames (weaponNames);
+
+		animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
+		if (animator != null)CheckAnimatorState ();
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
+
+		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
+
 	}
 
 
@@ -363,26 +492,20 @@ public class BuildMech : Photon.MonoBehaviour {
 		//if previous is two-handed => also destroy left hand 
 		if(weapPos==3){
 			if (weapons [2] != null) {
-				if (CheckIsTwoHanded(curWeapons [2])) {
-					if (!inStore) {
-						UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
-						Destroy (weapons [2]);
-					}else{
-						Destroy (weapons [2]);
-					}
-					curWeapons [2] = "EmptyWeapon";
+				if (CheckIsTwoHanded(curWeaponNames [2])) {
+					if (!inStore)UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
+
+					Destroy (weapons [2]);
+					curWeaponNames [2] = "EmptyWeapon";
 				}
 			}
 		}else if(weapPos==1){
 			if (weapons [0] != null) {
-				if (CheckIsTwoHanded(curWeapons [0])) {
-					if (!inStore) {
-						UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
-						Destroy (weapons [0]);
-					}else{
-						Destroy (weapons [0]);
-					}
-					curWeapons [0] = "EmptyWeapon";
+				if (CheckIsTwoHanded(curWeaponNames [0])) {
+					if (!inStore)UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
+
+					Destroy (weapons [0]);
+					curWeaponNames [0] = "EmptyWeapon";
 				}
 			}
 		}
@@ -393,23 +516,20 @@ public class BuildMech : Photon.MonoBehaviour {
 			if(weapPos==0){
 				if(!inStore)
 					UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-				curWeapons [1] = "EmptyWeapon";
+				curWeaponNames [1] = "EmptyWeapon";
 			}else if(weapPos==2){
 				if(!inStore)
 					UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-				curWeapons [3] = "EmptyWeapon";
+				curWeaponNames [3] = "EmptyWeapon";
 			}
 		}
 
 		//destroy the current weapon on the hand position
 		if (weapons [weapPos] != null) 
 			Destroy (weapons [weapPos]);
-		
 
+		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, Vector3.zero, transform.rotation) as GameObject;
 
-		Vector3 p = new Vector3(hands[weapPos%2].position.x, hands[weapPos%2].position.y - 0.4f, hands[weapPos%2].position.z);
-		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, p, transform.rotation) as GameObject;
-		print ("load weapon :" + weapon);
 		switch (weapon) {
 		case "APS403":
 			{
@@ -436,6 +556,20 @@ public class BuildMech : Photon.MonoBehaviour {
 				}else{
 					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
 					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f - weapons [weapPos].transform.right*0.2f;
+				}
+				break;
+			}
+		case "ADR000":
+			{
+				weaponScripts [weapPos] = new ADR000 ();
+				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
+				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
+				if(weapPos % 2 == 0){
+					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f  + weapons [weapPos].transform.right*0.2f;
+				}else{
+					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f - weapons [weapPos].transform.right*0.2f;
 				}
 				break;
 			}
@@ -509,13 +643,12 @@ public class BuildMech : Photon.MonoBehaviour {
 				if (weapPos >= 2) {
 					if(!inStore)
 						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-					curWeapons[3] = "EmptyWeapon";
+					curWeaponNames[3] = "EmptyWeapon";
 				} else {
 					if(!inStore)
 						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-					curWeapons[1] = "EmptyWeapon";
+					curWeaponNames[1] = "EmptyWeapon";
 				}
-				
 
 				break;
 			}
@@ -536,11 +669,11 @@ public class BuildMech : Photon.MonoBehaviour {
 				if (weapPos >= 2) {
 					if(!inStore)
 						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-					curWeapons[3] = "EmptyWeapon";
+					curWeaponNames[3] = "EmptyWeapon";
 				} else {
 					if(!inStore)
 						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-					curWeapons[1] = "EmptyWeapon";
+					curWeaponNames[1] = "EmptyWeapon";
 				}
 
 				break;
@@ -560,27 +693,20 @@ public class BuildMech : Photon.MonoBehaviour {
 				break;
 			}
 		}
-		if (weapPos != weaponOffset && weapPos != weaponOffset + 1)
-			weapons [weapPos].SetActive (false);
-		else {
-			weapons [weapPos].SetActive (true);
-		}
+			
+		weapons [weapPos].SetActive (weapPos == weaponOffset || weapPos == weaponOffset+1);
 
 		Muz = weapons [weapPos].GetComponentInChildren<ParticleSystem> ();
 		if (Muz != null) {
-			if(!inHangar)
-				Muz.Stop ();
-			else{
-				Muz.gameObject.SetActive(false);
+			Muz.Stop ();
+			if (inHangar||inStore) {
+				Muz.gameObject.SetActive (false);
 			}
 		}
-
-		if (!inStore) {
-			UpdateCurWeapons ();
-		}
-		curWeapons [weapPos] = weapon;
+			
+		curWeaponNames [weapPos] = weapon;
 		ShutDownTrail (weapons[weapPos]);
-		CheckAnimatorState ();
+		if(animator!=null)CheckAnimatorState ();
 	}
 		
 	private void findGameManager() {
@@ -592,30 +718,32 @@ public class BuildMech : Photon.MonoBehaviour {
 	public void DisplayFirstWeapons(){
 		weaponOffset = 0;
 
-		for(int i=0;i<4;i++)if(curWeapons[i]!="EmptyWeapon")EquipWeapon (curWeapons [i],i);
+		for(int i=0;i<4;i++)if(curWeaponNames[i]!="EmptyWeapon")EquipWeapon (curWeaponNames [i],i);
 	}
 
 	public void DisplaySecondWeapons(){
 		weaponOffset = 2;
 
-		for(int i=0;i<4;i++)if(curWeapons[i]!="EmptyWeapon")EquipWeapon (curWeapons [i],i);
+		for(int i=0;i<4;i++)if(curWeaponNames[i]!="EmptyWeapon")EquipWeapon (curWeaponNames [i],i);
 	}
 
-	public void UpdateCurWeapons(){
-		curWeapons [0] = UserData.myData.Mech[Mech_Num].Weapon1L;
-		curWeapons [1] = UserData.myData.Mech[Mech_Num].Weapon1R;
-		curWeapons [2] = UserData.myData.Mech[Mech_Num].Weapon2L;
-		curWeapons [3] = UserData.myData.Mech[Mech_Num].Weapon2R;
+	public void UpdateCurWeaponNames(string[] weaponNames){
+		curWeaponNames [0] = weaponNames[0];
+		curWeaponNames [1] = weaponNames[1];
+		curWeaponNames [2] = weaponNames[2];
+		curWeaponNames [3] = weaponNames[3];
 	}
 	public void CheckAnimatorState(){
-		print ("call check state : " + curWeapons [weaponOffset]);
-		if(curWeapons[weaponOffset] == "RCL034"){
+		if (animator == null)
+			return;
+		
+		if(curWeaponNames[weaponOffset] == "RCL034"){
 			animator.SetBool ("UsingRCL", true);
 		}else{
 			animator.SetBool ("UsingRCL", false);
 		}
 
-		if(curWeapons[weaponOffset] == "BCN029"){
+		if(curWeaponNames[weaponOffset] == "BCN029"){
 			animator.SetBool ("UsingBCN", true);
 		}else{
 			animator.SetBool ("UsingBCN", false);
@@ -639,16 +767,16 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech[mehc_num].Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1L)){
-			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [13];
+			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [7];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1R)){
-			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [13];
+			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [12];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2L)){
-			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [12];
+			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2R)){
-			UserData.myData.Mech[mehc_num].Weapon2R = defaultParts [12];
+			UserData.myData.Mech[mehc_num].Weapon2R = defaultParts [11];
 		}
 	}
 
@@ -670,9 +798,26 @@ public class BuildMech : Photon.MonoBehaviour {
 			return;
 
 		if(inHangar || inStore){//set active to false
-				trailRenderer.gameObject.SetActive (false);
+			trailRenderer.gameObject.SetActive (false);
 		}else{//in game -> disable
 			trailRenderer.enabled = false;
 		}
+	}
+
+	void UpdateMechCombatVars(){
+		if (mcbt == null)
+			return;
+		mcbt.initComponents ();
+		mcbt.initCombatVariables ();
+		mcbt.UpdateCurWeaponType ();
+		if(mcbt.crosshair!=null)
+			mcbt.crosshair.updateCrosshair (0);
+		mcbt.FindTrailRenderer ();
+		mcbt.EnableAllRenderers (true);
+		mcbt.EnableAllColliders (true);
+		mcbt.UpdateMuz ();
+
+		for (int i = 0; i < 4; i++)//turn off trail
+			ShutDownTrail (weapons [i]);
 	}
 }

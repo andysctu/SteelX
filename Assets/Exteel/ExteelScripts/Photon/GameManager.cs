@@ -34,6 +34,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private int bluescore = 0, redscore = 0;
 	private int timerDuration;
 	private int currentTimer = 999;
+	private bool is_Time_init = false;
 
 	private bool showboard = false;
 	private HUD hud;
@@ -185,7 +186,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 		if(player.GetComponent<PhotonView>().isMine){
 			cam = player.transform.Find("Camera").GetComponent<Camera>();
-			hud = GameObject.Find("Canvas").GetComponent<HUD>();
+			hud = GameObject.Find("PanelCanvas").GetComponent<HUD>();
 			mcbt = player.GetComponent<MechCombat> ();
 		}
 	}
@@ -240,6 +241,9 @@ public class GameManager : Photon.MonoBehaviour {
 			ps.transform.SetParent(Panel_BlueTeam.transform);
 
 		ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+		ps.transform.localPosition = Vector3.zero;
+		ps.transform.localRotation = Quaternion.identity;
+
 		playerScorePanels.Add(name, ps);
 	}
 
@@ -272,6 +276,8 @@ public class GameManager : Photon.MonoBehaviour {
 		ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", MaxTimeInSeconds } };
 		Debug.Log("Setting " + startTime + ", " + MaxTimeInSeconds);
 		PhotonNetwork.room.SetCustomProperties(ht);
+		currentTimer = storedDuration - (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
+		is_Time_init = true;
 	}
 
 	public void OnPhotonCustomRoomPropertiesChanged(ExitGames.Client.Photon.Hashtable propertiesThatChanged) {
@@ -336,13 +342,17 @@ public class GameManager : Photon.MonoBehaviour {
 							lastCheckCanStartTime = Time.time;
 						}
 					} else {//wait too long
+						print ("start time :" + (currentTimer - 2)); 
 						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer - 2);
 						callGameBegin = true;
 					}
 				}
 				else{//all player finish loading
-					photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer-2);
-					callGameBegin = true;
+					if (is_Time_init) {
+						print ("start time :" + (currentTimer - 2)); 
+						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, currentTimer - 2);
+						callGameBegin = true;
+					}
 				}
 			}
 		}	
@@ -355,6 +365,8 @@ public class GameManager : Photon.MonoBehaviour {
 		storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
 		yield return new WaitForSeconds (time);
 		OnSyncTimeRequest = false;
+		if (storedStartTime != 0 && storedDuration != 0)
+			is_Time_init = true;
 	}
 
 	IEnumerator ExecuteAfterTime(float time)
@@ -521,12 +533,12 @@ public class GameManager : Photon.MonoBehaviour {
 		if(isTeamMode){
 			if(num==GREY_ZONE){
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == BLUE) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == RED) {
 						respawnPoint = num;
 						print ("set respawn point : " + num);
 					}
 				} else {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == RED) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == BLUE) {
 						respawnPoint = num;
 						print ("set respawn point : " + num);
 					}

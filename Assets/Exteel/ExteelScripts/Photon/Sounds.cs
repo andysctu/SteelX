@@ -20,13 +20,22 @@ public class Sounds : MonoBehaviour {
 
 	*/
 	int weaponOffset =0; // update by switchWeapon
+
+	[SerializeField]
 	private AudioSource Source;
+
+	[SerializeField]
+	private AudioSource MovementSource;
 
 	// Use this for initialization
 	void Start () {
-		Source = GetComponent<AudioSource>();
-		Source.clip = BoostLoop;
-		Source.volume = 0.1f;
+		if (MovementSource != null) {
+			MovementSource.clip = BoostLoop;
+			MovementSource.volume = 0.3f;
+		}
+
+		if(Source!=null)
+			Source.volume = 0.1f;
 	}
 
 	public void UpdateSounds(int Offset){
@@ -53,10 +62,10 @@ public class Sounds : MonoBehaviour {
 		Source.PlayOneShot(BoostStart);
 	}
 	public void PlayBoostLoop(){
-		Source.Play ();
+		MovementSource.Play ();
 	}
 	public void StopBoostLoop(){
-		Source.Stop ();
+		MovementSource.Stop ();
 	}
 	public void PlayOnLocked(){
 		Source.PlayOneShot (OnLocked);

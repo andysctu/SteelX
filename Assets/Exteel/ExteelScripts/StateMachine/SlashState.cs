@@ -4,35 +4,6 @@ using UnityEngine;
 
 public class SlashState : MechStateMachineBehaviour {
 
-    // OnStateEnter is called before OnStateEnter is called on any state inside this state machine
-	//override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
-
-	// OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
-	//override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
-
-	// OnStateExit is called before OnStateExit is called on any state inside this state machine
-	//override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
-
-	// OnStateMove is called before OnStateMove is called on any state inside this state machine
-	//override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
-
-	// OnStateIK is called before OnStateIK is called on any state inside this state machine
-	//override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
-
-	// OnStateMachineEnter is called when entering a statemachine via its Entry Node
-	//override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash){
-	//
-	//}
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if ( cc == null || !cc.enabled ) return;
@@ -41,18 +12,43 @@ public class SlashState : MechStateMachineBehaviour {
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
+		if (mcbt != null) {
+			mcbt.ShowTrailL (false);
+			mcbt.ShowTrailR (false);
+		}
+
 		if ( cc == null || !cc.enabled) return;
 		animator.SetBool (onSlash_id, false);
 
 		mcbt.isRSlashPlaying = 0;
 		mcbt.isLSlashPlaying = 0;
-		mcbt.ShowTrailL (false);
-		mcbt.ShowTrailR (false);
 		mcbt.SetReceiveNextSlash (1);
 	}
+
+	public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+		mcbt.CanSlash = mctrl.CheckIsGrounded ();
+	}
+
 	public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+		if (cc == null)
+			return;
+
+		if (!cc.enabled) {
+			if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {//exit slash state not through stateMachineExit ( directly go to falling state )
+				mcbt.ShowTrailL (false);
+				mcbt.ShowTrailR (false);
+			}
+		}else{
+			if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {
+				mcbt.ShowTrailL (false);
+				mcbt.ShowTrailR (false);
+				mcbt.isRSlashPlaying = 0;
+				mcbt.isLSlashPlaying = 0;
+				animator.SetBool (onSlash_id, false);
+			}
+		}
+
 		animator.SetBool (boost_id, false);
-		animator.SetBool (onSlash_id, false);
 		mctrl.SetCanVerticalBoost (false);
 		mctrl.Boost (false);
 	}

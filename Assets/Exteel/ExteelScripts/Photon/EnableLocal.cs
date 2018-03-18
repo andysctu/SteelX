@@ -19,7 +19,7 @@ public class EnableLocal : MonoBehaviour {
 				c.enabled = true;
 		}
 
-		canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+		canvas = GameObject.Find("PanelCanvas").GetComponent<Canvas>();
 
 		GetComponentInChildren<MechCamera>().enabled = true;
 		GetComponentInChildren<AudioListener> ().enabled = true;
@@ -27,6 +27,9 @@ public class EnableLocal : MonoBehaviour {
 //		GetComponentInChildren<AudioListener>().enabled = true;
 		// Enable crosshair
 		GetComponentInChildren<Crosshair>().enabled = true;
+		//GetComponentInChildren<HeatBar> ().enabled = true;
+		transform.Find ("Camera/Canvas/HeatBar").GetComponent<HeatBar> ().enabled = true;
+
 		canvas.worldCamera = cam;
 		canvas.planeDistance = 1;
 		

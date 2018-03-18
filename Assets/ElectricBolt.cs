@@ -12,32 +12,32 @@ public class ElectricBolt : MonoBehaviour {
     private readonly int point_Middle_Right = 3;
     private readonly int point_End = 4;
 
+	public Camera cam;
 	public Transform Target = null;
     public Transform lineEnd = null;
 	public Vector3 dir;
 
     private readonly float randomPosOffset = 1.3f;
-    private readonly float randomWithOffsetMax = 5f;
-    private readonly float randomWithOffsetMin = 3f;
+    private readonly float randomWithOffsetMax = 8f;
+    private readonly float randomWithOffsetMin = 6f;
 
     private readonly WaitForSeconds customFrame = new WaitForSeconds(0.05f);
 
     void Start () {
         lRend = GetComponent<LineRenderer>();
         StartCoroutine(Beam());
-		Destroy (gameObject, 1.25f);
+		Destroy (gameObject, 1.675f);
 	}
 
     private IEnumerator Beam()
     {
 		yield return customFrame;
-		points[point_Begin] = transform.position + transform.forward;
-		//print ("begin :" + points [point_Begin]);
+		points[point_Begin] = transform.position + cam.transform.forward;
 		if (Target != null) {
 			lineEnd.position = Target.position + new Vector3(0,5f,0);
 			points [point_End] = lineEnd.position;
 		}else{
-			points [point_End] = transform.position+dir*50f;
+			points [point_End] = transform.position+cam.transform.forward*50f;
 			lineEnd.position = points [point_End];
 		}
 		CalculateMiddle ();

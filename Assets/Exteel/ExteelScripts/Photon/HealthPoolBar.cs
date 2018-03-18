@@ -42,14 +42,14 @@ public class HealthPoolBar : Photon.MonoBehaviour {
 		if (stream.isWriting) {
 			if(PhotonNetwork.isMasterClient){
 				if(!isAvailable){
-					bar.fillAmount += 0.005f;
+					bar.fillAmount += 0.001f;
 					if(bar.fillAmount >= 1){
 						isAvailable = true;
 					}
 				}
 
 				if (bar.fillAmount > 0 && isAvailable) {
-					bar.fillAmount -= PlayerInZone.getNotFullHPPlayerCount () * 0.005f;
+					bar.fillAmount -= PlayerInZone.getNotFullHPPlayerCount () * 0.001f;
 				}
 
 				if(bar.fillAmount<=0){
