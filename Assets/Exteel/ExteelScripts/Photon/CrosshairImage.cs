@@ -24,6 +24,8 @@ public class CrosshairImage : MonoBehaviour {
 	public bool noCrosshairL = false;
 	public bool noCrosshairR = false;
 
+	private bool isShaking = false;
+
 	public void SetRadius(float setRadiusL, float setRadiusR){
 		radiusL = setRadiusL * 25f;
 		radiusR = setRadiusR * 25f;
@@ -132,4 +134,10 @@ public class CrosshairImage : MonoBehaviour {
 		crosshairs [5].SetActive (false);
 		crosshairs [6].SetActive (true);
 	}
+
+	public void ShakingEffect(int handPosition, int bulletNum){
+		isShaking = true;
+
+	}
+
 }

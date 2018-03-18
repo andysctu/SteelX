@@ -25,7 +25,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	public Weapon[] weaponScripts;
 	public GameObject[] weapons;
 	public GameObject[] bulletPrefabs;
-	private String[] curWeaponNames = new String[4]; //this is the weapon name array
+	public String[] curWeaponNames = new String[4]; //this is the weapon name array
 
 	private ParticleSystem Muz;
 	private int weaponOffset = 0;
@@ -668,9 +668,9 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void UpdateMechCombatVars(){
-		if (mcbt == null)
+		if (mcbt == null || !mcbt.isInitFinished)
 			return;
-		mcbt.initComponents ();
+		mcbt.UpdateWeaponInfo ();
 		mcbt.initCombatVariables ();
 		mcbt.UpdateCurWeaponType ();
 		if(mcbt.crosshair!=null)

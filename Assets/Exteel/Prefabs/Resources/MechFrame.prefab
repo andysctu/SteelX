@@ -2927,6 +2927,11 @@ MonoBehaviour:
   ShotSounds: []
   weapons: []
   bulletPrefabs: []
+  curWeaponNames:
+  - 
+  - 
+  - 
+  - 
   onPanel: 0
   Total_Mech: 4
   Mech_Num: 0
@@ -2955,18 +2960,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camTransform: {fileID: 405268}
-  animator: {fileID: 9563454}
-  mechController: {fileID: 11462782}
-  CharacterController: {fileID: 14356836}
-  Sounds: {fileID: 114000010976113334}
   HeatBar: {fileID: 114328570908798246}
-  InRoomChat: {fileID: 0}
   SwitchWeaponEffectL: {fileID: 198874021016501722}
   SwitchWeaponEffectR: {fileID: 198771028345185282}
   displayPlayerInfo: {fileID: 114619718678987610}
-  Combo: {fileID: 114895722533198232}
-  trailL: {fileID: 0}
-  trailR: {fileID: 0}
+  bm: {fileID: 11422958}
   jumpPower: 90
   moveSpeed: 30
   boostSpeed: 50
