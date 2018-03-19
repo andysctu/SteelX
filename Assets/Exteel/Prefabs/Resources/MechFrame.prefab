@@ -2987,24 +2987,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 2087740}
+  boostFlame: {fileID: 1094051500879738}
+  AnimatorVars: {fileID: 114137985907184306}
   CharacterController: {fileID: 14356836}
-  animator: {fileID: 9563454}
-  Sounds: {fileID: 114000010976113334}
   Terrain:
     serializedVersion: 2
     m_Bits: 1024
-  boostFlame: {fileID: 1094051500879738}
-  AnimatorVars: {fileID: 114137985907184306}
   Gravity: 6.5
   minDownSpeed: -30
-  jumped: 0
   InAirSpeedCoeff: 0.55
-  TimeBetweenFire: 0.25
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
-  mechCombat: {fileID: 11445986}
-  cam: {fileID: 2087740}
   boost: 0
   grounded: 1
   jump: 0

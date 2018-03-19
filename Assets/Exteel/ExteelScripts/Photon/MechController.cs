@@ -5,22 +5,25 @@ using System.Collections;
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
 
+	[SerializeField]private Camera cam;
+	[SerializeField]private GameObject boostFlame;
+	[SerializeField]private AnimatorVars AnimatorVars;
+	private MechCombat mechCombat;
+	private Animator Animator;
+	private Sounds Sounds;
+	private GameManager gm;
+
 	public CharacterController CharacterController;
-	public Animator animator;
-	public Sounds Sounds;
 	public LayerMask Terrain;
-	[SerializeField] GameObject boostFlame;
-	[SerializeField] AnimatorVars AnimatorVars;
+
 	private int boost_id;
-	public float Gravity = 6.5f;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
 	private float marginOfError = 0.1f;
+	public float Gravity = 6.5f;
 	public float minDownSpeed = -30f;
-
 	public float InAirSpeedCoeff = 0.55f;
-	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 
 	private bool startBoosting = false;
@@ -31,20 +34,15 @@ public class MechController : Photon.MonoBehaviour {
 	private bool isSlowDown = false;
 	private Coroutine coroutine = null;
 
-	[SerializeField]
-	private MechCombat mechCombat;
 	private Transform camTransform;
-	private GameManager gm;
-	[SerializeField]
-	private Camera cam;
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
 	private float forcemove_speed;
 	private Vector3 forcemove_dir;
 	private bool canVerticalBoost = false;
-	private float v_boost_start_time = 0;
-	private const float v_boost_time_upperbound = 1.25f;
+	private float v_boost_start_yPos;
+	private float v_boost_upperbound ;
 	private float slashTeleportMinDistance = 5f;
 	// Animation
 	private float speed;
@@ -68,7 +66,7 @@ public class MechController : Photon.MonoBehaviour {
 		grounded = true;
 		canVerticalBoost = false;
 		isSlowDown = false;
-		animator.SetBool ("Grounded", true);
+		Animator.SetBool ("Grounded", true);
 	}
 
 	public void InitVars(){//this is called by AniamtorVars
@@ -76,8 +74,11 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	void initComponents() {
+		Transform currentMech = transform.Find("CurrentMech");
 		CharacterController = GetComponent<CharacterController> ();
-		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
+		Animator = currentMech.GetComponent<Animator>();
+		Sounds = currentMech.GetComponent<Sounds>();
+		mechCombat = GetComponent<MechCombat>();
 		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 
@@ -105,11 +106,11 @@ public class MechController : Photon.MonoBehaviour {
 			ySpeed = -CharacterController.stepOffset / Time.deltaTime;
 		}
 
-		if (animator == null) {
+		if (Animator == null) {
 			return;
 		}
 
-		if (animator.GetBool(boost_id)) {
+		if (Animator.GetBool(boost_id)) {
 			DynamicCam();
 			mechCombat.DecrementFuel();
 		} else {
@@ -128,7 +129,7 @@ public class MechController : Photon.MonoBehaviour {
 			}else{
 
 			}
-			forcemove_speed /= 1.6f;
+			forcemove_speed /= 1.6f;//1.6 : decrease coeff.
 			if (Mathf.Abs(forcemove_speed)> 0.05f)
 				ySpeed = 0;
 			CharacterController.Move(forcemove_dir * forcemove_speed);
@@ -137,7 +138,7 @@ public class MechController : Photon.MonoBehaviour {
 
 			//cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
 			RaycastHit hit;
-			if(!animator.GetBool(AnimatorVars.jump_id) && Physics.Raycast(transform.position,-Vector3.up,out hit,Terrain)){
+			if(!Animator.GetBool(AnimatorVars.jump_id) && Physics.Raycast(transform.position,-Vector3.up,out hit,Terrain)){
 				if(Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance){
 					transform.position = hit.point;
 				}
@@ -177,11 +178,11 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void VerticalBoost() {
-		if(v_boost_start_time==0){
-			v_boost_start_time = Time.time;
+		if(v_boost_start_yPos==0){
+			v_boost_start_yPos = transform.position.y;
 			ySpeed = mechCombat.MaxVerticalBoostSpeed();
 		}else{
-			if(Time.time - v_boost_start_time >= v_boost_time_upperbound){
+			if(transform.position.y >= v_boost_start_yPos + mechCombat.MaxVerticalBoostSpeed()*1.25f){
 				ySpeed = Gravity;
 			}else{
 				ySpeed = mechCombat.MaxVerticalBoostSpeed();
@@ -190,7 +191,7 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Jump() {
-		v_boost_start_time = 0;
+		v_boost_start_yPos = 0;
 		transform.position = new Vector3 (transform.position.x, transform.position.y + 0.2f, transform.position.z);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
@@ -234,7 +235,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	IEnumerator SlowDownCoroutine(float duration){
 		SetCanVerticalBoost (false);
-		animator.SetBool ("Boost", false);
+		Animator.SetBool ("Boost", false);
 		Boost (false);
 
 		yield return new WaitForSeconds (duration);
