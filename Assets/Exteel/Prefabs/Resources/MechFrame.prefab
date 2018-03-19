@@ -2966,13 +2966,16 @@ MonoBehaviour:
   displayPlayerInfo: {fileID: 114619718678987610}
   jumpPower: 90
   moveSpeed: 30
-  boostSpeed: 50
+  minBoostSpeed: 50
+  acceleration: 2
+  deceleration: 50
   maxVerticalBoostSpeed: 45
+  maxHorizontalBoostSpeed: 60
   isDead: 0
   is_overheat: 00000000
-  CanSlash: 1
   isLSlashPlaying: 0
   isRSlashPlaying: 0
+  CanSlash: 1
   crosshair: {fileID: 0}
   forceDead: 0
   isInitFinished: 0
@@ -3000,7 +3003,7 @@ MonoBehaviour:
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
-  boost: 0
+  is_hor_boosting: 0
   grounded: 1
   jump: 0
   on_BCNShoot: 0

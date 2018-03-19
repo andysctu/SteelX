@@ -25,6 +25,7 @@ public class MechController : Photon.MonoBehaviour {
 	public float minDownSpeed = -30f;
 	public float InAirSpeedCoeff = 0.55f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
+	private float curboostingSpeed;
 
 	private bool startBoosting = false;
 
@@ -47,7 +48,7 @@ public class MechController : Photon.MonoBehaviour {
 	// Animation
 	private float speed;
 	private float direction;
-	public bool boost;
+	public bool is_hor_boosting = false;
 	public bool grounded = true; //this is the fastest way to check if not grounded , and also depends on characterController.isgrounded
 	public bool jump;
 	public bool on_BCNShoot = false;
@@ -66,6 +67,7 @@ public class MechController : Photon.MonoBehaviour {
 		grounded = true;
 		canVerticalBoost = false;
 		isSlowDown = false;
+		curboostingSpeed = mechCombat.MoveSpeed();
 		Animator.SetBool ("Grounded", true);
 	}
 
@@ -198,22 +200,39 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Run() {
-		xSpeed = mechCombat.MoveSpeed();
-		zSpeed = mechCombat.MoveSpeed();
+		if(curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool(boost_id)){//not in transition to boost
+			curboostingSpeed -= mechCombat.deceleration * Time.fixedDeltaTime;
+			print ("cur speed : " + curboostingSpeed);
+		}
+
+		xSpeed = curboostingSpeed;
+		zSpeed = curboostingSpeed;
 	}
 
-	public void Boost(bool boost) {
-		if(boost != isBoostFlameOn){
-			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
-			isBoostFlameOn = boost;
+	public void Boost(bool b) {
+		if(b != isBoostFlameOn){
+			photonView.RPC ("BoostFlame", PhotonTargets.All, b);
+			isBoostFlameOn = b;
+
+			if (!b)
+				is_hor_boosting = false;
 		}
-		if (boost) {
+		if (b) {
 			if(grounded){
-				xSpeed = mechCombat.BoostSpeed ();
-				zSpeed = mechCombat.BoostSpeed ();
+				if(!is_hor_boosting){//first call
+					is_hor_boosting = true;
+					curboostingSpeed = mechCombat.MinHorizontalBoostSpeed ();
+				}else{
+					if(curboostingSpeed <= mechCombat.MaxHorizontalBoostSpeed()){
+						curboostingSpeed += mechCombat.acceleration * Time.fixedDeltaTime;
+						//print ("cur speed : " + curboostingSpeed);
+					}
+				}
+				xSpeed = curboostingSpeed;
+				zSpeed = curboostingSpeed;
 			}else{//boost in air
-				xSpeed = mechCombat.BoostSpeed ()*InAirSpeedCoeff;
-				zSpeed = mechCombat.BoostSpeed ()*InAirSpeedCoeff;
+				xSpeed = mechCombat.MaxHorizontalBoostSpeed ()*InAirSpeedCoeff;
+				zSpeed = mechCombat.MaxHorizontalBoostSpeed ()*InAirSpeedCoeff;
 			}
 		}
 	}
@@ -325,7 +344,6 @@ public class MechController : Photon.MonoBehaviour {
 
 	public bool CheckIsGrounded(){
 		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 2.0f, Terrain);
-		//return CharacterController.isGrounded;
 	}
 
 

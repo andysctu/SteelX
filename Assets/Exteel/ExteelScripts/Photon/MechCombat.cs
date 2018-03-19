@@ -19,36 +19,40 @@ public class MechCombat : Combat {
 	private float currentFuel;
 	public float jumpPower = 90.0f;
 	public float moveSpeed = 35.0f;
-	public float boostSpeed = 60f;
+	public float minBoostSpeed = 50;
+	public float acceleration = 2;
+	public float deceleration = 50;
 	private float verticalBoostSpeed = 1f;
 	public float maxVerticalBoostSpeed = 30f;
+	public float maxHorizontalBoostSpeed = 60f;
 	// Game variables
 	public Score score;
 	private const int playerlayer = 8 , ignoreRaycast_layer = 2;
 	// Combat variables
 	public bool isDead;
-	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it  
+	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it (shield)
 	private RaycastHit hit;
 	private Weapon[] weaponScripts;
 	private int weaponOffset = 0;
-	private const int LEFT_HAND = 0;
-	private const int RIGHT_HAND = 1;
-	private float timeOfLastShotL;
-	private float timeOfLastShotR;
 	private int[] curWeaponNames = new int[2];
 	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 	private int BCNPose_id;
 
-	public bool CanSlash = true;
 	// Left
+	private const int LEFT_HAND = 0;
+	private float timeOfLastShotL;
 	private bool fireL = false;
 	public int isLSlashPlaying = 0;
+
 	// Right
+	private const int RIGHT_HAND = 1;
+	private float timeOfLastShotR;
 	private bool fireR = false;
 	public int isRSlashPlaying = 0;
+
+	public bool CanSlash = true;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
-	private bool isDeadFirstCall = true;
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -169,7 +173,6 @@ public class MechCombat : Combat {
 		isSwitchingWeapon = false;
 		CanSlash = true;
 		receiveNextSlash = true;
-		isDeadFirstCall = true;
 		setIsFiring (0,false);
 		setIsFiring (1, false);
 	}
@@ -510,6 +513,14 @@ public class MechCombat : Combat {
 			}
 		}
 
+		if(photonView.isMine){
+			currentHP = 0;
+			animator.SetBool (BCNPose_id, false);
+			animator.SetBool ("UsingBCN", false);
+			animator.SetBool ("UsingRCL", false);
+			gm.ShowRespawnPanel ();
+		}
+
 		gameObject.layer = ignoreRaycast_layer;
 		StartCoroutine (Moveaway ());//moving away from colliders (disable does not trigger exit
 
@@ -573,16 +584,7 @@ public class MechCombat : Combat {
 		// Drain HP bar gradually
 		if (isDead) {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
-
-			if(isDeadFirstCall){
-				animator.SetBool (BCNPose_id, false);
-				animator.SetBool ("UsingBCN", false);
-				animator.SetBool ("UsingRCL", false);
-				isDeadFirstCall = false;
-				gm.ShowRespawnPanel ();}
 			return;
-		}else{
-			isDeadFirstCall = true;
 		}
 
 		//For debug
@@ -1075,12 +1077,16 @@ public class MechCombat : Combat {
 		return moveSpeed;
 	}
 
-	public float BoostSpeed() {
-		return boostSpeed;
+	public float MinHorizontalBoostSpeed() {
+		return minBoostSpeed;
 	}
 
 	public float JumpPower() {
 		return jumpPower;
+	}
+
+	public float MaxHorizontalBoostSpeed(){
+		return maxHorizontalBoostSpeed;
 	}
 
 	public float MaxVerticalBoostSpeed() {
