@@ -19,8 +19,6 @@ public class MechController : Photon.MonoBehaviour {
 	private float marginOfError = 0.1f;
 	public float minDownSpeed = -30f;
 
-	public bool jumped = false;
-
 	public float InAirSpeedCoeff = 0.55f;
 	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
@@ -47,6 +45,7 @@ public class MechController : Photon.MonoBehaviour {
 	private bool canVerticalBoost = false;
 	private float v_boost_start_time = 0;
 	private const float v_boost_time_upperbound = 1.25f;
+	private float slashTeleportMinDistance = 5f;
 	// Animation
 	private float speed;
 	private float direction;
@@ -135,6 +134,14 @@ public class MechController : Photon.MonoBehaviour {
 			CharacterController.Move(forcemove_dir * forcemove_speed);
 			move.x = 0;
 			move.z = 0;
+
+			//cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
+			RaycastHit hit;
+			if(!animator.GetBool(AnimatorVars.jump_id) && Physics.Raycast(transform.position,-Vector3.up,out hit,Terrain)){
+				if(Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance){
+					transform.position = hit.point;
+				}
+			}
 		}
 
 		move.x *= xSpeed * Time.fixedDeltaTime;
