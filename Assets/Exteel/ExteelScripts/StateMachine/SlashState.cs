@@ -20,11 +20,11 @@ public class SlashState : MechStateMachineBehaviour {
 		mcbt.SetReceiveNextSlash (1);
 	}
 
-	public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		mcbt.CanSlash = mctrl.CheckIsGrounded ();
 	}
 
-	public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (cc == null || !cc.enabled)
 			return;
 

@@ -42,16 +42,13 @@ public class MechCombat : Combat {
 	public bool CanSlash = true;
 	// Left
 	private bool fireL = false;
-	private bool shootingL = false;
 	public int isLSlashPlaying = 0;
 	// Right
 	private bool fireR = false;
-	private bool shootingR = false;
 	public int isRSlashPlaying = 0;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 	private bool isDeadFirstCall = true;
-	private bool isOverHeat = false;//used to check if it is just overheat
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -167,11 +164,8 @@ public class MechCombat : Combat {
 
 		fireL = false;
 		fireR = false;
-		shootingL = false;
-		shootingR = false;
 		timeOfLastShotL = Time.time;
 		timeOfLastShotR = Time.time;
-		isOverHeat = false;
 		isSwitchingWeapon = false;
 		CanSlash = true;
 		receiveNextSlash = true;

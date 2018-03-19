@@ -6,7 +6,7 @@ public class JumpedState : MechStateMachineBehaviour {
 
 	static public bool jumpReleased = false;
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
-	public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
 
@@ -19,7 +19,7 @@ public class JumpedState : MechStateMachineBehaviour {
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-	public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (cc == null || !cc.enabled) {
 			return;
 		}

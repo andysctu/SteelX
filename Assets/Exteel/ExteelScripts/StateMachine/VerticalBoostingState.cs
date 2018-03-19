@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VerticalBoostingState : MechStateMachineBehaviour {
-	static bool curBoostState = true;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
@@ -29,6 +28,9 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 			animator.SetFloat(speed_id, 0);
 			animator.SetBool(boost_id, false);
 		}
+	}
+	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+		mctrl.ApplyVerMinSpeed ();
 	}
 		
 }

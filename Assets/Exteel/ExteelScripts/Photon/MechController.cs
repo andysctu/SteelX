@@ -12,12 +12,12 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField] GameObject boostFlame;
 	[SerializeField] AnimatorVars AnimatorVars;
 	private int boost_id;
-	public float Gravity = 4.0f;
+	public float Gravity = 6.5f;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
 	private float marginOfError = 0.1f;
-	private float minDownSpeed = 0.0f;
+	public float minDownSpeed = -30f;
 
 	public bool jumped = false;
 
@@ -165,6 +165,10 @@ public class MechController : Photon.MonoBehaviour {
 		return canVerticalBoost;
 	}
 
+	public void ApplyVerMinSpeed(){
+		ySpeed = minDownSpeed;
+	}
+
 	public void VerticalBoost() {
 		if(v_boost_start_time==0){
 			v_boost_start_time = Time.time;
@@ -239,7 +243,7 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 15 + transform.position + new Vector3 (0, 5, 0);//15 : radius
 		cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
 	}
-	int pre = 0;
+
 	public void DynamicCam() {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = camTransform.localPosition;

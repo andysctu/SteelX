@@ -37,7 +37,7 @@ public class Crosshair : MonoBehaviour {
 	private Sounds Sounds;
 
 	private Weapon[] weaponScripts;
-	private Camera camera;
+	//private Camera camera;
 	private Transform targetL,targetR;
 	private RaycastHit hit;
 	private Coroutine coroutine = null;
@@ -45,7 +45,7 @@ public class Crosshair : MonoBehaviour {
 	void Start () {
 		screenCoeff = (float)Screen.height / Screen.width;
 		weaponScripts = bm.weaponScripts;
-		camera = transform.GetComponent<Camera>();
+		//camera = transform.GetComponent<Camera>();
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 		updateCrosshair (0);
 		isTeamMode = GameManager.isTeamMode;
@@ -107,7 +107,7 @@ public class Crosshair : MonoBehaviour {
 
 	void Update () {
 		if (CrosshairRadiusL > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, camera.transform.forward,MaxDistanceL, playerlayer);
+			RaycastHit[] targets = Physics.SphereCastAll (GetComponent<Camera>().transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, GetComponent<Camera>().transform.forward,MaxDistanceL, playerlayer);
 			foreach(RaycastHit target in targets){
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
@@ -132,7 +132,7 @@ public class Crosshair : MonoBehaviour {
 						continue;
 				}
 				//print ("crosshair target : " + target);
-				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, (camera.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0)).y -0.5f) * screenCoeff + 0.5f);
+				Vector2 targetLocInCam = new Vector2 (GetComponent<Camera>().WorldToViewportPoint (target.transform.position).x, (GetComponent<Camera>().WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0)).y -0.5f) * screenCoeff + 0.5f);
 				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f);
 
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusL) { 
@@ -141,7 +141,7 @@ public class Crosshair : MonoBehaviour {
 
 					//move target mark
 					crosshairImage.targetMark.enabled = true;
-					crosshairImage.targetMark.transform.position = camera.WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position = GetComponent<Camera>().WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockL) {
 						Sounds.PlayLock ();
@@ -164,7 +164,7 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 		if (CrosshairRadiusR > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, camera.transform.forward, MaxDistanceR, playerlayer);
+			RaycastHit[] targets = Physics.SphereCastAll (GetComponent<Camera>().transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, GetComponent<Camera>().transform.forward, MaxDistanceR, playerlayer);
 			foreach (RaycastHit target in targets) {
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
@@ -189,7 +189,7 @@ public class Crosshair : MonoBehaviour {
 						continue;
 				}
 
-				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, (camera.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0)).y - 0.5f) * screenCoeff + 0.5f);
+				Vector2 targetLocInCam = new Vector2 (GetComponent<Camera>().WorldToViewportPoint (target.transform.position).x, (GetComponent<Camera>().WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0)).y - 0.5f) * screenCoeff + 0.5f);
 				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f);
 
 				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
@@ -200,7 +200,7 @@ public class Crosshair : MonoBehaviour {
 
 					//move target mark
 					crosshairImage.targetMark.enabled = true;
-					crosshairImage.targetMark.transform.position =  camera.WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position =  GetComponent<Camera>().WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockR) {
 						Sounds.PlayLock ();
@@ -229,7 +229,7 @@ public class Crosshair : MonoBehaviour {
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
-			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
+			hitpoints = Physics.RaycastAll (GetComponent<Camera>().transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-GetComponent<Camera>().transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
 			foreach(RaycastHit hit in hitpoints){
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
@@ -248,7 +248,7 @@ public class Crosshair : MonoBehaviour {
 		if (targetR != null && !isTargetAllyR) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
-			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0,5,0)) - camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceR, playerlayer).OrderBy (h => h.distance).ToArray ();
+			hitpoints = Physics.RaycastAll (GetComponent<Camera>().transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0,5,0)) - GetComponent<Camera>().transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceR, playerlayer).OrderBy (h => h.distance).ToArray ();
 			foreach(RaycastHit hit in hitpoints){
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
