@@ -55,7 +55,6 @@ public class MechController : Photon.MonoBehaviour {
 	public bool jump;
 	public bool on_BCNShoot = false;
 
-	//public float DecreaseSlashMScoeff = 1.5f;//test 
 	// Unused
 	[SerializeField] Transform[] Legs;
 

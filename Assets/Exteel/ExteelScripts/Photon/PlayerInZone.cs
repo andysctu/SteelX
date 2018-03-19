@@ -4,17 +4,16 @@ using UnityEngine;
 
 public class PlayerInZone : MonoBehaviour {
 
-	public int player_viewID;
-	public int healAmount = 200;
+	private int player_viewID;
 	private int playerCount = 0;
 	private bool isThePlayerInside = false;
 	private int blueTeamPlayerCount = 0, redTeamPlayerCount = 0;
 	List<Collider> players = new List<Collider>();
-	// Use this for initialization
-	void Start () {
+
+	public void SetPlayerID (int id) {
+		player_viewID = id;
 	}
-	
-	// Update is called once per frame
+
 	void OnTriggerEnter (Collider collider) {
 		PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();
 		if(pv.viewID == player_viewID){

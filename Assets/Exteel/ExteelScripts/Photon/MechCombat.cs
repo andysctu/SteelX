@@ -12,9 +12,6 @@ public class MechCombat : Combat {
 	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	[SerializeField] DisplayPlayerInfo displayPlayerInfo;
 
-	PlayerInZone Healthpool;
-	HealthPoolBar HealthpoolBar;
-
 	// Boost variables
 	private float fuelDrain = 5.0f;
 	private float fuelGain = 5.0f;
@@ -90,10 +87,6 @@ public class MechCombat : Combat {
 	private ParticleSystem MuzL,MuzR;
 	private XWeaponTrail trailL,trailR;
 
-	//Healthpool
-	private float InPoolPreTime = 0f;
-	private const float CallHealDeltaTime = 2f;
-
 	private Coroutine bulletCoroutine;
 
 	//for Debug
@@ -113,7 +106,6 @@ public class MechCombat : Combat {
 		UpdateCurWeaponType ();
 		initSlashDetector();
 		SyncWeaponOffset ();
-		initHealthPool ();
 		FindTrail();
 		UpdateMuz ();
 		if(photonView.isMine) //since every mechframe share the same hud
@@ -198,15 +190,6 @@ public class MechCombat : Combat {
 
 	void initCrosshair(){
 		crosshair = cam.GetComponent<Crosshair> ();
-	}
-
-	void initHealthPool(){
-		Healthpool = GameObject.Find ("HealthZone").GetComponent<PlayerInZone> ();
-		HealthpoolBar = Healthpool.transform.root.GetComponent<HealthPoolBar> ();
-		if(photonView.isMine){
-			Healthpool.player_viewID = photonView.viewID;
-		}
-
 	}
 
 	public void FindGunEnds(){
@@ -637,19 +620,6 @@ public class MechCombat : Combat {
 	void LateUpdate() {
 		handleAnimation(LEFT_HAND);
 		handleAnimation(RIGHT_HAND);
-	}
-
-	void FixedUpdate(){
-		if(photonView.isMine && Healthpool != null){
-			if(Healthpool.IsThePlayerInside() && HealthpoolBar.isAvailable){
-				if(Time.time - InPoolPreTime >= CallHealDeltaTime){
-					photonView.RPC ("OnHeal", PhotonTargets.All, photonView.viewID, Healthpool.healAmount);
-					InPoolPreTime = Time.time;
-				}
-			}else{
-				InPoolPreTime = Time.time;
-			}
-		}
 	}
 
 	void handleCombat(int handPosition) {

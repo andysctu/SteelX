@@ -136,6 +136,7 @@ public class GameManager : Photon.MonoBehaviour {
 			InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
 		}
 
+		InitHealthPool ();
 		hud.ShowWaitOtherPlayer (true);
 	}
 		
@@ -269,6 +270,14 @@ public class GameManager : Photon.MonoBehaviour {
 	void InstantiateFlags(){
 		BlueFlag = PhotonNetwork.InstantiateSceneObject ("BlueFlag", new Vector3(SpawnPoints [BLUE].position.x , 0 , SpawnPoints [BLUE].position.z), Quaternion.Euler(Vector3.zero), 0, null);
 		RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [RED].position.x , 0 , SpawnPoints [RED].position.z), Quaternion.Euler(Vector3.zero), 0, null);
+	}
+
+	void InitHealthPool(){
+		HealthPool[] healthpools = (HealthPool[])Object.FindObjectsOfType<HealthPool> ();
+		foreach(HealthPool h in healthpools){
+			h.player = player;
+			h.Init ();
+		}
 	}
 
 	void SyncTime() {

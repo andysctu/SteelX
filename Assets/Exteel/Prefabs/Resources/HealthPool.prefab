@@ -111,9 +111,10 @@ GameObject:
   - component: {fileID: 65908292925151918}
   - component: {fileID: 114793780546706930}
   - component: {fileID: 114196162754325144}
-  - component: {fileID: 114284590368700040}
+  - component: {fileID: 114949861371761752}
+  - component: {fileID: 114276328997620410}
   m_Layer: 0
-  m_Name: HealthZone
+  m_Name: HealthPool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -252,9 +253,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 0
-  serializedVersion: 2
+  serializedVersion: 3
   m_Convex: 0
-  m_InflateMesh: 0
+  m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &65908292925151918
@@ -310,7 +311,7 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 114284590368700040}
+  - {fileID: 114949861371761752}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -343,7 +344,7 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114284590368700040
+--- !u!114 &114276328997620410
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -351,12 +352,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1848174610490112}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7297952e3f947ec45ac4a6708b119322, type: 3}
+  m_Script: {fileID: 11500000, guid: fecb4f0ab484c764fb293bc5f34b71dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bar: {fileID: 114604911893054376}
-  PlayerInZone: {fileID: 114793780546706930}
-  isAvailable: 1
+  healAmount: 250
+  healDeltaTime: 2
+  player: {fileID: 0}
 --- !u!114 &114396206769669570
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -385,14 +386,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.044827607, g: 0.8602941, b: 0.50735295, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  m_Sprite: {fileID: 21300048, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -411,8 +412,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2c5ad3c17fa0c41af62ba45688091d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player_viewID: 0
-  healAmount: 200
+--- !u!114 &114949861371761752
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1848174610490112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0de76ef86c945804fa3105a219596b62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bar_green: {fileID: 21300048, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
+  bar_grey: {fileID: 21300008, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  bar: {fileID: 114604911893054376}
+  PlayerInZone: {fileID: 114793780546706930}
+  isAvailable: 1
 --- !u!198 &198689516889773782
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -926,11 +941,11 @@ ParticleSystem:
     m_Rotation: {x: -90, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
+    m_MeshMaterialIndex: 0
+    m_MeshNormalOffset: 0
     m_Mesh: {fileID: 0}
     m_MeshRenderer: {fileID: 0}
     m_SkinnedMeshRenderer: {fileID: 0}
-    m_MeshMaterialIndex: 0
-    m_MeshNormalOffset: 0
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
     alignToDirection: 0
@@ -1646,6 +1661,47 @@ ParticleSystem:
         - serializedVersion: 2
           time: 1
           value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    speedModifier:
+      serializedVersion: 2
+      minMaxState: 0
+      scalar: 1
+      minScalar: 1
+      maxCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 2
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+        - serializedVersion: 2
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      minCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 2
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+        - serializedVersion: 2
+          time: 1
+          value: 1
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -3043,6 +3099,7 @@ ParticleSystem:
     maxLights: 20
   TrailModule:
     enabled: 0
+    mode: 0
     ratio: 1
     lifetime:
       serializedVersion: 2
@@ -3087,12 +3144,14 @@ ParticleSystem:
         m_RotationOrder: 4
     minVertexDistance: 0.2
     textureMode: 0
+    ribbonCount: 1
     worldSpace: 0
     dieWithParticles: 1
     sizeAffectsWidth: 1
     sizeAffectsLifetime: 0
     inheritParticleColor: 1
     generateLightingData: 0
+    splitSubEmitterRibbons: 0
     colorOverLifetime:
       serializedVersion: 2
       minMaxState: 0
@@ -3823,7 +3882,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1040930259727888}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.439995, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 224350987606886420}
@@ -3831,7 +3890,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 7.4399943, y: 50}
+  m_AnchoredPosition: {x: 6.7, y: 50}
   m_SizeDelta: {x: -20.27999, y: 60.64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224350987606886420
@@ -3841,7 +3900,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1074833455152202}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 26.2, z: 0.22}
+  m_LocalPosition: {x: 0, y: 0, z: 0.22}
   m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
   m_Children:
   - {fileID: 224939334417364364}
