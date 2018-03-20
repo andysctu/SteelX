@@ -499,7 +499,7 @@ public class MechCombat : Combat {
 	}
 
 	IEnumerator Moveaway(){
-		yield return new WaitForSeconds (1.5f);
+		yield return new WaitForSeconds (0.8f);
 		gameObject.transform.position = new Vector3 (0, 80, 0);
 	}
 
@@ -525,7 +525,7 @@ public class MechCombat : Combat {
 		}
 
 		gameObject.layer = ignoreRaycast_layer;
-		StartCoroutine (Moveaway ());//moving away from colliders (disable does not trigger exit
+		//StartCoroutine (Moveaway ());//moving away from colliders (disable does not trigger exit
 
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);

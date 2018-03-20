@@ -119,7 +119,7 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void CallBCNShoot(int b){
-		mctrl.on_BCNShoot = (b==1)? true : false;
+		mctrl.on_BCNShoot = (b==1);
 	}
 
 }

@@ -8,9 +8,8 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField]private Camera cam;
 	[SerializeField]private GameObject boostFlame;
 	[SerializeField]private AnimatorVars AnimatorVars;
-	private MechCombat mechCombat;
-	private Animator Animator;
-	private Sounds Sounds;
+	[SerializeField]private Animator Animator;
+	[SerializeField]private MechCombat mechCombat;
 	private GameManager gm;
 
 	public CharacterController CharacterController;
@@ -78,9 +77,6 @@ public class MechController : Photon.MonoBehaviour {
 	void initComponents() {
 		Transform currentMech = transform.Find("CurrentMech");
 		CharacterController = GetComponent<CharacterController> ();
-		Animator = currentMech.GetComponent<Animator>();
-		Sounds = currentMech.GetComponent<Sounds>();
-		mechCombat = GetComponent<MechCombat>();
 		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 
@@ -252,7 +248,9 @@ public class MechController : Photon.MonoBehaviour {
 
 	public void SlowDown(float duration){
 		if(isSlowDown){
-			StopCoroutine (coroutine);
+			if(coroutine!=null)
+				StopCoroutine (coroutine);
+			
 			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
 		}else{
 			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
