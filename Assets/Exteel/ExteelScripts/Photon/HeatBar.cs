@@ -12,33 +12,38 @@ public class HeatBar : MonoBehaviour {
 	[SerializeField]private PhotonView pv;//mech combat's pv
 
 	private Weapon[] weaponScripts;
-	private float[] curValue = new float[4]; // [0,100]
-	private int weaponOffset = 0;
-	private float rateL,rateR;
+	private float[] curValue = new float[4];
+	private int weaponOffset;
+	private int cooldown;
+	private int MaxHeat;
+	private Color32 RED = new Color32 (255, 0, 0, 200) , YELLOW = new Color32 (255, 255, 85, 200);
 
-	// Use this for initialization
-	void Start () {
+	public void InitVars(){//called when finished buildmech
+		weaponOffset = 0;
 		weaponScripts = bm.weaponScripts;
 		barL_fill.fillAmount = 0;
 		barR_fill.fillAmount = 0;
-		rateL = 0.2f;
-		rateR = 0.2f;
+		cooldown = mcbt.cooldown;
+		MaxHeat = mcbt.MaxHeat;
 
 		for (int i = 0; i < 4; i++)
 			mcbt.is_overheat [i] = false;
+
+		UpdateHeatBar (weaponOffset);
+		ResetHeatBar ();
 	}
 
 	void FixedUpdate(){
 		
 		for(int i=0;i<4;i++){
-			curValue[i] -= ((i%2)==0)? rateL : rateR;
+			curValue[i] -= ((mcbt.is_overheat[i])? cooldown : cooldown/2) *Time.fixedDeltaTime;// cooldown faster when overheat
 
 			if (curValue [i] <= 0){
 				if(mcbt.is_overheat[i]){ // if previous is overheated => change color
 					if(i==weaponOffset){
-						barL_fill.color = new Color32 (255, 255, 85, 200);
+						barL_fill.color = YELLOW;
 					}else if(i==weaponOffset+1){
-						barR_fill.color = new Color32 (255, 255, 85, 200);
+						barR_fill.color = YELLOW;
 					}
 					pv.RPC ("SetOverHeat", PhotonTargets.All, false, i);
 				}
@@ -55,93 +60,71 @@ public class HeatBar : MonoBehaviour {
 		weaponOffset = offset;
 
 		if(bm.weaponScripts[offset].isTwoHanded){
-			barL.enabled = true;
-			barL_fill.enabled = true;
-			barR.enabled = false;
-			barR_fill.enabled = false;
+			EnableHeatBar (weaponOffset, true);
+			EnableHeatBar (weaponOffset+1, false);
 		}else{
-			if (bm.weaponScripts [offset].Animation != "") {//Empty weapon 
-				barL.enabled = true;
-				barL_fill.enabled = true;
-			} else {
-				barL.enabled = false;
-				barL_fill.enabled = false;
-			}
-
-			if (bm.weaponScripts [offset + 1].Animation != "") {
-				barR.enabled = true;
-				barR_fill.enabled = true;
-			} else {
-				barR.enabled = false;
-				barR_fill.enabled = false;
-			}
+			EnableHeatBar (weaponOffset, bm.weaponScripts [weaponOffset].Animation != "");
+			EnableHeatBar (weaponOffset+1, bm.weaponScripts [weaponOffset+1].Animation != "");
 		}
 
 		if(mcbt.is_overheat[offset]){//update color
-			barL_fill.color =new Color32 (255, 0, 0, 200);
+			barL_fill.color = RED;
 		}else{
-			barL_fill.color =new Color32 (255, 255, 85, 200);
+			barL_fill.color = YELLOW;
 		}
 
 		if(mcbt.is_overheat[offset+1]){
-			barR_fill.color =new Color32 (255, 0, 0, 200);
+			barR_fill.color = RED;
 		}else{
-			barR_fill.color =new Color32 (255, 255, 85, 200);
+			barR_fill.color = YELLOW;
 		}
 	}
 
-	public void IncreaseHeatBarL(float value){ //value : [0,100]
-		curValue [weaponOffset] += value;
-		if (curValue [weaponOffset] >= 100) {
-			curValue[weaponOffset] = 100;
-			mcbt.is_overheat [weaponOffset] = true;
-
-			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset);
-
-			barL_fill.color =new Color32 (255, 0, 0, 200);
-		}
-	}
-
-	public void IncreaseHeatBarR(float value){
-		curValue [weaponOffset+1] += value;
-		if (curValue [weaponOffset + 1] >= 100) {
-			curValue[weaponOffset + 1] = 100;
-			mcbt.is_overheat [weaponOffset + 1] = true;
-
-			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset+1);
-
-			barR_fill.color = new Color32 (255, 0, 0, 200);
-		}
-	}
-	public void ResetHeatBar(){
+	void ResetHeatBar(){
 		for(int i=0;i<4;i++){
 			curValue [i] = 0;
 		}
 	}
 
-	public bool Is_HeatBarL_Overheat(){
-		return mcbt.is_overheat [weaponOffset];
+	public void IncreaseHeatBarL(float value){ //value : [0,100]
+		curValue [weaponOffset] += value;
+		if (curValue [weaponOffset] >= MaxHeat) {
+			curValue[weaponOffset] = MaxHeat;
+			mcbt.is_overheat [weaponOffset] = true;
+
+			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset);
+
+			barL_fill.color = RED;
+		}
 	}
 
-	public bool Is_HeatBarR_Overheat(){
-		return mcbt.is_overheat [weaponOffset+1];
+	public void IncreaseHeatBarR(float value){
+		curValue [weaponOffset+1] += value;
+		if (curValue [weaponOffset + 1] >= MaxHeat) {
+			curValue[weaponOffset + 1] = MaxHeat;
+			mcbt.is_overheat [weaponOffset + 1] = true;
+
+			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset+1);
+
+			barR_fill.color = RED;
+		}
 	}
 
-	public void NoHeatBarL(){
-		barL.enabled = false;
-		barL_fill.enabled = false;
-	}
-
-	public void NoHeatBarR(){
-		barR.enabled = false;
-		barR_fill.enabled = false;
+	public void EnableHeatBar(int hand, bool b){
+		if(hand==0){
+			barL.enabled = b;
+			barL_fill.enabled = b;
+		}else{
+			barR.enabled = b;
+			barR_fill.enabled = b;
+		}
 	}
 
 	private void DrawBarL(){
-		barL_fill.fillAmount = curValue[weaponOffset] * 0.01f;
+		barL_fill.fillAmount = curValue[weaponOffset]/MaxHeat;
 	}
 
 	private void DrawBarR(){
-		barR_fill.fillAmount = curValue[weaponOffset+1] * 0.01f;
+		barR_fill.fillAmount = curValue [weaponOffset + 1]/MaxHeat;
 	}
 }
