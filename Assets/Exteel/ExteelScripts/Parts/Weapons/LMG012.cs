@@ -3,7 +3,7 @@
 		Damage = 120;
 		Range = 100;
 		Rate = 1;
-		radius = 8f;
+		radius = 6f;
 		bulletNum = 5;
 	}
 }

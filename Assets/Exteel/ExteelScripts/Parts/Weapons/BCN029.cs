@@ -3,7 +3,7 @@
 		Damage = 700;
 		Range = 350;
 		Rate = 0.5f;
-		radius = 4f;
+		radius = 3f;
 		isTwoHanded = true;
 		Animation = "BCNPose";
 	}

@@ -3,7 +3,7 @@
 		Damage = 150;//heal amount
 		Range = 120;
 		Rate = 0.6f;
-		radius = 15f;
+		radius = 8f;
 		Animation = "ENGShoot";
 	}
 }

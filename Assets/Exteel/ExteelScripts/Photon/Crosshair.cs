@@ -84,7 +84,7 @@ public class Crosshair : MonoBehaviour {
 		}
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
-	
+
 		if(CrosshairRadiusL!=0){
 			crosshairImage.SetCurrentLImage (0);
 		}else{
@@ -140,7 +140,7 @@ public class Crosshair : MonoBehaviour {
 					targetL = target.transform;
 
 					//move target mark
-					crosshairImage.targetMark.enabled = true;
+
 					crosshairImage.targetMark.transform.position = GetComponent<Camera>().WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockL) {
@@ -155,8 +155,7 @@ public class Crosshair : MonoBehaviour {
 				} 
 			}
 			if (!foundTargetL) {
-				crosshairImage.SetCurrentLImage (0);
-				crosshairImage.targetMark.enabled = false;
+				crosshairImage.SetCurrentLImage (0);				
 				targetL = null;
 				LockL = false;
 			}else{
@@ -199,7 +198,6 @@ public class Crosshair : MonoBehaviour {
 					//Debug.DrawRay (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0, 5, 0)) - camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), Color.red, 1f);
 
 					//move target mark
-					crosshairImage.targetMark.enabled = true;
 					crosshairImage.targetMark.transform.position =  GetComponent<Camera>().WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockR) {
@@ -216,13 +214,14 @@ public class Crosshair : MonoBehaviour {
 			}
 			if (!foundTargetR) {
 				crosshairImage.SetCurrentRImage (0);
-				crosshairImage.targetMark.enabled = false;
 				targetR = null;
 				LockR = false;
 			}else{
 				foundTargetR = false;
 			}
 		}
+
+		crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
 	}
 
 	public Transform getCurrentTargetL(){
