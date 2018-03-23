@@ -289,7 +289,7 @@ public class MechController : Photon.MonoBehaviour {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
 
-		if (grounded) {
+		if (grounded) {//lerp camera z offset when boosting 
 			if (speed > 0) {
 				Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 20 + transform.position + new Vector3 (0, 5, 0);
 				cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 6f);

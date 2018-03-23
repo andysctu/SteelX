@@ -11,6 +11,7 @@ public class MechCombat : Combat {
 	[SerializeField] HeatBar HeatBar;
 	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	[SerializeField] DisplayPlayerInfo displayPlayerInfo;
+	[SerializeField] CrosshairImage crosshairImage;
 	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 
 	// Boost variables
@@ -289,6 +290,7 @@ public class MechCombat : Combat {
 						hud.ShowText (cam, target.position, "Hit");
 					}
 				} else if (target.tag == "Shield") {
+					
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
 
 					//check what hand is it
@@ -395,6 +397,11 @@ public class MechCombat : Combat {
 		}else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
 			GameObject b = bullets [weaponOffset + handPosition];
+
+			if(photonView.isMine){
+				crosshairImage.ShakingEffect (handPosition, bm.weaponScripts [weaponOffset + handPosition].Rate, bN);
+			}
+
 			for (int i = 0; i < bN; i++) {
 				GameObject bullet = Instantiate (b , Gun_ends[handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();

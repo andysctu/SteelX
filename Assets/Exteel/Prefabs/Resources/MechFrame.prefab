@@ -106,7 +106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &109764
 GameObject:
   m_ObjectHideFlags: 1
@@ -2899,10 +2899,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SphereRadiusCoeff: 0.04
-  DistanceCoeff: 0.006
-  MaxDistanceL: 0
-  MaxDistanceR: 0
   bm: {fileID: 11422958}
   pv: {fileID: 11416036}
   LockedImg: {fileID: 1378835646835420}
@@ -2910,7 +2906,12 @@ MonoBehaviour:
   playerlayer:
     serializedVersion: 2
     m_Bits: 256
+  Terrainlayer:
+    serializedVersion: 2
+    m_Bits: 1024
   Sounds: {fileID: 114000010976113334}
+  MaxDistanceL: 0
+  MaxDistanceR: 0
 --- !u!114 &11422958
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2964,6 +2965,7 @@ MonoBehaviour:
   SwitchWeaponEffectL: {fileID: 198874021016501722}
   SwitchWeaponEffectR: {fileID: 198771028345185282}
   displayPlayerInfo: {fileID: 114619718678987610}
+  crosshairImage: {fileID: 114672547102200730}
   jumpPower: 90
   moveSpeed: 30
   minBoostSpeed: 50
