@@ -136,6 +136,7 @@ public class GameManager : Photon.MonoBehaviour {
 			InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
 		}
 
+		InitHealthPool ();
 		hud.ShowWaitOtherPlayer (true);
 	}
 		
@@ -271,6 +272,14 @@ public class GameManager : Photon.MonoBehaviour {
 		RedFlag = PhotonNetwork.InstantiateSceneObject ("RedFlag", new Vector3(SpawnPoints [RED].position.x , 0 , SpawnPoints [RED].position.z), Quaternion.Euler(Vector3.zero), 0, null);
 	}
 
+	void InitHealthPool(){
+		HealthPool[] healthpools = (HealthPool[])Object.FindObjectsOfType<HealthPool> ();
+		foreach(HealthPool h in healthpools){
+			h.player = player;
+			h.Init ();
+		}
+	}
+
 	void SyncTime() {
 		int startTime = PhotonNetwork.ServerTimestamp;
 		ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", MaxTimeInSeconds } };
@@ -307,7 +316,7 @@ public class GameManager : Photon.MonoBehaviour {
 			SceneManager.LoadScene("Lobby");
 		}
 		// Update time
-		if (storedStartTime != 0 && storedDuration != 0) {
+		if (storedStartTime != 0 || storedDuration != 0) {//sometimes storedStartTime is 0 but duration is not
 			timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
 			currentTimer = storedDuration - timerDuration;
 
@@ -365,7 +374,7 @@ public class GameManager : Photon.MonoBehaviour {
 		storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
 		yield return new WaitForSeconds (time);
 		OnSyncTimeRequest = false;
-		if (storedStartTime != 0 && storedDuration != 0)
+		if (storedStartTime != 0 || storedDuration != 0)
 			is_Time_init = true;
 	}
 
@@ -449,7 +458,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public bool GameOver() {
-		if (storedStartTime != 0 && storedDuration != 0) {
+		if (storedStartTime != 0 || storedDuration != 0) {
 			if (currentTimer <= 0 || callEndGame) {
 				return true;
 			} else {

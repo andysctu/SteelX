@@ -6,10 +6,12 @@ public class JumpedState : MechStateMachineBehaviour {
 
 	static public bool jumpReleased = false;
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
-	public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled) return;
+
 		animator.SetBool(onSlash_id,false);
+		mcbt.CanSlash = true;
 		mcbt.isRSlashPlaying = 0;
 		mcbt.isLSlashPlaying = 0;
 		animator.SetBool (slashR2_id, false);
@@ -17,7 +19,7 @@ public class JumpedState : MechStateMachineBehaviour {
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-	public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (cc == null || !cc.enabled) {
 			return;
 		}
@@ -34,6 +36,15 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
+
+		/*//debug delete
+		if(Input.GetKey(KeyCode.Space)){
+			if (!jumpReleased)
+				Debug.Log ("jump not release");
+
+			if (!mctrl.CanVerticalBoost ())
+				Debug.Log ("can't vertical boost");
+		}*/
 
 		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
 			mctrl.SetCanVerticalBoost (false);

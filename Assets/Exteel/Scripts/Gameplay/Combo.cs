@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Combo : MonoBehaviour {
 
@@ -8,6 +9,7 @@ public class Combo : MonoBehaviour {
 	[SerializeField]private MechController mctrl;
 	[SerializeField]private Animator animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
+	[SerializeField]private SlashDetector SlashDetector;
 
 	private int slashL_id;
 	private int slashL2_id;
@@ -27,11 +29,17 @@ public class Combo : MonoBehaviour {
 
 	public void CallLSlashPlaying(int isPlaying){
 		mechCombat.SetLSlashPlaying(isPlaying);
-		mechCombat.ShowTrailL (isPlaying==1);
 	}
 	public void CallRSlashPlaying(int isPlaying){
 		mechCombat.SetRSlashPlaying(isPlaying);
-		mechCombat.ShowTrailR (isPlaying==1);
+	}
+
+	public void CallShowTrailL(int show){
+		mechCombat.ShowTrailL (show==1);
+	}
+
+	public void CallShowTrailR(int show){
+		mechCombat.ShowTrailR (show==1);
 	}
 		
 	public void CallSlashLToFalse(int num){
@@ -89,17 +97,29 @@ public class Combo : MonoBehaviour {
 			}
 		}
 	}
+		
+	public void CallSlashDetect(int hand){
+		mechCombat.SlashDetect (hand);
+	}
 
 	public void CallSetSlashMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
-		if(speed >0 && Input.GetAxis("Vertical")>0)
-			mctrl.SetSlashMoving(speed);
-		else if(speed < 0){
+		if(speed >0){
+			List<Transform> targets = SlashDetector.getCurrentTargets ();
+			if(targets.Count == 0){
+				mctrl.SetSlashMoving(speed);
+			}else{
+				//choose the first one
+				if(Vector3.Distance(transform.position, targets[0].position) >= 10 ){
+					mctrl.SetSlashMoving(speed/2);
+				}
+			}
+		}else if(speed < 0){
 			mctrl.SetSlashMoving(speed);
 		}
 	}
 
 	public void CallBCNShoot(int b){
-		mctrl.on_BCNShoot = (b==1)? true : false;
+		mctrl.on_BCNShoot = (b==1);
 	}
 
 }

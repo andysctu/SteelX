@@ -44,7 +44,6 @@ public class SlashDetector : MonoBehaviour {
 
 	void OnTriggerEnter(Collider target){
 		if (target.gameObject != User && (target.tag == "Drone" || target.tag == "Player" )) {
-
 			if(GameManager.isTeamMode){
 				if ( target.tag == "Drone" || target.transform.root.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
 					return;
@@ -55,7 +54,6 @@ public class SlashDetector : MonoBehaviour {
 	 
 	void OnTriggerExit(Collider target){
 		if(target.gameObject != User &&(target.tag == "Drone" || target.tag == "Player" ) ){
-
 			if(GameManager.isTeamMode){
 				if ( target.tag == "Drone" || target.transform.root.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
 					return;

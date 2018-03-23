@@ -4,6 +4,20 @@ using System.Collections;
 using System.Linq;
 
 public class Crosshair : MonoBehaviour {
+	[SerializeField]private BuildMech bm;
+	[SerializeField]private PhotonView pv;
+	[SerializeField]private GameObject LockedImg;
+	[SerializeField]private CrosshairImage crosshairImage;
+	[SerializeField]private LayerMask playerlayer,Terrainlayer;
+	[SerializeField]private Sounds Sounds;
+
+	private Weapon[] weaponScripts;
+	private Transform targetL,targetR;
+	private Camera cam;
+	private RaycastHit hit;
+	private Coroutine coroutine = null;
+	private Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f);
+
 	private const float SendMsgDeltaTime = 0.3f; //If the target is the same, this is the time between two msgs.
 	private float screenCoeff;
 	private float TimeOfLastSend;
@@ -15,42 +29,22 @@ public class Crosshair : MonoBehaviour {
 	private bool isTeamMode;
 	private bool isTargetAllyL = false, isTargetAllyR = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
-	public const float CAM_DISTANCE_TO_MECH = 17f;
+	public const float CAM_DISTANCE_TO_MECH = 15f;
 
-	public float SphereRadiusCoeff;
-	public float DistanceCoeff;
+	private float SphereRadiusCoeff = 0.04f;
+	private float DistanceCoeff = 0.008f;
 
 	public float MaxDistanceL ;
 	public float MaxDistanceR ;
 
-	[SerializeField]
-	private BuildMech bm;
-	[SerializeField]
-	private PhotonView pv;
-	[SerializeField]
-	private GameObject LockedImg;
-	[SerializeField]
-	private CrosshairImage crosshairImage;
-	[SerializeField]
-	private LayerMask playerlayer;
-	[SerializeField]
-	private Sounds Sounds;
-
-	private Weapon[] weaponScripts;
-	private Camera camera;
-	private Transform targetL,targetR;
-	private RaycastHit hit;
-	private Coroutine coroutine = null;
 
 	void Start () {
 		screenCoeff = (float)Screen.height / Screen.width;
 		weaponScripts = bm.weaponScripts;
-		camera = transform.GetComponent<Camera>();
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 		updateCrosshair (0);
 		isTeamMode = GameManager.isTeamMode;
-		SphereRadiusCoeff = 0.04f;
-		DistanceCoeff = 0.008f;
+		cam = GetComponent<Camera> ();
 		crosshairImage.targetMark.enabled = false;
 	}
 
@@ -84,7 +78,7 @@ public class Crosshair : MonoBehaviour {
 		}
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
-	
+
 		if(CrosshairRadiusL!=0){
 			crosshairImage.SetCurrentLImage (0);
 		}else{
@@ -107,7 +101,7 @@ public class Crosshair : MonoBehaviour {
 
 	void Update () {
 		if (CrosshairRadiusL > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, camera.transform.forward,MaxDistanceL, playerlayer);
+			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, cam.transform.forward,MaxDistanceL, playerlayer);
 			foreach(RaycastHit target in targets){
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
@@ -131,17 +125,24 @@ public class Crosshair : MonoBehaviour {
 					if (isTargetAllyL)
 						continue;
 				}
-				//print ("crosshair target : " + target);
-				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, (camera.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0)).y -0.5f) * screenCoeff + 0.5f);
-				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f);
 
-				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusL) { 
+				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
+				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
+				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
+
+				if (Vector2.Distance (targetLocOnScreen, CamMidpoint) < DistanceCoeff * CrosshairRadiusL) { 
+					//check if Terrain block the way
+					RaycastHit hit;
+					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
+						if(hit.collider.gameObject.layer == 10){
+							continue;
+						}
+					}
 					crosshairImage.SetCurrentLImage (1);
 					targetL = target.transform;
 
 					//move target mark
-					crosshairImage.targetMark.enabled = true;
-					crosshairImage.targetMark.transform.position = camera.WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockL) {
 						Sounds.PlayLock ();
@@ -155,8 +156,7 @@ public class Crosshair : MonoBehaviour {
 				} 
 			}
 			if (!foundTargetL) {
-				crosshairImage.SetCurrentLImage (0);
-				crosshairImage.targetMark.enabled = false;
+				crosshairImage.SetCurrentLImage (0);				
 				targetL = null;
 				LockL = false;
 			}else{
@@ -164,7 +164,7 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 		if (CrosshairRadiusR > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, camera.transform.forward, MaxDistanceR, playerlayer);
+			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, cam.transform.forward, MaxDistanceR, playerlayer);
 			foreach (RaycastHit target in targets) {
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
@@ -189,18 +189,22 @@ public class Crosshair : MonoBehaviour {
 						continue;
 				}
 
-				Vector2 targetLocInCam = new Vector2 (camera.WorldToViewportPoint (target.transform.position).x, (camera.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0)).y - 0.5f) * screenCoeff + 0.5f);
-				Vector2 CamMidpoint = new Vector2 (0.5f, 0.5f);
+				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
+				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0);;
+				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 
-				if (Vector2.Distance (targetLocInCam, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
+				if (Vector2.Distance (targetLocOnScreen, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
 
-					//Debug.DrawRay (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0, 5, 0)) - camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), Color.red, 1f);
-
+					RaycastHit hit;
+					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
+						if(hit.collider.gameObject.layer == 10){
+							continue;
+						}
+					}
 					//move target mark
-					crosshairImage.targetMark.enabled = true;
-					crosshairImage.targetMark.transform.position =  camera.WorldToScreenPoint (target.transform.root.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockR) {
 						Sounds.PlayLock ();
@@ -216,20 +220,22 @@ public class Crosshair : MonoBehaviour {
 			}
 			if (!foundTargetR) {
 				crosshairImage.SetCurrentRImage (0);
-				crosshairImage.targetMark.enabled = false;
 				targetR = null;
 				LockR = false;
 			}else{
 				foundTargetR = false;
 			}
 		}
+
+		crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
+		print ("enable : " + !(targetL==null&&targetR==null));
 	}
 
 	public Transform getCurrentTargetL(){
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
-			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
+			hitpoints = Physics.RaycastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
 			foreach(RaycastHit hit in hitpoints){
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
@@ -248,7 +254,7 @@ public class Crosshair : MonoBehaviour {
 		if (targetR != null && !isTargetAllyR) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
-			hitpoints = Physics.RaycastAll (camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0,5,0)) - camera.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceR, playerlayer).OrderBy (h => h.distance).ToArray ();
+			hitpoints = Physics.RaycastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetR.transform.root.position + new Vector3 (0,5,0)) - cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceR, playerlayer).OrderBy (h => h.distance).ToArray ();
 			foreach(RaycastHit hit in hitpoints){
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();

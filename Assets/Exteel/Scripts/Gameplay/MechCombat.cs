@@ -3,73 +3,70 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using XftWeapon;
 
 public class MechCombat : Combat {
 
 	[SerializeField] Transform camTransform;
-	[SerializeField] Animator animator;
-	[SerializeField] MechController mechController;
-	[SerializeField] CharacterController CharacterController;
-	[SerializeField] Sounds Sounds;
 	[SerializeField] HeatBar HeatBar;
-	[SerializeField] InRoomChat InRoomChat;
 	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	[SerializeField] DisplayPlayerInfo displayPlayerInfo;
-	[SerializeField] Combo Combo;
-	public TrailRenderer trailRendererL,trailRendererR;
-	PlayerInZone Healthpool;
-	HealthPoolBar HealthpoolBar;
-	ParticleSystem MuzL,MuzR;
+	[SerializeField] CrosshairImage crosshairImage;
+	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
+
 	// Boost variables
 	private float fuelDrain = 5.0f;
-	private float fuelGain = 5.0f;
+	private float fuelGain = 20.0f;
 	private float minFuelRequired = 450;
 	private float currentFuel;
 	public float jumpPower = 90.0f;
 	public float moveSpeed = 35.0f;
-	public float boostSpeed = 60f;
+	public float minBoostSpeed = 50;
+	public float acceleration = 2;
+	public float deceleration = 50;
 	private float verticalBoostSpeed = 1f;
 	public float maxVerticalBoostSpeed = 30f;
+	public float maxHorizontalBoostSpeed = 60f;
 	// Game variables
 	public Score score;
-
+	private const int playerlayer = 8 , ignoreRaycast_layer = 2;
 	// Combat variables
 	public bool isDead;
-	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it  
-	private RaycastHit hit;
-	private Weapon[] weaponScripts;
+	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it (shield)
+	public int MaxHeat = 100;
+	public int cooldown = 5;
 	private int weaponOffset = 0;
-	private const int LEFT_HAND = 0;
-	private const int RIGHT_HAND = 1;
-	private float timeOfLastShotL;
-	private float timeOfLastShotR;
 	private int[] curWeaponNames = new int[2];
-	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
+	private int BCNPose_id;
+
+	// Left
+	private const int LEFT_HAND = 0;
+	private float timeOfLastShotL;
+	private bool fireL = false;
+	public int isLSlashPlaying = 0;
+
+	// Right
+	private const int RIGHT_HAND = 1;
+	private float timeOfLastShotR;
+	private bool fireR = false;
+	public int isRSlashPlaying = 0;
 
 	public bool CanSlash = true;
-	// Left
-	private bool fireL = false;
-	private bool shootingL = false;
-	public int isLSlashPlaying = 0;
-	// Right
-	private bool fireR = false;
-	private bool shootingR = false;
-	public int isRSlashPlaying = 0;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
-	private bool isDeadFirstCall = true;
-	private bool isOverHeat = false;//used to check if it is just overheat
 	// Transforms
 	private Transform shoulderL;
 	private Transform shoulderR;
 	private Transform head;
 	private Transform[] Hands;
+	private Transform[] Gun_ends;
 
 	// GameObjects
 	private GameObject[] weapons;
 	private GameObject[] bullets;
-	private GameObject Target;
 	private List<Transform> targets;
+	private InRoomChat InRoomChat;
+	private Weapon[] weaponScripts;
 
 	// HUD
 	private Slider healthBar;
@@ -82,35 +79,41 @@ public class MechCombat : Combat {
 	private Camera cam;
 
 	// Components
-	private BuildMech bm;
 	public Crosshair crosshair;
+	private BuildMech bm;
 	private SlashDetector slashDetector;
-
-	//Healthpool
-	private float InPoolPreTime = 0f;
-	private const float CallHealDeltaTime = 2f;
+	private MechController mechController;
+	private Sounds Sounds;
+	private Combo Combo;
+	private AnimatorVars AnimatorVars;
+	private Animator animator;
+	private ParticleSystem MuzL,MuzR;
+	private XWeaponTrail trailL,trailR;
 
 	private Coroutine bulletCoroutine;
 
 	//for Debug
 	public bool forceDead = false;
 
+	public bool isInitFinished = false;
 	void Start() {
 		findGameManager();
 		initMechStats();
+		initCombatVariables();
+		initComponents ();
+		UpdateWeaponInfo();
 		initTransforms();
 		initGameObjects();
-		initComponents();
-		initCombatVariables();
-		initHUD();
 		initCam ();
 		initCrosshair();
-		initSlashDetector();
 		UpdateCurWeaponType ();
+		initSlashDetector();
 		SyncWeaponOffset ();
-		initHealthPool ();
-		FindTrailRenderer ();
+		FindTrail();
 		UpdateMuz ();
+		if(photonView.isMine) //since every mechframe share the same hud
+			initHUD();
+		isInitFinished = true;
 	}
 
 	void initMechStats() {
@@ -122,6 +125,10 @@ public class MechCombat : Combat {
 		head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
 		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
 		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+
+		Gun_ends = new Transform[2];
+		FindGunEnds ();
+
 		Hands = new Transform[2];
 		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
 		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
@@ -137,11 +144,20 @@ public class MechCombat : Combat {
 	void initGameObjects() {
 		InRoomChat = GameObject.Find ("InRoomChat") .GetComponent<InRoomChat>();
 		hud = GameObject.FindObjectOfType<HUD> ();
-		displayPlayerInfo.gameObject.SetActive (!photonView.isMine);
+		displayPlayerInfo.gameObject.SetActive (!photonView.isMine);//do not show my name & hp bar
 	}
 
-	public void initComponents() {
+	void initComponents(){
+		Transform currentMech = transform.Find("CurrentMech");
+		Sounds = currentMech.GetComponent<Sounds> ();
+		AnimatorVars = currentMech.GetComponent<AnimatorVars> ();
+		Combo = currentMech.GetComponent<Combo> ();
+		animator = currentMech.GetComponent<Animator> (); 
+		mechController = GetComponent<MechController> ();
 		bm = GetComponent<BuildMech>();
+	}
+
+	public void UpdateWeaponInfo() {
 		weapons = bm.weapons;
 		bullets = bm.bulletPrefabs;
 		weaponScripts = bm.weaponScripts;
@@ -150,24 +166,23 @@ public class MechCombat : Combat {
 
 	public void initCombatVariables() {// this will be called also when respawn
 		weaponOffset = 0;
+		if (photonView.isMine)SetWeaponOffsetProperty (weaponOffset);
+
 		fireL = false;
 		fireR = false;
-		shootingL = false;
-		shootingR = false;
 		timeOfLastShotL = Time.time;
 		timeOfLastShotR = Time.time;
-		isOverHeat = false;
 		isSwitchingWeapon = false;
 		CanSlash = true;
 		receiveNextSlash = true;
-		isDeadFirstCall = true;
 		setIsFiring (0,false);
 		setIsFiring (1, false);
+
+		HeatBar.InitVars ();
 	}
 
 	void initHUD() {
-		if(photonView.isMine)
-			initHealthAndFuelBars();
+		initHealthAndFuelBars();
 	}
 
 	void initCam(){
@@ -178,22 +193,33 @@ public class MechCombat : Combat {
 		crosshair = cam.GetComponent<Crosshair> ();
 	}
 
-	void initHealthPool(){
-		Healthpool = GameObject.Find ("HealthZone").GetComponent<PlayerInZone> ();
-		HealthpoolBar = Healthpool.transform.root.GetComponent<HealthPoolBar> ();
-		if(photonView.isMine){
-			Healthpool.player_viewID = photonView.viewID;
-		}
+	public void FindGunEnds(){
+		if (Gun_ends == null)//mcbt is not initialized ( in BuildMech )
+			return;
+		
+		if(weapons [weaponOffset]!=null)
+			Gun_ends [0] = weapons [weaponOffset].transform.Find ("End");
 
+		if(weapons [weaponOffset+1]!=null)
+			Gun_ends [1] = weapons [weaponOffset+1].transform.Find ("End");
 	}
 
 	public void UpdateMuz (){
-		MuzL = weapons [weaponOffset].GetComponentInChildren<ParticleSystem> ();
-		MuzR = weapons [weaponOffset+1].GetComponentInChildren<ParticleSystem> ();
-		if(MuzL!=null)
-			MuzL.Stop ();
-		if(MuzR!=null)
-			MuzR.Stop ();
+		if(weapons[weaponOffset]!=null){
+			Transform Muz = weapons [weaponOffset].transform.Find ("End/Muz");
+			if (Muz != null) {
+				MuzL = Muz.GetComponent<ParticleSystem> ();
+				MuzL.Stop ();
+			}
+		}
+
+		if(weapons[weaponOffset+1]!=null){
+			Transform Muz = weapons [weaponOffset+1].transform.Find ("End/Muz");
+			if (Muz != null) {
+				MuzR = Muz.GetComponent<ParticleSystem> ();
+				MuzR.Stop ();
+			}
+		}
 	}
 
 	float timeOfLastShot(int handPosition) {
@@ -216,6 +242,16 @@ public class MechCombat : Combat {
 	}
 	void initSlashDetector(){
 		slashDetector = GetComponentInChildren<SlashDetector> ();
+		SetSlashDetector ();
+	}
+	public void initAnimatorVarID(){
+		BCNPose_id = AnimatorVars.BCNPose_id;
+	}
+
+	void SetSlashDetector(){
+		bool b = ((curWeaponNames [0] == (int)WeaponTypes.MELEE || curWeaponNames [1] == (int)WeaponTypes.MELEE) && photonView.isMine);
+		slashDetector.GetComponent<BoxCollider> ().enabled = b;
+		slashDetector.enabled = b;
 	}
 
 	void SyncWeaponOffset (){
@@ -238,14 +274,14 @@ public class MechCombat : Combat {
 		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
 		if( target != null){
 			//Debug.Log("Hit tag: " + target.tag);
-			Debug.Log("Hit name: " + target.name);
-			Debug.Log ("Hit layer: " + target.gameObject.layer);
+			//Debug.Log("Hit name: " + target.name);
+			//Debug.Log ("Hit layer: " + target.gameObject.layer);
 			if (curWeaponNames [handPosition] != (int)WeaponTypes.ENG) {
 				if (target.tag == "Player" || target.tag == "Drone") {
 				
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, (isSlowDown) ? 0.4f : 0);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], (isSlowDown) ? 0.4f : 0);
 					//Debug.Log ("Damage: " + damage + ", Range: " + range);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
@@ -254,6 +290,7 @@ public class MechCombat : Combat {
 						hud.ShowText (cam, target.position, "Hit");
 					}
 				} else if (target.tag == "Shield") {
+					
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
 
 					//check what hand is it
@@ -263,9 +300,9 @@ public class MechCombat : Combat {
 
 					if(targetMcbt!=null){
 						if(targetMcbt.is_overheat[targetMcbt.weaponOffset + hand]){
-							targetMcbt.photonView.RPC ("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, hand);
+							targetMcbt.photonView.RPC ("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, hand, bm.curWeaponNames[weaponOffset+handPosition]);
 						}else{
-							targetMcbt.photonView.RPC ("ShieldOnHit", PhotonTargets.All, damage/2, photonView.viewID, hand);
+							targetMcbt.photonView.RPC ("ShieldOnHit", PhotonTargets.All, damage/2, photonView.viewID, hand, bm.curWeaponNames[weaponOffset+handPosition]);
 						}
 					}
 
@@ -283,21 +320,24 @@ public class MechCombat : Combat {
 		}
 	}
 
-	void SlashDetect(int damage){
-
+	public void SlashDetect(int handPosition){//called by animation event (Combo.cs) 
+		if (!photonView.isMine)
+			return;
+		
 		if(!mechController.grounded){
 			mechController.Boost (true); // jump slash boost effect
 		}
+
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
 
 			Sounds.PlaySlashOnHit ();
 			foreach(Transform target in targets){
-				if(target == null){//it causes bug if target disconnect
+				if(target == null || target.transform.root.GetComponent<MechCombat>().isDead){//it causes bug if target disconnect
 					continue;
 				}
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, 0.4f);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bm.weaponScripts[weaponOffset+handPosition].Damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], 0.4f);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -314,15 +354,20 @@ public class MechCombat : Combat {
 
 	[PunRPC]
 	void RegisterBulletTrace(int handPosition, Vector3 direction , int playerPVid , bool isShield) {
-		if (playerPVid != -1) {
+		bulletCoroutine = StartCoroutine (InstantiateBulletTrace (handPosition, direction, playerPVid, isShield));
+	}
+
+	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, int playerPVid, bool isShield){
+		GameObject Target;
+
+		if (playerPVid != -1)
 			Target = PhotonView.Find (playerPVid).gameObject;
-		}
 		else
 			Target = null;
-		bulletCoroutine = StartCoroutine (InstantiateBulletTrace (handPosition, direction, isShield));
-	}
-	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, bool isShield){
-		int i;
+
+		if(curWeaponNames[handPosition] != (int)WeaponTypes.BCN) //wait for hands to go to right position
+			yield return new WaitForSeconds (0.05f);
+
 		if(handPosition==0){
 			if (MuzL != null)
 				MuzL.Play ();
@@ -335,16 +380,15 @@ public class MechCombat : Combat {
 			yield break;
 		}
 
-		if (usingRCLWeapon (handPosition)) { 
-			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands [handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
+		if (curWeaponNames[handPosition] == (int)WeaponTypes.RCL) { 
+			GameObject bullet = Instantiate (bullets[weaponOffset], (Hands[handPosition].position + Hands[handPosition+1].position)/2 + transform.forward*3f + transform.up*3f, Quaternion.LookRotation (direction)) as GameObject;
 			RCLBulletTrace RCLbullet = bullet.GetComponent<RCLBulletTrace> ();
 			RCLbullet.hud = hud;
 			RCLbullet.cam = cam;
 			RCLbullet.Shooter = gameObject;
-		} else if(usingENGWeapon(handPosition)){
-			yield return new WaitForSeconds (0.1f);//in case the wrong start position makes glitch
-			GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
-			bullet.transform.SetParent (Hands [handPosition]);
+		} else if(curWeaponNames[handPosition] == (int)WeaponTypes.ENG){
+			GameObject bullet = Instantiate (bullets[weaponOffset+handPosition], Gun_ends[handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+			bullet.transform.SetParent (Gun_ends[handPosition]);
 			bullet.GetComponent<ElectricBolt> ().dir = direction;
 			bullet.GetComponent<ElectricBolt> ().cam = cam;
 			if (Target != null) {
@@ -353,8 +397,13 @@ public class MechCombat : Combat {
 		}else {
 			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
 			GameObject b = bullets [weaponOffset + handPosition];
-			for (i = 0; i < bN; i++) {
-				GameObject bullet = Instantiate (b , Hands [handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
+
+			if(photonView.isMine){
+				crosshairImage.ShakingEffect (handPosition, bm.weaponScripts [weaponOffset + handPosition].Rate, bN);
+			}
+
+			for (int i = 0; i < bN; i++) {
+				GameObject bullet = Instantiate (b , Gun_ends[handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
 				bulletTrace.direction = cam.transform.forward;
 				bulletTrace.HUD = hud;
@@ -376,36 +425,30 @@ public class MechCombat : Combat {
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
-	public override void OnHit(int d, int shooter_viewID, float slowdownDuration = 0) {
-		//Debug.Log ("OnHit, isDead: " + isDead);
-		// If already dead, do nothing
+	public override void OnHit(int d, int shooter_viewID, string weapon, float slowdownDuration = 0) {
 		if (isDead) {
 			return;
 		}
 		if(slowdownDuration > 0){
 			mechController.SlowDown (slowdownDuration);
 		}
-		// Apply damage
+			
 		currentHP -= d;
-		//Debug.Log ("HP: " + currentHP);
 
-		// If fatal hit,
 		if (currentHP <= 0) {
 			isDead = true;
-			// UI for shooter
 
 			DisablePlayer();
 
 			// Update scoreboard
 			gm.RegisterKill(shooter_viewID, photonView.viewID);
-
 			string shooter = PhotonView.Find (shooter_viewID).owner.NickName;
-			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
+			InRoomChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
 		}
 	}
 
 	[PunRPC]
-	void ShieldOnHit(int d, int shooter_viewID, int hand ){
+	void ShieldOnHit(int d, int shooter_viewID, int shield, string weapon){
 		if (isDead) {
 			return;
 		}
@@ -414,8 +457,6 @@ public class MechCombat : Combat {
 		currentHP -= d;
 		Debug.Log ("HP: " + currentHP);
 		if (currentHP <= 0) {
-			isDead = true;
-			// UI for shooter
 
 			DisablePlayer();
 
@@ -423,11 +464,11 @@ public class MechCombat : Combat {
 			gm.RegisterKill(shooter_viewID, photonView.viewID);
 
 			string shooter = pv.owner.NickName;
-			InRoomChat.AddLine(shooter + " killed " + photonView.name + ".");
+			InRoomChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
 		}
 
-		if(photonView.isMine && !is_overheat[weaponOffset+hand]){//heat
-			if(hand==0){
+		if(photonView.isMine && !is_overheat[weaponOffset+shield]){//heat
+			if(shield==0){
 				HeatBar.IncreaseHeatBarL (30);
 			} else {
 				HeatBar.IncreaseHeatBarR (30);
@@ -452,10 +493,6 @@ public class MechCombat : Combat {
 		currentHP = amount;
 	}
 
-	/*public int GetCurrentHP(){
-		return currentHP;
-	}*/
-
 	[PunRPC]
 	void OnLocked(string name){
 		if (PhotonNetwork.playerName != name)
@@ -466,6 +503,11 @@ public class MechCombat : Combat {
 	[PunRPC]
 	public void ForceMove(Vector3 dir, float length){
 		transform.position += dir * length;
+	}
+
+	IEnumerator Moveaway(){
+		yield return new WaitForSeconds (0.8f);
+		gameObject.transform.position = new Vector3 (0, 80, 0);
 	}
 
 	// Disable MechController, Crosshair, Renderers, and set layer to 0
@@ -481,7 +523,16 @@ public class MechCombat : Combat {
 			}
 		}
 
-		gameObject.transform.position = new Vector3 (0, 80, 0);
+		if(photonView.isMine){
+			currentHP = 0;
+			animator.SetBool (BCNPose_id, false);
+			animator.SetBool ("UsingBCN", false);
+			animator.SetBool ("UsingRCL", false);
+			gm.ShowRespawnPanel ();
+		}
+
+		gameObject.layer = ignoreRaycast_layer;
+		//StartCoroutine (Moveaway ());//moving away from colliders (disable does not trigger exit
 
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
@@ -491,7 +542,6 @@ public class MechCombat : Combat {
 
 		displayPlayerInfo.gameObject.SetActive (false);
 
-		gameObject.layer = 2;//2 : ignore ray cast
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		if(ch!=null){
 			ch.NoCrosshair();
@@ -519,12 +569,11 @@ public class MechCombat : Combat {
 		initMechStats ();
 
 		mechController.initControllerVar ();
-		HeatBar.ResetHeatBar ();
 		Sounds.UpdateSounds (weaponOffset);
 		displayPlayerInfo.gameObject.SetActive (!photonView.isMine);
 
 		transform.position = gm.SpawnPoints[respawnPoint].position;
-		gameObject.layer = 8;
+		gameObject.layer = playerlayer;
 		isDead = false;
 		if (!photonView.isMine) return;
 
@@ -544,22 +593,13 @@ public class MechCombat : Combat {
 		// Drain HP bar gradually
 		if (isDead) {
 			if (healthBar.value > 0) healthBar.value = healthBar.value -0.01f;
-
-			if(isDeadFirstCall){
-				animator.SetBool ("BCNPose", false);
-				animator.SetBool ("UsingBCN", false);
-				animator.SetBool ("UsingRCL", false);
-				isDeadFirstCall = false;
-				gm.ShowRespawnPanel ();}
 			return;
-		}else{
-			isDeadFirstCall = true;
 		}
 
 		//For debug
 		if(forceDead){
 			forceDead = false;
-			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, 0f);
+			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", 0f);
 		}
 			
 		// Fix head to always look ahead
@@ -572,7 +612,9 @@ public class MechCombat : Combat {
 		handleCombat(RIGHT_HAND);
 
 		// Switch weapons
-		if (Input.GetKeyDown (KeyCode.R) && !isDead) {
+		if (Input.GetKeyDown (KeyCode.R) && !isSwitchingWeapon &&!isDead) {
+			currentFuel -= (currentFuel >= MAX_FUEL / 3) ? MAX_FUEL / 3 : currentFuel;
+
 			photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
 		}
 
@@ -585,24 +627,11 @@ public class MechCombat : Combat {
 		handleAnimation(RIGHT_HAND);
 	}
 
-	void FixedUpdate(){
-		if(photonView.isMine && Healthpool != null){
-			if(Healthpool.IsThePlayerInside() && HealthpoolBar.isAvailable){
-				if(Time.time - InPoolPreTime >= CallHealDeltaTime){
-					photonView.RPC ("OnHeal", PhotonTargets.All, photonView.viewID, Healthpool.healAmount);
-					InPoolPreTime = Time.time;
-				}
-			}else{
-				InPoolPreTime = Time.time;
-			}
-		}
-	}
-
 	void handleCombat(int handPosition) {
 		switch(curWeaponNames[handPosition]){
 		case (int)WeaponTypes.RANGED:
 			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //SMG : has a delay before putting down hands
-				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || ((handPosition == 0)? HeatBar.Is_HeatBarL_Overheat () : HeatBar.Is_HeatBarR_Overheat ()) ) {
+				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset+handPosition] ) {
 					if(handPosition == LEFT_HAND){
 						if(Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.95f)
 							setIsFiring (handPosition, false);
@@ -614,7 +643,7 @@ public class MechCombat : Combat {
 					}
 				}
 			}else{
-				if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || ((handPosition == 0)? HeatBar.Is_HeatBarL_Overheat () : HeatBar.Is_HeatBarR_Overheat ())) {
+				if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset+handPosition] ) {
 					if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 0.1f)//0.1 < time of playing shoot animation once , to make sure other player catch this
 						setIsFiring (handPosition, false);
 					return;
@@ -622,7 +651,7 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.MELEE:
-			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) ||  ((handPosition == 0)? HeatBar.Is_HeatBarL_Overheat () : HeatBar.Is_HeatBarR_Overheat ()) ) {
+			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) ||  is_overheat[weaponOffset+handPosition] ) {
 				setIsFiring (handPosition, false);
 				return;
 			}
@@ -634,7 +663,7 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.RCL:
-			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || HeatBar.Is_HeatBarL_Overheat ()) {
+			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset]) {
 				if (Time.time - timeOfLastShotL >= 0.4f)//0.4 < time of playing shoot animation once , to make sure other player catch this
 					setIsFiring (handPosition, false);
 				return;
@@ -643,22 +672,22 @@ public class MechCombat : Combat {
 		case (int)WeaponTypes.BCN:
 			if (Time.time - timeOfLastShotL >= 0.5f)
 				setIsFiring (handPosition, false);
-			if (Input.GetKeyDown (KeyCode.Mouse1) || HeatBar.Is_HeatBarL_Overheat ()) {//right click cancel BCNPose
-				animator.SetBool ("BCNPose", false);
+			if (Input.GetKeyDown (KeyCode.Mouse1) || is_overheat[weaponOffset]) {//right click cancel BCNPose
+				animator.SetBool (BCNPose_id, false);
 				return;
 			} else if (Input.GetKeyDown (KeyCode.Mouse0)) {
-				if (!HeatBar.Is_HeatBarL_Overheat ()) {
-					if (!animator.GetBool ("BCNPose")) {
-						animator.SetBool ("BCNPose", true);
+				if (!is_overheat[weaponOffset]) {
+					if (!animator.GetBool (BCNPose_id)) {
+						animator.SetBool (BCNPose_id, true);
 						timeOfLastShotL = Time.time - 1 / bm.weaponScripts [weaponOffset + handPosition].Rate / 2;
 					}
 				} else {
-					animator.SetBool ("BCNPose", false);
+					animator.SetBool (BCNPose_id, false);
 				}
 			}
 		break;
 		case (int)WeaponTypes.ENG:
-			if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || ((handPosition == 0)? HeatBar.Is_HeatBarL_Overheat () : HeatBar.Is_HeatBarR_Overheat ()) ) {
+			if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset+handPosition] ) {
 				if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate )
 					setIsFiring (handPosition, false);
 				return;
@@ -668,18 +697,6 @@ public class MechCombat : Combat {
 		default: //Empty weapon
 			return;
 		}
-
-		/*if(handPosition==0){
-			if (HeatBar.Is_HeatBarL_Overheat ()) {
-				setIsFiring (handPosition, false);
-				return;
-			}
-		}else{
-			if (HeatBar.Is_HeatBarR_Overheat ()) {
-				setIsFiring (handPosition, false);
-				return;
-			}
-		}*/
 
 		if(isSwitchingWeapon){
 			return;
@@ -744,7 +761,7 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.BCN:
 			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool ("BCNPose") || !mechController.grounded)
+				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool (BCNPose_id) || !mechController.grounded)
 					return;
 				setIsFiring (handPosition, true);
 				HeatBar.IncreaseHeatBarL (45); 
@@ -784,7 +801,7 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.MELEE:
-				SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage);
+				//SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage, handPosition);
 				Combo.Slash (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:
@@ -849,10 +866,6 @@ public class MechCombat : Combat {
 		SwitchWeaponEffectL.Play();
 		SwitchWeaponEffectR.Play();
 
-
-		//decrease energy
-
-
 		Sounds.PlaySwitchWeapon ();
 		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
@@ -861,12 +874,6 @@ public class MechCombat : Combat {
 	void SwitchWeaponsBegin(){
 		if(isDead){
 			return;
-		}
-		//update customproperty
-		if (photonView.isMine) {
-			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ("weaponOffset", (weaponOffset + 2) % 4);
-			photonView.owner.SetCustomProperties (h);
 		}
 		// Stop current attacks
 		setIsFiring(LEFT_HAND, false);
@@ -895,17 +902,20 @@ public class MechCombat : Combat {
 
 		// Change weaponOffset
 		weaponOffset = (weaponOffset + 2) % 4;
+		if(photonView.isMine)SetWeaponOffsetProperty (weaponOffset);
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
 		UpdateCurWeaponType ();
+		SetSlashDetector ();
+		FindGunEnds ();
 		UpdateMuz ();
-		FindTrailRenderer ();
+		FindTrail();
 
 		//check if using RCL => RCLIdle
 		animator.SetBool ("UsingRCL", curWeaponNames[0] == (int)WeaponTypes.RCL);
 		animator.SetBool ("UsingBCN", curWeaponNames[0] == (int)WeaponTypes.BCN);
 
-		animator.SetBool ("BCNPose", false);
+		animator.SetBool (BCNPose_id, false);
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset);
@@ -917,6 +927,12 @@ public class MechCombat : Combat {
 		isSwitchingWeapon = false;
 
 
+	}
+
+	void SetWeaponOffsetProperty(int weaponOffset){
+		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+		h.Add ("weaponOffset", weaponOffset);
+		photonView.owner.SetCustomProperties (h);
 	}
 
 	bool getIsFiring(int handPosition) {
@@ -1062,20 +1078,20 @@ public class MechCombat : Combat {
 		return currentFuel <= 0;
 	}
 
-	public float VerticalBoostSpeed() {
-		return verticalBoostSpeed;
-	}
-
 	public float MoveSpeed() {
 		return moveSpeed;
 	}
 
-	public float BoostSpeed() {
-		return boostSpeed;
+	public float MinHorizontalBoostSpeed() {
+		return minBoostSpeed;
 	}
 
 	public float JumpPower() {
 		return jumpPower;
+	}
+
+	public float MaxHorizontalBoostSpeed(){
+		return maxHorizontalBoostSpeed;
 	}
 
 	public float MaxVerticalBoostSpeed() {
@@ -1098,33 +1114,42 @@ public class MechCombat : Combat {
 		receiveNextSlash = (receive == 1) ? true : false;
 	}
 
-	public void FindTrailRenderer(){
+	public void FindTrail(){
 		if(curWeaponNames[0] == (int)WeaponTypes.MELEE){
-			trailRendererL = weapons [weaponOffset].GetComponentInChildren<TrailRenderer> ();
-			if (trailRendererL != null) {
-				trailRendererL.enabled = false;
+			trailL = weapons [weaponOffset].GetComponentInChildren<XWeaponTrail> (true);
+			if (trailL != null) {
+				trailL.Deactivate ();
 			}
 		}else{
-			trailRendererL = null;
+			trailL = null;
 		}
 
 		if(curWeaponNames[1] == (int)WeaponTypes.MELEE){
-			trailRendererR = weapons [weaponOffset+1].GetComponentInChildren<TrailRenderer> ();
-			if(trailRendererR!=null)
-				trailRendererR.enabled = false;
+			trailR = weapons [weaponOffset+1].GetComponentInChildren<XWeaponTrail> (true);
+			if (trailR != null)
+				trailR.Deactivate ();
 		}else{
-			trailRendererR = null;
+			trailR = null;
 		}
 	}
 
 	public void ShowTrailL(bool show){
-		if (trailRendererL != null) {
-			trailRendererL.enabled = show;
+		if (trailL != null) {
+			if(show){
+				trailL.Activate ();
+			}else{
+				trailL.Deactivate ();
+			}
 		}
 	}
 	public void ShowTrailR(bool show){
-		if(trailRendererR!=null)
-			trailRendererR.enabled = show;
+		if (trailR != null) {
+			if (show) {
+				trailR.Activate ();
+			} else {
+				trailR.Deactivate ();
+			}
+		}
 	}
 
 	private string BarValueToString(int curvalue, int maxvalue){

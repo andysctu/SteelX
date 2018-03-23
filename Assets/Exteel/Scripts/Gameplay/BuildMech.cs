@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
 
@@ -25,7 +26,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	public Weapon[] weaponScripts;
 	public GameObject[] weapons;
 	public GameObject[] bulletPrefabs;
-	private String[] curWeaponNames = new String[4]; //this is the weapon name array
+	public String[] curWeaponNames = new String[4]; //this is the weapon name array
 
 	private ParticleSystem Muz;
 	private int weaponOffset = 0;
@@ -139,17 +140,13 @@ public class BuildMech : Photon.MonoBehaviour {
 		// Replace all
 		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
 
-		int j = 0;//if call build when it's already build , we need to make sure not selecting weapons
-		for (int i = 0; i < curSMR.Length; i++) {
-			if(CheckIsWeapon(curSMR[i].ToString())){
-				continue;
-			}
+		for (int i = 0; i < 5; i++) {
+			//Note the order of parts in MechFrame.prefab matters
 
-			if (newSMR[j] == null) Debug.LogError(i + " is null.");
-			curSMR[i].sharedMesh = newSMR[j].sharedMesh;
-			curSMR[i].material = materials[j];
+			if (newSMR[i] == null) Debug.LogError(i + " is null.");
+			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
+			curSMR[i].material = materials[i];
 			curSMR[i].enabled = true;
-			j++;
 		}
 
 		//set all properties to 0
@@ -487,6 +484,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		weapons [(weaponOffset+3)%4].SetActive (false);
 
 		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
+		for (int i = 0; i < 4; i++)//turn off trail
+			ShutDownTrail (weapons [i]);
 
 	}
 
@@ -770,10 +769,10 @@ public class BuildMech : Photon.MonoBehaviour {
 			UserData.myData.Mech[mehc_num].Booster = defaultParts [4];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1L)){
-			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [7];
+			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1R)){
-			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [12];
+			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [5];
 		}
 		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2L)){
 			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [5];
@@ -783,9 +782,9 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 	}
 
-	bool CheckIsWeapon(string name){
+	/*bool CheckIsWeapon(string name){
 		return (name.Contains ("BCN") || name.Contains ("RCL") || name.Contains ("ENG") || name.Contains ("BRF") || name.Contains ("SHL") || name.Contains ("LMG") || name.Contains ("APS") || name.Contains ("SHS") || name.Contains ("SGN"));
-	}
+	}*/
 	bool CheckIsTwoHanded(string name){
 		return (name.Contains ("RCL") || name.Contains ("MSR") || name.Contains ("LCN") || name.Contains ("BCN"));
 	}
@@ -795,32 +794,26 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void ShutDownTrail(GameObject weapon){
-		TrailRenderer trailRenderer = weapon.GetComponentInChildren<TrailRenderer> ();
+		XWeaponTrail trail = weapon.GetComponentInChildren<XWeaponTrail> ();
 
-		if (trailRenderer == null)
+		if (trail == null)
 			return;
 
-		if(inHangar || inStore){//set active to false
-			trailRenderer.gameObject.SetActive (false);
-		}else{//in game -> disable
-			trailRenderer.enabled = false;
-		}
+		trail.Deactivate ();
 	}
 
 	void UpdateMechCombatVars(){
-		if (mcbt == null)
+		if (mcbt == null || !mcbt.isInitFinished)
 			return;
-		mcbt.initComponents ();
+		mcbt.UpdateWeaponInfo ();
 		mcbt.initCombatVariables ();
 		mcbt.UpdateCurWeaponType ();
 		if(mcbt.crosshair!=null)
 			mcbt.crosshair.updateCrosshair (0);
-		mcbt.FindTrailRenderer ();
+		mcbt.FindTrail();
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();
-
-		for (int i = 0; i < 4; i++)//turn off trail
-			ShutDownTrail (weapons [i]);
+		mcbt.FindGunEnds ();
 	}
 }

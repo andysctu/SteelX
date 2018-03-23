@@ -13,25 +13,23 @@ public class DisplayPlayerInfo : MonoBehaviour {
 	GameObject player;
 	private string text ; //name
 	private float LastInitRequestTime;
-
+	private Color32 color_ally = new Color32 (223, 234, 11, 255);
 	void Start () {
 		mcbt = transform.root.GetComponent<MechCombat> ();
 		text = transform.root.GetComponent<PhotonView> ().owner.NickName;
 		textMesh.text = text;
-		textMesh.color = new Color32 (255, 0, 0, 255);
 
 		if(GameManager.isTeamMode){
 			if(PhotonNetwork.player.GetTeam() != transform.root.GetComponent<PhotonView> ().owner.GetTeam()){
-				bar.color = new Color32 (255, 0, 0, 255); //enemy
-				textMesh.color = new Color32 (255, 0, 0, 255); 
+				bar.color = Color.red; //enemy
+				textMesh.color = Color.red; 
 			} else {
-				bar.color = new Color32 (223, 234, 11, 255);
-				textMesh.color = new Color32 (255, 255, 255, 255);
+				bar.color = color_ally;
+				textMesh.color = Color.white;
 			}
 		}else{
-			bar.color = new Color32 (255, 0, 0, 255); //enemy
-			textMesh.color = new Color32 (255, 0, 0, 255); 
-
+			bar.color = Color.red; //enemy
+			textMesh.color = Color.red; 
 		}
 	}
 	

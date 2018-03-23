@@ -17,9 +17,9 @@ public class ElectricBolt : MonoBehaviour {
     public Transform lineEnd = null;
 	public Vector3 dir;
 
-    private readonly float randomPosOffset = 1.3f;
-    private readonly float randomWithOffsetMax = 8f;
-    private readonly float randomWithOffsetMin = 6f;
+    private readonly float randomPosOffset = 1f;
+    private readonly float randomWithOffsetMax = 8.5f;
+    private readonly float randomWithOffsetMin = 7.5f;
 
     private readonly WaitForSeconds customFrame = new WaitForSeconds(0.05f);
 
@@ -32,7 +32,7 @@ public class ElectricBolt : MonoBehaviour {
     private IEnumerator Beam()
     {
 		yield return customFrame;
-		points[point_Begin] = transform.position + cam.transform.forward;
+		points[point_Begin] = transform.position + transform.forward*2.5f;
 		if (Target != null) {
 			lineEnd.position = Target.position + new Vector3(0,5f,0);
 			points [point_End] = lineEnd.position;

@@ -8,81 +8,54 @@ public class CrosshairImage : MonoBehaviour {
 	private float radiusL;
 	private float radiusR;
 
-	[SerializeField]
-	private GameObject[] crosshairs;// 4 : RCL's circle, 5 : middlecross , 6:RCL middlecross
-
-	[SerializeField]
-	private RectTransform[] crosshairsL0;
-	[SerializeField]
-	private RectTransform[] crosshairsL1;
-	[SerializeField]
-	private RectTransform[] crosshairsR0;
-	[SerializeField]
-	private RectTransform[] crosshairsR1;
+	[SerializeField]private GameObject[] crosshairs;// 4 : RCL's circle, 5 : middlecross , 6:RCL middlecross
+	[SerializeField]private RectTransform crosshairsL0, crosshairsL1, crosshairsR0, crosshairsR1;
 	public Image targetMark;
 
+	private int radiusCoeff = 22;
 	public bool noCrosshairL = false;
 	public bool noCrosshairR = false;
 
-	public void SetRadius(float setRadiusL, float setRadiusR){
-		radiusL = setRadiusL * 25f;
-		radiusR = setRadiusR * 25f;
+	private bool isShaking = false;
+	private Coroutine[] shakeCoroutine = new Coroutine[2];
 
+	//shaking
+	private float orgRadiusL, orgRadiusR;
+	private float shakingAmount = 1.33f;
 
-		SetR1offset (radiusR);
-		SetL1offset (radiusL);
+	void Update(){
+		if(isShaking){
+			SetLoffset (radiusL);
+			SetRoffset (radiusR);
 
+			radiusL = Mathf.Lerp (radiusL, orgRadiusL, 0.05f);
+			radiusR = Mathf.Lerp (radiusR, orgRadiusR, 0.05f);
+		}
 	}
-	void SetL1offset(float radiusL){
-		crosshairsL0 [0].offsetMin = new Vector2 (-radiusL, radiusL);
-		crosshairsL0 [0].offsetMax = new Vector2 (-radiusL, radiusL);
 
-		crosshairsL0 [1].offsetMin = new Vector2 (radiusL, radiusL);
-		crosshairsL0 [1].offsetMax = new Vector2 (radiusL, radiusL);
+	public void SetRadius(float L, float R){
+		radiusL = L * radiusCoeff;
+		radiusR = R * radiusCoeff;
 
-		crosshairsL0 [2].offsetMin = new Vector2 (-radiusL, -radiusL);
-		crosshairsL0 [2].offsetMax = new Vector2 (-radiusL, -radiusL);
+		orgRadiusL = radiusL;
+		orgRadiusR = radiusR;
 
-		crosshairsL0 [3].offsetMin = new Vector2 (radiusL, -radiusL);
-		crosshairsL0 [3].offsetMax = new Vector2 (radiusL, -radiusL);
-
-		crosshairsL1 [0].offsetMin = new Vector2 (-radiusL, radiusL);
-		crosshairsL1 [0].offsetMax = new Vector2 (-radiusL, radiusL);
-
-		crosshairsL1 [1].offsetMin = new Vector2 (radiusL, radiusL);
-		crosshairsL1 [1].offsetMax = new Vector2 (radiusL, radiusL);
-
-		crosshairsL1 [2].offsetMin = new Vector2 (-radiusL, -radiusL);
-		crosshairsL1 [2].offsetMax = new Vector2 (-radiusL, -radiusL);
-
-		crosshairsL1 [3].offsetMin = new Vector2 (radiusL, -radiusL);
-		crosshairsL1 [3].offsetMax = new Vector2 (radiusL, -radiusL);
+		SetRoffset (radiusR);
+		SetLoffset (radiusL);
 	}
-	void SetR1offset(float radiusR){
-		//R
-		crosshairsR0 [0].offsetMin = new Vector2 (-radiusR, radiusR);
-		crosshairsR0 [0].offsetMax = new Vector2 (-radiusR, radiusR);
+	void SetLoffset(float radiusL){
+		crosshairsL0.offsetMin = new Vector2 (-radiusL, -radiusL);
+		crosshairsL0.offsetMax = new Vector2 (radiusL, radiusL);
 
-		crosshairsR0 [1].offsetMin = new Vector2 (radiusR, radiusR);
-		crosshairsR0 [1].offsetMax = new Vector2 (radiusR, radiusR);
+		crosshairsL1.offsetMin = new Vector2 (-radiusL, -radiusL);
+		crosshairsL1.offsetMax = new Vector2 (radiusL, radiusL);
+	}
+	void SetRoffset(float radiusR){
+		crosshairsR0.offsetMin = new Vector2 (-radiusR, -radiusR);
+		crosshairsR0.offsetMax = new Vector2 (radiusR, radiusR);
 
-		crosshairsR0 [2].offsetMin = new Vector2 (-radiusR, -radiusR);
-		crosshairsR0 [2].offsetMax = new Vector2 (-radiusR, -radiusR);
-
-		crosshairsR0 [3].offsetMin = new Vector2 (radiusR, -radiusR);
-		crosshairsR0 [3].offsetMax = new Vector2 (radiusR, -radiusR);
-
-		crosshairsR1 [0].offsetMin = new Vector2 (-radiusR, radiusR);
-		crosshairsR1 [0].offsetMax = new Vector2 (-radiusR, radiusR);
-
-		crosshairsR1 [1].offsetMin = new Vector2 (radiusR, radiusR);
-		crosshairsR1 [1].offsetMax = new Vector2 (radiusR, radiusR);
-
-		crosshairsR1 [2].offsetMin = new Vector2 (-radiusR, -radiusR);
-		crosshairsR1 [2].offsetMax = new Vector2 (-radiusR, -radiusR);
-
-		crosshairsR1 [3].offsetMin = new Vector2 (radiusR, -radiusR);
-		crosshairsR1 [3].offsetMax = new Vector2 (radiusR, -radiusR);
+		crosshairsR1.offsetMin = new Vector2 (-radiusR, -radiusR);
+		crosshairsR1.offsetMax = new Vector2 (radiusR, radiusR);
 	}
 
 	public void SetCurrentLImage(int CurImage){
@@ -131,5 +104,32 @@ public class CrosshairImage : MonoBehaviour {
 		crosshairs [4].SetActive (true);
 		crosshairs [5].SetActive (false);
 		crosshairs [6].SetActive (true);
+	}
+
+	public void ShakingEffect(int handPosition, float rate,  int bulletNum){
+		isShaking = true;
+		if (shakeCoroutine[handPosition] == null) {
+			shakeCoroutine[handPosition] = StartCoroutine (Shaking (handPosition, rate, bulletNum));
+		}else{//stop the current shaking & start a new one
+			StopCoroutine (shakeCoroutine[handPosition]);
+			shakeCoroutine[handPosition] = StartCoroutine (Shaking (handPosition, rate, bulletNum));
+		}
+	}
+
+	IEnumerator Shaking(int handPosition, float rate,  int bulletNum){
+		for(int i=0;i<bulletNum;i++){
+			if(handPosition==0){
+				radiusL = orgRadiusL*shakingAmount;
+			}else{
+				radiusR = orgRadiusR*shakingAmount;
+			}
+			yield return (bulletNum==1)? new WaitForSeconds (0.2f):new WaitForSeconds (1 / rate / bulletNum);
+		}
+		isShaking = false;
+
+		radiusL = orgRadiusL;
+		radiusR = orgRadiusR;
+		SetLoffset (radiusL);
+		SetRoffset (radiusR);
 	}
 }

@@ -5,25 +5,26 @@ using System.Collections;
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
 
+	[SerializeField]private Camera cam;
+	[SerializeField]private GameObject boostFlame;
+	[SerializeField]private AnimatorVars AnimatorVars;
+	[SerializeField]private Animator Animator;
+	[SerializeField]private MechCombat mechCombat;
+	private GameManager gm;
+
 	public CharacterController CharacterController;
-	public Animator animator;
-	public Sounds Sounds;
 	public LayerMask Terrain;
-	[SerializeField] GameObject boostFlame;
-	[SerializeField] AnimatorVars AnimatorVars;
+
 	private int boost_id;
-	public float Gravity = 4.0f;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
 	private float marginOfError = 0.1f;
-	private float minDownSpeed = 0.0f;
-
-	public bool jumped = false;
-
+	public float Gravity = 6.5f;
+	public float minDownSpeed = -30f;
 	public float InAirSpeedCoeff = 0.55f;
-	public float TimeBetweenFire = 0.25f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
+	private float curboostingVelocity;
 
 	private bool startBoosting = false;
 
@@ -33,29 +34,24 @@ public class MechController : Photon.MonoBehaviour {
 	private bool isSlowDown = false;
 	private Coroutine coroutine = null;
 
-	[SerializeField]
-	private MechCombat mechCombat;
 	private Transform camTransform;
-	private GameManager gm;
-	[SerializeField]
-	private Camera cam;
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
 	private float forcemove_speed;
 	private Vector3 forcemove_dir;
 	private bool canVerticalBoost = false;
-	private float v_boost_start_time = 0;
-	private const float v_boost_time_upperbound = 1.25f;
+	private float v_boost_start_yPos;
+	private float v_boost_upperbound ;
+	private float slashTeleportMinDistance = 5f;
 	// Animation
 	private float speed;
 	private float direction;
-	public bool boost;
+	public bool is_hor_boosting = false;
 	public bool grounded = true; //this is the fastest way to check if not grounded , and also depends on characterController.isgrounded
 	public bool jump;
 	public bool on_BCNShoot = false;
 
-	//public float DecreaseSlashMScoeff = 1.5f;//test 
 	// Unused
 	[SerializeField] Transform[] Legs;
 
@@ -70,7 +66,8 @@ public class MechController : Photon.MonoBehaviour {
 		grounded = true;
 		canVerticalBoost = false;
 		isSlowDown = false;
-		animator.SetBool ("Grounded", true);
+		curboostingVelocity = mechCombat.MoveSpeed();
+		Animator.SetBool ("Grounded", true);
 	}
 
 	public void InitVars(){//this is called by AniamtorVars
@@ -78,8 +75,8 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	void initComponents() {
+		Transform currentMech = transform.Find("CurrentMech");
 		CharacterController = GetComponent<CharacterController> ();
-		animator = transform.Find("CurrentMech").gameObject.GetComponent<Animator>();
 		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 
@@ -107,11 +104,11 @@ public class MechController : Photon.MonoBehaviour {
 			ySpeed = -CharacterController.stepOffset / Time.deltaTime;
 		}
 
-		if (animator == null) {
+		if (Animator == null) {
 			return;
 		}
 
-		if (animator.GetBool(boost_id)) {
+		if (Animator.GetBool(boost_id)) {
 			DynamicCam();
 			mechCombat.DecrementFuel();
 		} else {
@@ -130,12 +127,20 @@ public class MechController : Photon.MonoBehaviour {
 			}else{
 
 			}
-			forcemove_speed /= 1.6f;
+			forcemove_speed /= 1.6f;//1.6 : decrease coeff.
 			if (Mathf.Abs(forcemove_speed)> 0.05f)
 				ySpeed = 0;
 			CharacterController.Move(forcemove_dir * forcemove_speed);
 			move.x = 0;
 			move.z = 0;
+
+			//cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
+			RaycastHit hit;
+			if(!Animator.GetBool(AnimatorVars.jump_id) && Physics.Raycast(transform.position,-Vector3.up,out hit,Terrain)){
+				if(Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance && !Physics.CheckSphere(hit.point+new Vector3(0,2.1f,0), CharacterController.radius, Terrain)){
+					transform.position = hit.point;
+				}
+			}
 		}
 
 		move.x *= xSpeed * Time.fixedDeltaTime;
@@ -166,12 +171,16 @@ public class MechController : Photon.MonoBehaviour {
 		return canVerticalBoost;
 	}
 
+	public void ApplyVerMinDownSpeed(){//called when exiting vertical boosting state
+		ySpeed = minDownSpeed;
+	}
+
 	public void VerticalBoost() {
-		if(v_boost_start_time==0){
-			v_boost_start_time = Time.time;
+		if(v_boost_start_yPos==0){
+			v_boost_start_yPos = transform.position.y;
 			ySpeed = mechCombat.MaxVerticalBoostSpeed();
 		}else{
-			if(Time.time - v_boost_start_time >= v_boost_time_upperbound){
+			if(transform.position.y >= v_boost_start_yPos + mechCombat.MaxVerticalBoostSpeed()*1.25f){
 				ySpeed = Gravity;
 			}else{
 				ySpeed = mechCombat.MaxVerticalBoostSpeed();
@@ -180,29 +189,54 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Jump() {
-		v_boost_start_time = 0;
+		v_boost_start_yPos = 0;
 		transform.position = new Vector3 (transform.position.x, transform.position.y + 0.2f, transform.position.z);
 		ySpeed = mechCombat.JumpPower();
 		UpdateSpeed();
 	}
 
 	public void Run() {
-		xSpeed = mechCombat.MoveSpeed();
-		zSpeed = mechCombat.MoveSpeed();
+		//decelerating
+		if (Mathf.Abs (curboostingVelocity) >= mechCombat.MoveSpeed () && !Animator.GetBool (boost_id)) {//not in transition to boost
+			curboostingVelocity -= Mathf.Sign(curboostingVelocity) * mechCombat.deceleration * Time.fixedDeltaTime;
+			//print ("cur speed : " + curboostingVelocity);
+			xSpeed = Mathf.Abs (curboostingVelocity);
+			zSpeed = Mathf.Abs (curboostingVelocity);
+		}else{
+			xSpeed = mechCombat.MoveSpeed();
+			zSpeed = mechCombat.MoveSpeed();
+		}
+			
 	}
 
-	public void Boost(bool boost) {
-		if(boost != isBoostFlameOn){
-			photonView.RPC ("BoostFlame", PhotonTargets.All, boost);
-			isBoostFlameOn = boost;
+	public void Boost(bool b) {
+		if(b != isBoostFlameOn){
+			photonView.RPC ("BoostFlame", PhotonTargets.All, b);
+			isBoostFlameOn = b;
+
+			if (!b) {
+				is_hor_boosting = false;
+			}
 		}
-		if (boost) {
+		if (b) {
 			if(grounded){
-				xSpeed = mechCombat.BoostSpeed ();
-				zSpeed = mechCombat.BoostSpeed ();
+				if(!is_hor_boosting){//first call
+					is_hor_boosting = true;
+					curboostingVelocity = (speed >= 0)?mechCombat.MinHorizontalBoostSpeed () : -mechCombat.MinHorizontalBoostSpeed ();
+				}else{
+					if (Mathf.Sign (speed) != Mathf.Sign (curboostingVelocity))
+						curboostingVelocity = Mathf.Sign (speed) * mechCombat.MinHorizontalBoostSpeed () / 1.5f;
+
+					if(Mathf.Abs(curboostingVelocity )<= mechCombat.MaxHorizontalBoostSpeed()){
+						curboostingVelocity += Mathf.Sign(curboostingVelocity) * mechCombat.acceleration * Time.fixedDeltaTime;
+						//print ("cur speed : " + curboostingVelocity);
+					}
+				}
+				xSpeed = Mathf.Abs (curboostingVelocity);
+				zSpeed = Mathf.Abs (curboostingVelocity);
 			}else{//boost in air
-				xSpeed = mechCombat.BoostSpeed ()*InAirSpeedCoeff;
-				zSpeed = mechCombat.BoostSpeed ()*InAirSpeedCoeff;
+				xSpeed = mechCombat.MaxHorizontalBoostSpeed ()*InAirSpeedCoeff;
+				zSpeed = mechCombat.MaxHorizontalBoostSpeed ()*InAirSpeedCoeff;
 			}
 		}
 	}
@@ -214,7 +248,9 @@ public class MechController : Photon.MonoBehaviour {
 
 	public void SlowDown(float duration){
 		if(isSlowDown){
-			StopCoroutine (coroutine);
+			if(coroutine!=null)
+				StopCoroutine (coroutine);
+			
 			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
 		}else{
 			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
@@ -224,7 +260,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	IEnumerator SlowDownCoroutine(float duration){
 		SetCanVerticalBoost (false);
-		animator.SetBool ("Boost", false);
+		Animator.SetBool ("Boost", false);
 		Boost (false);
 
 		yield return new WaitForSeconds (duration);
@@ -236,9 +272,11 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
-		//cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, 60, 0.07f);
+
+		Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 15 + transform.position + new Vector3 (0, 5, 0);//15 : radius
+		cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
 	}
-	int pre = 0;
+
 	public void DynamicCam() {
 		Vector3 curPos = camTransform.localPosition;
 		Vector3 newPos = camTransform.localPosition;
@@ -250,13 +288,27 @@ public class MechController : Photon.MonoBehaviour {
 		} else {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
-		
+
+		if (grounded) {//lerp camera z offset when boosting 
+			if (speed > 0) {
+				Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 20 + transform.position + new Vector3 (0, 5, 0);
+				cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 6f);
+			} else if (speed < 0) {
+				if(direction > 0 || direction < 0){
+					Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 14 + transform.position + new Vector3 (0, 5, 0);
+					cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
+				} else {
+					Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 12 + transform.position + new Vector3 (0, 5, 0);
+					cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
+				}
+			}
+		}
+
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 	}
 
 	[PunRPC]
 	void BoostFlame(bool boost) {
-		//print ("set to : " + boost);
 		boostFlame.SetActive(boost);
 	}
 
@@ -278,7 +330,7 @@ public class MechController : Photon.MonoBehaviour {
 			move = Vector3.Normalize(move);
 		}
 			
-//		speed = v;
+		speed = v;
 		direction = h;
 
 		/*Debug.Log("Speed: " + v);
@@ -298,7 +350,6 @@ public class MechController : Photon.MonoBehaviour {
 
 	public bool CheckIsGrounded(){
 		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 2.0f, Terrain);
-		//return CharacterController.isGrounded;
 	}
 
 
