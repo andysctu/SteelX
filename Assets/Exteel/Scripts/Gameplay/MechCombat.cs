@@ -272,7 +272,7 @@ public class MechCombat : Combat {
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
 		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());
 		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
-		if( target != null){
+		if(target != null){
 			//Debug.Log("Hit tag: " + target.tag);
 			//Debug.Log("Hit name: " + target.name);
 			//Debug.Log ("Hit layer: " + target.gameObject.layer);
@@ -544,7 +544,7 @@ public class MechCombat : Combat {
 
 		Crosshair ch = GetComponentInChildren<Crosshair>();
 		if(ch!=null){
-			ch.NoCrosshair();
+			ch.NoAllCrosshairs();
 			ch.enabled = false;
 		}
 		GetComponent<MechController>().enabled = false;

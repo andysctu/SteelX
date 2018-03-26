@@ -28,13 +28,17 @@ public class CheckIsRendered : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(crosshair == null && Time.time - lastRequestTime >= requestDeltaTime){
-			lastRequestTime = Time.time;
-			GameObject theplayer = GameObject.Find (PhotonNetwork.playerName);
-			if (theplayer != null)
-				crosshair = theplayer.GetComponentInChildren<Camera> ().GetComponent<Crosshair> ();
-			else {
-				crosshair = null;
+		if(crosshair == null){
+			if (Time.time - lastRequestTime >= requestDeltaTime) {
+				lastRequestTime = Time.time;
+				GameObject theplayer = GameObject.Find (PhotonNetwork.playerName);
+				if (theplayer != null)
+					crosshair = theplayer.GetComponentInChildren<Camera> ().GetComponent<Crosshair> ();
+				else {
+					crosshair = null;
+					return;
+				}
+			}else{
 				return;
 			}
 		}

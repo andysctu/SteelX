@@ -31,6 +31,7 @@ public class Crosshair : MonoBehaviour {
 	private bool isOnLocked = false;
 	private bool isTeamMode;
 	private bool isTargetAllyL = false, isTargetAllyR = false;
+	private bool isRCL = false, isENG_L = false, isENG_R = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
 	public const float CAM_DISTANCE_TO_MECH = 15f;
 
@@ -50,17 +51,20 @@ public class Crosshair : MonoBehaviour {
 		cam = GetComponent<Camera> ();
 		Targets = new List<GameObject> ();
 		TargetsToRemove = new List<GameObject> ();
-		crosshairImage.targetMark.enabled = false;
+		crosshairImage.targetMark.gameObject.SetActive (false);
 	}
 
-	public void NoCrosshair() {
+	public void NoAllCrosshairs() {//called when disabling player
 		if (crosshairImage != null) {
-			crosshairImage.NoCrosshairL ();
-			crosshairImage.NoCrosshairR ();
+			crosshairImage.CloseAllCrosshairs_L ();
+			crosshairImage.CloseAllCrosshairs_R ();
 
 			targetL = null;	
 			targetR = null;
-			crosshairImage.targetMark.enabled = false;
+
+			crosshairImage.targetMark.gameObject.SetActive (false);
+			crosshairImage.middlecross.enabled = false;
+			crosshairImage.EngTargetMark.enabled = false;
 		}
 	}
 	public void updateCrosshair(int offset){
@@ -71,37 +75,49 @@ public class Crosshair : MonoBehaviour {
 		MaxDistanceL = weaponScripts [offset].Range;
 		MaxDistanceR = weaponScripts [offset+1].Range;
 
-		if(weaponScripts[offset].Animation == "ENGShoot"){
-			isTargetAllyL = true;
-		}else{
-			isTargetAllyL = false;
-		}
-		if(weaponScripts[offset+1].Animation == "ENGShoot"){
-			isTargetAllyR = true;
-		}else{
-			isTargetAllyR = false;
-		}
+		isENG_L = (weaponScripts [offset].Animation == "ENGShoot");
+		isENG_R = (weaponScripts [offset + 1].Animation == "ENGShoot");
+		isRCL = (weaponScripts [offset].Animation == "ShootRCL");
+
+		isTargetAllyL = isENG_L;
+		isTargetAllyR = isENG_R;
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 
-		if(CrosshairRadiusL!=0){
-			crosshairImage.SetCurrentLImage (0);
-		}else{
-			crosshairImage.NoCrosshairL ();
-		}
-		if (CrosshairRadiusR != 0) {
-			crosshairImage.SetCurrentRImage (0);
-		} else{
-			crosshairImage.NoCrosshairR ();
+		//first turn all off
+		crosshairImage.CloseAllCrosshairs_L ();
+
+		if(CrosshairRadiusL != 0){
+			if(isRCL){
+				crosshairImage.SetCurrentLImage ((int)Ctype.RCL_0);
+			}else if(!isENG_L){//ENG does not have crosshair
+				crosshairImage.SetCurrentLImage ((int)Ctype.N_L0);
+			}else{
+				crosshairImage.SetCurrentLImage ((int)Ctype.ENG);
+			}
 		}
 
-		if(weaponScripts[offset].Animation == "ShootRCL"){
-			crosshairImage.RCLcrosshair ();
+		crosshairImage.CloseAllCrosshairs_R ();
+
+		if (CrosshairRadiusR != 0) {
+			if(!isENG_R){
+				crosshairImage.SetCurrentRImage ((int)Ctype.N_R0);
+			}else{
+				crosshairImage.SetCurrentRImage ((int)Ctype.ENG);
+			}		
 		}
+
 		targetL = null;
 		targetR = null; 
 
-		crosshairImage.targetMark.enabled = false;
+		//enable middle cross
+		if (isENG_L && isENG_R)
+			crosshairImage.middlecross.enabled = false;
+		else 
+			crosshairImage.middlecross.enabled = true;
+		
+		crosshairImage.targetMark.gameObject.SetActive(false); //targetMark has a children
+		crosshairImage.EngTargetMark.enabled = false;
 	}
 
 	void Update () {
@@ -134,7 +150,10 @@ public class Crosshair : MonoBehaviour {
 					if (isTargetAllyL)
 						continue;
 				}
-
+				//check distance
+				if (!(Vector3.Distance (target.transform.position, transform.root.position) < MaxDistanceL))
+					continue;
+				
 				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
 				Vector3 rayStartPoint = transform.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
@@ -146,11 +165,8 @@ public class Crosshair : MonoBehaviour {
 							continue;
 						}
 					}
-					crosshairImage.SetCurrentLImage (1);
+					crosshairImage.OnTargetL(true);
 					targetL = target.transform;
-
-					//move target mark
-					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.position + new Vector3(0,5,0));
 
 					if (!LockL) {
 						Sounds.PlayLock ();
@@ -164,7 +180,7 @@ public class Crosshair : MonoBehaviour {
 				} 
 			}
 			if (!foundTargetL) {
-				crosshairImage.SetCurrentLImage (0);				
+				crosshairImage.OnTargetL(false);		
 				targetL = null;
 				LockL = false;
 			}else{
@@ -200,13 +216,16 @@ public class Crosshair : MonoBehaviour {
 					if (isTargetAllyR)
 						continue;
 				}
-
+				//check distance
+				if (!(Vector3.Distance (target.transform.position, transform.root.position) < MaxDistanceR))
+					continue;
+				
 				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
 				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0);;
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 
 				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusR && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusR){
-					crosshairImage.SetCurrentRImage (1);
+					crosshairImage.OnTargetR(true);
 					targetR = target.transform;
 					RaycastHit hit;
 					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
@@ -214,8 +233,6 @@ public class Crosshair : MonoBehaviour {
 							continue;
 						}
 					}
-					//move target mark
-					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.position + new Vector3(0,5,0));
 
 					if (!LockR) {
 						Sounds.PlayLock ();
@@ -230,7 +247,7 @@ public class Crosshair : MonoBehaviour {
 				}
 			}
 			if (!foundTargetR) {
-				crosshairImage.SetCurrentRImage (0);
+				crosshairImage.OnTargetR(false);
 				targetR = null;
 				LockR = false;
 			}else{
@@ -244,11 +261,14 @@ public class Crosshair : MonoBehaviour {
 		}
 		TargetsToRemove.Clear ();
 
-
-		crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
+		MarkTarget ();
+		//crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
 	}
 
 	public Transform getCurrentTargetL(){
+		if (isRCL)
+			return null;
+		
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
@@ -268,6 +288,9 @@ public class Crosshair : MonoBehaviour {
 		return targetL;
 	}
 	public Transform getCurrentTargetR(){
+		if (isRCL)
+			return null;
+		
 		if (targetR != null && !isTargetAllyR) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
@@ -285,6 +308,36 @@ public class Crosshair : MonoBehaviour {
 		}
 
 		return targetR;
+	}
+
+	private void MarkTarget(){
+		if(isENG_L){
+			if(targetL!=null){
+				crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint (targetL.transform.position + new Vector3 (0, 5, 0));
+			}
+		}else{
+			if(targetL!=null){
+				crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint (targetL.transform.position + new Vector3 (0, 5, 0));
+			}
+		}
+
+		if(isENG_R){
+			if(targetR!=null){
+				crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint (targetR.transform.position + new Vector3 (0, 5, 0));
+			}
+		}else{
+			if(targetR!=null){
+				crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint (targetR.transform.position + new Vector3 (0, 5, 0));
+			}
+		}
+		if((!isENG_L && targetL != null) || (!isENG_R && targetR != null)){
+			crosshairImage.middlecross.enabled = false;
+		}else{
+			crosshairImage.middlecross.enabled = true;
+		}
+
+		crosshairImage.EngTargetMark.enabled = ((isENG_L && targetL != null) || (isENG_R && targetR != null));
+		crosshairImage.targetMark.gameObject.SetActive((!isENG_L && targetL != null) || (!isENG_R && targetR != null));
 	}
 
 	void SendLockedMessage(int id, string Name){
