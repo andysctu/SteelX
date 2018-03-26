@@ -112,7 +112,7 @@ public class Crosshair : MonoBehaviour {
 					continue;
 				}
 
-				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
+				PhotonView targetpv = target.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
 					continue;
 
@@ -135,13 +135,13 @@ public class Crosshair : MonoBehaviour {
 						continue;
 				}
 
-				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
-				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
+				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
+				Vector3 rayStartPoint = transform.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusL && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusL){
 					//check if Terrain block the way
 					RaycastHit hit;
-					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
+					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
 						if(hit.collider.gameObject.layer == 10){
 							continue;
 						}
@@ -150,7 +150,7 @@ public class Crosshair : MonoBehaviour {
 					targetL = target.transform;
 
 					//move target mark
-					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.root.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.position + new Vector3(0,5,0));
 
 					if (!LockL) {
 						Sounds.PlayLock ();
@@ -158,7 +158,7 @@ public class Crosshair : MonoBehaviour {
 					}
 					foundTargetL = true;
 					if(!isTargetAllyL)
-						SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
+						SendLockedMessage (targetpv.viewID, target.name);
 
 					break;
 				} 
@@ -178,7 +178,7 @@ public class Crosshair : MonoBehaviour {
 					continue;
 				}
 					
-				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
+				PhotonView targetpv = target.transform.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
 					continue;
 
@@ -201,7 +201,7 @@ public class Crosshair : MonoBehaviour {
 						continue;
 				}
 
-				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
+				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
 				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0);;
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 
@@ -209,13 +209,13 @@ public class Crosshair : MonoBehaviour {
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
 					RaycastHit hit;
-					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
+					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
 						if(hit.collider.gameObject.layer == 10){
 							continue;
 						}
 					}
 					//move target mark
-					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.root.position + new Vector3(0,5,0));
+					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.position + new Vector3(0,5,0));
 
 					if (!LockR) {
 						Sounds.PlayLock ();
@@ -224,7 +224,7 @@ public class Crosshair : MonoBehaviour {
 					foundTargetR = true;
 
 					if(!isTargetAllyR)
-						SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
+						SendLockedMessage (targetpv.viewID, target.transform.gameObject.name);
 
 					break;
 				}

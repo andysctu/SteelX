@@ -21216,7 +21216,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   Sounds: {fileID: 0}
-  checkRendered: {fileID: 0}
   Targets: []
   MaxDistanceL: 0
   MaxDistanceR: 0
@@ -23025,6 +23024,7 @@ GameObject:
   - component: {fileID: 1856524278}
   - component: {fileID: 1856524277}
   - component: {fileID: 1856524276}
+  - component: {fileID: 1856524282}
   m_Layer: 8
   m_Name: Drone
   m_TagString: Drone
@@ -23198,6 +23198,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1856524282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1856524275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97063224de75cef43bb01020b1f6d1ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crosshair: {fileID: 0}
 --- !u!1 &1861881112
 GameObject:
   m_ObjectHideFlags: 0

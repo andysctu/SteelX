@@ -12,12 +12,17 @@ public class CheckIsRendered : MonoBehaviour {
 	private float requestDeltaTime = 0.5f;
 	// Use this for initialization
 	void Start () {
-		if(GetComponent<PhotonView>().isMine){//not get msg from myself
+		if(GetComponent<PhotonView>().isMine && gameObject.tag!="Drone"){//not get msg from myself
 			enabled = false;
 		}
 		//find core
-		SkinnedMeshRenderer[] meshRenderers = transform.Find("CurrentMech").GetComponentsInChildren<SkinnedMeshRenderer> ();
-		theMeshRenderer = meshRenderers [0];
+		if (gameObject.tag != "Drone") {
+			SkinnedMeshRenderer[] meshRenderers = transform.Find ("CurrentMech").GetComponentsInChildren<SkinnedMeshRenderer> ();
+			theMeshRenderer = meshRenderers [0];
+		}else{
+			SkinnedMeshRenderer meshRenderer = GetComponentInChildren<SkinnedMeshRenderer> ();
+			theMeshRenderer = meshRenderer;
+		}
 
 	}
 	
