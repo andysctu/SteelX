@@ -677,6 +677,7 @@ GameObject:
   - component: {fileID: 95000010712001338}
   - component: {fileID: 114000010080436828}
   - component: {fileID: 114000012410893822}
+  - component: {fileID: 114718916726667884}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -2910,6 +2911,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   Sounds: {fileID: 114000010976113334}
+  checkRendered: {fileID: 0}
+  Targets: []
   MaxDistanceL: 0
   MaxDistanceR: 0
 --- !u!114 &11422958
@@ -6192,6 +6195,18 @@ MonoBehaviour:
   targetMark: {fileID: 114308529597384706}
   noCrosshairL: 0
   noCrosshairR: 0
+--- !u!114 &114718916726667884
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97063224de75cef43bb01020b1f6d1ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crosshair: {fileID: 0}
 --- !u!114 &114746188837826856
 MonoBehaviour:
   m_ObjectHideFlags: 1

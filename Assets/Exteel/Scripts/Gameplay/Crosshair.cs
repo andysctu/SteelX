@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 public class Crosshair : MonoBehaviour {
@@ -10,7 +11,8 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]private CrosshairImage crosshairImage;
 	[SerializeField]private LayerMask playerlayer,Terrainlayer;
 	[SerializeField]private Sounds Sounds;
-	public GameObject checkRendered;//test delete
+	public List<GameObject> Targets;//control by checkisrendered.cs
+	private List<GameObject> TargetsToRemove;
 
 	private Weapon[] weaponScripts;
 	private Transform targetL,targetR;
@@ -46,6 +48,8 @@ public class Crosshair : MonoBehaviour {
 		updateCrosshair (0);
 		isTeamMode = GameManager.isTeamMode;
 		cam = GetComponent<Camera> ();
+		Targets = new List<GameObject> ();
+		TargetsToRemove = new List<GameObject> ();
 		crosshairImage.targetMark.enabled = false;
 	}
 
@@ -101,19 +105,19 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	void Update () {
-		/*//test delete
-		if(checkRendered!=null && checkRendered.GetComponent<Renderer>().isVisible){
-			print ("I'm visible");
-		}*/
 		if (CrosshairRadiusL > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, cam.transform.forward,MaxDistanceL, playerlayer);
-			foreach(RaycastHit target in targets){
+			foreach(GameObject target in Targets){
+				if (target == null) {//if target is disconnected => target is null
+					TargetsToRemove.Add (target);
+					continue;
+				}
+
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
 					continue;
 
 				if(isTeamMode){
-					if (target.collider.tag == "Drone"){
+					if (target.GetComponent<Collider>().tag == "Drone"){
 						continue;
 					}
 					if (!isTargetAllyL) {
@@ -168,14 +172,18 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 		if (CrosshairRadiusR > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, cam.transform.forward, MaxDistanceR, playerlayer);
-			foreach (RaycastHit target in targets) {
+			foreach (GameObject target in Targets) {
+				if (target == null) {
+					TargetsToRemove.Add (target);
+					continue;
+				}
+					
 				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
 					continue;
 
 				if(isTeamMode){
-					if (target.collider.tag == "Drone"){
+					if (target.GetComponent<Collider>().tag == "Drone"){
 						continue;
 					}
 					if (!isTargetAllyR) {
@@ -200,7 +208,6 @@ public class Crosshair : MonoBehaviour {
 				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusR && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusR){
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
-
 					RaycastHit hit;
 					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
 						if(hit.collider.gameObject.layer == 10){
@@ -230,6 +237,13 @@ public class Crosshair : MonoBehaviour {
 				foundTargetR = false;
 			}
 		}
+
+
+		foreach (GameObject g in TargetsToRemove) {//remove null target
+			Targets.Remove (g);
+		}
+		TargetsToRemove.Clear ();
+
 
 		crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
 	}

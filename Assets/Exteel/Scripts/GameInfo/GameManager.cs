@@ -184,7 +184,6 @@ public class GameManager : Photon.MonoBehaviour {
 		Mech m = UserData.myData.Mech[0];//default 0
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 
-
 		if(player.GetComponent<PhotonView>().isMine){
 			cam = player.transform.Find("Camera").GetComponent<Camera>();
 			hud = GameObject.Find("PanelCanvas").GetComponent<HUD>();
