@@ -5388,7 +5388,7 @@ Prefab:
   m_IsPrefabParent: 0
 --- !u!4 &504189194 stripped
 Transform:
-  m_PrefabParentObject: {fileID: 483904, guid: bebf91a652278ac418f0f5bb6d36d064, type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 504189193}
 --- !u!1 &506282552
 GameObject:
@@ -16724,7 +16724,7 @@ Prefab:
   m_IsPrefabParent: 0
 --- !u!4 &1163363828 stripped
 Transform:
-  m_PrefabParentObject: {fileID: 421522, guid: 098893b16f691234fba4a7145c123831, type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 1163363827}
 --- !u!1 &1163442458
 GameObject:
@@ -21216,6 +21216,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   Sounds: {fileID: 0}
+  checkRendered: {fileID: 0}
   MaxDistanceL: 0
   MaxDistanceR: 0
 --- !u!114 &1608924966

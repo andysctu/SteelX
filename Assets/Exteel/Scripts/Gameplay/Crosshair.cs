@@ -10,6 +10,7 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]private CrosshairImage crosshairImage;
 	[SerializeField]private LayerMask playerlayer,Terrainlayer;
 	[SerializeField]private Sounds Sounds;
+	public GameObject checkRendered;//test delete
 
 	private Weapon[] weaponScripts;
 	private Transform targetL,targetR;
@@ -100,6 +101,10 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	void Update () {
+		/*//test delete
+		if(checkRendered!=null && checkRendered.GetComponent<Renderer>().isVisible){
+			print ("I'm visible");
+		}*/
 		if (CrosshairRadiusL > 0) {
 			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, cam.transform.forward,MaxDistanceL, playerlayer);
 			foreach(RaycastHit target in targets){
@@ -129,8 +134,7 @@ public class Crosshair : MonoBehaviour {
 				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
 				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
-
-				if (Vector2.Distance (targetLocOnScreen, CamMidpoint) < DistanceCoeff * CrosshairRadiusL) { 
+				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusL && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusL){
 					//check if Terrain block the way
 					RaycastHit hit;
 					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
@@ -193,7 +197,7 @@ public class Crosshair : MonoBehaviour {
 				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0);;
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 
-				if (Vector2.Distance (targetLocOnScreen, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
+				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusR && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusR){
 					crosshairImage.SetCurrentRImage (1);
 					targetR = target.transform;
 
@@ -228,7 +232,6 @@ public class Crosshair : MonoBehaviour {
 		}
 
 		crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
-		print ("enable : " + !(targetL==null&&targetR==null));
 	}
 
 	public Transform getCurrentTargetL(){
