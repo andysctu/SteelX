@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum Ctype{// order of crosshairs in crosshairImage gameObject
+	N_L0, N_L1, N_R0, N_R1, RCL_0, RCL_1, ENG
+}
+
 public class CrosshairImage : MonoBehaviour {
 
 	private float radiusL;
 	private float radiusR;
-
-	[SerializeField]private GameObject[] crosshairs;// 4 : RCL's circle, 5 : middlecross , 6:RCL middlecross
+	[SerializeField]private GameObject[] crosshairs;
 	[SerializeField]private RectTransform crosshairsL0, crosshairsL1, crosshairsR0, crosshairsR1;
-	public Image targetMark;
+	public Image targetMark, EngTargetMark, middlecross;//pos control by Crosshair.cs
 
 	private int radiusCoeff = 22;
-	public bool noCrosshairL = false;
-	public bool noCrosshairR = false;
+	private int curImageL, curImageR;
 
 	private bool isShaking = false;
 	private Coroutine[] shakeCoroutine = new Coroutine[2];
@@ -58,52 +60,75 @@ public class CrosshairImage : MonoBehaviour {
 		crosshairsR1.offsetMax = new Vector2 (radiusR, radiusR);
 	}
 
-	public void SetCurrentLImage(int CurImage){
-		if(CurImage == 1){
-			crosshairs [0].SetActive (false);
-			crosshairs [1].SetActive (true);
-		}else if(CurImage == 0){
-			crosshairs [0].SetActive (true);
-			crosshairs [1].SetActive (false);
+	public void OnTargetL(bool b){
+		switch(curImageL){
+			case (int)Ctype.N_L0:
+			case (int)Ctype.N_L1:
+				SetCurrentLImage ((b)? (int)Ctype.N_L1 : (int)Ctype.N_L0);
+				break;
+			case (int)Ctype.RCL_0:
+			case (int)Ctype.RCL_1:
+				SetCurrentLImage ((b)? (int)Ctype.RCL_1 : (int)Ctype.RCL_0);
+				break;
+		default :
+			return;
 		}
-		crosshairs [5].SetActive (true);
+	}
+	public void OnTargetR(bool b){
+		switch(curImageR){
+		case (int)Ctype.N_R0:
+		case (int)Ctype.N_R1:
+			SetCurrentRImage ((b)? (int)Ctype.N_R1 : (int)Ctype.N_R0);
+			break;
+		default :
+			return;
+		}
+	}
 
-		crosshairs [4].SetActive (false);
-		crosshairs [6].SetActive (false);
+	public void SetCurrentLImage(int CurImage){
+		curImageL = CurImage;
+		switch(CurImage){
+			case (int)Ctype.N_L0:
+				crosshairs [(int)Ctype.N_L0].SetActive (true);
+				crosshairs [(int)Ctype.N_L1].SetActive (false);
+				break;
+			case (int)Ctype.N_L1:
+				crosshairs [(int)Ctype.N_L0].SetActive (false);
+				crosshairs [(int)Ctype.N_L1].SetActive (true);
+				break;
+			case (int)Ctype.RCL_0:
+				crosshairs [(int)Ctype.RCL_0].SetActive (true);
+				crosshairs [(int)Ctype.RCL_1].SetActive (false);
+				break;
+			case (int)Ctype.RCL_1:
+				crosshairs [(int)Ctype.RCL_0].SetActive (false);
+				crosshairs [(int)Ctype.RCL_1].SetActive (true);
+				break;
+		}
 	}
 	public void SetCurrentRImage(int CurImage){
-		if(CurImage == 1){
-			crosshairs [2].SetActive (false);
-			crosshairs [3].SetActive (true);
-		}else if(CurImage == 0){
-			crosshairs [2].SetActive (true);
-			crosshairs [3].SetActive (false);
+		curImageR = CurImage;
+		switch(CurImage){
+			case (int)Ctype.N_R0:
+				crosshairs [(int)Ctype.N_R0].SetActive (true);
+				crosshairs [(int)Ctype.N_R1].SetActive (false);
+				break;
+			case (int)Ctype.N_R1:
+				crosshairs [(int)Ctype.N_R0].SetActive (false);
+				crosshairs [(int)Ctype.N_R1].SetActive (true);
+				break;
 		}
-		crosshairs [5].SetActive (true);
-
-		crosshairs [4].SetActive (false);
-		crosshairs [6].SetActive (false);
 	}
-	public void NoCrosshairL(){
-		crosshairs [0].SetActive (false);
-		crosshairs [1].SetActive (false);
+	public void CloseAllCrosshairs_L(){
+		crosshairs [(int)Ctype.N_L0].SetActive (false);
+		crosshairs [(int)Ctype.N_L1].SetActive (false);
 
-		crosshairs [4].SetActive (false);
-		crosshairs [5].SetActive (true);
-		crosshairs [6].SetActive (false);
+		crosshairs [(int)Ctype.RCL_0].SetActive (false);
+		crosshairs [(int)Ctype.RCL_1].SetActive (false);
 	}
-	public void NoCrosshairR(){
-		crosshairs [2].SetActive (false);
-		crosshairs [3].SetActive (false);
-
-		crosshairs [4].SetActive (false);
-		crosshairs [5].SetActive (true);
-		crosshairs [6].SetActive (false);
-	}
-	public void RCLcrosshair(){  // middlecross turns off only when RCL is on  
-		crosshairs [4].SetActive (true);
-		crosshairs [5].SetActive (false);
-		crosshairs [6].SetActive (true);
+	public void CloseAllCrosshairs_R(){
+		crosshairs [(int)Ctype.N_R0].SetActive (false);
+		crosshairs [(int)Ctype.N_R1].SetActive (false);
 	}
 
 	public void ShakingEffect(int handPosition, float rate,  int bulletNum){

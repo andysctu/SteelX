@@ -37,6 +37,7 @@ public class EnableLocal : MonoBehaviour {
 		crossHairImage.SetActive(true);
 		GameObject HeatBar = transform.Find("Camera/Canvas/HeatBar").gameObject;
 		HeatBar.SetActive (true);
+
 		// Disable your own cube
 //		transform.Find("Cube").gameObject.SetActive(false);
 	}

@@ -870,7 +870,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211057276}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &115830148
 SkinnedMeshRenderer:
@@ -1630,29 +1630,13 @@ MonoBehaviour:
   - {fileID: 156182983}
   - {fileID: 1640635364}
   - {fileID: 599927629}
-  crosshairsL0:
-  - {fileID: 2018134756}
-  - {fileID: 138107699}
-  - {fileID: 1144368463}
-  - {fileID: 413140627}
-  crosshairsL1:
-  - {fileID: 1747229911}
-  - {fileID: 1493215530}
-  - {fileID: 1283174573}
-  - {fileID: 1029413432}
-  crosshairsR0:
-  - {fileID: 2132627045}
-  - {fileID: 1295490253}
-  - {fileID: 474484907}
-  - {fileID: 240255841}
-  crosshairsR1:
-  - {fileID: 2007290191}
-  - {fileID: 1415105051}
-  - {fileID: 272081237}
-  - {fileID: 1791479474}
+  crosshairsL0: {fileID: 0}
+  crosshairsL1: {fileID: 0}
+  crosshairsR0: {fileID: 0}
+  crosshairsR1: {fileID: 0}
   targetMark: {fileID: 0}
-  noCrosshairL: 0
-  noCrosshairR: 0
+  EngTargetMark: {fileID: 0}
+  middlecross: {fileID: 0}
 --- !u!222 &166775144
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2629,10 +2613,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SphereRadiusCoeff: 0
-  DistanceCoeff: 0
-  MaxDistanceL: 0
-  MaxDistanceR: 0
   bm: {fileID: 1323358513}
   pv: {fileID: 0}
   LockedImg: {fileID: 0}
@@ -2640,7 +2620,13 @@ MonoBehaviour:
   playerlayer:
     serializedVersion: 2
     m_Bits: 0
+  Terrainlayer:
+    serializedVersion: 2
+    m_Bits: 0
   Sounds: {fileID: 1211057272}
+  Targets: []
+  MaxDistanceL: 0
+  MaxDistanceR: 0
 --- !u!114 &358531254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3282,7 +3268,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211057276}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &448701016
 SkinnedMeshRenderer:
@@ -3452,29 +3438,13 @@ MonoBehaviour:
   - {fileID: 1279167489}
   - {fileID: 825664119}
   - {fileID: 1694045938}
-  crosshairsL0:
-  - {fileID: 1147524822}
-  - {fileID: 2080576465}
-  - {fileID: 2061825880}
-  - {fileID: 1903059607}
-  crosshairsL1:
-  - {fileID: 1047990978}
-  - {fileID: 978729703}
-  - {fileID: 1933167243}
-  - {fileID: 11424445}
-  crosshairsR0:
-  - {fileID: 1335939268}
-  - {fileID: 1665271008}
-  - {fileID: 936435491}
-  - {fileID: 1781697364}
-  crosshairsR1:
-  - {fileID: 127564701}
-  - {fileID: 382299858}
-  - {fileID: 1055261803}
-  - {fileID: 477097457}
+  crosshairsL0: {fileID: 0}
+  crosshairsL1: {fileID: 0}
+  crosshairsR0: {fileID: 0}
+  crosshairsR1: {fileID: 0}
   targetMark: {fileID: 0}
-  noCrosshairL: 0
-  noCrosshairR: 0
+  EngTargetMark: {fileID: 0}
+  middlecross: {fileID: 0}
 --- !u!222 &454983641
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3885,29 +3855,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camTransform: {fileID: 1912059244}
-  animator: {fileID: 1397864225}
-  mechController: {fileID: 531572482}
-  CharacterController: {fileID: 531572483}
-  Sounds: {fileID: 0}
   HeatBar: {fileID: 0}
-  InRoomChat: {fileID: 0}
   SwitchWeaponEffectL: {fileID: 0}
   SwitchWeaponEffectR: {fileID: 0}
   displayPlayerInfo: {fileID: 0}
-  Combo: {fileID: 0}
-  trailRendererL: {fileID: 0}
-  trailRendererR: {fileID: 0}
+  crosshairImage: {fileID: 0}
   jumpPower: 100
   moveSpeed: 35
-  boostSpeed: 60
+  minBoostSpeed: 50
+  acceleration: 2
+  deceleration: 50
   maxVerticalBoostSpeed: 30
+  maxHorizontalBoostSpeed: 60
   isDead: 0
   is_overheat: 00000000
-  CanSlash: 1
+  MaxHeat: 100
+  cooldown: 5
   isLSlashPlaying: 0
   isRSlashPlaying: 0
+  CanSlash: 1
   crosshair: {fileID: 0}
   forceDead: 0
+  isInitFinished: 0
 --- !u!114 &531572479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3925,6 +3894,11 @@ MonoBehaviour:
   ShotSounds: []
   weapons: []
   bulletPrefabs: []
+  curWeaponNames:
+  - 
+  - 
+  - 
+  - 
   onPanel: 0
   Total_Mech: 4
   Mech_Num: 0
@@ -3981,24 +3955,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 0}
+  boostFlame: {fileID: 593257868}
+  AnimatorVars: {fileID: 0}
+  Animator: {fileID: 0}
+  mechCombat: {fileID: 531572478}
   CharacterController: {fileID: 531572483}
-  animator: {fileID: 1397864225}
-  Sounds: {fileID: 0}
   Terrain:
     serializedVersion: 2
     m_Bits: 0
-  boostFlame: {fileID: 593257868}
-  AnimatorVars: {fileID: 0}
   Gravity: 4
-  jumped: 0
+  minDownSpeed: -30
   InAirSpeedCoeff: 0.55
-  TimeBetweenFire: 0.25
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
-  mechCombat: {fileID: 531572478}
-  cam: {fileID: 0}
-  boost: 0
+  is_hor_boosting: 0
   grounded: 0
   jump: 0
   on_BCNShoot: 0
@@ -14861,7 +14833,7 @@ Transform:
   m_Children:
   - {fileID: 2074710080}
   m_Father: {fileID: 1211057276}
-  m_RootOrder: 1
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -89.980194, y: 0, z: 0}
 --- !u!1 &757981207
 GameObject:
@@ -20850,6 +20822,7 @@ MonoBehaviour:
   mctrl: {fileID: 0}
   animator: {fileID: 0}
   AnimatorVars: {fileID: 0}
+  SlashDetector: {fileID: 0}
 --- !u!82 &1211057271
 AudioSource:
   m_ObjectHideFlags: 0
@@ -21048,6 +21021,18 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: UsingBCN
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL3
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR3
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -21093,11 +21078,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 269943310}
-  - {fileID: 757199191}
   - {fileID: 448701015}
   - {fileID: 1429655004}
   - {fileID: 115830147}
   - {fileID: 2082557979}
+  - {fileID: 757199191}
   m_Father: {fileID: 1323358518}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -21129,6 +21114,7 @@ MonoBehaviour:
   SlashR_id: 0
   SlashR2_id: 0
   SlashR3_id: 0
+  BCNPose_id: 0
   inHangar: 1
 --- !u!1001 &1211613024
 Prefab:
@@ -21904,29 +21890,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camTransform: {fileID: 358531250}
-  animator: {fileID: 1211057269}
-  mechController: {fileID: 1323358516}
-  CharacterController: {fileID: 1323358517}
-  Sounds: {fileID: 0}
   HeatBar: {fileID: 0}
-  InRoomChat: {fileID: 0}
   SwitchWeaponEffectL: {fileID: 0}
   SwitchWeaponEffectR: {fileID: 0}
   displayPlayerInfo: {fileID: 0}
-  Combo: {fileID: 0}
-  trailRendererL: {fileID: 0}
-  trailRendererR: {fileID: 0}
+  crosshairImage: {fileID: 0}
   jumpPower: 100
   moveSpeed: 35
-  boostSpeed: 60
+  minBoostSpeed: 50
+  acceleration: 2
+  deceleration: 50
   maxVerticalBoostSpeed: 30
+  maxHorizontalBoostSpeed: 60
   isDead: 0
   is_overheat: 00000000
-  CanSlash: 1
+  MaxHeat: 100
+  cooldown: 5
   isLSlashPlaying: 0
   isRSlashPlaying: 0
+  CanSlash: 1
   crosshair: {fileID: 0}
   forceDead: 0
+  isInitFinished: 0
 --- !u!114 &1323358513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21944,6 +21929,11 @@ MonoBehaviour:
   ShotSounds: []
   weapons: []
   bulletPrefabs: []
+  curWeaponNames:
+  - 
+  - 
+  - 
+  - 
   onPanel: 0
   Total_Mech: 4
   Mech_Num: 0
@@ -22000,24 +21990,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 0}
+  boostFlame: {fileID: 945746313}
+  AnimatorVars: {fileID: 0}
+  Animator: {fileID: 0}
+  mechCombat: {fileID: 1323358512}
   CharacterController: {fileID: 1323358517}
-  animator: {fileID: 1211057269}
-  Sounds: {fileID: 0}
   Terrain:
     serializedVersion: 2
     m_Bits: 0
-  boostFlame: {fileID: 945746313}
-  AnimatorVars: {fileID: 0}
   Gravity: 4
-  jumped: 0
+  minDownSpeed: -30
   InAirSpeedCoeff: 0.55
-  TimeBetweenFire: 0.25
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
-  mechCombat: {fileID: 1323358512}
-  cam: {fileID: 0}
-  boost: 0
+  is_hor_boosting: 0
   grounded: 0
   jump: 0
   on_BCNShoot: 0
@@ -25694,6 +25682,7 @@ MonoBehaviour:
   mctrl: {fileID: 0}
   animator: {fileID: 0}
   AnimatorVars: {fileID: 0}
+  SlashDetector: {fileID: 0}
 --- !u!82 &1397864227
 AudioSource:
   m_ObjectHideFlags: 0
@@ -29613,7 +29602,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211057276}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &1429655005
 SkinnedMeshRenderer:
@@ -32583,10 +32572,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SphereRadiusCoeff: 0
-  DistanceCoeff: 0
-  MaxDistanceL: 0
-  MaxDistanceR: 0
   bm: {fileID: 531572479}
   pv: {fileID: 0}
   LockedImg: {fileID: 0}
@@ -32594,7 +32579,13 @@ MonoBehaviour:
   playerlayer:
     serializedVersion: 2
     m_Bits: 0
+  Terrainlayer:
+    serializedVersion: 2
+    m_Bits: 0
   Sounds: {fileID: 1397864228}
+  Targets: []
+  MaxDistanceL: 0
+  MaxDistanceR: 0
 --- !u!114 &1912059248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33982,7 +33973,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1211057276}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &2082557980
 SkinnedMeshRenderer:

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 public class Crosshair : MonoBehaviour {
@@ -10,6 +11,8 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]private CrosshairImage crosshairImage;
 	[SerializeField]private LayerMask playerlayer,Terrainlayer;
 	[SerializeField]private Sounds Sounds;
+	public List<GameObject> Targets;//control by checkisrendered.cs
+	private List<GameObject> TargetsToRemove;
 
 	private Weapon[] weaponScripts;
 	private Transform targetL,targetR;
@@ -28,6 +31,7 @@ public class Crosshair : MonoBehaviour {
 	private bool isOnLocked = false;
 	private bool isTeamMode;
 	private bool isTargetAllyL = false, isTargetAllyR = false;
+	private bool isRCL = false, isENG_L = false, isENG_R = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
 	public const float CAM_DISTANCE_TO_MECH = 15f;
 
@@ -45,17 +49,22 @@ public class Crosshair : MonoBehaviour {
 		updateCrosshair (0);
 		isTeamMode = GameManager.isTeamMode;
 		cam = GetComponent<Camera> ();
-		crosshairImage.targetMark.enabled = false;
+		Targets = new List<GameObject> ();
+		TargetsToRemove = new List<GameObject> ();
+		crosshairImage.targetMark.gameObject.SetActive (false);
 	}
 
-	public void NoCrosshair() {
+	public void NoAllCrosshairs() {//called when disabling player
 		if (crosshairImage != null) {
-			crosshairImage.NoCrosshairL ();
-			crosshairImage.NoCrosshairR ();
+			crosshairImage.CloseAllCrosshairs_L ();
+			crosshairImage.CloseAllCrosshairs_R ();
 
 			targetL = null;	
 			targetR = null;
-			crosshairImage.targetMark.enabled = false;
+
+			crosshairImage.targetMark.gameObject.SetActive (false);
+			crosshairImage.middlecross.enabled = false;
+			crosshairImage.EngTargetMark.enabled = false;
 		}
 	}
 	public void updateCrosshair(int offset){
@@ -66,49 +75,65 @@ public class Crosshair : MonoBehaviour {
 		MaxDistanceL = weaponScripts [offset].Range;
 		MaxDistanceR = weaponScripts [offset+1].Range;
 
-		if(weaponScripts[offset].Animation == "ENGShoot"){
-			isTargetAllyL = true;
-		}else{
-			isTargetAllyL = false;
-		}
-		if(weaponScripts[offset+1].Animation == "ENGShoot"){
-			isTargetAllyR = true;
-		}else{
-			isTargetAllyR = false;
-		}
+		isENG_L = (weaponScripts [offset].Animation == "ENGShoot");
+		isENG_R = (weaponScripts [offset + 1].Animation == "ENGShoot");
+		isRCL = (weaponScripts [offset].Animation == "ShootRCL");
+
+		isTargetAllyL = isENG_L;
+		isTargetAllyR = isENG_R;
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 
-		if(CrosshairRadiusL!=0){
-			crosshairImage.SetCurrentLImage (0);
-		}else{
-			crosshairImage.NoCrosshairL ();
-		}
-		if (CrosshairRadiusR != 0) {
-			crosshairImage.SetCurrentRImage (0);
-		} else{
-			crosshairImage.NoCrosshairR ();
+		//first turn all off
+		crosshairImage.CloseAllCrosshairs_L ();
+
+		if(CrosshairRadiusL != 0){
+			if(isRCL){
+				crosshairImage.SetCurrentLImage ((int)Ctype.RCL_0);
+			}else if(!isENG_L){//ENG does not have crosshair
+				crosshairImage.SetCurrentLImage ((int)Ctype.N_L0);
+			}else{
+				crosshairImage.SetCurrentLImage ((int)Ctype.ENG);
+			}
 		}
 
-		if(weaponScripts[offset].Animation == "ShootRCL"){
-			crosshairImage.RCLcrosshair ();
+		crosshairImage.CloseAllCrosshairs_R ();
+
+		if (CrosshairRadiusR != 0) {
+			if(!isENG_R){
+				crosshairImage.SetCurrentRImage ((int)Ctype.N_R0);
+			}else{
+				crosshairImage.SetCurrentRImage ((int)Ctype.ENG);
+			}		
 		}
+
 		targetL = null;
 		targetR = null; 
 
-		crosshairImage.targetMark.enabled = false;
+		//enable middle cross
+		if (isENG_L && isENG_R)
+			crosshairImage.middlecross.enabled = false;
+		else 
+			crosshairImage.middlecross.enabled = true;
+		
+		crosshairImage.targetMark.gameObject.SetActive(false); //targetMark has a children
+		crosshairImage.EngTargetMark.enabled = false;
 	}
 
 	void Update () {
 		if (CrosshairRadiusL > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff), CrosshairRadiusL*MaxDistanceL*SphereRadiusCoeff, cam.transform.forward,MaxDistanceL, playerlayer);
-			foreach(RaycastHit target in targets){
-				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
+			foreach(GameObject target in Targets){
+				if (target == null) {//if target is disconnected => target is null
+					TargetsToRemove.Add (target);
+					continue;
+				}
+
+				PhotonView targetpv = target.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
 					continue;
 
 				if(isTeamMode){
-					if (target.collider.tag == "Drone"){
+					if (target.GetComponent<Collider>().tag == "Drone"){
 						continue;
 					}
 					if (!isTargetAllyL) {
@@ -125,24 +150,23 @@ public class Crosshair : MonoBehaviour {
 					if (isTargetAllyL)
 						continue;
 				}
-
-				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
-				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
+				//check distance
+				if (!(Vector3.Distance (target.transform.position, transform.root.position) < MaxDistanceL))
+					continue;
+				
+				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
+				Vector3 rayStartPoint = transform.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
-
-				if (Vector2.Distance (targetLocOnScreen, CamMidpoint) < DistanceCoeff * CrosshairRadiusL) { 
+				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusL && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusL){
 					//check if Terrain block the way
 					RaycastHit hit;
-					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
+					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
 						if(hit.collider.gameObject.layer == 10){
 							continue;
 						}
 					}
-					crosshairImage.SetCurrentLImage (1);
+					crosshairImage.OnTargetL(true);
 					targetL = target.transform;
-
-					//move target mark
-					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockL) {
 						Sounds.PlayLock ();
@@ -150,13 +174,13 @@ public class Crosshair : MonoBehaviour {
 					}
 					foundTargetL = true;
 					if(!isTargetAllyL)
-						SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
+						SendLockedMessage (targetpv.viewID, target.name);
 
 					break;
 				} 
 			}
 			if (!foundTargetL) {
-				crosshairImage.SetCurrentLImage (0);				
+				crosshairImage.OnTargetL(false);		
 				targetL = null;
 				LockL = false;
 			}else{
@@ -164,14 +188,18 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 		if (CrosshairRadiusR > 0) {
-			RaycastHit[] targets = Physics.SphereCastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH + CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff), CrosshairRadiusR * MaxDistanceR * SphereRadiusCoeff, cam.transform.forward, MaxDistanceR, playerlayer);
-			foreach (RaycastHit target in targets) {
-				PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
+			foreach (GameObject target in Targets) {
+				if (target == null) {
+					TargetsToRemove.Add (target);
+					continue;
+				}
+					
+				PhotonView targetpv = target.transform.GetComponent<PhotonView> ();
 				if (targetpv.viewID == pv.viewID)
 					continue;
 
 				if(isTeamMode){
-					if (target.collider.tag == "Drone"){
+					if (target.GetComponent<Collider>().tag == "Drone"){
 						continue;
 					}
 					if (!isTargetAllyR) {
@@ -188,23 +216,23 @@ public class Crosshair : MonoBehaviour {
 					if (isTargetAllyR)
 						continue;
 				}
-
-				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.root.position + new Vector3 (0, 5, 0));
+				//check distance
+				if (!(Vector3.Distance (target.transform.position, transform.root.position) < MaxDistanceR))
+					continue;
+				
+				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
 				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0);;
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 
-				if (Vector2.Distance (targetLocOnScreen, CamMidpoint) < DistanceCoeff * CrosshairRadiusR) { 
-					crosshairImage.SetCurrentRImage (1);
+				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusR && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusR){
+					crosshairImage.OnTargetR(true);
 					targetR = target.transform;
-
 					RaycastHit hit;
-					if (Physics.Raycast (rayStartPoint,(target.transform.root.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.root.position + new Vector3(0,5,0)), Terrainlayer)) {
+					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
 						if(hit.collider.gameObject.layer == 10){
 							continue;
 						}
 					}
-					//move target mark
-					crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(target.transform.root.position + new Vector3(0,5,0));
 
 					if (!LockR) {
 						Sounds.PlayLock ();
@@ -213,13 +241,13 @@ public class Crosshair : MonoBehaviour {
 					foundTargetR = true;
 
 					if(!isTargetAllyR)
-						SendLockedMessage (targetpv.viewID, target.transform.root.gameObject.name);
+						SendLockedMessage (targetpv.viewID, target.transform.gameObject.name);
 
 					break;
 				}
 			}
 			if (!foundTargetR) {
-				crosshairImage.SetCurrentRImage (0);
+				crosshairImage.OnTargetR(false);
 				targetR = null;
 				LockR = false;
 			}else{
@@ -227,11 +255,20 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 
-		crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
-		print ("enable : " + !(targetL==null&&targetR==null));
+
+		foreach (GameObject g in TargetsToRemove) {//remove null target
+			Targets.Remove (g);
+		}
+		TargetsToRemove.Clear ();
+
+		MarkTarget ();
+		//crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
 	}
 
 	public Transform getCurrentTargetL(){
+		if (isRCL)
+			return null;
+		
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
@@ -251,6 +288,9 @@ public class Crosshair : MonoBehaviour {
 		return targetL;
 	}
 	public Transform getCurrentTargetR(){
+		if (isRCL)
+			return null;
+		
 		if (targetR != null && !isTargetAllyR) {
 			//cast a ray to check if hitting shield
 			RaycastHit[] hitpoints;
@@ -268,6 +308,36 @@ public class Crosshair : MonoBehaviour {
 		}
 
 		return targetR;
+	}
+
+	private void MarkTarget(){
+		if(isENG_L){
+			if(targetL!=null){
+				crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint (targetL.transform.position + new Vector3 (0, 5, 0));
+			}
+		}else{
+			if(targetL!=null){
+				crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint (targetL.transform.position + new Vector3 (0, 5, 0));
+			}
+		}
+
+		if(isENG_R){
+			if(targetR!=null){
+				crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint (targetR.transform.position + new Vector3 (0, 5, 0));
+			}
+		}else{
+			if(targetR!=null){
+				crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint (targetR.transform.position + new Vector3 (0, 5, 0));
+			}
+		}
+		if((!isENG_L && targetL != null) || (!isENG_R && targetR != null)){
+			crosshairImage.middlecross.enabled = false;
+		}else{
+			crosshairImage.middlecross.enabled = true;
+		}
+
+		crosshairImage.EngTargetMark.enabled = ((isENG_L && targetL != null) || (isENG_R && targetR != null));
+		crosshairImage.targetMark.gameObject.SetActive((!isENG_L && targetL != null) || (!isENG_R && targetR != null));
 	}
 
 	void SendLockedMessage(int id, string Name){
