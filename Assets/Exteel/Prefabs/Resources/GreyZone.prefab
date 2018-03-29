@@ -266,6 +266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  Zone_Id: 0
   bar: {fileID: 114574501441225686}
   mark: {fileID: 114780847294184792}
   bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
@@ -274,15 +276,10 @@ MonoBehaviour:
   bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  Panel_bluemark: {fileID: 21300020, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  Panel_redmark: {fileID: 21300022, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  Panel_greymark: {fileID: 21300024, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
   base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
   base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  PlayerInZone: {fileID: 114822292809683112}
   barCanvas: {fileID: 1015806385405316}
-  Zone_mark_onPanel: {fileID: 0}
 --- !u!114 &114349835324724132
 MonoBehaviour:
   m_ObjectHideFlags: 1

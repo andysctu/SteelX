@@ -9,6 +9,7 @@ public class HealthPool : Photon.MonoBehaviour {
 
 	[SerializeField]private int healAmount = 250;
 	[SerializeField]private float healDeltaTime = 2;
+	[SerializeField]GameObject barCanvas;
 	public GameObject player;
 	PlayerInZone PlayerInZone;
 	SyncHealthPoolBar syncHealthPoolBar;
@@ -26,7 +27,12 @@ public class HealthPool : Photon.MonoBehaviour {
 
 	void Update () {
 		if (cam != null) {
-			transform.LookAt (new Vector3 (cam.transform.position.x, transform.position.y, cam.transform.position.z));
+			barCanvas.transform.LookAt (new Vector3 (cam.transform.position.x, barCanvas.transform.position.y, cam.transform.position.z));
+
+			//update scale
+			float distance = Vector3.Distance (transform.position, cam.transform.position);
+			distance = Mathf.Clamp (distance, 0, 200f);
+			barCanvas.transform.localScale = new Vector3 (0.02f + distance / 100 * 0.02f, 0.02f + distance / 100 * 0.02f, 1);
 		}
 	}
 

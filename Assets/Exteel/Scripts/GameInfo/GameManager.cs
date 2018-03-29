@@ -108,7 +108,7 @@ public class GameManager : Photon.MonoBehaviour {
 			BlueScore.SetActive (false);
 			isTeamMode = false;
 		}
-			
+
 		StartCoroutine(LateStart());
 
 		// client ini himself
@@ -126,17 +126,13 @@ public class GameManager : Photon.MonoBehaviour {
 				SetRespawnPoint (RED);
 				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [RED].position, 20),SpawnPoints [RED].rotation, 0);
 			}
-			Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
-			if (PhotonNetwork.room.CustomProperties ["Zone"] != null) {
-				Zone.ChangeZone (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()));
-			} else {
-				Zone.ChangeZone (-1);
-			}
 		}else{
 			InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
 		}
-
+		//set LookAt Target to player
 		InitHealthPool ();
+		InitGreyZone ();
+
 		hud.ShowWaitOtherPlayer (true);
 	}
 		
@@ -277,6 +273,21 @@ public class GameManager : Photon.MonoBehaviour {
 			h.player = player;
 			h.Init ();
 		}
+	}
+
+	void InitGreyZone(){
+		GreyZone[] greyzones = (GreyZone[])Object.FindObjectsOfType<GreyZone> ();
+		foreach(GreyZone g in greyzones){
+			g.player = player;
+			g.Init ();
+			g.ChangeZone (-1);
+		}
+/*		Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
+		if (PhotonNetwork.room.CustomProperties ["Zone"] != null) {
+			Zone.ChangeZone (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()));
+		} else {
+			Zone.ChangeZone (-1);
+		}*/
 	}
 
 	void SyncTime() {
