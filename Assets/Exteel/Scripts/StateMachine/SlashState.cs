@@ -28,13 +28,14 @@ public class SlashState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 
-		if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {//exit not through statemachineExit
+		/*if (!animator.GetBool (slashR2_id) && !animator.GetBool (slashL2_id) && !animator.GetBool (slashR3_id) && !animator.GetBool (slashL3_id)) {//exit not through statemachineExit
 			mcbt.isRSlashPlaying = 0;
 			mcbt.isLSlashPlaying = 0;
 			animator.SetBool (onSlash_id, false);
 		}else{
 			mctrl.SetCanVerticalBoost (false);
-		}
+		}*/
+		mctrl.SetCanVerticalBoost (false);
 
 
 		animator.SetBool (boost_id, false);

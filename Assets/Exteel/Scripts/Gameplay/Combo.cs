@@ -10,13 +10,20 @@ public class Combo : MonoBehaviour {
 	[SerializeField]private Animator animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private SlashDetector SlashDetector;
-
+	private PhotonView pv;
 	private int slashL_id;
 	private int slashL2_id;
 	private int slashL3_id;
 	private int slashR_id;
 	private int slashR2_id;
 	private int slashR3_id;
+
+	private int grounded_id;
+	private int onSlash_id;
+
+	void Start(){
+		pv = GetComponent<PhotonView> ();
+	}
 
 	public void InitVars(){// called by AnimatorVars
 		slashL_id = AnimatorVars.SlashL_id;
@@ -25,6 +32,9 @@ public class Combo : MonoBehaviour {
 		slashR_id = AnimatorVars.SlashR_id;
 		slashR2_id = AnimatorVars.SlashR2_id;
 		slashR3_id = AnimatorVars.SlashR3_id;
+
+		grounded_id = AnimatorVars.grounded_id;
+		onSlash_id = AnimatorVars.onSlash_id;
 	}
 
 	public void CallLSlashPlaying(int isPlaying){
@@ -82,7 +92,14 @@ public class Combo : MonoBehaviour {
 				if(animator.GetBool(slashL_id)){
 					animator.SetBool (slashL2_id, true);
 				}else{
-					animator.SetBool (slashL_id, true);
+					if (!animator.GetBool (onSlash_id)) {
+						if (animator.GetBool (grounded_id)) {
+							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 0);
+						}else{
+							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 1);
+						}
+						animator.SetBool (slashL_id, true);
+					}
 				}
 			}
 		}else{
@@ -92,12 +109,34 @@ public class Combo : MonoBehaviour {
 				if(animator.GetBool(slashR_id)){
 					animator.SetBool (slashR2_id, true);
 				}else{
-					animator.SetBool (slashR_id, true);
+					if (!animator.GetBool (onSlash_id)) {
+						if (animator.GetBool (grounded_id)) {
+							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 0);
+						}else{
+							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 1);
+						}
+						animator.SetBool (slashR_id, true);
+					}
 				}
 			}
 		}
 	}
-		
+
+	[PunRPC]
+	void SlashRPC(int hand, int mode){
+		if (hand == 0) {
+			if(mode==0)
+				animator.Play ("Sword L1");
+			else
+				animator.Play ("Ldown F");
+		}else{
+			if(mode==0)
+				animator.Play ("Sword R1");
+			else
+				animator.Play ("Rdown F");
+		}
+	}
+
 	public void CallSlashDetect(int hand){
 		mechCombat.SlashDetect (hand);
 	}
