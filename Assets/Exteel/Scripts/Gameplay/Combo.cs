@@ -122,6 +122,10 @@ public class Combo : MonoBehaviour {
 		}
 	}
 
+	public void Lance(int handposition){
+		pv.RPC ("LanceRPC", PhotonTargets.All, handposition, (animator.GetBool(grounded_id)? 0 : 1 ));
+	}
+
 	[PunRPC]
 	void SlashRPC(int hand, int mode){
 		if (hand == 0) {
@@ -134,6 +138,21 @@ public class Combo : MonoBehaviour {
 				animator.Play ("Sword R1");
 			else
 				animator.Play ("Rdown F");
+		}
+	}
+
+	[PunRPC]
+	void LanceRPC(int hand, int mode){
+		if (hand == 0) {
+			if(mode==0)
+				animator.Play ("Lance L");
+			else
+				animator.Play ("LancedownL");
+		}else{
+			if(mode==0)
+				animator.Play ("Lance R");
+			else
+				animator.Play ("LancedownR");
 		}
 	}
 

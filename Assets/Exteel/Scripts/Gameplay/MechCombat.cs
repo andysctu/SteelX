@@ -801,8 +801,10 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.MELEE:
-				//SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage, handPosition);
-				Combo.Slash (handPosition);
+				if (weaponScripts [weaponOffset + handPosition].Animation == "Slash")
+					Combo.Slash (handPosition);
+				else
+					Combo.Lance (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:
 				animator.SetBool(animationStr, true);
@@ -976,7 +978,7 @@ public class MechCombat : Combat {
 	}
 
 	bool usingMeleeWeapon(int handPosition) {
-		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
+		return (weaponScripts [weaponOffset + handPosition].Animation == "Slash" || weaponScripts [weaponOffset + handPosition].Animation == "Lance");
 	}
 
 	bool usingShieldWeapon(int handPosition) {
