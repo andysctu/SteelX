@@ -3005,6 +3005,7 @@ MonoBehaviour:
   Animator: {fileID: 9563454}
   mechCombat: {fileID: 11445986}
   mechCamera: {fileID: 11415780}
+  hips: {fileID: 428374}
   CharacterController: {fileID: 14356836}
   Terrain:
     serializedVersion: 2
@@ -3019,9 +3020,6 @@ MonoBehaviour:
   grounded: 1
   jump: 0
   on_BCNShoot: 0
-  Legs:
-  - {fileID: 462424}
-  - {fileID: 407428}
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1

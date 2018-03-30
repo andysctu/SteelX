@@ -44,6 +44,7 @@ public class MechController : Photon.MonoBehaviour {
 	private bool canVerticalBoost = false;
 	private float v_boost_start_yPos;
 	private float v_boost_upperbound ;
+	//private float boostStartTime = 0;//this is for camera z offset lerping
 	private float slashTeleportMinDistance = 5f;
 	// Animation
 	private float speed;
@@ -53,8 +54,6 @@ public class MechController : Photon.MonoBehaviour {
 	public bool jump;
 	public bool on_BCNShoot = false;
 
-	// Unused
-	[SerializeField] Transform[] Legs;
 
 	// Use this for initialization
 	void Start () {
@@ -137,8 +136,7 @@ public class MechController : Photon.MonoBehaviour {
 			}else{
 				mechCamera.LockMechRotation (false);
 			}
-
-
+				
 			CharacterController.Move(forcemove_dir * forcemove_speed);
 			move.x = 0;
 			move.z = 0;
@@ -151,7 +149,7 @@ public class MechController : Photon.MonoBehaviour {
 				}
 			}
 		}else
-			mechCamera.LockMechRotation (false);
+			mechCamera.LockMechRotation (false); //avoid stop too early
 
 
 		move.x *= xSpeed * Time.fixedDeltaTime;
@@ -232,6 +230,7 @@ public class MechController : Photon.MonoBehaviour {
 		if (b) {
 			if(grounded){
 				if(!is_hor_boosting){//first call
+					//boostStartTime = Time.time;
 					is_hor_boosting = true;
 					curboostingVelocity = (speed >= 0)?mechCombat.MinHorizontalBoostSpeed () : -mechCombat.MinHorizontalBoostSpeed ();
 				}else{
@@ -300,9 +299,11 @@ public class MechController : Photon.MonoBehaviour {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
 
+		//float t = Time.time - boostStartTime;
+
 		if (grounded) {//lerp camera z offset when boosting 
 			if (speed > 0) {
-				Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 20 + transform.position + new Vector3 (0, 5, 0);
+				Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 22 + transform.position + new Vector3 (0, 5, 0);
 				cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 6f);
 			} else if (speed < 0) {
 				if(direction > 0 || direction < 0){
@@ -344,19 +345,6 @@ public class MechController : Photon.MonoBehaviour {
 		speed = v;
 		direction = h;
 
-		/*Debug.Log("Speed: " + v);
-		Debug.Log("Direc: " + h);*/
-		/*Debug.Log(h);
-		if (h < 0) {
-			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, -90,0));
-			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, -90,0));
-		} else if (h > 0) {
-			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, 90,0));
-			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 90,0));
-		} else {
-			Legs[0].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
-			Legs[1].localRotation = Quaternion.Euler(new Vector3(0, 0,0));
-		}*/
 	}
 
 	public bool CheckIsGrounded(){

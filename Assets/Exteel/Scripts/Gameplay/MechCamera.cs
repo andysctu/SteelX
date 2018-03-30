@@ -108,7 +108,6 @@ public class MechCamera : MonoBehaviour
 		lockPlayerRot = b;
 
 		if(!b){
-			lockCamRot = false;
 			currentMech.transform.localRotation = Quaternion.identity;
 		}else{
 			tempCurrentMechRot = currentMech.transform.rotation;
