@@ -2767,6 +2767,9 @@ MonoBehaviour:
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
+  lockPlayerRot: 0
+  lockCamRot: 0
+  currentMech: {fileID: 144000}
 --- !u!114 &11416036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3001,6 +3004,7 @@ MonoBehaviour:
   AnimatorVars: {fileID: 114137985907184306}
   Animator: {fileID: 9563454}
   mechCombat: {fileID: 11445986}
+  mechCamera: {fileID: 11415780}
   CharacterController: {fileID: 14356836}
   Terrain:
     serializedVersion: 2
@@ -6616,6 +6620,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechCombat: {fileID: 11445986}
   mctrl: {fileID: 11462782}
+  mcam: {fileID: 11415780}
   animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
   SlashDetector: {fileID: 114361624446557588}

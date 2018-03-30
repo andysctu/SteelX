@@ -21234,6 +21234,9 @@ MonoBehaviour:
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
+  lockPlayerRot: 0
+  lockCamRot: 0
+  currentMech: {fileID: 0}
 --- !u!81 &1608924967
 AudioListener:
   m_ObjectHideFlags: 0

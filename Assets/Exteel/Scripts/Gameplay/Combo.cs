@@ -7,6 +7,7 @@ public class Combo : MonoBehaviour {
 
 	[SerializeField]private MechCombat mechCombat;
 	[SerializeField]private MechController mctrl;
+	[SerializeField]private MechCamera mcam;
 	[SerializeField]private Animator animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private SlashDetector SlashDetector;
@@ -53,6 +54,7 @@ public class Combo : MonoBehaviour {
 	}
 		
 	public void CallSlashLToFalse(int num){
+		mcam.LockCamRotation (false);
 		switch(num){
 		case 1:
 			animator.SetBool (slashL_id, false);
@@ -67,6 +69,7 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void CallSlashRToFalse(int num){
+		mcam.LockCamRotation (false);
 		switch(num){
 		case 1:
 			animator.SetBool (slashR_id, false);
@@ -162,6 +165,7 @@ public class Combo : MonoBehaviour {
 
 	public void CallSetSlashMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
 		if(speed >0){
+			mcam.LockCamRotation (true);
 			List<Transform> targets = SlashDetector.getCurrentTargets ();
 			if(targets.Count == 0){
 				mctrl.SetSlashMoving(speed);

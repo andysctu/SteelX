@@ -10,6 +10,7 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private MechCombat mechCombat;
+	[SerializeField]private MechCamera mechCamera;
 	private GameManager gm;
 
 	public CharacterController CharacterController;
@@ -68,6 +69,8 @@ public class MechController : Photon.MonoBehaviour {
 		isSlowDown = false;
 		curboostingVelocity = mechCombat.MoveSpeed();
 		Animator.SetBool ("Grounded", true);
+		mechCamera.LockCamRotation (false);
+		mechCamera.LockMechRotation (false);
 	}
 
 	public void InitVars(){//this is called by AniamtorVars
@@ -92,7 +95,6 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		// Do nothing if CharacterController not found & slashing
 		if (CharacterController == null || !CharacterController.enabled){
 			return;
 		}
@@ -122,14 +124,21 @@ public class MechController : Photon.MonoBehaviour {
 	public void UpdateSpeed() {
 		// slash z-offset
 		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1 || on_BCNShoot) {
+
 			if(grounded){
 				forcemove_dir = new Vector3 (forcemove_dir.x, 0, forcemove_dir.z);	// make sure not slashing to the sky
-			}else{
-
 			}
+
 			forcemove_speed /= 1.6f;//1.6 : decrease coeff.
-			if (Mathf.Abs(forcemove_speed)> 0.05f)
+			if (Mathf.Abs (forcemove_speed) > 0.01f) {
+				if(!on_BCNShoot)
+					mechCamera.LockMechRotation (true);
 				ySpeed = 0;
+			}else{
+				mechCamera.LockMechRotation (false);
+			}
+
+
 			CharacterController.Move(forcemove_dir * forcemove_speed);
 			move.x = 0;
 			move.z = 0;
@@ -141,7 +150,9 @@ public class MechController : Photon.MonoBehaviour {
 					transform.position = hit.point;
 				}
 			}
-		}
+		}else
+			mechCamera.LockMechRotation (false);
+
 
 		move.x *= xSpeed * Time.fixedDeltaTime;
 		move.z *= zSpeed * Time.fixedDeltaTime;
