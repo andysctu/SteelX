@@ -11,8 +11,8 @@ public class GreyZone : MonoBehaviour {
 	private float trueAmount = 0;
 	private const int BLUE = 0, RED = 1, NONE = -1;
 	public GameObject player;
+	public int Zone_Id = 0;//to identify which image is on respawnPanel
 
-	[SerializeField]private int Zone_Id = 0;//to identify which image is on respawnPanel
 	[SerializeField]Image bar, mark;
 	[SerializeField]Sprite bar_blue, bar_blue1, bar_red, bar_red1; //bar_blue1 is the light color one
 	[SerializeField]Sprite mark_blue, mark_red;
@@ -104,13 +104,11 @@ public class GreyZone : MonoBehaviour {
 			bar.sprite = bar_blue;
 			mark.enabled = true;
 			mark.sprite = mark_blue;
-			bar.color = new Color32 (20, 41, 182, 255);
 		}else if(num==RED){
 			GetComponent<MeshRenderer> ().material = base_red;
 			bar.sprite = bar_red;
 			mark.enabled = true;
 			mark.sprite = mark_red;
-			bar.color = new Color32 (232, 34, 0, 255);
 		}else{
 			GetComponent<MeshRenderer> ().material = base_none;
 			mark.sprite = null;
@@ -124,7 +122,7 @@ public class GreyZone : MonoBehaviour {
 		//for new player to load
 		if(PhotonNetwork.isMasterClient){
 			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ("Zone", num);
+			h.Add ("GreyZone_"+Zone_Id, num);
 			PhotonNetwork.room.SetCustomProperties (h);
 		}
 	}
