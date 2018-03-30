@@ -29,7 +29,7 @@ public class MechCombat : Combat {
 	public float maxHorizontalBoostSpeed = 60f;
 	// Game variables
 	public Score score;
-	private const int playerlayer = 8 , ignoreRaycast_layer = 2;
+	private const int playerlayer = 8 , default_layer = 0;
 	// Combat variables
 	public bool isDead;
 	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it (shield)
@@ -531,7 +531,7 @@ public class MechCombat : Combat {
 			gm.ShowRespawnPanel ();
 		}
 
-		gameObject.layer = ignoreRaycast_layer;
+		gameObject.layer = default_layer;
 		//StartCoroutine (Moveaway ());//moving away from colliders (disable does not trigger exit
 
 		if(bulletCoroutine != null)
@@ -1024,10 +1024,9 @@ public class MechCombat : Combat {
 	public void EnableAllColliders(bool b){
 		Collider[] colliders = GetComponentsInChildren<Collider> ();
 		foreach(Collider collider in colliders){
-			//collider.enabled = b;
 			if(!b){
 				if(collider.gameObject.name != "Slash Detector")
-					collider.gameObject.layer = 2;
+					collider.gameObject.layer = default_layer;
 			}else if (collider.gameObject.name != "Slash Detector")
 				collider.gameObject.layer = 8;
 			

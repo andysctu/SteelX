@@ -170,9 +170,14 @@ public class Combo : MonoBehaviour {
 			if(targets.Count == 0){
 				mctrl.SetSlashMoving(speed);
 			}else{
-				//choose the first one
-				if(Vector3.Distance(transform.position, targets[0].position) >= 10 ){
-					mctrl.SetSlashMoving(speed/2);
+				//check if there is any target in front & the distance between
+				foreach (Transform t in targets) {
+					if (t.root.GetComponent<MechCombat> ().isDead || t == null)
+						continue;
+
+					if (Vector3.Distance (transform.position, t.position) >= 10) {
+						mctrl.SetSlashMoving (speed / 2);
+					}
 				}
 			}
 		}else if(speed < 0){
