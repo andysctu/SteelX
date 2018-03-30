@@ -57,8 +57,6 @@ public class MechCamera : MonoBehaviour
 		m_TargetAngles.y += inputH * rotationSpeed;
 		m_TargetAngles.x += inputV * rotationSpeed;
 
-		
-		
 		// wrap values to avoid springing quickly the wrong way from positive to negative
 		if (m_TargetAngles.y > 180) {
 			m_TargetAngles.y -= 360;
@@ -76,10 +74,9 @@ public class MechCamera : MonoBehaviour
 			m_TargetAngles.x += 360;
 			m_FollowAngles.x += 360;
 		}
-		
+
 		// clamp vertical, let 360 horizontal
-		// m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -rotationRange.x * 0.5f, rotationRange.x * 0.5f);
-	
+		//m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -rotationRange.x * 0.5f, rotationRange.x * 0.5f);
 		
 		// smoothly interpolate current values to target angles
 //		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
@@ -87,11 +84,15 @@ public class MechCamera : MonoBehaviour
 
 
 		float outerRotate = ( - inputV) * rotationSpeed;
-		transform.RotateAround(transform.parent.position + transform.parent.up * 5, transform.parent.right, outerRotate);
-		//transform.RotateAround(transform.parent.position , transform.parent.right, outerRotate);
+
+		if (m_TargetAngles.x <= -120 || m_TargetAngles.x >= 70) {
+			outerRotate = 0;
+			m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -120, 70);
+		}
+		transform.RotateAround (transform.parent.position + transform.parent.up * 5, transform.parent.right, outerRotate);
 
 		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
-		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_FollowAngles.x, 0, 0);
+		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
 
 
 		Vector3 rot = transform.parent.eulerAngles;
