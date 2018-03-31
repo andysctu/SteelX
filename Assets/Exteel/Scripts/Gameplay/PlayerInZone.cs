@@ -8,7 +8,16 @@ public class PlayerInZone : MonoBehaviour {
 	private int playerCount = 0;
 	private bool isThePlayerInside = false;
 	private int blueTeamPlayerCount = 0, redTeamPlayerCount = 0;
-	List<Collider> players = new List<Collider>();
+	private float LastCheckTime = 0;
+	private float checkDeltaTime = 0.3f;
+	List<MechCombat> players = new List<MechCombat>();
+
+	void FixedUpdate(){
+		if(Time.time - LastCheckTime >= checkDeltaTime){
+			LastCheckTime = Time.time;
+			CountPlayer ();//check dead player
+		}
+	}
 
 	public void SetPlayerID (int id) {
 		player_viewID = id;
@@ -19,48 +28,57 @@ public class PlayerInZone : MonoBehaviour {
 		if(pv.viewID == player_viewID){
 			isThePlayerInside = true;
 		}
+		playerCount++;
 		if(pv.owner.GetTeam()==PunTeams.Team.red){
 			redTeamPlayerCount++;
 		}else{
 			blueTeamPlayerCount++;
 		}
-		players.Add (collider);
-		playerCount++;
-	}
 
+		players.Add (collider.transform.root.GetComponent<MechCombat>());
+	}
+		
 	void OnTriggerExit(Collider collider){
 		PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();
 		if(pv.viewID == player_viewID){
 			isThePlayerInside = false;
 		}
+		playerCount--;
 		if(pv.owner.GetTeam()==PunTeams.Team.red){
 			redTeamPlayerCount--;
 		}else{
 			blueTeamPlayerCount--;
 		}
-		players.Remove (collider);
-		playerCount--;
+
+		players.Remove (collider.transform.root.GetComponent<MechCombat>());
 	}
-	public int getPlayerCount(){
-		return playerCount;
+
+	public void CountPlayer(){
+		int tempPlayerCount = 0, tempRTcount = 0, tempBTcount = 0;
+		foreach(MechCombat m in players){
+			if(!m.isDead){
+				tempPlayerCount++;
+				if(m.photonView.owner.GetTeam()==PunTeams.Team.red){
+					tempRTcount++;
+				}else{
+					tempBTcount++;
+				}
+			}
+		}
+
+		playerCount = tempPlayerCount;
+		redTeamPlayerCount = tempRTcount;
+		blueTeamPlayerCount = tempBTcount;
 	}
 
 	public int getNotFullHPPlayerCount(){
 		int tempCount = 0;
-		foreach(Collider player in players){
-			if(player.transform.root.GetComponent<MechCombat>().IsHpFull()){
+		foreach(MechCombat player in players){
+			if (!(player.IsHpFull () || player.isDead)) { //ignore full hp & dead player
 				tempCount++;
 			}
 		}
-		//Debug.Log ("Not full hp player count : " + (playerCount - tempCount));
-		return playerCount - tempCount;
-	}
-	public int getBlueTeamPlayerCount(){
-		return blueTeamPlayerCount;
-	}
-
-	public int getRedTeamPlayerCount(){
-		return redTeamPlayerCount;
+		return tempCount;
 	}
 
 	public int PlayerCountDiff(){
@@ -83,5 +101,4 @@ public class PlayerInZone : MonoBehaviour {
 	public bool IsThePlayerInside(){
 		return isThePlayerInside;
 	}
-
 }

@@ -9,38 +9,38 @@ public class GreyZone : MonoBehaviour {
 	bool switchBarColor = true; // true : need to change color due to barstate change
 	float coeff = 0.005f;
 	private float trueAmount = 0;
+	private const int BLUE = 0, RED = 1, NONE = -1;
+	public GameObject player;
+	public int Zone_Id = 0;//to identify which image is on respawnPanel
 
 	[SerializeField]Image bar, mark;
 	[SerializeField]Sprite bar_blue, bar_blue1, bar_red, bar_red1; //bar_blue1 is the light color one
 	[SerializeField]Sprite mark_blue, mark_red;
-	[SerializeField]Sprite Panel_bluemark, Panel_redmark, Panel_greymark;
 	[SerializeField]Material base_none, base_blue, base_red;
-	[SerializeField]PlayerInZone PlayerInZone;
 	[SerializeField]GameObject barCanvas;
-	[SerializeField]Image Zone_mark_onPanel;
+	RespawnPanel RespawnPanel;
+	PlayerInZone PlayerInZone;
 	Camera cam;
-	GameObject player;
 	PhotonView pv;
 
-	private float LastInitRequestTime = 0;
-
-	void Start () {
+	public void Init(){//called by gameManager
+		PlayerInZone = GetComponent<PlayerInZone> ();
+		RespawnPanel = (RespawnPanel)Object.FindObjectOfType<RespawnPanel> ();
 		pv = GetComponent<PhotonView> ();
 		mark.enabled = false;
+
+		cam = player.GetComponentInChildren<Camera> ();
+		PlayerInZone.SetPlayerID (player.GetPhotonView ().viewID);
 	}
 
 	void Update () {
 		if (cam != null) {
 			barCanvas.transform.LookAt (new Vector3 (cam.transform.position.x, barCanvas.transform.position.y, cam.transform.position.z));
 
-		}else{
-			if (Time.time - LastInitRequestTime >0.5f) {
-				player = GameObject.Find (PhotonNetwork.playerName);
-				if (player != null) {
-					cam = player.GetComponentInChildren<Camera> ();
-				}
-				LastInitRequestTime = Time.time;
-			}
+			//update scale
+			float distance = Vector3.Distance (transform.position, cam.transform.position);
+			distance = Mathf.Clamp (distance, 0, 200f);
+			barCanvas.transform.localScale = new Vector3 (0.02f + distance / 100 * 0.02f, 0.02f + distance / 100 * 0.02f, 1);
 		}
 
 		bar.fillAmount = Mathf.Lerp (bar.fillAmount, trueAmount, Time.deltaTime*10f);
@@ -61,13 +61,12 @@ public class GreyZone : MonoBehaviour {
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
 		if (stream.isWriting) {
 			if(PhotonNetwork.isMasterClient){
-				if (PlayerInZone.whichTeamDominate () != -1) {
+				if (PlayerInZone.whichTeamDominate () != NONE) {
 					
 					if (curBarState == PlayerInZone.whichTeamDominate ()) {
 						if (bar.fillAmount + PlayerInZone.PlayerCountDiff() * coeff >= 1) {
 							bar.fillAmount = 1;
 							if(curBarState != curZoneState){
-								Debug.Log ("change to zone : " + curBarState);
 								pv.RPC ("ChangeZone", PhotonTargets.All, curBarState);
 							}
 						} else {
@@ -77,9 +76,7 @@ public class GreyZone : MonoBehaviour {
 						if(bar.fillAmount - PlayerInZone.PlayerCountDiff() * coeff <=0){
 							bar.fillAmount = 0;
 							curBarState = PlayerInZone.whichTeamDominate ();
-
-							Debug.Log ("change to zone : " + curBarState);
-							pv.RPC ("ChangeZone", PhotonTargets.All, -1);//change to grey zone
+							pv.RPC ("ChangeZone", PhotonTargets.All, NONE);//change to grey zone
 						} else {
 							bar.fillAmount -= PlayerInZone.PlayerCountDiff() * coeff;
 						}
@@ -102,18 +99,16 @@ public class GreyZone : MonoBehaviour {
 	[PunRPC]
 	public void ChangeZone(int num){
 		curZoneState = num;
-		if(num==0){
+		if(num==BLUE){
 			GetComponent<MeshRenderer> ().material = base_blue;
 			bar.sprite = bar_blue;
 			mark.enabled = true;
 			mark.sprite = mark_blue;
-			bar.color = new Color32 (20, 41, 182, 255);
-		}else if(num==1){
+		}else if(num==RED){
 			GetComponent<MeshRenderer> ().material = base_red;
 			bar.sprite = bar_red;
 			mark.enabled = true;
 			mark.sprite = mark_red;
-			bar.color = new Color32 (232, 34, 0, 255);
 		}else{
 			GetComponent<MeshRenderer> ().material = base_none;
 			mark.sprite = null;
@@ -122,19 +117,12 @@ public class GreyZone : MonoBehaviour {
 		}
 
 		//change mark
-		if(num==0){
-			Zone_mark_onPanel.sprite = Panel_bluemark;
-		}else if(num==1){
-			Zone_mark_onPanel.sprite = Panel_redmark;
-		}else{
-			Zone_mark_onPanel.sprite = Panel_greymark;
-		}
-
+		RespawnPanel.ChangeMark (Zone_Id, num);
 
 		//for new player to load
 		if(PhotonNetwork.isMasterClient){
 			ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-			h.Add ("Zone", num);
+			h.Add ("GreyZone_"+Zone_Id, num);
 			PhotonNetwork.room.SetCustomProperties (h);
 		}
 	}
