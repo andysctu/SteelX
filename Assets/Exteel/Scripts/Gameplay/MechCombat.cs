@@ -502,7 +502,8 @@ public class MechCombat : Combat {
 
 	[PunRPC]
 	public void ForceMove(Vector3 dir, float length){
-		transform.position += dir * length;
+		GetComponent<CharacterController> ().Move (dir * length);
+		//transform.position += dir * length;
 	}
 
 	IEnumerator Moveaway(){

@@ -27,6 +27,7 @@ public class SlashState : MechStateMachineBehaviour {
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+		if ( cc == null || !cc.enabled) return;
 		mcbt.CanSlash = mctrl.CheckIsGrounded ();
 	}
 

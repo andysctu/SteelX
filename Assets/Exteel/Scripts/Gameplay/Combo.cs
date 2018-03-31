@@ -54,6 +54,9 @@ public class Combo : MonoBehaviour {
 	}
 		
 	public void CallSlashLToFalse(int num){
+		if (!pv.isMine)
+			return;
+		
 		mcam.LockCamRotation (false);
 		switch(num){
 		case 1:
@@ -69,6 +72,9 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void CallSlashRToFalse(int num){
+		if (!pv.isMine)
+			return;
+		
 		mcam.LockCamRotation (false);
 		switch(num){
 		case 1:
@@ -84,6 +90,9 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void ReceiveNextSlash(int receive){
+		if (!pv.isMine)
+			return;
+		
 		mechCombat.SetReceiveNextSlash (receive);
 	}
 
@@ -160,10 +169,16 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void CallSlashDetect(int hand){
+		if (!pv.isMine)
+			return;
+
 		mechCombat.SlashDetect (hand);
 	}
 
 	public void CallSetSlashMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
+		if (!pv.isMine)
+			return;
+		
 		if(speed >0){
 			mcam.LockCamRotation (true);
 			List<Transform> targets = SlashDetector.getCurrentTargets ();
@@ -172,7 +187,7 @@ public class Combo : MonoBehaviour {
 			}else{
 				//check if there is any target in front & the distance between
 				foreach (Transform t in targets) {
-					if (t.root.GetComponent<MechCombat> ().isDead || t == null)
+					if (t == null || t.root.GetComponent<MechCombat> ().isDead)
 						continue;
 
 					if (Vector3.Distance (transform.position, t.position) >= 10) {
@@ -186,6 +201,9 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void CallBCNShoot(int b){
+		if (!pv.isMine)
+			return;
+		
 		mctrl.on_BCNShoot = (b==1);
 	}
 
