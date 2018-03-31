@@ -8,7 +8,6 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected MechController mctrl;
 	protected MechCombat mcbt;
 	protected Sounds Sounds;
-	//protected PhotonView pv;
 
 	protected int boost_id;
 	protected int grounded_id;
