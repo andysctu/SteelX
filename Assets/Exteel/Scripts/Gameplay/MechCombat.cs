@@ -271,7 +271,6 @@ public class MechCombat : Combat {
 
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
 		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());
-		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
 		if(target != null){
 			//Debug.Log("Hit tag: " + target.tag);
 			//Debug.Log("Hit name: " + target.name);
@@ -281,7 +280,7 @@ public class MechCombat : Combat {
 				
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], (isSlowDown) ? 0.4f : 0);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], weaponScripts [weaponOffset + handPosition].isSlowDown);
 					//Debug.Log ("Damage: " + damage + ", Range: " + range);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
@@ -337,7 +336,7 @@ public class MechCombat : Combat {
 				}
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bm.weaponScripts[weaponOffset+handPosition].Damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], 0.4f);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bm.weaponScripts[weaponOffset+handPosition].Damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], true);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -425,12 +424,12 @@ public class MechCombat : Combat {
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
-	public override void OnHit(int d, int shooter_viewID, string weapon, float slowdownDuration = 0) {
+	public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
 		if (isDead) {
 			return;
 		}
-		if(slowdownDuration > 0){
-			mechController.SlowDown (slowdownDuration);
+		if(isSlowDown && photonView.isMine){
+			mechController.SlowDown ();
 		}
 			
 		currentHP -= d;

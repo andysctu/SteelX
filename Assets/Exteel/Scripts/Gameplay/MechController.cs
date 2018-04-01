@@ -33,6 +33,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	private bool isBoostFlameOn = false;
 	private bool isSlowDown = false;
+	private const float slowDownDuration = 0.3f;
 	private Coroutine coroutine = null;
 
 	private Transform camTransform;
@@ -256,24 +257,26 @@ public class MechController : Photon.MonoBehaviour {
 		zSpeed = 0;
 	}
 
-	public void SlowDown(float duration){
+	public void SlowDown(){
 		if(isSlowDown){
 			if(coroutine!=null)
 				StopCoroutine (coroutine);
 			
-			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
+			coroutine = StartCoroutine ("SlowDownCoroutine");
 		}else{
-			coroutine = StartCoroutine ("SlowDownCoroutine", duration);
+			coroutine = StartCoroutine ("SlowDownCoroutine");
 			isSlowDown = true;
 		}
 	}
 
-	IEnumerator SlowDownCoroutine(float duration){
+	IEnumerator SlowDownCoroutine(){
 		SetCanVerticalBoost (false);
 		Animator.SetBool ("Boost", false);
 		Boost (false);
+		if (!CheckIsGrounded ())//in air => small bump effect
+			ySpeed = 0;
 
-		yield return new WaitForSeconds (duration);
+		yield return new WaitForSeconds (slowDownDuration);
 		isSlowDown = false;
 		coroutine = null;
 	}

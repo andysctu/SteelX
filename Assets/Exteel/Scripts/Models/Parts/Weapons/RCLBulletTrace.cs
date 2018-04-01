@@ -121,7 +121,7 @@ public class RCLBulletTrace : MonoBehaviour {
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
 						}
-						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, "RCL", 0.3f); 
+						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, "RCL", true); 
 
 					}else if(colliderPV.isMine){
 						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
