@@ -10,6 +10,7 @@ public class Sounds : MonoBehaviour {
 	[SerializeField] AudioClip Lock;
 	[SerializeField] AudioClip OnLocked;
 	[SerializeField] AudioClip[] Slash;
+	[SerializeField] AudioClip Lance;
 	[SerializeField] AudioClip BoostStart;
 	[SerializeField] AudioClip BoostLoop;
 	[SerializeField] AudioClip[] RPCsounds;
@@ -41,7 +42,7 @@ public class Sounds : MonoBehaviour {
 		}
 
 		if(Source!=null)
-			Source.volume = 0.1f;
+			Source.volume = 0.3f;
 	}
 
 	public void UpdateSounds(int Offset){
@@ -59,6 +60,10 @@ public class Sounds : MonoBehaviour {
 
 	public void PlaySlash(int num){
 		Source.PlayOneShot (Slash [num]);
+	}
+
+	public void PlayLance(){
+		Source.PlayOneShot (Lance);
 	}
 
 	public void PlayLock(){

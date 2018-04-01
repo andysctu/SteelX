@@ -1410,7 +1410,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 276.5, y: 15.35, z: -19.47}
+  m_LocalPosition: {x: 259.6, y: 15.35, z: -19.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 405268}
@@ -3005,7 +3005,6 @@ MonoBehaviour:
   Animator: {fileID: 9563454}
   mechCombat: {fileID: 11445986}
   mechCamera: {fileID: 11415780}
-  hips: {fileID: 428374}
   CharacterController: {fileID: 14356836}
   Terrain:
     serializedVersion: 2
@@ -5568,6 +5567,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
   - {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
   - {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
+  Lance: {fileID: 8300000, guid: e158fd622c94b45cca6e2c0386dc7d4c, type: 3}
   BoostStart: {fileID: 8300000, guid: 85694ab5f1a2240bfa16915335ffdacf, type: 3}
   BoostLoop: {fileID: 8300000, guid: e529fb7ecf34944479ec3cb577df8643, type: 3}
   RPCsounds:
