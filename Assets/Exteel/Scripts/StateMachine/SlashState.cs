@@ -14,6 +14,9 @@ public class SlashState : MechStateMachineBehaviour {
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
 		}
+
+		if (!animator.GetBool (slashL3_id) && !animator.GetBool (slashR3_id))
+			mcbt.SetReceiveNextSlash (1);
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node

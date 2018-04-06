@@ -1139,7 +1139,7 @@ public class MechCombat : Combat {
 			if(show){
 				trailL.Activate ();
 			}else{
-				trailL.Deactivate ();
+				trailL.StopSmoothly (0.1f);
 			}
 		}
 	}
@@ -1148,7 +1148,7 @@ public class MechCombat : Combat {
 			if (show) {
 				trailR.Activate ();
 			} else {
-				trailR.Deactivate ();
+				trailR.StopSmoothly (0.1f);
 			}
 		}
 	}
