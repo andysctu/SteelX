@@ -108,7 +108,13 @@ public class Combo : MonoBehaviour {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 0);
 						}else{
-							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 1);
+							print (mcam.GetCamAngle ());
+							if(mcam.GetCamAngle()<=-20)
+								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 1);
+							else if(mcam.GetCamAngle()>=20)
+								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 3);
+							else
+								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 2);
 						}
 						animator.SetBool (slashL_id, true);
 					}
@@ -125,7 +131,12 @@ public class Combo : MonoBehaviour {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 0);
 						}else{
-							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 1);
+							if(mcam.GetCamAngle()<=-20)
+								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 1);
+							else if(mcam.GetCamAngle()>=20)
+								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 3);
+							else
+								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 2);
 						}
 						animator.SetBool (slashR_id, true);
 					}
@@ -139,17 +150,37 @@ public class Combo : MonoBehaviour {
 	}
 
 	[PunRPC]
-	void SlashRPC(int hand, int mode){
+	void SlashRPC(int hand, int mode){//0 : SlashL1 , 1 : SlashLlow , 2 : SlashLmiddle , 3 : SlashLhigh
 		if (hand == 0) {
-			if(mode==0)
-				animator.Play ("Sword L1");
-			else
-				animator.Play ("Ldown F");
+			switch(mode){
+			case 0:
+				animator.Play ("SlashL1");
+				break;
+			case 1:
+				animator.Play ("SlashLlow");
+				break;
+			case 2:
+				animator.Play ("SlashLmiddle");
+				break;
+			case 3:
+				animator.Play ("SlashLhigh");
+				break;
+			}
 		}else{
-			if(mode==0)
-				animator.Play ("Sword R1");
-			else
-				animator.Play ("Rdown F");
+			switch(mode){
+			case 0:
+				animator.Play ("SlashR1");
+				break;
+			case 1:
+				animator.Play ("SlashRlow");
+				break;
+			case 2:
+				animator.Play ("SlashRmiddle");
+				break;
+			case 3:
+				animator.Play ("SlashRhigh");
+				break;
+			}
 		}
 	}
 
