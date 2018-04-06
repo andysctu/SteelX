@@ -5,6 +5,7 @@
 		Rate = 0.5f;
 		radius = 3f;
 		isTwoHanded = true;
+		isSlowDown = true;
 		Animation = "BCNPose";
 	}
 }

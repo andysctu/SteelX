@@ -19,8 +19,12 @@ public class SlashDetector : MonoBehaviour {
 	}
 
 	void Update(){
-		clamped_cam_angle_x = Mathf.Clamp (cam.GetFollowAngle_x(), -45f, 45f);
-		transform.localPosition = new Vector3(transform.localPosition.x, 5f + clamped_cam_angle_x*0.2f ,transform.localPosition.z);
+		if (!mctrl.grounded) {
+			clamped_cam_angle_x = Mathf.Clamp (cam.GetCamAngle (), -45f, 45f);
+			transform.localPosition = new Vector3 (transform.localPosition.x, 5f + clamped_cam_angle_x * 0.2f, transform.localPosition.z);
+		}else{
+			transform.localPosition = new Vector3 (transform.localPosition.x, 5f , transform.localPosition.z);
+		}
 		if (clamped_cam_angle_x >= 0){
 			is_lookingUp = true;
 			if(!mctrl.grounded){

@@ -9,6 +9,10 @@ public class BCNstate : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		animator.SetBool ("OnBCN", true);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
+
+		if(!animator.GetBool("ShootBCN")){
+			Sounds.PlayBCNload ();
+		}
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

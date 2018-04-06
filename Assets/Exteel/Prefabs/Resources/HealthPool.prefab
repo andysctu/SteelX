@@ -357,6 +357,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healAmount: 250
   healDeltaTime: 2
+  barCanvas: {fileID: 1074833455152202}
   player: {fileID: 0}
 --- !u!114 &114396206769669570
 MonoBehaviour:
@@ -427,6 +428,7 @@ MonoBehaviour:
   bar_grey: {fileID: 21300008, guid: 00429edee359949d9955d2393313fad6, type: 3}
   bar: {fileID: 114604911893054376}
   PlayerInZone: {fileID: 114793780546706930}
+  increaseAmount: 0.001
   isAvailable: 1
 --- !u!198 &198689516889773782
 ParticleSystem:
@@ -488,7 +490,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1581017900
+  randomSeed: -399473614
   InitialModule:
     serializedVersion: 3
     enabled: 1

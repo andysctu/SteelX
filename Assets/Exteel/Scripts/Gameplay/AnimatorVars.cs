@@ -29,12 +29,13 @@ public class AnimatorVars : MonoBehaviour {
 	public bool inHangar = false;//in Store also manually set this to TRUE
 	// Use this for initialization
 	void Start () {
-		cc = transform.parent.gameObject.GetComponent<CharacterController> ();
+		if(transform.root.GetComponent<PhotonView>().isMine)
+			cc = transform.parent.gameObject.GetComponent<CharacterController> ();
 		mctrl = transform.parent.gameObject.GetComponent<MechController> ();
 		mcbt = transform.parent.gameObject.GetComponent<MechCombat> ();
 		Sounds = GetComponent<Sounds> ();
 		
-		if (!inHangar) {
+		if (!inHangar && transform.root.GetComponent<PhotonView>().isMine) {
 			boost_id = Animator.StringToHash ("Boost");
 			grounded_id = Animator.StringToHash ("Grounded");
 			jump_id = Animator.StringToHash ("Jump");

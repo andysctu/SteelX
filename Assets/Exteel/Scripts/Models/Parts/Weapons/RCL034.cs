@@ -5,6 +5,7 @@
 		Rate = 0.8f;
 		radius = 2f;
 		isTwoHanded = true;
+		isSlowDown = true;
 		Animation = "ShootRCL";
 	}
 }

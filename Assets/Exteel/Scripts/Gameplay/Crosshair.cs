@@ -155,7 +155,7 @@ public class Crosshair : MonoBehaviour {
 					continue;
 				
 				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
-				Vector3 rayStartPoint = transform.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
+				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusL && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusL){
 					//check if Terrain block the way
@@ -225,14 +225,14 @@ public class Crosshair : MonoBehaviour {
 				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
 
 				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusR && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusR){
-					crosshairImage.OnTargetR(true);
-					targetR = target.transform;
 					RaycastHit hit;
 					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
 						if(hit.collider.gameObject.layer == 10){
 							continue;
 						}
 					}
+					crosshairImage.OnTargetR(true);
+					targetR = target.transform;
 
 					if (!LockR) {
 						Sounds.PlayLock ();
@@ -271,6 +271,7 @@ public class Crosshair : MonoBehaviour {
 		
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
+			Debug.DrawRay (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), ((targetL.transform.root.position + new Vector3 (0, 5, 0)) - cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH))*100f, Color.red, 3f);
 			RaycastHit[] hitpoints;
 			hitpoints = Physics.RaycastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
 			foreach(RaycastHit hit in hitpoints){
