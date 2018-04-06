@@ -23,7 +23,7 @@ public class MechCombat : Combat {
 	public float moveSpeed = 35.0f;
 	public float minBoostSpeed = 50;
 	public float acceleration = 2;
-	public float deceleration = 50;
+	public float deceleration = 30;
 	private float verticalBoostSpeed = 1f;
 	public float maxVerticalBoostSpeed = 30f;
 	public float maxHorizontalBoostSpeed = 60f;

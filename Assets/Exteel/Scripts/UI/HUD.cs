@@ -9,10 +9,6 @@ public class HUD : MonoBehaviour {
 	[SerializeField] Sprite Hit, Kill, Defense, GameOver;
 	[SerializeField] GameObject WaitOtherPlayer;
 	[SerializeField] GameObject GameStart;
-	void Start() {
-		Cursor.lockState = CursorLockMode.Confined;
-		Cursor.visible = false;
-	}
 
 	public void ShowText(Camera cam, Vector3 p, string Text) {
 		GameObject i = Instantiate(Placeholder, cam.WorldToScreenPoint(p), Quaternion.identity) as GameObject;

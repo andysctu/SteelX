@@ -28,7 +28,8 @@ public class SlashState : MechStateMachineBehaviour {
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if ( cc == null || !cc.enabled) return;
-		mcbt.CanSlash = mctrl.CheckIsGrounded ();
+		//mcbt.CanSlash = mctrl.CheckIsGrounded ();
+		mcbt.CanSlash = !animator.GetBool (jump_id);
 	}
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
@@ -38,5 +39,11 @@ public class SlashState : MechStateMachineBehaviour {
 		mctrl.SetCanVerticalBoost (false);
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
+
+		if (animator.GetBool (jump_id)) {//exiting from jump slash
+			animator.SetBool (onSlash_id, false);
+			mcbt.isRSlashPlaying = 0;
+			mcbt.isLSlashPlaying = 0;
+		}
 	}
 }
