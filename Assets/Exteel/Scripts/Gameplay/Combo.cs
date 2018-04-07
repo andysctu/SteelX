@@ -20,7 +20,7 @@ public class Combo : MonoBehaviour {
 	private int slashR3_id;
 
 	private int grounded_id;
-	private int onSlash_id;
+	private int onMelee_id;
 
 	void Start(){
 		pv = GetComponent<PhotonView> ();
@@ -35,14 +35,14 @@ public class Combo : MonoBehaviour {
 		slashR3_id = AnimatorVars.SlashR3_id;
 
 		grounded_id = AnimatorVars.grounded_id;
-		onSlash_id = AnimatorVars.onSlash_id;
+		onMelee_id = AnimatorVars.onMelee_id;
 	}
 
-	public void CallLSlashPlaying(int isPlaying){
-		mechCombat.SetLSlashPlaying(isPlaying);
+	public void CallLMeleePlaying(int isPlaying){//this is called when melee attack in air , to make the mech drop when attacking ( for nicier look)
+		mechCombat.SetLMeleePlaying(isPlaying);
 	}
-	public void CallRSlashPlaying(int isPlaying){
-		mechCombat.SetRSlashPlaying(isPlaying);
+	public void CallRMeleePlaying(int isPlaying){
+		mechCombat.SetRMeleePlaying(isPlaying);
 	}
 
 	public void CallShowTrailL(int show){
@@ -104,7 +104,7 @@ public class Combo : MonoBehaviour {
 				if(animator.GetBool(slashL_id)){
 					animator.SetBool (slashL2_id, true);
 				}else{
-					if (!animator.GetBool (onSlash_id)) {
+					if (!animator.GetBool (onMelee_id)) {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 0);
 						}else{
@@ -126,7 +126,7 @@ public class Combo : MonoBehaviour {
 				if(animator.GetBool(slashR_id)){
 					animator.SetBool (slashR2_id, true);
 				}else{
-					if (!animator.GetBool (onSlash_id)) {
+					if (!animator.GetBool (onMelee_id)) {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 0);
 						}else{
@@ -144,12 +144,27 @@ public class Combo : MonoBehaviour {
 		}
 	}
 
-	public void Lance(int handposition){
-		pv.RPC ("LanceRPC", PhotonTargets.All, handposition, (animator.GetBool(grounded_id)? 0 : 1 ));
+	public void Smash(int handposition){
+		if (handposition == 0)
+			mechCombat.isLMeleePlaying = 1;
+		else
+			mechCombat.isRMeleePlaying = 1;
+
+
+		if (animator.GetBool (grounded_id)) {
+			pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 0);
+		} else {
+			if (mcam.GetCamAngle () <= -10)
+				pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 1);
+			else if (mcam.GetCamAngle () >= 10)
+				pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 3);
+			else
+				pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 2);
+		}
 	}
 
 	[PunRPC]
-	void SlashRPC(int hand, int mode){//0 : SlashL1 , 1 : SlashLlow , 2 : SlashLmiddle , 3 : SlashLhigh
+	void SlashRPC(int hand, int mode){//0 : Slash 1 , 1 : Slash low , 2 : Slash middle , 3 : Slash high
 		if (hand == 0) {
 			switch(mode){
 			case 0:
@@ -184,28 +199,53 @@ public class Combo : MonoBehaviour {
 	}
 
 	[PunRPC]
-	void LanceRPC(int hand, int mode){
+	void SmashRPC(int hand, int mode){
 		if (hand == 0) {
-			if(mode==0)
-				animator.Play ("Lance L");
-			else
-				animator.Play ("LancedownL");
-		}else{
-			if(mode==0)
-				animator.Play ("Lance R");
-			else
-				animator.Play ("LancedownR");
+			switch (mode) {
+			case 0:
+				animator.Play ("SmashL");
+				break;
+			case 1:
+				animator.Play ("SmashLlow");
+				break;
+			case 2:
+				animator.Play ("SmashLmiddle");
+				break;
+			case 3:
+				animator.Play ("SmashLhigh");
+				break;
+			}
+		} else {
+			switch (mode) {
+			case 0:
+				animator.Play ("SmashR");
+				break;
+			case 1:
+				animator.Play ("SmashRlow");
+				break;
+			case 2:
+				animator.Play ("SmashRmiddle");
+				break;
+			case 3:
+				animator.Play ("SmashRhigh");
+				break;
+			}
 		}
 	}
 
 	public void CallSlashDetect(int hand){
 		if (!pv.isMine)
 			return;
-
 		mechCombat.SlashDetect (hand);
 	}
 
-	public void CallSetSlashMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
+	/*public void CallSmashDetect(int hand){
+		if (!pv.isMine)
+			return;
+		mechCombat.SlashDetect (hand);
+	}*/
+
+	public void CallMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
 		if (!pv.isMine)
 			return;
 		
@@ -213,7 +253,7 @@ public class Combo : MonoBehaviour {
 			mcam.LockCamRotation (true);
 			List<Transform> targets = SlashDetector.getCurrentTargets ();
 			if(targets.Count == 0){
-				mctrl.SetSlashMoving(speed);
+				mctrl.SetMoving(speed);
 			}else{
 				//check if there is any target in front & the distance between
 				foreach (Transform t in targets) {
@@ -221,12 +261,12 @@ public class Combo : MonoBehaviour {
 						continue;
 
 					if (Vector3.Distance (transform.position, t.position) >= 10) {
-						mctrl.SetSlashMoving (speed / 2);
+						mctrl.SetMoving (speed / 2);
 					}
 				}
 			}
 		}else if(speed < 0){
-			mctrl.SetSlashMoving(speed);
+			mctrl.SetMoving(speed);
 		}
 	}
 

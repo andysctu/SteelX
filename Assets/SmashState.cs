@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlashState : MechStateMachineBehaviour {
+public class SmashState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.OnStateEnter(animator, stateInfo, layerIndex);
@@ -14,14 +14,6 @@ public class SlashState : MechStateMachineBehaviour {
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
 		//}
-
-		if (!animator.GetBool (slashL3_id) && !animator.GetBool (slashR3_id)) {
-			mcbt.SetReceiveNextSlash (1);
-			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id))
-				mcbt.isLMeleePlaying = 1;
-			else
-				mcbt.isRMeleePlaying = 1;
-		}
 
 		if(mcbt.isLMeleePlaying == 1){
 			mcbt.SlashDetect (0);

@@ -14,7 +14,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected int jump_id;
 	protected int speed_id;
 	protected int direction_id;
-	protected int onSlash_id;
+	protected int onMelee_id;
 
 	protected int slashL_id;
 	protected int slashR_id;
@@ -41,7 +41,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		grounded_id = animatorVars.grounded_id;
 		jump_id = animatorVars.jump_id;
 		direction_id = animatorVars.direction_id;
-		onSlash_id = animatorVars.onSlash_id;
+		onMelee_id = animatorVars.onMelee_id;
 		speed_id = animatorVars.speed_id;
 
 		slashL_id = animatorVars.SlashL_id;
@@ -69,7 +69,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		grounded_id = animatorVars.grounded_id;
 		jump_id = animatorVars.jump_id;
 		direction_id = animatorVars.direction_id;
-		onSlash_id = animatorVars.onSlash_id;
+		onMelee_id = animatorVars.onMelee_id;
 		speed_id = animatorVars.speed_id;
 
 		slashL_id = animatorVars.SlashL_id;

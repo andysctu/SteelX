@@ -12,13 +12,13 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)return;
 
 		jumpReleased = false;
-		mcbt.CanSlash = true;
+		mcbt.CanMeleeAttack = true;
 		jumpFirstCall = true;
 	}
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init (animator);
 		if (cc == null || !cc.enabled)return;
-		animator.SetBool (onSlash_id, false);
+		animator.SetBool (onMelee_id, false);
 	}
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

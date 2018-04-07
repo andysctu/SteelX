@@ -31,6 +31,7 @@ public class MechCamera : MonoBehaviour
 	public float orbitRadius = 19;
 	public float angleOffset = 33;
 
+	private float playerlerpspeed = 0.2f, orbitlerpspeed = 0.6f;
 	private void Start()
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
@@ -45,6 +46,10 @@ public class MechCamera : MonoBehaviour
 
 		if(lockPlayerRot){
 			currentMech.transform.rotation = tempCurrentMechRot;
+		}else{
+			if(currentMech.transform.localRotation != Quaternion.identity){
+				currentMech.transform.localRotation = Quaternion.Lerp (currentMech.transform.localRotation, Quaternion.identity, playerlerpspeed);
+			}
 		}
 
 		/*if (lockCamRot) {
@@ -74,9 +79,14 @@ public class MechCamera : MonoBehaviour
 //		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
 		m_FollowAngles = m_TargetAngles;
 
-		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
+		//lerp parent rotation
+		transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), playerlerpspeed);
 
-		orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220);
+		//lerp cam rotation
+		//orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220);
+
+		orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), orbitlerpspeed);
+
 
 		idealAngle = -1.0322f * (orbitAngle - 119.64f);
 		transform.localRotation = Quaternion.Euler(idealAngle+angleOffset,0,0);
@@ -88,11 +98,11 @@ public class MechCamera : MonoBehaviour
 	}
 
 	public void LockMechRotation(bool b){//cam not included
+		if (lockPlayerRot && b)
+			return;
 		lockPlayerRot = b;
 
-		if(!b){
-			currentMech.transform.localRotation = Quaternion.identity;
-		}else{
+		if(b){
 			tempCurrentMechRot = currentMech.transform.rotation;
 		}
 	}

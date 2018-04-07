@@ -10,7 +10,7 @@ public class Sounds : MonoBehaviour {
 	[SerializeField] AudioClip Lock;
 	[SerializeField] AudioClip OnLocked;
 	[SerializeField] AudioClip[] Slash;
-	[SerializeField] AudioClip Lance;
+	[SerializeField] AudioClip Smash;
 	[SerializeField] AudioClip BoostStart;
 	[SerializeField] AudioClip BoostLoop;
 	[SerializeField] AudioClip[] RPCsounds;
@@ -62,8 +62,8 @@ public class Sounds : MonoBehaviour {
 		Source.PlayOneShot (Slash [num]);
 	}
 
-	public void PlayLance(){
-		Source.PlayOneShot (Lance);
+	public void PlaySmash(){
+		Source.PlayOneShot (Smash);
 	}
 
 	public void PlayLock(){

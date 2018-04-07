@@ -129,7 +129,7 @@ public class MechController : Photon.MonoBehaviour {
 
 	public void UpdateSpeed() {
 		// slash z-offset
-		if (mechCombat.isLSlashPlaying == 1 ||mechCombat.isRSlashPlaying == 1 || on_BCNShoot) {
+		if (mechCombat.isLMeleePlaying == 1 ||mechCombat.isRMeleePlaying == 1 || on_BCNShoot) {
 
 			if(grounded){
 				forcemove_dir = new Vector3 (forcemove_dir.x, 0, forcemove_dir.z);	// make sure not slashing to the sky
@@ -137,17 +137,12 @@ public class MechController : Photon.MonoBehaviour {
 
 			forcemove_speed /= 1.6f;//1.6 : decrease coeff.
 			if (Mathf.Abs (forcemove_speed) > 0.01f) {
-				if(!on_BCNShoot)
-					mechCamera.LockMechRotation (true);
 				ySpeed = 0;
-			}else{
-				mechCamera.LockMechRotation (false);
 			}
 				
 			CharacterController.Move(forcemove_dir * forcemove_speed);
 			move.x = 0;
 			move.z = 0;
-
 
 			//cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
 			RaycastHit hit;
@@ -157,8 +152,7 @@ public class MechController : Photon.MonoBehaviour {
 				}
 			}
 			return;
-		}else
-			mechCamera.LockMechRotation (false); //avoid stop too early
+		}
 
 		move += transform.right * xSpeed * ((Mathf.Abs (direction) > marginOfError) ? 1 : 0) * Time.fixedDeltaTime;
 		move += transform.forward * zSpeed * ((Mathf.Abs (speed) > marginOfError) ? 1 : 0) *  Time.fixedDeltaTime;
@@ -177,7 +171,7 @@ public class MechController : Photon.MonoBehaviour {
 		CharacterController.Move(move);
 	}
 
-	public void SetSlashMoving(float speed){//called by animation
+	public void SetMoving(float speed){//called by animation
 		forcemove_speed = speed;
 		forcemove_dir = cam.transform.forward;
 	}
@@ -409,5 +403,9 @@ public class MechController : Photon.MonoBehaviour {
 
 	public bool CheckIsGrounded(){
 		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 2.0f, Terrain);
+	}
+
+	public void CallLockMechRot(bool b){
+		mechCamera.LockMechRotation (b);
 	}
 }

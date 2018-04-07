@@ -8,7 +8,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 
-		mcbt.CanSlash = true;
+		mcbt.CanMeleeAttack = true;
 		mcbt.SetReceiveNextSlash (1);
 	}
 
@@ -43,16 +43,5 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 				mctrl.Boost (true);
 			}
 		}
-
-		/*if (Input.GetKey(KeyCode.Space) && !animator.GetBool(onSlash_id)) {	
-			Sounds.StopBoostLoop ();
-			mctrl.Boost (false);
-			mctrl.SetCanVerticalBoost(true);
-			//mctrl.Jump();
-			animator.SetBool(boost_id, false);
-			animator.SetBool(grounded_id, false);
-			mctrl.grounded = false;
-			animator.SetBool(jump_id, true);
-		}*/
 	}
 }
