@@ -108,7 +108,6 @@ public class Combo : MonoBehaviour {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 0);
 						}else{
-							print (mcam.GetCamAngle ());
 							if(mcam.GetCamAngle()<=-20)
 								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 1);
 							else if(mcam.GetCamAngle()>=20)

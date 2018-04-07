@@ -47,10 +47,10 @@ public class MechCamera : MonoBehaviour
 			currentMech.transform.rotation = tempCurrentMechRot;
 		}
 
-		if (lockCamRot) {
+		/*if (lockCamRot) {
 			transform.rotation = tempCamRot;
 			return;
-		}
+		}*/
 
 		// read input from mouse or mobile controls
 		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");

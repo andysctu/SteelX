@@ -15,8 +15,19 @@ public class SlashState : MechStateMachineBehaviour {
 			mctrl.Boost (false);
 		}
 
-		if (!animator.GetBool (slashL3_id) && !animator.GetBool (slashR3_id))
+		if (!animator.GetBool (slashL3_id) && !animator.GetBool (slashR3_id)) {
 			mcbt.SetReceiveNextSlash (1);
+			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id))
+				mcbt.isLSlashPlaying = 1;
+			else
+				mcbt.isRSlashPlaying = 1;
+		}
+
+		if(mcbt.isLSlashPlaying == 1){
+			mcbt.SlashDetect (0);
+		}else{
+			mcbt.SlashDetect (1);
+		}
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
@@ -31,7 +42,6 @@ public class SlashState : MechStateMachineBehaviour {
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if ( cc == null || !cc.enabled) return;
-		//mcbt.CanSlash = mctrl.CheckIsGrounded ();
 		mcbt.CanSlash = !animator.GetBool (jump_id);
 	}
 

@@ -35,7 +35,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			mctrl.Boost (true);
 		}
 
-		if (!jumpFirstCall && cc.isGrounded) { //falling->end jump  
+		if (!jumpFirstCall && cc.isGrounded && !animator.IsInTransition(0)) { //falling->end jump  but not jump slash -> falling
 			animator.SetBool(grounded_id, true);
 			animator.SetBool (jump_id, false);
 			mctrl.grounded = true;
