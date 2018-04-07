@@ -8,7 +8,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 
-		mcbt.CanSlash = true;
+		mcbt.CanMeleeAttack = true;
 		mcbt.SetReceiveNextSlash (1);
 	}
 
@@ -23,25 +23,25 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
+		if (Input.GetKey(KeyCode.Space) && !animator.GetBool(jump_id)) {	
+			mctrl.Boost (false);
+			mctrl.SetCanVerticalBoost(true);
+			animator.SetBool(boost_id, false);
+			animator.SetBool(grounded_id, false);
+			mctrl.grounded = false;
+			animator.SetBool(jump_id, true);
+		}
+
 		if (!Input.GetKey (KeyCode.LeftShift) || animator.GetBool(jump_id) || !mcbt.IsFuelAvailable ()) {
 			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
 			return;
 		} else {
-			if (mctrl.grounded)
+			if (mctrl.grounded) {
+				animator.SetBool (boost_id, true);
 				mctrl.Boost (true);
-		}
-			
-		if (Input.GetKey(KeyCode.Space) && !animator.GetBool(onSlash_id)) {	
-			Sounds.StopBoostLoop ();
-			mctrl.Boost (false);
-			mctrl.SetCanVerticalBoost(true);
-			mctrl.Jump();
-			animator.SetBool(boost_id, false);
-			animator.SetBool(grounded_id, false);
-			mctrl.grounded = false;
-			animator.SetBool(jump_id, true);
+			}
 		}
 	}
 }

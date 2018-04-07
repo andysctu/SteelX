@@ -7,7 +7,7 @@ public class GroundedState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.OnStateEnter(animator, stateInfo, layerIndex);
 		if (cc == null || !cc.enabled || !cc.isGrounded) return;
-		mcbt.CanSlash = true;
+		mcbt.CanMeleeAttack = true;//CanMeleeAttack is to avoid multi-slash in air 
 		mcbt.SetReceiveNextSlash (1);
 	}
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -24,9 +24,8 @@ public class GroundedState : MechStateMachineBehaviour {
 			mctrl.Boost(false);
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onSlash_id)) {
+		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onMelee_id)) {
 			mctrl.SetCanVerticalBoost (true);
-			mctrl.Jump();
 			animator.SetBool(grounded_id, false);
 			mctrl.grounded = false;
 			animator.SetBool(jump_id, true);
@@ -37,8 +36,6 @@ public class GroundedState : MechStateMachineBehaviour {
 			mctrl.Run();
 
 			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && !animator.IsInTransition(0)) {
-				Sounds.PlayBoostStart ();
-				Sounds.PlayBoostLoop ();
 				animator.SetBool(boost_id, true);
 				mctrl.Boost(true);
 			}

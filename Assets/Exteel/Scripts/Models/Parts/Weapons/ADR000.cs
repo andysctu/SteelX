@@ -2,7 +2,7 @@
 	public ADR000() {
 		Damage = 400;
 		Range = 25;
-		Animation = "Lance";
+		Animation = "Smash";
 		Rate = 10f;
 	}
 }

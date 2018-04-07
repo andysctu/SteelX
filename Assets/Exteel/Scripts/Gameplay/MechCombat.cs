@@ -23,7 +23,7 @@ public class MechCombat : Combat {
 	public float moveSpeed = 35.0f;
 	public float minBoostSpeed = 50;
 	public float acceleration = 2;
-	public float deceleration = 50;
+	public float deceleration = 30;
 	private float verticalBoostSpeed = 1f;
 	public float maxVerticalBoostSpeed = 30f;
 	public float maxHorizontalBoostSpeed = 60f;
@@ -43,15 +43,15 @@ public class MechCombat : Combat {
 	private const int LEFT_HAND = 0;
 	private float timeOfLastShotL;
 	private bool fireL = false;
-	public int isLSlashPlaying = 0;
+	public int isLMeleePlaying = 0;
 
 	// Right
 	private const int RIGHT_HAND = 1;
 	private float timeOfLastShotR;
 	private bool fireR = false;
-	public int isRSlashPlaying = 0;
+	public int isRMeleePlaying = 0;
 
-	public bool CanSlash = true;
+	public bool CanMeleeAttack = true;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 	// Transforms
@@ -173,7 +173,7 @@ public class MechCombat : Combat {
 		timeOfLastShotL = Time.time;
 		timeOfLastShotR = Time.time;
 		isSwitchingWeapon = false;
-		CanSlash = true;
+		CanMeleeAttack = true;
 		receiveNextSlash = true;
 		setIsFiring (0,false);
 		setIsFiring (1, false);
@@ -719,17 +719,17 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.MELEE:
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!receiveNextSlash|| !CanSlash)
+				if (!receiveNextSlash|| !CanMeleeAttack)
 					return;
 
 				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
-				if (((handPosition == 1) ? isLSlashPlaying : isRSlashPlaying) != 0) { // only one can play at the same time
+				if (((handPosition == 1) ? isLMeleePlaying : isRMeleePlaying) != 0) { // only one can play at the same time
 					return;
 				}
 
-				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
+				CanMeleeAttack = false;//this is set to true when grounded(update) , to avoid multi-hit in air
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
@@ -801,10 +801,10 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.MELEE:
-				if (weaponScripts [weaponOffset + handPosition].Animation == "Slash")
+				if (weaponScripts [weaponOffset + handPosition].Animation == "Slash")//sword
 					Combo.Slash (handPosition);
-				else
-					Combo.Lance (handPosition);
+				else//spear
+					Combo.Smash (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:
 				animator.SetBool(animationStr, true);
@@ -978,7 +978,7 @@ public class MechCombat : Combat {
 	}
 
 	bool usingMeleeWeapon(int handPosition) {
-		return (weaponScripts [weaponOffset + handPosition].Animation == "Slash" || weaponScripts [weaponOffset + handPosition].Animation == "Lance");
+		return (weaponScripts [weaponOffset + handPosition].Animation == "Slash" || weaponScripts [weaponOffset + handPosition].Animation == "Smash");
 	}
 
 	bool usingShieldWeapon(int handPosition) {
@@ -1103,12 +1103,12 @@ public class MechCombat : Combat {
 		return (currentHP >= MAX_HP);
 	}
 
-	public void SetLSlashPlaying(int isPlaying){
-		isLSlashPlaying = isPlaying;
+	public void SetLMeleePlaying(int isPlaying){
+		isLMeleePlaying = isPlaying;
 	}
 
-	public void SetRSlashPlaying(int isPlaying){// this is true when RSlash is playing ( slashR1 , ... )
-		isRSlashPlaying = isPlaying;
+	public void SetRMeleePlaying(int isPlaying){// this is true when RSlash is playing ( slashR1 , ... )
+		isRMeleePlaying = isPlaying;
 	}
 
 	public void SetReceiveNextSlash(int receive){ // this is called in the animation clip
@@ -1139,7 +1139,7 @@ public class MechCombat : Combat {
 			if(show){
 				trailL.Activate ();
 			}else{
-				trailL.Deactivate ();
+				trailL.StopSmoothly (0.1f);
 			}
 		}
 	}
@@ -1148,7 +1148,7 @@ public class MechCombat : Combat {
 			if (show) {
 				trailR.Activate ();
 			} else {
-				trailR.Deactivate ();
+				trailR.StopSmoothly (0.1f);
 			}
 		}
 	}

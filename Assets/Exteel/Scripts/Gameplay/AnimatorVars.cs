@@ -15,7 +15,7 @@ public class AnimatorVars : MonoBehaviour {
 	public int jump_id;
 	public int speed_id;
 	public int direction_id;
-	public int onSlash_id;
+	public int onMelee_id;
 
 	public int SlashL_id;
 	public int SlashL2_id;
@@ -40,7 +40,7 @@ public class AnimatorVars : MonoBehaviour {
 			grounded_id = Animator.StringToHash ("Grounded");
 			jump_id = Animator.StringToHash ("Jump");
 			direction_id = Animator.StringToHash ("Direction");
-			onSlash_id = Animator.StringToHash ("OnSlash");
+			onMelee_id = Animator.StringToHash ("OnMelee");
 			speed_id = Animator.StringToHash ("Speed");
 
 			SlashL_id = Animator.StringToHash ("SlashL");
