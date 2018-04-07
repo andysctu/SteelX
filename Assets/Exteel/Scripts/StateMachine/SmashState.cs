@@ -9,11 +9,9 @@ public class SmashState : MechStateMachineBehaviour {
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 
-		//if (animator.GetBool (grounded_id)) {
-			Sounds.StopBoostLoop ();
-			animator.SetBool (boost_id, false);
-			mctrl.Boost (false);
-		//}
+		Sounds.StopBoostLoop ();
+		animator.SetBool (boost_id, false);
+		mctrl.Boost (false);
 
 		if(mcbt.isLMeleePlaying == 1){
 			mcbt.SlashDetect (0);

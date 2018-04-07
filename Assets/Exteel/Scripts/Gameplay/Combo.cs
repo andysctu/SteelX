@@ -38,7 +38,7 @@ public class Combo : MonoBehaviour {
 		onMelee_id = AnimatorVars.onMelee_id;
 	}
 
-	public void CallLMeleePlaying(int isPlaying){//this is called when melee attack in air , to make the mech drop when attacking ( for nicier look)
+	public void CallLMeleePlaying(int isPlaying){//this is called when melee attack in air , to make the mech drop quicker when attacking ( for nicier look)
 		mechCombat.SetLMeleePlaying(isPlaying);
 	}
 	public void CallRMeleePlaying(int isPlaying){
@@ -90,9 +90,6 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void ReceiveNextSlash(int receive){
-		if (!pv.isMine)
-			return;
-		
 		mechCombat.SetReceiveNextSlash (receive);
 	}
 
@@ -108,9 +105,9 @@ public class Combo : MonoBehaviour {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 0);
 						}else{
-							if(mcam.GetCamAngle()<=-20)
+							if(mcam.GetCamAngle()<=-10)
 								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 1);
-							else if(mcam.GetCamAngle()>=20)
+							else if(mcam.GetCamAngle()>=10)
 								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 3);
 							else
 								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 2);
@@ -130,9 +127,9 @@ public class Combo : MonoBehaviour {
 						if (animator.GetBool (grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 0);
 						}else{
-							if(mcam.GetCamAngle()<=-20)
+							if(mcam.GetCamAngle()<=-10)
 								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 1);
-							else if(mcam.GetCamAngle()>=20)
+							else if(mcam.GetCamAngle()>=10)
 								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 3);
 							else
 								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 2);
@@ -239,11 +236,11 @@ public class Combo : MonoBehaviour {
 		mechCombat.SlashDetect (hand);
 	}
 
-	/*public void CallSmashDetect(int hand){
+	public void CallSmashDetect(int hand){
 		if (!pv.isMine)
 			return;
 		mechCombat.SlashDetect (hand);
-	}*/
+	}
 
 	public void CallMoving(float speed){//called by animation ( also by BCN shoot with speed < 0)
 		if (!pv.isMine)

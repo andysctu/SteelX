@@ -9,11 +9,10 @@ public class SlashState : MechStateMachineBehaviour {
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 
-		//if (animator.GetBool (grounded_id)) {
-			Sounds.StopBoostLoop ();
-			animator.SetBool (boost_id, false);
-			mctrl.Boost (false);
-		//}
+
+		Sounds.StopBoostLoop ();
+		animator.SetBool (boost_id, false);
+		mctrl.Boost (false);
 
 		if (!animator.GetBool (slashL3_id) && !animator.GetBool (slashR3_id)) {
 			mcbt.SetReceiveNextSlash (1);

@@ -155,7 +155,7 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		move += transform.right * xSpeed * ((Mathf.Abs (direction) > marginOfError) ? 1 : 0) * Time.fixedDeltaTime;
-		move += transform.forward * zSpeed * ((Mathf.Abs (speed) > marginOfError) ? 1 : 0) *  Time.fixedDeltaTime;
+		move += transform.forward * zSpeed * ((Mathf.Abs (speed) > marginOfError) ? 1 : 0) * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 
 		if(isSlowDown){
@@ -316,10 +316,8 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 
-		//Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 15 + transform.position + new Vector3 (0, 5, 0);//15 : radius
-		//cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
-		mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 19, 0.06f);
-		mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 33, 0.06f);
+		mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 19, 0.05f);
+		mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 33, 0.05f);
 	}
 
 	public void DynamicCam() {
@@ -336,25 +334,18 @@ public class MechController : Photon.MonoBehaviour {
 
 		if (grounded) {//lerp camera z offset when boosting 
 			if (speed > 0) {
-				//Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 22 + transform.position + new Vector3 (0, 5, 0);
-				//cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 6f);
 				mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 26, 0.05f);
-				mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 36, 0.06f);
+				mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 36, 0.05f);
 			} else if (speed < 0) {
 				if(direction > 0 || direction < 0){
-					//Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 14 + transform.position + new Vector3 (0, 5, 0);
-					//cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
 					mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 16, 0.05f);
-					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, 0.06f);
+					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, 0.05f);
 				} else {
-					//Vector3 desiredPosition = (cam.transform.position - (transform.position + new Vector3 (0, 5, 0))).normalized * 12 + transform.position + new Vector3 (0, 5, 0);
-					//cam.transform.position = Vector3.MoveTowards (cam.transform.position, desiredPosition, Time.deltaTime * 5f);
 					mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 14, 0.05f);
-					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, 0.06f);
+					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, 0.05f);
 				}
 			}
 		}
-
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.05f);
 	}
 
@@ -382,19 +373,6 @@ public class MechController : Photon.MonoBehaviour {
 		if (h <= marginOfError && h >= -marginOfError){
 			h = 0;
 		}
-
-		/*if (v > marginOfError || v < -marginOfError) {
-			move += new Vector3(0, 0, v);
-		}
-
-		if (h > marginOfError || h < -marginOfError) {
-			move += new Vector3(h, 0, 0);
-		}
-
-		move = transform.TransformDirection(move);
-		if (move.magnitude > 1) {
-			move = Vector3.Normalize(move);
-		}*/
 			
 		speed = v;
 		direction = h;

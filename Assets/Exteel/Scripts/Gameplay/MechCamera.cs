@@ -26,7 +26,7 @@ public class MechCamera : MonoBehaviour
 	float inputH;
 	float inputV;
 	float orbitAngle = 0;
-	float idealAngle = 0;
+	float idealLocalAngle = 0;//this is cam local angle
 	private CharacterController parentCtrl;
 	public float orbitRadius = 19;
 	public float angleOffset = 33;
@@ -83,13 +83,11 @@ public class MechCamera : MonoBehaviour
 		transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), playerlerpspeed);
 
 		//lerp cam rotation
-		//orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220);
-
 		orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), orbitlerpspeed);
 
 
-		idealAngle = -1.0322f * (orbitAngle - 119.64f);
-		transform.localRotation = Quaternion.Euler(idealAngle+angleOffset,0,0);
+		idealLocalAngle = -1.0322f * (orbitAngle - 119.64f);
+		transform.localRotation = Quaternion.Euler(idealLocalAngle+angleOffset,0,0);
 		transform.localPosition = new Vector3 (transform.localPosition.x, orbitRadius * Mathf.Sin (orbitAngle * Mathf.Deg2Rad), orbitRadius * Mathf.Cos (orbitAngle * Mathf.Deg2Rad));
 	}
 
@@ -98,13 +96,11 @@ public class MechCamera : MonoBehaviour
 	}
 
 	public void LockMechRotation(bool b){//cam not included
-		if (lockPlayerRot && b)
-			return;
-		lockPlayerRot = b;
-
 		if(b){
+			if (lockPlayerRot)return;//already locked
 			tempCurrentMechRot = currentMech.transform.rotation;
 		}
+		lockPlayerRot = b;
 	}
 
 	public void LockCamRotation(bool b){
