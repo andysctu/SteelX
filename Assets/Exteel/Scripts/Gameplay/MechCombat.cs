@@ -29,7 +29,7 @@ public class MechCombat : Combat {
 	public float maxHorizontalBoostSpeed = 60f;
 	// Game variables
 	public Score score;
-	private const int playerlayer = 8 , ignoreRaycast_layer = 2;
+	private const int playerlayer = 8 , default_layer = 0;
 	// Combat variables
 	public bool isDead;
 	public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it (shield)
@@ -271,7 +271,6 @@ public class MechCombat : Combat {
 
 	void FireRaycast(Vector3 start, Vector3 direction, int damage, float range , int handPosition) {
 		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());
-		bool isSlowDown = weaponScripts [weaponOffset + handPosition].isSlowDown;
 		if(target != null){
 			//Debug.Log("Hit tag: " + target.tag);
 			//Debug.Log("Hit name: " + target.name);
@@ -281,7 +280,7 @@ public class MechCombat : Combat {
 				
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
 
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], (isSlowDown) ? 0.4f : 0);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], weaponScripts [weaponOffset + handPosition].isSlowDown);
 					//Debug.Log ("Damage: " + damage + ", Range: " + range);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
@@ -337,7 +336,7 @@ public class MechCombat : Combat {
 				}
 				if (target.tag == "Player" || target.tag == "Drone") {
 					
-					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bm.weaponScripts[weaponOffset+handPosition].Damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], 0.4f);
+					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bm.weaponScripts[weaponOffset+handPosition].Damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], true);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
 						hud.ShowText (cam, target.position, "Kill");
@@ -425,12 +424,12 @@ public class MechCombat : Combat {
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
-	public override void OnHit(int d, int shooter_viewID, string weapon, float slowdownDuration = 0) {
+	public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
 		if (isDead) {
 			return;
 		}
-		if(slowdownDuration > 0){
-			mechController.SlowDown (slowdownDuration);
+		if(isSlowDown && photonView.isMine){
+			mechController.SlowDown ();
 		}
 			
 		currentHP -= d;
@@ -502,7 +501,8 @@ public class MechCombat : Combat {
 
 	[PunRPC]
 	public void ForceMove(Vector3 dir, float length){
-		transform.position += dir * length;
+		GetComponent<CharacterController> ().Move (dir * length);
+		//transform.position += dir * length;
 	}
 
 	IEnumerator Moveaway(){
@@ -531,7 +531,7 @@ public class MechCombat : Combat {
 			gm.ShowRespawnPanel ();
 		}
 
-		gameObject.layer = ignoreRaycast_layer;
+		gameObject.layer = default_layer;
 		//StartCoroutine (Moveaway ());//moving away from colliders (disable does not trigger exit
 
 		if(bulletCoroutine != null)
@@ -801,8 +801,10 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.MELEE:
-				//SlashDetect (bm.weaponScripts [weaponOffset + handPosition].Damage, handPosition);
-				Combo.Slash (handPosition);
+				if (weaponScripts [weaponOffset + handPosition].Animation == "Slash")
+					Combo.Slash (handPosition);
+				else
+					Combo.Lance (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:
 				animator.SetBool(animationStr, true);
@@ -976,7 +978,7 @@ public class MechCombat : Combat {
 	}
 
 	bool usingMeleeWeapon(int handPosition) {
-		return weaponScripts[weaponOffset+handPosition].Animation == "Slash";
+		return (weaponScripts [weaponOffset + handPosition].Animation == "Slash" || weaponScripts [weaponOffset + handPosition].Animation == "Lance");
 	}
 
 	bool usingShieldWeapon(int handPosition) {
@@ -1022,10 +1024,9 @@ public class MechCombat : Combat {
 	public void EnableAllColliders(bool b){
 		Collider[] colliders = GetComponentsInChildren<Collider> ();
 		foreach(Collider collider in colliders){
-			//collider.enabled = b;
 			if(!b){
 				if(collider.gameObject.name != "Slash Detector")
-					collider.gameObject.layer = 2;
+					collider.gameObject.layer = default_layer;
 			}else if (collider.gameObject.name != "Slash Detector")
 				collider.gameObject.layer = 8;
 			

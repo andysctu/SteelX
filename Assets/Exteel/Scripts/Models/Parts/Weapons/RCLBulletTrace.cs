@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class RCLBulletTrace : MonoBehaviour {
 
@@ -65,6 +66,16 @@ public class RCLBulletTrace : MonoBehaviour {
 		BI.GetComponent<ParticleSystem> ().Play ();//play bullet impact
 
 		Collider[] hitColliders = Physics.OverlapSphere(collisionHitLoc, 6f, PlayerlayerMask); // get overlap targets
+		//sort the distance to increasing order
+		Array.Sort (hitColliders, delegate (Collider A, Collider B) {
+			Vector3 A_midpoint,B_midpoint;
+
+			A_midpoint = (A.tag!="Shield")? A.transform.position + new Vector3(0,5,0) : A.transform.position;//player mid point
+			B_midpoint = (B.tag!="Shield")? B.transform.position + new Vector3(0,5,0) : B.transform.position;//player mid point
+
+			return (Vector3.Distance(A_midpoint,collisionHitLoc) >= Vector3.Distance(B_midpoint,collisionHitLoc))? 1 : -1;
+		});
+
 		List<int> colliderViewIds = new List<int> ();
 
 		for (int i=0;i < hitColliders.Length;i++)
@@ -93,8 +104,8 @@ public class RCLBulletTrace : MonoBehaviour {
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 						}
-						int hand = (hitColliders[i].transform.parent.name [hitColliders[i].transform.parent.name.Length - 1] == 'L') ? 0 : 1;
-						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, ShooterID, hand); 
+						int hand = (hitColliders[i].transform.parent.parent.name [hitColliders[i].transform.parent.parent.name.Length - 1] == 'L') ? 0 : 1;
+						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, ShooterID, hand, "RCL"); 
 					}
 
 				} else {
@@ -110,10 +121,10 @@ public class RCLBulletTrace : MonoBehaviour {
 						} else {
 							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
 						}
-						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, 0.3f); 
+						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, "RCL", true); 
 
 					}else if(colliderPV.isMine){
-						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 3f);
+						colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
 					}
 				}
 			}

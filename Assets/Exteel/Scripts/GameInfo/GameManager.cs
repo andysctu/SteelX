@@ -18,19 +18,18 @@ public class GameManager : Photon.MonoBehaviour {
 	[SerializeField] Text RedScoreText, BlueScoreText;
 	[SerializeField] GameObject MechFrame;
 
-	GreyZone Zone;
-
 	public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
 	public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 	private GameObject RedFlag, BlueFlag;
 	private GameObject player;
+	private GreyZone[] greyZones;
 
 	public int MaxTimeInSeconds = 300;
 	public int MaxKills = 2;
 	public int CurrentMaxKills = 0;
 	public const int GREY_ZONE = 2;
-	public const int BLUE = 0, RED = 1;
+	public const int BLUE = 0, RED = 1, NONE = -1;
 	private int bluescore = 0, redscore = 0;
 	private int timerDuration;
 	private int currentTimer = 999;
@@ -108,7 +107,7 @@ public class GameManager : Photon.MonoBehaviour {
 			BlueScore.SetActive (false);
 			isTeamMode = false;
 		}
-			
+
 		StartCoroutine(LateStart());
 
 		// client ini himself
@@ -126,17 +125,13 @@ public class GameManager : Photon.MonoBehaviour {
 				SetRespawnPoint (RED);
 				InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [RED].position, 20),SpawnPoints [RED].rotation, 0);
 			}
-			Zone = GameObject.Find ("GreyZone").GetComponent<GreyZone>();
-			if (PhotonNetwork.room.CustomProperties ["Zone"] != null) {
-				Zone.ChangeZone (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()));
-			} else {
-				Zone.ChangeZone (-1);
-			}
 		}else{
 			InstantiatePlayer (PlayerPrefab.name, RandomXZposition (SpawnPoints [0].position, 20), SpawnPoints [0].rotation, 0);
 		}
-
+		//set LookAt Target to player
 		InitHealthPool ();
+		InitGreyZone ();
+
 		hud.ShowWaitOtherPlayer (true);
 	}
 		
@@ -276,6 +271,28 @@ public class GameManager : Photon.MonoBehaviour {
 		foreach(HealthPool h in healthpools){
 			h.player = player;
 			h.Init ();
+		}
+	}
+
+	void InitGreyZone(){
+		greyZones = (GreyZone[])Object.FindObjectsOfType<GreyZone> ();
+		foreach(GreyZone g in greyZones){
+			g.player = player;
+			g.Init ();
+
+			if (PhotonNetwork.isMasterClient) {
+				ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
+				h.Add ("GreyZone_"+g.Zone_Id, GREY_ZONE);
+				PhotonNetwork.room.SetCustomProperties (h);
+				g.ChangeZone (NONE);
+			}else{
+				if (PhotonNetwork.room.CustomProperties ["GreyZone_"+g.Zone_Id] != null) {
+					g.ChangeZone (int.Parse (PhotonNetwork.room.CustomProperties ["GreyZone_"+g.Zone_Id].ToString ()));
+				}else{
+					g.ChangeZone (NONE);
+				}
+
+			}
 		}
 	}
 
@@ -539,34 +556,33 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public void SetRespawnPoint(int num){
 		if(isTeamMode){
-			if(num==GREY_ZONE){
+			if(num>=GREY_ZONE){
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == RED) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["GreyZone_" + (num-2)].ToString ()) == RED) {//grey zone id start from 0 ;
 						respawnPoint = num;
-						print ("set respawn point : " + num);
+					}else{
+						respawnPoint = (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) ? RED : BLUE;
 					}
 				} else {
-					if (int.Parse (PhotonNetwork.room.CustomProperties ["Zone"].ToString ()) == BLUE) {
+					if (int.Parse (PhotonNetwork.room.CustomProperties ["GreyZone_" + (num-2)].ToString ()) == BLUE) {
 						respawnPoint = num;
-						print ("set respawn point : " + num);
+					}else{
+						respawnPoint = (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) ? RED : BLUE;
 					}
 				}
-			}else{
+			}else{//choose bases
 				if (PhotonNetwork.player.GetTeam () == PunTeams.Team.red) {
 					if (num==RED) {
 						respawnPoint = num;
-						print ("set respawn point : " + num);
 					}
 				} else {
 					if (num==BLUE) {
 						respawnPoint = num;
-						print ("set respawn point : " + num);
 					}
 				}
 			}
 		} else {
 			respawnPoint = num;
-			print ("set respawn point : " + num);
 		}
 	}
 
@@ -575,6 +591,8 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void CallRespawn(int mech_num){
+		SetRespawnPoint (respawnPoint);//set again to make sure not changed
+
 		CloseRespawnPanel();
 		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint, mech_num);
 		mcbt.isDead = false;

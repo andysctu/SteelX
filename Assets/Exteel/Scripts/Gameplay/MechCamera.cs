@@ -16,11 +16,15 @@ public class MechCamera : MonoBehaviour
 	public Vector2 rotationRange = new Vector3(70, 70);
 	public float rotationSpeed = 5;
 	public float dampingTime = 0.2f;
-	
+	public bool lockPlayerRot = false, lockCamRot = false;
+
 	private Vector3 m_TargetAngles;
 	private Vector3 m_FollowAngles;
 	private Vector3 m_FollowVelocity;
-	private Quaternion m_OriginalRotation;	
+	private Quaternion m_OriginalRotation, tempCurrentMechRot, tempCamRot;	
+	[SerializeField]private GameObject currentMech;
+	float inputH;
+	float inputV;
 
 	private CharacterController parentCtrl;
 
@@ -35,14 +39,24 @@ public class MechCamera : MonoBehaviour
 	{
 		// we make initial calculations from the original local rotation
 		transform.localRotation = m_OriginalRotation;
-		
+
+		if(lockPlayerRot){
+			currentMech.transform.rotation = tempCurrentMechRot;
+		}
+
+		if (lockCamRot) {
+			transform.rotation = tempCamRot;
+			return;
+		}
+
 		// read input from mouse or mobile controls
-		float inputH;
-		float inputV;
-	
 		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
 		inputV = CrossPlatformInputManager.GetAxis ("Mouse Y");
-		
+
+		// with mouse input, we have direct control with no springback required.
+		m_TargetAngles.y += inputH * rotationSpeed;
+		m_TargetAngles.x += inputV * rotationSpeed;
+
 		// wrap values to avoid springing quickly the wrong way from positive to negative
 		if (m_TargetAngles.y > 180) {
 			m_TargetAngles.y -= 360;
@@ -61,13 +75,8 @@ public class MechCamera : MonoBehaviour
 			m_FollowAngles.x += 360;
 		}
 
-		// with mouse input, we have direct control with no springback required.
-		m_TargetAngles.y += inputH * rotationSpeed;
-		m_TargetAngles.x += inputV * rotationSpeed;
-		
 		// clamp vertical, let 360 horizontal
-		// m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -rotationRange.x * 0.5f, rotationRange.x * 0.5f);
-	
+		//m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -rotationRange.x * 0.5f, rotationRange.x * 0.5f);
 		
 		// smoothly interpolate current values to target angles
 //		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
@@ -75,11 +84,16 @@ public class MechCamera : MonoBehaviour
 
 
 		float outerRotate = ( - inputV) * rotationSpeed;
-		transform.RotateAround(transform.parent.position + transform.parent.up * 5, transform.parent.right, outerRotate);
-		//transform.RotateAround(transform.parent.position , transform.parent.right, outerRotate);
+
+		if (m_TargetAngles.x <= -120 || m_TargetAngles.x >= 70) {
+			outerRotate = 0;
+			m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -120, 70);
+		}
+		transform.RotateAround (transform.parent.position + transform.parent.up * 5, transform.parent.right, outerRotate);
 
 		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
-		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_FollowAngles.x, 0, 0);
+		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
+
 
 		Vector3 rot = transform.parent.eulerAngles;
 		rot.z = 0;
@@ -88,5 +102,20 @@ public class MechCamera : MonoBehaviour
 
 	public float GetFollowAngle_x(){
 		return m_FollowAngles.x;
+	}
+
+	public void LockMechRotation(bool b){//cam not included
+		lockPlayerRot = b;
+
+		if(!b){
+			currentMech.transform.localRotation = Quaternion.identity;
+		}else{
+			tempCurrentMechRot = currentMech.transform.rotation;
+		}
+	}
+
+	public void LockCamRotation(bool b){
+		lockCamRot = b;
+		tempCamRot = transform.rotation;
 	}
 }

@@ -29,7 +29,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		if (animatorVars == null)//find too slow ?
 			return;
 
-		if (cc != null)//already init ( every state need to be assigned only one time )
+		if (mctrl != null)//already init ( every state need to be assigned only one time )  ; cc is null if it's not mine
 			return;
 		
 		cc = animatorVars.cc;

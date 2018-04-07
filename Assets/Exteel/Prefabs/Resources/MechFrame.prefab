@@ -1410,7 +1410,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 276.5, y: 15.35, z: -19.47}
+  m_LocalPosition: {x: 259.6, y: 15.35, z: -19.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 405268}
@@ -2767,6 +2767,9 @@ MonoBehaviour:
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
+  lockPlayerRot: 0
+  lockCamRot: 0
+  currentMech: {fileID: 144000}
 --- !u!114 &11416036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3001,6 +3004,7 @@ MonoBehaviour:
   AnimatorVars: {fileID: 114137985907184306}
   Animator: {fileID: 9563454}
   mechCombat: {fileID: 11445986}
+  mechCamera: {fileID: 11415780}
   CharacterController: {fileID: 14356836}
   Terrain:
     serializedVersion: 2
@@ -3015,9 +3019,6 @@ MonoBehaviour:
   grounded: 1
   jump: 0
   on_BCNShoot: 0
-  Legs:
-  - {fileID: 462424}
-  - {fileID: 407428}
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5566,6 +5567,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
   - {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
   - {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
+  Lance: {fileID: 8300000, guid: e158fd622c94b45cca6e2c0386dc7d4c, type: 3}
   BoostStart: {fileID: 8300000, guid: 85694ab5f1a2240bfa16915335ffdacf, type: 3}
   BoostLoop: {fileID: 8300000, guid: e529fb7ecf34944479ec3cb577df8643, type: 3}
   RPCsounds:
@@ -6616,6 +6618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechCombat: {fileID: 11445986}
   mctrl: {fileID: 11462782}
+  mcam: {fileID: 11415780}
   animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
   SlashDetector: {fileID: 114361624446557588}
@@ -6772,7 +6775,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -380864114
+  randomSeed: 404121469
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -10085,7 +10088,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -214248512
+  randomSeed: -267507740
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -13392,7 +13395,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 162211592
+  randomSeed: -1162323125
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -16699,7 +16702,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -805193475
+  randomSeed: 990407369
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -23337,7 +23340,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 625091585
+  randomSeed: -314217965
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -30023,7 +30026,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1449418564
+  randomSeed: -1677932199
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -33336,7 +33339,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1841203489
+  randomSeed: -776364557
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -36685,7 +36688,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1148306229
+  randomSeed: 1187239241
   InitialModule:
     serializedVersion: 3
     enabled: 1
