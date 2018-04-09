@@ -85,10 +85,16 @@ public class MechCombat : Combat {
 	private MechController mechController;
 	private Sounds Sounds;
 	private Combo Combo;
-	private AnimatorVars AnimatorVars;
-	private Animator animator;
 	private ParticleSystem MuzL,MuzR;
 	private XWeaponTrail trailL,trailR;
+
+	//Animator
+	private AnimatorVars AnimatorVars;
+	private Animator animator;
+	AnimatorOverrideController animatorOverrideController;
+	private AnimationClipOverrides clipOverrides;
+	MovementClips MovementClips;
+
 
 	private Coroutine bulletCoroutine;
 
@@ -102,6 +108,7 @@ public class MechCombat : Combat {
 		initCombatVariables();
 		initComponents ();
 		UpdateWeaponInfo();
+		initAnimatorControllers();
 		initTransforms();
 		initGameObjects();
 		initCam ();
@@ -155,6 +162,17 @@ public class MechCombat : Combat {
 		animator = currentMech.GetComponent<Animator> (); 
 		mechController = GetComponent<MechController> ();
 		bm = GetComponent<BuildMech>();
+		MovementClips = GetComponent<MovementClips> ();
+	}
+
+	void initAnimatorControllers(){
+		animatorOverrideController = new AnimatorOverrideController (animator.runtimeAnimatorController);
+		animator.runtimeAnimatorController = animatorOverrideController;
+
+		clipOverrides = new AnimationClipOverrides (animatorOverrideController.overridesCount);
+		animatorOverrideController.GetOverrides (clipOverrides);
+
+		ChangeMovementClips ((weaponScripts[0].isTwoHanded)? 1 : 0);
 	}
 
 	public void UpdateWeaponInfo() {
@@ -526,8 +544,6 @@ public class MechCombat : Combat {
 		if(photonView.isMine){
 			currentHP = 0;
 			animator.SetBool (BCNPose_id, false);
-			animator.SetBool ("UsingBCN", false);
-			animator.SetBool ("UsingRCL", false);
 			gm.ShowRespawnPanel ();
 		}
 
@@ -599,7 +615,7 @@ public class MechCombat : Combat {
 		//For debug
 		if(forceDead){
 			forceDead = false;
-			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", 0f);
+			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
 		}
 			
 		// Fix head to always look ahead
@@ -913,15 +929,10 @@ public class MechCombat : Combat {
 		FindTrail();
 
 		//Switch animator controller 
-		if(weaponScripts[weaponOffset].isTwoHanded){
-			animator.runtimeAnimatorController = Resources.Load ("Both_Animator") as RuntimeAnimatorController;
-		}else{
-			animator.runtimeAnimatorController = Resources.Load ("ThirdAnimator") as RuntimeAnimatorController;
-		}
-
-		/*//check if using RCL => RCLIdle
-		animator.SetBool ("UsingRCL", curWeaponNames[0] == (int)WeaponTypes.RCL);
-		animator.SetBool ("UsingBCN", curWeaponNames[0] == (int)WeaponTypes.BCN);*/
+		if (!weaponScripts [weaponOffset].isTwoHanded)
+			ChangeMovementClips (0);
+		else
+			ChangeMovementClips (1);
 
 		animator.SetBool (BCNPose_id, false);
 
@@ -933,14 +944,45 @@ public class MechCombat : Combat {
 		SwitchWeaponEffectR.Stop();
 
 		isSwitchingWeapon = false;
-
-
 	}
 
 	void SetWeaponOffsetProperty(int weaponOffset){
 		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 		h.Add ("weaponOffset", weaponOffset);
 		photonView.owner.SetCustomProperties (h);
+	}
+
+	public void ChangeMovementClips(int num){ 
+		if (clipOverrides ["Idle"] == null)
+			print ("it's null");
+		clipOverrides ["Idle"] = MovementClips.Idle [num];
+		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
+		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
+		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
+		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
+
+		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
+		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
+		clipOverrides ["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
+
+		clipOverrides ["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
+		clipOverrides ["Hover_Left_02"] = MovementClips.Hover_Left_02[num];
+		clipOverrides ["Hover_Left_03"] = MovementClips.Hover_Left_03[num];
+		clipOverrides ["Hover_Right_01"] = MovementClips.Hover_Right_01[num];
+		clipOverrides ["Hover_Right_02"] = MovementClips.Hover_Right_02[num];
+		clipOverrides ["Hover_Right_03"] = MovementClips.Hover_Right_03[num];
+		clipOverrides ["Hover_Front_01"] = MovementClips.Hover_Front_01[num];
+		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
+		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
+
+		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
+		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
+		clipOverrides ["Jump03"] = MovementClips.Jump03[num];
+		clipOverrides ["Jump06"] = MovementClips.Jump06[num];
+		clipOverrides ["Jump07"] = MovementClips.Jump07[num];
+		clipOverrides ["Jump08"] = MovementClips.Jump08[num];
+
+		animatorOverrideController.ApplyOverrides (clipOverrides);
 	}
 
 	bool getIsFiring(int handPosition) {
