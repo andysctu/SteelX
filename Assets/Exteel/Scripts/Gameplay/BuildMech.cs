@@ -401,8 +401,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts[i] = new BCN029();
 					weapons [i].transform.rotation = hands [1].rotation;
 					weapons [i].transform.SetParent (hands [1]);
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(170,90,-25));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.5f - weapons [i].transform.forward*0.1f;
+					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f + weapons [i].transform.forward*0.2f;
 					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
 
@@ -635,8 +635,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos] = new BCN029 ();
 				weapons [weapPos].transform.rotation = hands [1].rotation;
 				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(170,90,-25));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f;
+				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f + weapons [weapPos].transform.forward*0.2f;
 
 				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
@@ -739,17 +739,12 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (animator == null)
 			return;
 		
-		if(curWeaponNames[weaponOffset] == "RCL034"){
-			animator.SetBool ("UsingRCL", true);
+		if(weaponScripts[weaponOffset].isTwoHanded){
+			animator.runtimeAnimatorController = Resources.Load ("Both_Animator") as RuntimeAnimatorController;
 		}else{
-			animator.SetBool ("UsingRCL", false);
+			animator.runtimeAnimatorController = Resources.Load ("ThirdAnimator") as RuntimeAnimatorController;
 		}
 
-		if(curWeaponNames[weaponOffset] == "BCN029"){
-			animator.SetBool ("UsingBCN", true);
-		}else{
-			animator.SetBool ("UsingBCN", false);
-		}
 	}
 
 	void SetMechDefaultIfEmpty(int mehc_num){

@@ -620,7 +620,7 @@ public class MechCombat : Combat {
 
 		updateHUD();
 	}
-
+		
 	// Set animations and tweaks
 	void LateUpdate() {
 		handleAnimation(LEFT_HAND);
@@ -890,7 +890,6 @@ public class MechCombat : Combat {
 			animator.SetBool(animationString(RIGHT_HAND), false);
 		}
 
-
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
 
@@ -913,9 +912,16 @@ public class MechCombat : Combat {
 		UpdateMuz ();
 		FindTrail();
 
-		//check if using RCL => RCLIdle
+		//Switch animator controller 
+		if(weaponScripts[weaponOffset].isTwoHanded){
+			animator.runtimeAnimatorController = Resources.Load ("Both_Animator") as RuntimeAnimatorController;
+		}else{
+			animator.runtimeAnimatorController = Resources.Load ("ThirdAnimator") as RuntimeAnimatorController;
+		}
+
+		/*//check if using RCL => RCLIdle
 		animator.SetBool ("UsingRCL", curWeaponNames[0] == (int)WeaponTypes.RCL);
-		animator.SetBool ("UsingBCN", curWeaponNames[0] == (int)WeaponTypes.BCN);
+		animator.SetBool ("UsingBCN", curWeaponNames[0] == (int)WeaponTypes.BCN);*/
 
 		animator.SetBool (BCNPose_id, false);
 

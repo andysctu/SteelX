@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 531a43ae47353a244961e463b743610f
-timeCreated: 1523017784
+guid: 225f7d60db03ad14fb20b594c123dca7
+timeCreated: 1523230427
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -51,8 +51,8 @@ ModelImporter:
     100086: Bip01_Spine1
     100088: Bip01_Spine2
     100090: Bip01_Spine3
-    100092: HDS308_Head
-    100094: //RootNode
+    100092: //RootNode
+    100094: HDS308_Head
     100096: L_UpperArm_Bone
     100098: R_UpperArm_Bone01
     100100: Weapon_lft_Bone
@@ -103,13 +103,13 @@ ModelImporter:
     400086: Bip01_Spine1
     400088: Bip01_Spine2
     400090: Bip01_Spine3
-    400092: HDS308_Head
-    400094: //RootNode
+    400092: //RootNode
+    400094: HDS308_Head
     400096: L_UpperArm_Bone
     400098: R_UpperArm_Bone01
     400100: Weapon_lft_Bone
     400102: Weapon_rt_Bone
-    7400000: Idle
+    7400000: Both_Hover_Right_03
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -126,14 +126,16 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Idle' has import animation warnings that might
-      lower retargeting quality:\nNote: Activate translation DOF on avatar to improve
-      retargeting quality.\n\t'Bip01_L_Clavicle' has translation animation that will
-      be discarded.\n\t'Bip01_R_Clavicle' has translation animation that will be discarded.\n"
+    animationImportWarnings: "\nClip 'Both_Hover_Right_03' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Bip01_Spine2' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\t'Bip01_L_Clavicle' has
+      translation animation that will be discarded.\n\t'Bip01_R_Clavicle' has translation
+      animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -142,18 +144,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Idle
-      takeName: Idle
+      name: Both_Hover_Right_03
+      takeName: Both_Hover_Right_03
       firstFrame: 0
-      lastFrame: 50
+      lastFrame: 13
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
+      loopTime: 0
+      loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
       loopBlendPositionXZ: 1
@@ -162,12 +164,12 @@ ModelImporter:
       keepOriginalPositionXZ: 0
       heightFromFeet: 0
       mirror: 0
-      bodyMask: 01000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
       transformMask: []
-      maskType: 1
-      maskSource: {fileID: 31900000, guid: 82b0de6506fe9fa4c869ecab3faefa70, type: 2}
+      maskType: 3
+      maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
