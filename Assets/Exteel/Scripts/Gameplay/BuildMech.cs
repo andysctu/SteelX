@@ -435,8 +435,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts [i] = new RCL034 ();
 					weapons [i].transform.rotation = hands [1].rotation;
 					weapons [i].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0f - weapons [i].transform.forward*0.1f;
+					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f ;
 
 					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
@@ -661,8 +661,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos] = new RCL034 ();
 				weapons [weapPos].transform.rotation = hands [1].rotation;
 				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward*0.1f;
+				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f ;
 
 				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
