@@ -962,8 +962,6 @@ public class MechCombat : Combat {
 	}
 
 	public void ChangeMovementClips(int num){ 
-		if (clipOverrides ["Idle"] == null)
-			print ("it's null");
 		clipOverrides ["Idle"] = MovementClips.Idle [num];
 		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
 		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
@@ -985,11 +983,23 @@ public class MechCombat : Combat {
 		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
 
 		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
+		clipOverrides ["Jump01_Left"] = MovementClips.Jump01_Left[num];
+		clipOverrides ["Jump01_Right"] = MovementClips.Jump01_Right[num];
 		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
+		clipOverrides ["Jump02_Left"] = MovementClips.Jump02_Left[num];
+		clipOverrides ["Jump02_Right"] = MovementClips.Jump02_Right[num];
 		clipOverrides ["Jump03"] = MovementClips.Jump03[num];
+		clipOverrides ["Jump03_Left"] = MovementClips.Jump03_Left[num];
+		clipOverrides ["Jump03_Right"] = MovementClips.Jump03_Right[num];
 		clipOverrides ["Jump06"] = MovementClips.Jump06[num];
+		clipOverrides ["Jump06_Left"] = MovementClips.Jump06_Left[num];
+		clipOverrides ["Jump06_Right"] = MovementClips.Jump06_Right[num];
 		clipOverrides ["Jump07"] = MovementClips.Jump07[num];
+		clipOverrides ["Jump07_Left"] = MovementClips.Jump07_Left[num];
+		clipOverrides ["Jump07_Right"] = MovementClips.Jump07_Right[num];
 		clipOverrides ["Jump08"] = MovementClips.Jump08[num];
+		clipOverrides ["Jump08_Left"] = MovementClips.Jump08_Left[num];
+		clipOverrides ["Jump08_Right"] = MovementClips.Jump08_Right[num];
 
 		animatorOverrideController.ApplyOverrides (clipOverrides);
 	}

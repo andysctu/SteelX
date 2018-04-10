@@ -26,10 +26,22 @@ public class MovementClips : MonoBehaviour
 	public AnimationClip[] Hover_Front_03;
 
 	public AnimationClip[] Jump01;
+	public AnimationClip[] Jump01_Left;
+	public AnimationClip[] Jump01_Right;
 	public AnimationClip[] Jump02;
+	public AnimationClip[] Jump02_Left;
+	public AnimationClip[] Jump02_Right;
 	public AnimationClip[] Jump03;
+	public AnimationClip[] Jump03_Left;
+	public AnimationClip[] Jump03_Right;
 	public AnimationClip[] Jump06;
+	public AnimationClip[] Jump06_Left;
+	public AnimationClip[] Jump06_Right;
 	public AnimationClip[] Jump07;
+	public AnimationClip[] Jump07_Left;
+	public AnimationClip[] Jump07_Right;
 	public AnimationClip[] Jump08;
+	public AnimationClip[] Jump08_Left;
+	public AnimationClip[] Jump08_Right;
 }
 

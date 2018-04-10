@@ -24,6 +24,12 @@ public class JumpedState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (cc == null || !cc.enabled)return;
 
+		float speed = Input.GetAxis("Vertical");
+		float direction = Input.GetAxis("Horizontal");
+
+		animator.SetFloat(speed_id, speed);
+		animator.SetFloat(direction_id, direction);
+
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
