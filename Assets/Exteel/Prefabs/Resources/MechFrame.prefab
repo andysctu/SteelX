@@ -2882,7 +2882,7 @@ MonoBehaviour:
     SynchronizeType: 0
     Name: OnMelee
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: BCNLoad
   m_SynchronizeLayers:
   - SynchronizeType: 1
@@ -2981,6 +2981,7 @@ MonoBehaviour:
   is_overheat: 00000000
   MaxHeat: 100
   cooldown: 16
+  isOnBCNPose: 0
   isLMeleePlaying: 0
   isRMeleePlaying: 0
   CanMeleeAttack: 1

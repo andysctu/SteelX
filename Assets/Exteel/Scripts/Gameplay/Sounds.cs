@@ -20,7 +20,7 @@ public class Sounds : MonoBehaviour {
 
 	*/
 
-	AudioClip BCNload;
+	AudioClip BCNload,BCNPose;
 
 	int weaponOffset =0; // update by switchWeapon
 
@@ -31,7 +31,8 @@ public class Sounds : MonoBehaviour {
 	private AudioSource MovementSource;
 
 	void Awake(){
-		BCNload = Resources.Load ("Sounds/Sieze") as AudioClip;
+		BCNload = Resources.Load ("Sounds/reload") as AudioClip;
+		BCNPose = Resources.Load ("Sounds/Sieze") as AudioClip;
 	}
 
 	// Use this for initialization
@@ -80,6 +81,10 @@ public class Sounds : MonoBehaviour {
 	}
 	public void PlayOnLocked(){
 		Source.PlayOneShot (OnLocked);
+	}
+
+	public void PlayBCNPose(){
+		Source.PlayOneShot (BCNPose);
 	}
 
 	public void PlayBCNload(){

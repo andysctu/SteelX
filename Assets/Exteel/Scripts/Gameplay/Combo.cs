@@ -274,4 +274,12 @@ public class Combo : MonoBehaviour {
 		mctrl.on_BCNShoot = (b==1);
 	}
 
+	public void SetBCNLoadToFalse(){
+		animator.SetBool ("BCNLoad", false);
+		animator.SetBool ("OnBCN", false);
+		animator.SetBool ("BCNPose", false);
+		mechCombat.BCNbulletNum = 2;
+	}
+
+	//public void Check
 }

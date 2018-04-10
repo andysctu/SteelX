@@ -38,6 +38,8 @@ public class MechCombat : Combat {
 	private int weaponOffset = 0;
 	private int[] curWeaponNames = new int[2];
 	private int BCNPose_id;
+	public int BCNbulletNum;
+	public bool isOnBCNPose;//called by BCNPoseState to check if on the right pose 
 
 	// Left
 	private const int LEFT_HAND = 0;
@@ -193,6 +195,8 @@ public class MechCombat : Combat {
 		isSwitchingWeapon = false;
 		CanMeleeAttack = true;
 		receiveNextSlash = true;
+		isOnBCNPose = false;
+		BCNbulletNum = 2;
 		setIsFiring (0,false);
 		setIsFiring (1, false);
 
@@ -776,9 +780,14 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.BCN:
-			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
+			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate && isOnBCNPose) {
 				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool (BCNPose_id) || !mechController.grounded)
 					return;
+				
+				BCNbulletNum--;
+				if (BCNbulletNum <= 0)
+					animator.SetBool ("BCNLoad", true);
+				
 				setIsFiring (handPosition, true);
 				HeatBar.IncreaseHeatBarL (45); 
 				//**Start Position
