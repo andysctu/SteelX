@@ -43,5 +43,8 @@ public class MovementClips : MonoBehaviour
 	public AnimationClip[] Jump08;
 	public AnimationClip[] Jump08_Left;
 	public AnimationClip[] Jump08_Right;
+
+	public AnimationClip[] shootL;
+	public AnimationClip[] shootR;
 }
 

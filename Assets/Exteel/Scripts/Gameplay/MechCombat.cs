@@ -177,6 +177,7 @@ public class MechCombat : Combat {
 		animatorOverrideController.GetOverrides (clipOverrides);
 
 		ChangeMovementClips ((weaponScripts[0].isTwoHanded)? 1 : 0);
+		ChangeWeaponClips ();
 	}
 
 	public void UpdateWeaponInfo() {
@@ -963,7 +964,25 @@ public class MechCombat : Combat {
 		photonView.owner.SetCustomProperties (h);
 	}
 
-	public void ChangeMovementClips(int num){ 
+	void ChangeWeaponClips(){
+		//switch weapon type
+		if(curWeaponNames[0] == (int)WeaponTypes.RANGED){
+			if(bm.curWeaponNames[weaponOffset].Contains("SMG")){
+				animatorOverrideController ["ShootingL"] = MovementClips.shootL [1];
+			}else{
+				animatorOverrideController ["ShootingL"] = MovementClips.shootL [0];
+			}
+		}
+		if(curWeaponNames[1] == (int)WeaponTypes.RANGED){
+			if(bm.curWeaponNames[weaponOffset+1].Contains("SMG")){
+				animatorOverrideController ["ShootingR"] = MovementClips.shootR [1];
+			}else{
+				animatorOverrideController ["ShootingR"] = MovementClips.shootR [0];
+			}
+		}
+	}
+
+	public void ChangeMovementClips(int num){
 		clipOverrides ["Idle"] = MovementClips.Idle [num];
 		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
 		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;

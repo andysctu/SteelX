@@ -158,6 +158,8 @@ public class MechController : Photon.MonoBehaviour {
 		move += transform.forward * zSpeed * ((Mathf.Abs (speed) > marginOfError) ? 1 : 0) * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 
+		//curboostingSpeed -= mechCombat.deceleration * Time.fixedDeltaTime;
+
 		if(isSlowDown){
 			move.x = move.x * 0.2f;
 			move.z = move.z * 0.2f;
@@ -221,8 +223,8 @@ public class MechController : Photon.MonoBehaviour {
 			
 			xSpeed = xzDir.x * curboostingSpeed;
 			zSpeed = xzDir.y * curboostingSpeed;
-		
-			curboostingSpeed -= mechCombat.deceleration * Time.fixedDeltaTime;
+
+			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime * 20;
 		}else{		
 			xSpeed = mechCombat.MoveSpeed()*xzDir.x;
 			zSpeed = mechCombat.MoveSpeed()*xzDir.y;
@@ -236,7 +238,7 @@ public class MechController : Photon.MonoBehaviour {
 			xSpeed = xzDir.x * curboostingSpeed;
 			zSpeed = xzDir.y * curboostingSpeed;
 
-			curboostingSpeed -= mechCombat.deceleration/4 * Time.fixedDeltaTime;
+			curboostingSpeed -= mechCombat.deceleration/4 * Time.deltaTime * 20;
 		}else{		
 			xSpeed = mechCombat.MoveSpeed()*xzDir.x;
 			zSpeed = mechCombat.MoveSpeed()*xzDir.y;
@@ -265,10 +267,11 @@ public class MechController : Photon.MonoBehaviour {
 		if (b) {
 			if(grounded){
 				if (curboostingSpeed <= mechCombat.MaxHorizontalBoostSpeed ())
-				curboostingSpeed += mechCombat.acceleration * Time.fixedDeltaTime;
+					curboostingSpeed += mechCombat.acceleration * Time.deltaTime * 5;
+				//Debug.Log ("speed : " + curboostingSpeed);
 				//ideal speed
-				curboostingVelocity_x += Mathf.Sign (curboostingSpeed * xzDir.x - curboostingVelocity_x) * mechCombat.acceleration /2 ;
-				curboostingVelocity_z += Mathf.Sign(curboostingSpeed * xzDir.y - curboostingVelocity_z) * mechCombat.acceleration /2 ;
+				curboostingVelocity_x += Mathf.Sign (curboostingSpeed * xzDir.x - curboostingVelocity_x) * mechCombat.acceleration /2 * Time.deltaTime *300;
+				curboostingVelocity_z += Mathf.Sign(curboostingSpeed * xzDir.y - curboostingVelocity_z) * mechCombat.acceleration /2 * Time.deltaTime *300;
 
 				xSpeed = curboostingVelocity_x;
 				zSpeed = curboostingVelocity_z;

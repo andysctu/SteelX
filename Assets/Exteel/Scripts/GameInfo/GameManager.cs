@@ -71,6 +71,11 @@ public class GameManager : Photon.MonoBehaviour {
 	//debug use
 	public bool FreezeTime = false;
 
+	//TODO : player can choose target frame rate
+	void Awake(){
+		Application.targetFrameRate = 60;//60:temp
+	}
+
 	void Start() {
 		if (Offline) {
 			PhotonNetwork.offlineMode = true;
