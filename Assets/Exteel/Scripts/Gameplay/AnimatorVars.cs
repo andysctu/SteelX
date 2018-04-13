@@ -9,6 +9,7 @@ public class AnimatorVars : MonoBehaviour {
 	public MechController mctrl = null;
 	public MechCombat mcbt = null;
 	public Sounds Sounds = null;
+	public MechIK mechIK = null;
 
 	public int boost_id;
 	public int grounded_id;
@@ -34,7 +35,8 @@ public class AnimatorVars : MonoBehaviour {
 		mctrl = transform.parent.gameObject.GetComponent<MechController> ();
 		mcbt = transform.parent.gameObject.GetComponent<MechCombat> ();
 		Sounds = GetComponent<Sounds> ();
-		
+		mechIK = GetComponent<MechIK> ();
+
 		if (!inHangar && transform.root.GetComponent<PhotonView>().isMine) {
 			boost_id = Animator.StringToHash ("Boost");
 			grounded_id = Animator.StringToHash ("Grounded");

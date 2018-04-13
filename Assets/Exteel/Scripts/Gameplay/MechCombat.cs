@@ -96,6 +96,7 @@ public class MechCombat : Combat {
 	AnimatorOverrideController animatorOverrideController;
 	private AnimationClipOverrides clipOverrides;
 	MovementClips MovementClips;
+	MechIK MechIK;
 
 
 	private Coroutine bulletCoroutine;
@@ -162,6 +163,7 @@ public class MechCombat : Combat {
 		AnimatorVars = currentMech.GetComponent<AnimatorVars> ();
 		Combo = currentMech.GetComponent<Combo> ();
 		animator = currentMech.GetComponent<Animator> (); 
+		MechIK = currentMech.GetComponent<MechIK> ();
 		mechController = GetComponent<MechController> ();
 		bm = GetComponent<BuildMech>();
 		MovementClips = GetComponent<MovementClips> ();
@@ -1240,6 +1242,11 @@ public class MechCombat : Combat {
 		finalStr += maxvalueStr [3];
 
 		return finalStr;
+	}
+
+
+	public int GetCurrentWeaponOffset(){
+		return weaponOffset;
 	}
 		
 //	public void BulletTraceEvent() {
