@@ -55,13 +55,13 @@ public class MechIK : MonoBehaviour {
 			}
 			break;
 		case 1:
-			AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 1, 0.05f);//TODO : too slow ?
+			AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 1, Time.deltaTime * 5);//TODO : too slow ?
 			Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3(0,10,0);
 			break;
 		case 2:
 			Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
 			if (!LeftIK_on) {
-				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 0, 0.1f);
+				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 0, Time.deltaTime * 5);
 				if (AimIK.solver.IKPositionWeight < 0.1f) {
 					AimIK.solver.IKPositionWeight = 0;
 					//enabled = false;
@@ -76,7 +76,7 @@ public class MechIK : MonoBehaviour {
 		case 0:
 
 			if (!LeftIK_on && weight_L>0.1f) {
-				weight_L = Mathf.Lerp (weight_L, 0, 0.05f);
+				weight_L = Mathf.Lerp (weight_L, 0, Time.deltaTime * 10);
 				Animator.SetIKPosition (AvatarIKGoal.LeftHand, Left_handIK.position);
 				Animator.SetIKPositionWeight (AvatarIKGoal.LeftHand, weight_L);
 
@@ -90,7 +90,7 @@ public class MechIK : MonoBehaviour {
 			}
 
 			if (!RightIK_on && weight_R>0.1f) {
-				weight_R = Mathf.Lerp (weight_R, 0, 0.05f);
+				weight_R = Mathf.Lerp (weight_R, 0, Time.deltaTime * 10);
 				Animator.SetIKPosition (AvatarIKGoal.RightHand, Right_handIK.position);
 				Animator.SetIKPositionWeight (AvatarIKGoal.RightHand, weight_R);
 				if (weight_R <= 0.1) {

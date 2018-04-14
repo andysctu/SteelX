@@ -19,4 +19,4 @@ public class ShootingState : MechStateMachineBehaviour {
 
 		mechIK.SetIK (false, 0, hand);
 	}
-}
+}	

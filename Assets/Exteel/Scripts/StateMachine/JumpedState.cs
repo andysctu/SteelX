@@ -5,20 +5,30 @@ using UnityEngine;
 public class JumpedState : MechStateMachineBehaviour {
 
 	public static bool jumpReleased = false;
-	bool jumpFirstCall = false;
+	public bool isFirstjump = false;
 
 	override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash){
 		base.Init (animator);
 		if (cc == null || !cc.enabled)return;
 
-		jumpReleased = false;
-		mcbt.CanMeleeAttack = true;
-		jumpFirstCall = true;
+		/*jumpReleased = false;
+		mcbt.CanMeleeAttack = true;*/
 	}
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init (animator);
 		if (cc == null || !cc.enabled)return;
 		animator.SetBool (onMelee_id, false);
+
+		if(isFirstjump){
+			mctrl.Boost (false);
+			animator.SetBool (boost_id, false);
+			jumpReleased = false;
+			mcbt.CanMeleeAttack = true;
+		}
+
+		if(!Input.GetKey(KeyCode.Space)){
+			jumpReleased = true;
+		}
 	}
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -29,7 +39,6 @@ public class JumpedState : MechStateMachineBehaviour {
 
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
-
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
@@ -41,7 +50,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			mctrl.Boost (true);
 		}
 
-		if (!jumpFirstCall && cc.isGrounded && !animator.IsInTransition(0)) { //falling->end jump  but not jump slash -> falling
+		if (!isFirstjump && cc.isGrounded && !animator.IsInTransition(0)) { //falling->end jump  but not jump slash -> falling
 			animator.SetBool(grounded_id, true);
 			animator.SetBool (jump_id, false);
 			mctrl.grounded = true;
@@ -55,10 +64,10 @@ public class JumpedState : MechStateMachineBehaviour {
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (cc == null || !cc.enabled)return;
 
-		if (jumpFirstCall) {//call after the jump01 end
+		/*if (jumpFirstCall) {//call after the jump01 end
 			jumpFirstCall = false;
-			mctrl.Jump ();
-		}
+			//mctrl.Jump ();
+		}*/
 	}
 
 	// OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here

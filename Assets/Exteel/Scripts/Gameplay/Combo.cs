@@ -281,5 +281,7 @@ public class Combo : MonoBehaviour {
 		mechCombat.BCNbulletNum = 2;
 	}
 
-	//public void Check
+	public void CallJump(){
+		mctrl.Jump ();
+	}
 }

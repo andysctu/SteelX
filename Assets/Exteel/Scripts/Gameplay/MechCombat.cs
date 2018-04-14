@@ -177,7 +177,7 @@ public class MechCombat : Combat {
 		animatorOverrideController.GetOverrides (clipOverrides);
 
 		ChangeMovementClips ((weaponScripts[0].isTwoHanded)? 1 : 0);
-		ChangeWeaponClips ();
+		//ChangeWeaponClips ();
 	}
 
 	public void UpdateWeaponInfo() {
@@ -964,7 +964,7 @@ public class MechCombat : Combat {
 		photonView.owner.SetCustomProperties (h);
 	}
 
-	void ChangeWeaponClips(){
+	/*void ChangeWeaponClips(){
 		//switch weapon type
 		if(curWeaponNames[0] == (int)WeaponTypes.RANGED){
 			if(bm.curWeaponNames[weaponOffset].Contains("SMG")){
@@ -980,7 +980,7 @@ public class MechCombat : Combat {
 				animatorOverrideController ["ShootingR"] = MovementClips.shootR [0];
 			}
 		}
-	}
+	}*/
 
 	public void ChangeMovementClips(int num){
 		clipOverrides ["Idle"] = MovementClips.Idle [num];
@@ -1003,9 +1003,9 @@ public class MechCombat : Combat {
 		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
 		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
 
-		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
-		clipOverrides ["Jump01_Left"] = MovementClips.Jump01_Left[num];
-		clipOverrides ["Jump01_Right"] = MovementClips.Jump01_Right[num];
+		clipOverrides ["Jump01"] = MovementClips.Jump01[0];
+		clipOverrides ["Jump01_Left"] = MovementClips.Jump01_Left[0];
+		clipOverrides ["Jump01_Right"] = MovementClips.Jump01_Right[0];
 		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
 		clipOverrides ["Jump02_Left"] = MovementClips.Jump02_Left[num];
 		clipOverrides ["Jump02_Right"] = MovementClips.Jump02_Right[num];

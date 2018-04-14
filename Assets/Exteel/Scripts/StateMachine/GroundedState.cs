@@ -12,9 +12,17 @@ public class GroundedState : MechStateMachineBehaviour {
 	}
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled || !cc.isGrounded)
+		if (cc == null || !cc.enabled)
 			return;
-		
+
+		if(!cc.isGrounded || animator.GetBool(jump_id)){//TODO : mctrl has checked grounded 
+			animator.SetBool (grounded_id, false);
+			return;
+		}else{
+			animator.SetBool (grounded_id, true);
+		}
+
+
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
@@ -35,7 +43,8 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (speed > 0 || speed < 0 || direction > 0 || direction < 0) {
 			mctrl.Run();
 
-			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && !animator.IsInTransition(0)) {
+		//	if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && !animator.IsInTransition(0)) {
+			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && !animator.GetBool(jump_id)) {
 				animator.SetBool(boost_id, true);
 				mctrl.Boost(true);
 			}
