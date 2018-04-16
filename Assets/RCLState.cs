@@ -5,7 +5,7 @@ using UnityEngine;
 public class RCLState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if (mcbt == null)return;
 		mechIK.SetIK (true, 2, 0);
 	}

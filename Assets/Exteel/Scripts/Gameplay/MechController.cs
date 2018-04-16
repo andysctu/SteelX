@@ -52,7 +52,7 @@ public class MechController : Photon.MonoBehaviour {
 	// Animation
 	private float speed;
 	private float direction;
-	public bool grounded = true; //this is the fastest way to check if not grounded , and also depends on characterController.isgrounded
+	public bool grounded = true; //changes with animator bool "grounded"
 	public bool jump;
 	public bool on_BCNShoot = false;
 
@@ -97,6 +97,7 @@ public class MechController : Photon.MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// Update the Vector3 move variable
+		//CheckIsGrounded ();
 		GetXZDirection();
 	}
 
@@ -105,13 +106,11 @@ public class MechController : Photon.MonoBehaviour {
 			return;
 		}
 
-		if(!CheckIsGrounded()){
-			ySpeed -= Gravity;
+		if(!grounded){
+			ySpeed -= Gravity ;
 		} else {
-			//ySpeed = 0;
-			ySpeed = -CharacterController.stepOffset / Time.deltaTime;
+			ySpeed = -CharacterController.stepOffset / (Time.fixedDeltaTime/2);
 		}
-
 		if (Animator == null) {
 			return;
 		}

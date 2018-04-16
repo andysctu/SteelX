@@ -7,30 +7,24 @@ public class JumpedState : MechStateMachineBehaviour {
 	public static bool jumpReleased = false;
 	public bool isFirstjump = false;
 
-	override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash){
-		base.Init (animator);
-		if (cc == null || !cc.enabled)return;
-
-		/*jumpReleased = false;
-		mcbt.CanMeleeAttack = true;*/
-	}
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init (animator);
 		if (cc == null || !cc.enabled)return;
-		animator.SetBool (onMelee_id, false);
 
 		if(isFirstjump){
 			mctrl.Boost (false);
-			animator.SetBool (boost_id, false);
+			animator.SetBool (boost_id, false);//avoid shift+space directly vertically boost
 			jumpReleased = false;
-			mcbt.CanMeleeAttack = true;
-		}
-
-		if(!Input.GetKey(KeyCode.Space)){
+			mctrl.grounded = false;
+			animator.SetBool (grounded_id, false);
+		}else if(!Input.GetKey(KeyCode.Space)){//dir falling
+			animator.SetBool (jump_id, true);
 			jumpReleased = true;
+			mctrl.grounded = false;
+			animator.SetBool (grounded_id, false);
 		}
 	}
-	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
+
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (cc == null || !cc.enabled)return;
 
@@ -39,8 +33,19 @@ public class JumpedState : MechStateMachineBehaviour {
 
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
+
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
+		}
+
+		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(boost_id)) {
+			mctrl.grounded = true;
+			animator.SetBool(grounded_id, true);
+			animator.SetBool (jump_id, false);
+			mctrl.SetCanVerticalBoost (false);
+			return;
+		}else{
+			mctrl.JumpMoveInAir ();
 		}
 
 		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
@@ -49,34 +54,6 @@ public class JumpedState : MechStateMachineBehaviour {
 			animator.SetBool(boost_id, true);
 			mctrl.Boost (true);
 		}
-
-		if (!isFirstjump && cc.isGrounded && !animator.IsInTransition(0)) { //falling->end jump  but not jump slash -> falling
-			animator.SetBool(grounded_id, true);
-			animator.SetBool (jump_id, false);
-			mctrl.grounded = true;
-			mctrl.SetCanVerticalBoost (false);
-			return;
-		}else{
-			mctrl.JumpMoveInAir ();
-		}
 	}
 
-	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled)return;
-
-		/*if (jumpFirstCall) {//call after the jump01 end
-			jumpFirstCall = false;
-			//mctrl.Jump ();
-		}*/
-	}
-
-	// OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here
-	//override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
-
-	// OnStateIK is called right after Animator.OnAnimatorIK(). Code that sets up animation IK (inverse kinematics) should be implemented here.
-	//override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-	//
-	//}
 }

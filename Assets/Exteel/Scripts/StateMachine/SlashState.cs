@@ -5,7 +5,7 @@ using UnityEngine;
 public class SlashState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 
@@ -36,6 +36,7 @@ public class SlashState : MechStateMachineBehaviour {
 
 		mcbt.isRMeleePlaying = 0;
 		mcbt.isLMeleePlaying = 0;
+		mcbt.CanMeleeAttack = true;
 		mcbt.SetReceiveNextSlash (1);
 	}
 
@@ -58,6 +59,7 @@ public class SlashState : MechStateMachineBehaviour {
 			animator.SetBool (onMelee_id, false);
 			mcbt.isRMeleePlaying = 0;
 			mcbt.isLMeleePlaying = 0;
+			mcbt.SetReceiveNextSlash (1);
 		}
 	}
 }

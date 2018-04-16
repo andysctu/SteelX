@@ -7,7 +7,7 @@ public class ShootingState : MechStateMachineBehaviour {
 	public int hand = 0;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if (mcbt == null)return;
 		mcbt.isOnBCNPose = true;
 		mechIK.SetIK (true, 0, hand);

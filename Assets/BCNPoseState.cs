@@ -5,7 +5,7 @@ using UnityEngine;
 public class BCNPoseState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if (mcbt == null)return;
 		mcbt.isOnBCNPose = true;
 		mechIK.SetIK (true, 1, 0);

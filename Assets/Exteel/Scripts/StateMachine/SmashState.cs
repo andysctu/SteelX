@@ -5,7 +5,7 @@ using UnityEngine;
 public class SmashState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 

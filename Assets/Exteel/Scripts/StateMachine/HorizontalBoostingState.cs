@@ -5,7 +5,7 @@ using UnityEngine;
 public class HorizontalBoostingState : MechStateMachineBehaviour {
 	
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 
 		mcbt.CanMeleeAttack = true;
@@ -17,38 +17,38 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 
-		if(!cc.isGrounded){//TODO : mctrl has checked grounded 
-			animator.SetBool (grounded_id, false);
-			animator.SetBool (boost_id, false);
-			mctrl.Boost (false);
-			return;
-		}
-
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if (Input.GetKey(KeyCode.Space) && !animator.GetBool(jump_id)) {	
-			mctrl.Boost (false);
-			mctrl.SetCanVerticalBoost(true);
-			animator.SetBool(boost_id, false);
-			animator.SetBool(grounded_id, false);
+		if(animator.GetBool(jump_id)){
+			return;
+		}
+
+		if(!mctrl.CheckIsGrounded()){//falling
+			mctrl.SetCanVerticalBoost (true);
 			mctrl.grounded = false;
+			animator.SetBool (grounded_id, false);
+			animator.SetBool (boost_id, false);//avoid dir go to next state (the transition interrupts by next state)
+			mctrl.Boost (false);
+			return;
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space)) {	
+			mctrl.SetCanVerticalBoost(true);
 			animator.SetBool(jump_id, true);
 		}
 
-		if (!Input.GetKey (KeyCode.LeftShift) || animator.GetBool(jump_id) || !mcbt.IsFuelAvailable ()) {
+		if (!Input.GetKey (KeyCode.LeftShift) || !mcbt.IsFuelAvailable ()) {
 			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
 			return;
 		} else {
-			if (mctrl.grounded) {
-				animator.SetBool (boost_id, true);
-				mctrl.Boost (true);
-			}
+			animator.SetBool (boost_id, true);
+			mctrl.Boost (true);
 		}
 	}
 }

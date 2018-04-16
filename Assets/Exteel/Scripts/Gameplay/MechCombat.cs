@@ -752,7 +752,7 @@ public class MechCombat : Combat {
 					return;
 				}
 
-				CanMeleeAttack = false;//this is set to true when grounded(update) , to avoid multi-hit in air
+				CanMeleeAttack = false;
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
@@ -1003,9 +1003,12 @@ public class MechCombat : Combat {
 		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
 		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
 
-		clipOverrides ["Jump01"] = MovementClips.Jump01[0];
-		clipOverrides ["Jump01_Left"] = MovementClips.Jump01_Left[0];
-		clipOverrides ["Jump01_Right"] = MovementClips.Jump01_Right[0];
+		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
+		clipOverrides ["Jump01_Left"] = MovementClips.Jump01_Left[num];
+		clipOverrides ["Jump01_Right"] = MovementClips.Jump01_Right[num];
+		clipOverrides ["Jump01_b"] = MovementClips.Jump01_b[num];
+		clipOverrides ["Jump01_Left_b"] = MovementClips.Jump01_Left_b[num];
+		clipOverrides ["Jump01_Right_b"] = MovementClips.Jump01_Right_b[num];
 		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
 		clipOverrides ["Jump02_Left"] = MovementClips.Jump02_Left[num];
 		clipOverrides ["Jump02_Right"] = MovementClips.Jump02_Right[num];
