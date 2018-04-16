@@ -32,8 +32,8 @@ public class SlashState : MechStateMachineBehaviour {
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
 		if ( cc == null || !cc.enabled) return;
-		animator.SetBool (onMelee_id, false);
 
+		animator.SetBool (onMelee_id, false);
 		mcbt.isRMeleePlaying = 0;
 		mcbt.isLMeleePlaying = 0;
 		mcbt.CanMeleeAttack = true;

@@ -784,9 +784,9 @@ AnimatorState:
   m_Transitions:
   - {fileID: 1101147252347095666}
   - {fileID: 1101058862304373212}
+  - {fileID: 1101811151047641210}
   - {fileID: 110110852}
   - {fileID: 110120526}
-  - {fileID: 1101811151047641210}
   m_StateMachineBehaviours:
   - {fileID: 114985000940339824}
   m_Position: {x: 50, y: 50, z: 0}
@@ -815,9 +815,9 @@ AnimatorState:
   m_Transitions:
   - {fileID: 1101989669450488116}
   - {fileID: 1101739228245761288}
+  - {fileID: 1101588472749204902}
   - {fileID: 110184246}
   - {fileID: 110199848}
-  - {fileID: 1101588472749204902}
   m_StateMachineBehaviours:
   - {fileID: 114502281321995480}
   m_Position: {x: 50, y: 50, z: 0}
@@ -1843,7 +1843,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.0011477686
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 2
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &1101000013182351926
@@ -1891,7 +1891,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.05356192
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 2
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &1101000014188786098
@@ -2954,7 +2954,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.2
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0
@@ -2981,7 +2981,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.2
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0
@@ -3981,7 +3981,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.2
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0
@@ -5208,7 +5208,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.2
   m_TransitionOffset: 0
   m_ExitTime: 0
   m_HasExitTime: 0

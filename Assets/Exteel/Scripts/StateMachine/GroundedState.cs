@@ -44,11 +44,13 @@ public class GroundedState : MechStateMachineBehaviour {
 		}
 
 		if (speed > 0 || speed < 0 || direction > 0 || direction < 0) {
-			mctrl.Run();
+			//mctrl.Run();
 
 			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost()) {
 				animator.SetBool(boost_id, true);
 				mctrl.Boost(true);
+			}else{
+				mctrl.Run();
 			}
 		}
 	}
