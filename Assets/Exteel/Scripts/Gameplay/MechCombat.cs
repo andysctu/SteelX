@@ -992,6 +992,12 @@ public class MechCombat : Combat {
 		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
 		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
 		clipOverrides ["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
+		clipOverrides ["Hover_Back_01_Left"] = MovementClips.Hover_Back_01_Left[num];
+		clipOverrides ["Hover_Back_02_Left"] = MovementClips.Hover_Back_02_Left[num];
+		clipOverrides ["Hover_Back_03_Left"] = MovementClips.Hover_Back_03_Left[num];
+		clipOverrides ["Hover_Back_01_Right"] = MovementClips.Hover_Back_01_Right[num];
+		clipOverrides ["Hover_Back_02_Right"] = MovementClips.Hover_Back_02_Right[num];
+		clipOverrides ["Hover_Back_03_Right"] = MovementClips.Hover_Back_03_Right[num];
 
 		clipOverrides ["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
 		clipOverrides ["Hover_Left_02"] = MovementClips.Hover_Left_02[num];

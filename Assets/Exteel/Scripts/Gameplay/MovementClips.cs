@@ -7,6 +7,8 @@ public class MovementClips : MonoBehaviour
 	public AnimationClip[] Idle;
 
 	public AnimationClip[] BackWalk;
+	public AnimationClip[] BackWalk_Left;
+	public AnimationClip[] BackWalk_Right;
 	public AnimationClip[] Run_Left;
 	public AnimationClip[] Run_Front;
 	public AnimationClip[] Run_Right;
@@ -14,6 +16,12 @@ public class MovementClips : MonoBehaviour
 	public AnimationClip[] Hover_Back_01;
 	public AnimationClip[] Hover_Back_02;
 	public AnimationClip[] Hover_Back_03;
+	public AnimationClip[] Hover_Back_01_Left;
+	public AnimationClip[] Hover_Back_02_Left;
+	public AnimationClip[] Hover_Back_03_Left;
+	public AnimationClip[] Hover_Back_01_Right;
+	public AnimationClip[] Hover_Back_02_Right;
+	public AnimationClip[] Hover_Back_03_Right;
 
 	public AnimationClip[] Hover_Left_01;
 	public AnimationClip[] Hover_Left_02;
