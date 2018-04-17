@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class SlashState : MechStateMachineBehaviour {
 
+	private bool inAir = false;
+
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 
+		if (animator.GetBool (jump_id))
+			inAir = true;
+		else
+			inAir = false;
 
 		Sounds.StopBoostLoop ();
 		animator.SetBool (boost_id, false);
@@ -55,7 +61,7 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
-		if (animator.GetBool (jump_id)) {//exiting from jump melee attack
+		if (inAir) {//exiting from jump melee attack
 			animator.SetBool (onMelee_id, false);
 			mcbt.isRMeleePlaying = 0;
 			mcbt.isLMeleePlaying = 0;
