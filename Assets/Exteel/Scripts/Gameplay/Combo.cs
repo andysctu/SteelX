@@ -249,7 +249,7 @@ public class Combo : MonoBehaviour {
 		if(speed >0){
 			mcam.LockCamRotation (true);
 			List<Transform> targets = SlashDetector.getCurrentTargets ();
-			if(targets.Count == 0){
+			if(targets.Count == 0 || !mctrl.grounded){
 				mctrl.SetMoving(speed);
 			}else{
 				//check if there is any target in front & the distance between

@@ -935,6 +935,7 @@ public class MechCombat : Combat {
 		if(photonView.isMine)SetWeaponOffsetProperty (weaponOffset);
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
+		MechIK.ResetIK ();
 		UpdateCurWeaponType ();
 		SetSlashDetector ();
 		FindGunEnds ();
