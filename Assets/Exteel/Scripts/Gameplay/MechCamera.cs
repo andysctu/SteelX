@@ -80,11 +80,12 @@ public class MechCamera : MonoBehaviour
 		m_FollowAngles = m_TargetAngles;
 
 		//lerp parent rotation
-		transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.deltaTime * playerlerpspeed);
+		//transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.deltaTime * playerlerpspeed);
+		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
 
 		//lerp cam rotation
-		orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), Time.deltaTime * orbitlerpspeed);
-
+		//orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), Time.deltaTime * orbitlerpspeed);
+		orbitAngle = orbitAngle + inputV * rotationSpeed;
 
 		idealLocalAngle = -1.0322f * (orbitAngle - 119.64f);
 		transform.localRotation = Quaternion.Euler(idealLocalAngle+angleOffset,0,0);

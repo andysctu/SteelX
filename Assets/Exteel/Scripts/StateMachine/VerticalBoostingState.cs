@@ -14,7 +14,7 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if ( cc == null || !cc.enabled) return;
-		mctrl.VerticalBoost();
+		//mctrl.VerticalBoost();
 
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
@@ -26,6 +26,8 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 			mctrl.Boost (false);
 			animator.SetFloat(speed_id, 0);
 			animator.SetBool(boost_id, false);
+		}else{
+			mctrl.VerticalBoost();
 		}
 	}
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
