@@ -12,7 +12,7 @@ public class MechIK : MonoBehaviour {
 	Animator Animator;
 	Transform shoulderL,shoulderR;
 	Transform[] Hands;
-
+	float idealweight = 0;
 	//AimIK
 	[SerializeField]Transform Target;
 	Transform PoleTarget, AimTransform;
@@ -55,7 +55,7 @@ public class MechIK : MonoBehaviour {
 			}
 			break;
 		case 1:
-			AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 1, Time.deltaTime * 5);//TODO : too slow ?
+			AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, idealweight, Time.deltaTime * 5);//TODO : too slow ?
 			Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3(0,10,0);
 			break;
 		case 2:
@@ -129,6 +129,8 @@ public class MechIK : MonoBehaviour {
 					Debug.Log ("null PoleTarget");
 				else
 					AimIK.solver.poleTarget = PoleTarget;
+
+				idealweight = 1;
 			}
 
 			switch(mode){
@@ -175,9 +177,9 @@ public class MechIK : MonoBehaviour {
 				}
 				break;
 			case 1:
-
-				AimIK.solver.IKPositionWeight = 0;
-				enabled = false;
+				idealweight = 0;
+				//AimIK.solver.IKPositionWeight = 0;
+				//enabled = false;
 				break;
 			case 2:
 				LeftIK_on = false;

@@ -275,7 +275,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: d8d4ddcdc6c07424ba534dea9f4117ef, type: 3}
     m_Threshold: -0.5
-    m_Position: {x: -0.4, y: 0}
+    m_Position: {x: -1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -291,7 +291,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 7bfe5577a2af740fd92baf59a22ae531, type: 3}
     m_Threshold: 0.5
-    m_Position: {x: 0, y: -0.7}
+    m_Position: {x: 0, y: -1}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -299,7 +299,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 3fc5af6f8a6c24eff80e0ea74e1f62d3, type: 3}
     m_Threshold: 1
-    m_Position: {x: 0.4, y: 0}
+    m_Position: {x: 0.5, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -307,7 +307,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 831cf131298354b79bf8d4de4ec39bb9, type: 3}
     m_Threshold: 1.5
-    m_Position: {x: 0, y: 0.7}
+    m_Position: {x: 0, y: 1}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -315,7 +315,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 02f49a728c6955146811d0d9c336b743, type: 2}
     m_Threshold: 2
-    m_Position: {x: -0.4, y: -0.7}
+    m_Position: {x: -1, y: -1}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -323,7 +323,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: 7400000, guid: 6008c9b9d0b22f141afe963402125ed7, type: 2}
     m_Threshold: 2.5
-    m_Position: {x: -0.4, y: 0.7}
+    m_Position: {x: -1, y: 1}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
@@ -563,7 +563,7 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0
+  m_TransitionDuration: 0.05
   m_TransitionOffset: 0
   m_ExitTime: 0.045447037
   m_HasExitTime: 0
@@ -693,13 +693,14 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_StateMachine: {fileID: 1107523502110462064}
     m_Position: {x: -768, y: 252, z: 0}
-  m_AnyStateTransitions:
-  - {fileID: 1101614422872725384}
+  m_AnyStateTransitions: []
   m_EntryTransitions: []
   m_StateMachineTransitions:
   - first: {fileID: 0}
     second: []
   - first: {fileID: 1107308097323917106}
+    second: []
+  - first: {fileID: 1107523502110462064}
     second: []
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -168, y: -300, z: 0}
@@ -3315,39 +3316,6 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!1101 &1101614422872725384
-AnimatorStateTransition:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: 
-  m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: BCNPose
-    m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: Grounded
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: OnBCN
-    m_EventTreshold: 0
-  - m_ConditionMode: 2
-    m_ConditionEvent: BCNLoad
-    m_EventTreshold: 0
-  m_DstStateMachine: {fileID: 0}
-  m_DstState: {fileID: 1102681344286992044}
-  m_Solo: 0
-  m_Mute: 0
-  m_IsExit: 0
-  serializedVersion: 3
-  m_TransitionDuration: 0.1
-  m_TransitionOffset: 0
-  m_ExitTime: 0.75
-  m_HasExitTime: 0
-  m_HasFixedDuration: 1
-  m_InterruptionSource: 0
-  m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
 --- !u!1101 &1101618772002167372
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -3846,7 +3814,7 @@ AnimatorStateTransition:
   m_ExitTime: 0
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 2
+  m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &1101801808883636204
@@ -5324,7 +5292,7 @@ AnimatorState:
   m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: BCNpose_Start
+  m_Name: BCNPose_Start
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:

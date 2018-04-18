@@ -33,6 +33,7 @@ public class SlashState : MechStateMachineBehaviour {
 		}else{
 			mcbt.SlashDetect (1);
 		}
+		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);//**
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
@@ -48,15 +49,12 @@ public class SlashState : MechStateMachineBehaviour {
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if ( cc == null || !cc.enabled) return;
-		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
-
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 	}
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (cc == null || !cc.enabled)
 			return;
-
 		mctrl.SetCanVerticalBoost (false);
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);

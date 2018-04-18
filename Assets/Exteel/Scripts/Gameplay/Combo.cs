@@ -267,6 +267,15 @@ public class Combo : MonoBehaviour {
 		}
 	}
 
+	public void BCNPose(){
+		pv.RPC ("BCNPoseRPC", PhotonTargets.All);
+	}
+
+	[PunRPC]
+	public void BCNPoseRPC(){
+		animator.Play ("BCNPose_Start");
+	}
+
 	public void CallBCNShoot(int b){
 		if (!pv.isMine)
 			return;

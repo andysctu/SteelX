@@ -701,6 +701,7 @@ public class MechCombat : Combat {
 			} else if (Input.GetKeyDown (KeyCode.Mouse0)) {
 				if (!is_overheat[weaponOffset]) {
 					if (!animator.GetBool (BCNPose_id)) {
+						Combo.BCNPose ();
 						animator.SetBool (BCNPose_id, true);
 						timeOfLastShotL = Time.time - 1 / bm.weaponScripts [weaponOffset + handPosition].Rate / 2;
 					}

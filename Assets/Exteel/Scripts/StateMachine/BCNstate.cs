@@ -13,7 +13,10 @@ public class BCNstate : MechStateMachineBehaviour {
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if ( cc == null || !cc.enabled) return;
-		mctrl.BCNPose ();
+
+		if(animator.GetBool("OnBCN"))
+			mctrl.BCNPose ();
+		
 		animator.SetBool (boost_id, false);
 
 		if(!animator.IsInTransition(0))

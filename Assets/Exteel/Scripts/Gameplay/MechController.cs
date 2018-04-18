@@ -24,12 +24,12 @@ public class MechController : Photon.MonoBehaviour {
 
 	private float marginOfError = 0.1f;
 	public float Gravity = 6.5f;
-	public float minDownSpeed = -30f;
+	public float minDownSpeed = -30f, maxDownSpeed = -60f;
 	public float InAirSpeedCoeff = 0.7f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
 	private float curboostingSpeed;//global space
 	private Vector2 xzDir;
-
+	private Vector2 run_xzDir;
 	private bool startBoosting = false;
 
 	private Vector3 move = Vector3.zero;
@@ -74,7 +74,7 @@ public class MechController : Photon.MonoBehaviour {
 		Animator.SetBool ("Grounded", true);
 		mechCamera.LockCamRotation (false);
 		mechCamera.LockMechRotation (false);
-
+		run_xzDir = Vector2.zero;
 		boostDust.Stop ();
 	}
 
@@ -105,11 +105,13 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		if(!grounded){
-			ySpeed -= Gravity ;
+
+			ySpeed -= (ySpeed<maxDownSpeed)? 0 : Gravity ;
+			
 			if(!Animator.GetBool("OnMelee"))
 				DynamicCamInAir ();
 		} else {
-			ySpeed = -CharacterController.stepOffset / (Time.fixedDeltaTime/2);
+			ySpeed = (-CharacterController.stepOffset / Time.fixedDeltaTime)*0.2f;
 		}
 		if (Animator == null) {
 			return;
@@ -166,10 +168,11 @@ public class MechController : Photon.MonoBehaviour {
 			}
 			return;
 		}
-		if (!(Mathf.Abs (speed) < 0.1f) || !(Mathf.Abs (direction) < 0.1f)) {
+
+		//if (!(Mathf.Abs (speed) < 0.1f) || !(Mathf.Abs (direction) < 0.1f) ) {
 			move += Vector3.right * xSpeed * Time.fixedDeltaTime;
 			move += Vector3.forward * zSpeed * Time.fixedDeltaTime;
-		}
+		//}
 		move.y += ySpeed * Time.fixedDeltaTime;
 
 		if(isSlowDown){
@@ -225,12 +228,14 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Run() {
+		run_xzDir.x = Mathf.Lerp (run_xzDir.x, xzDir.x, 0.2f);//smooth slow down (boosting -> Idle&Walk
+		run_xzDir.y = Mathf.Lerp (run_xzDir.y, xzDir.y, 0.2f);//not achieving by gravity because we don't want walk smooth slow down
+
 		//decelerating
 		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (boost_id)) {//not in transition to boost
-			
-			xSpeed = (xzDir.x * curboostingSpeed * transform.right).x +(xzDir.y * curboostingSpeed * transform.forward).x;
-			zSpeed =  (xzDir.x * curboostingSpeed * transform.right).z +(xzDir.y * curboostingSpeed * transform.forward).z;
-			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime * 20;
+			xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x +(run_xzDir.y * curboostingSpeed * transform.forward).x;
+			zSpeed =  (run_xzDir.x * curboostingSpeed * transform.right).z +(run_xzDir.y * curboostingSpeed * transform.forward).z;
+			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime * 5;
 		}else{		
 			xSpeed = mechCombat.MoveSpeed()*xzDir.x*transform.right.x + mechCombat.MoveSpeed()*xzDir.y*transform.forward.x;
 			zSpeed = mechCombat.MoveSpeed()*xzDir.x*transform.right.z + mechCombat.MoveSpeed()*xzDir.y*transform.forward.z;
@@ -273,15 +278,19 @@ public class MechController : Photon.MonoBehaviour {
 				if (curboostingSpeed <= mechCombat.MaxHorizontalBoostSpeed ())
 					curboostingSpeed += mechCombat.acceleration * Time.deltaTime * 5;
 
-				//ideal speed
-				float idealSpeed_x = (curboostingSpeed * xzDir.x * transform.right).x + (curboostingSpeed * xzDir.y * transform.forward).x,
-				idealSpeed_z = (curboostingSpeed * xzDir.y * transform.forward).z + (curboostingSpeed * xzDir.x * transform.right).z;
+				if ((Mathf.Abs (speed) < 0.1f) && (Mathf.Abs (direction) < 0.1f)) {
+					xSpeed += Mathf.Sign(0 - xSpeed) * mechCombat.acceleration * Time.deltaTime *50;
+					zSpeed += Mathf.Sign(0 - zSpeed) * mechCombat.acceleration * Time.deltaTime *50;
+				}else{
+					//ideal speed
+					float idealSpeed_x = (curboostingSpeed * xzDir.x * transform.right).x + (curboostingSpeed * xzDir.y * transform.forward).x,
+					idealSpeed_z = (curboostingSpeed * xzDir.y * transform.forward).z + (curboostingSpeed * xzDir.x * transform.right).z;
+					Vector2 dir = new Vector2 (idealSpeed_x, idealSpeed_z).normalized;
+					float acc_x = Mathf.Abs (mechCombat.acceleration * dir.x), acc_z = Mathf.Abs(mechCombat.acceleration * dir.y);
 
-				Vector2 dir = new Vector2 (idealSpeed_x, idealSpeed_z).normalized;
-				float acc_x = Mathf.Abs (mechCombat.acceleration * dir.x), acc_z = Mathf.Abs(mechCombat.acceleration * dir.y);
-
-				xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime *100;
-				zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime *100;
+					xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime *100;
+					zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime *100;
+				}
 
 				boostDust.transform.localRotation = Quaternion.Euler (-90,Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward),0);
 				
