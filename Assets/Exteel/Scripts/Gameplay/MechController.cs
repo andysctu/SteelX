@@ -401,10 +401,16 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public bool CheckIsGrounded(){
-		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.8f, 0), 2.0f, Terrain);
+		
+		return Physics.CheckSphere (transform.position + new Vector3 (0, 1.7f, 0), 2.0f, Terrain);
 	}
 
 	public void CallLockMechRot(bool b){
 		mechCamera.LockMechRotation (b);
 	}
+
+	/*void OnDrawGizmos(){
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere (transform.position + new Vector3 (0, 1.7f, 0), 2.0f);
+	}*/
 }

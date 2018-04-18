@@ -281,6 +281,10 @@ public class Combo : MonoBehaviour {
 			return;
 		
 		mctrl.on_BCNShoot = (b==1);
+		if(b==0){
+			animator.SetBool ("BCNPose", false);
+			animator.SetBool ("OnBCN", false);
+		}
 	}
 
 	public void SetBCNLoadToFalse(){

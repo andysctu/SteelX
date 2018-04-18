@@ -85,7 +85,7 @@ public class MechCamera : MonoBehaviour
 
 		//lerp cam rotation
 		//orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), Time.deltaTime * orbitlerpspeed);
-		orbitAngle = orbitAngle + inputV * rotationSpeed;
+		orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220);
 
 		idealLocalAngle = -1.0322f * (orbitAngle - 119.64f);
 		transform.localRotation = Quaternion.Euler(idealLocalAngle+angleOffset,0,0);

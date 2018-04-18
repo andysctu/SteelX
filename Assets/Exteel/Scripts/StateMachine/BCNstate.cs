@@ -9,6 +9,7 @@ public class BCNstate : MechStateMachineBehaviour {
 		base.Init(animator);
 		if ( cc == null || !cc.enabled) return;
 		animator.SetBool ("OnBCN", true);
+		animator.SetBool (jump_id, false);
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
@@ -16,11 +17,11 @@ public class BCNstate : MechStateMachineBehaviour {
 
 		if(animator.GetBool("OnBCN"))
 			mctrl.BCNPose ();
-		
-		animator.SetBool (boost_id, false);
 
-		if(!animator.IsInTransition(0))
+		if (!animator.IsInTransition (0)) {
+			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
+		}
 	}
 
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {

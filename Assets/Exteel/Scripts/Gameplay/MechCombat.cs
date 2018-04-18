@@ -38,6 +38,7 @@ public class MechCombat : Combat {
 	private int weaponOffset = 0;
 	private int[] curWeaponNames = new int[2];
 	private int BCNPose_id;
+	private bool isBCNcanceled = false;//check if right click cancel
 	public int BCNbulletNum;
 	public bool isOnBCNPose;//called by BCNPoseState to check if on the right pose 
 
@@ -696,9 +697,10 @@ public class MechCombat : Combat {
 			if (Time.time - timeOfLastShotL >= 0.5f)
 				setIsFiring (handPosition, false);
 			if (Input.GetKeyDown (KeyCode.Mouse1) || is_overheat[weaponOffset]) {//right click cancel BCNPose
+				isBCNcanceled = true;
 				animator.SetBool (BCNPose_id, false);
 				return;
-			} else if (Input.GetKeyDown (KeyCode.Mouse0)) {
+			} else if (Input.GetKey (KeyCode.Mouse0) && !isBCNcanceled &&!animator.GetBool(BCNPose_id) && mechController.grounded && !animator.GetBool("BCNLoad")) {
 				if (!is_overheat[weaponOffset]) {
 					if (!animator.GetBool (BCNPose_id)) {
 						Combo.BCNPose ();
@@ -708,6 +710,8 @@ public class MechCombat : Combat {
 				} else {
 					animator.SetBool (BCNPose_id, false);
 				}
+			}else if(!Input.GetKey(KeyCode.Mouse0)){
+				isBCNcanceled = false;
 			}
 		break;
 		case (int)WeaponTypes.ENG:
@@ -785,7 +789,7 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.BCN:
 			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate && isOnBCNPose) {
-				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool (BCNPose_id) || !mechController.grounded)
+				if (Input.GetKey (KeyCode.Mouse0) || !animator.GetBool (BCNPose_id) || !mechController.grounded)
 					return;
 				
 				BCNbulletNum--;
@@ -990,6 +994,8 @@ public class MechCombat : Combat {
 		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
 		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
 		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
+		clipOverrides ["BackWalk_Left"] = MovementClips.BackWalk [num];
+		clipOverrides ["BackWalk_Right"] = MovementClips.BackWalk [num];
 
 		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
 		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];

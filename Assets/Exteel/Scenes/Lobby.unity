@@ -3984,6 +3984,7 @@ MonoBehaviour:
   mctrl: {fileID: 0}
   mcbt: {fileID: 0}
   Sounds: {fileID: 0}
+  mechIK: {fileID: 0}
   boost_id: 0
   grounded_id: 0
   jump_id: 0
@@ -4060,9 +4061,6 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 2
     Name: Grounded
-  - Type: 4
-    SynchronizeType: 2
-    Name: AlreadyFalling
   - Type: 4
     SynchronizeType: 0
     Name: ShootL
@@ -4168,10 +4166,10 @@ Animator:
   m_LinearVelocityBlending: 0
   m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
     are already bound by a Humanoid avatar. These transforms can only be changed by
-    Humanoid clips.\n\tTransform 'f_ring.01.R'\n\tTransform 'f_ring.01.L'\n\tTransform
-    'palm.03.R'\n\tTransform 'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tTransform
-    'f_pinky.03.L'\n\tTransform 'f_pinky.01.R'\n\tTransform 'f_ring.03.L'\n\tTransform
-    'f_pinky.02.L'\n\tTransform 'f_ring.02.R'\n\tand more ...\n\tFrom animation clip
+    Humanoid clips.\n\tTransform 'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tTransform
+    'f_pinky.03.L'\n\tTransform 'f_pinky.01.R'\n\tTransform 'f_pinky.02.L'\n\tTransform
+    'palm.04.L'\n\tTransform 'f_pinky.03.R'\n\tTransform 'f_pinky.01.L'\n\tTransform
+    'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tand more ...\n\tFrom animation clip
     'BlockR'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -6284,7 +6282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.00001118539}
+  m_AnchoredPosition: {x: 0, y: -513.0469}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &646861062
@@ -12752,6 +12750,8 @@ MonoBehaviour:
   BackWalk:
   - {fileID: 7400000, guid: d8d4ddcdc6c07424ba534dea9f4117ef, type: 3}
   - {fileID: 7400000, guid: ef256990da8d84841b06aaa0f7e8ad75, type: 3}
+  BackWalk_Left: []
+  BackWalk_Right: []
   Run_Left:
   - {fileID: 7400000, guid: 7bfe5577a2af740fd92baf59a22ae531, type: 3}
   - {fileID: 7400000, guid: 09a37c859b4285d418546cd08d73f6bb, type: 2}
@@ -12770,6 +12770,12 @@ MonoBehaviour:
   Hover_Back_03:
   - {fileID: 7400000, guid: a4cfad349bcc94e4ab4ac967f7821953, type: 3}
   - {fileID: 7400000, guid: dd5e81f2dbf5b7744a688247bfdb85ae, type: 3}
+  Hover_Back_01_Left: []
+  Hover_Back_02_Left: []
+  Hover_Back_03_Left: []
+  Hover_Back_01_Right: []
+  Hover_Back_02_Right: []
+  Hover_Back_03_Right: []
   Hover_Left_01:
   - {fileID: 7400000, guid: 66ecd77e70f81ad4386980e79a859ffc, type: 3}
   - {fileID: 7400000, guid: 263ab5102e272da4ea798eafb0071b98, type: 3}
@@ -12800,21 +12806,38 @@ MonoBehaviour:
   Jump01:
   - {fileID: 7400000, guid: 79a5cfe38ed5f9249a9123a841073197, type: 3}
   - {fileID: 7400000, guid: c6e446df69d02c04ab74467992d724c0, type: 3}
+  Jump01_Left: []
+  Jump01_Right: []
+  Jump01_b: []
+  Jump01_Left_b: []
+  Jump01_Right_b: []
   Jump02:
   - {fileID: 7400000, guid: b1b46a06f46c14944a9f2d6dbd0dfc25, type: 3}
   - {fileID: 7400000, guid: a56bc1bc0cd1f4449a87b6e87eeff02d, type: 3}
+  Jump02_Left: []
+  Jump02_Right: []
   Jump03:
   - {fileID: 7400000, guid: 368c81993a643304eb75d43e7da6c7e2, type: 3}
   - {fileID: 7400000, guid: 5570ea7fcb9510c43ac36688def4d16f, type: 3}
+  Jump03_Left: []
+  Jump03_Right: []
   Jump06:
   - {fileID: 7400000, guid: 4da1d84159c2aa44d954fba3a705192d, type: 3}
   - {fileID: 7400000, guid: 6135274ab32f30548a5271ac82f3a6b2, type: 3}
+  Jump06_Left: []
+  Jump06_Right: []
   Jump07:
   - {fileID: 7400000, guid: 30d72e531fe14294f911d1d4554eb190, type: 3}
   - {fileID: 7400000, guid: f8b3e9f64c704994e9ffdc7ad0a6fd9e, type: 3}
+  Jump07_Left: []
+  Jump07_Right: []
   Jump08:
   - {fileID: 7400000, guid: bcd68b7edf6493545ac3e67e789fe3d6, type: 3}
   - {fileID: 7400000, guid: 0b4ba6b34ef7b7549b4254057d6cbbe4, type: 3}
+  Jump08_Left: []
+  Jump08_Right: []
+  shootL: []
+  shootR: []
 --- !u!1 &1317049204
 GameObject:
   m_ObjectHideFlags: 0
