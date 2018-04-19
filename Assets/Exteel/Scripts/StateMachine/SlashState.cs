@@ -20,9 +20,9 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
-		if (!animator.GetBool (slashL3_id) && !animator.GetBool (slashR3_id)) {
+		if (!animator.GetBool ("SlashL5") && !animator.GetBool ("SlashR5")) {
 			mcbt.SetReceiveNextSlash (1);
-			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id))
+			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool ("SlashL3") || animator.GetBool ("SlashL4"))
 				mcbt.isLMeleePlaying = 1;
 			else
 				mcbt.isRMeleePlaying = 1;
@@ -33,7 +33,7 @@ public class SlashState : MechStateMachineBehaviour {
 		}else{
 			mcbt.SlashDetect (1);
 		}
-		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);//**
+		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node

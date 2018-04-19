@@ -21,9 +21,14 @@ public class AnimatorVars : MonoBehaviour {
 	public int SlashL_id;
 	public int SlashL2_id;
 	public int SlashL3_id;
+	public int SlashL4_id;
+	public int SlashL5_id;
+
 	public int SlashR_id;
 	public int SlashR2_id;
 	public int SlashR3_id;
+	public int SlashR4_id;
+	public int SlashR5_id;
 
 	public int BCNPose_id;
 
@@ -48,10 +53,14 @@ public class AnimatorVars : MonoBehaviour {
 			SlashL_id = Animator.StringToHash ("SlashL");
 			SlashL2_id = Animator.StringToHash ("SlashL2");
 			SlashL3_id = Animator.StringToHash ("SlashL3");
+			SlashL4_id =  Animator.StringToHash ("SlashL4");
+			SlashL5_id =  Animator.StringToHash ("SlashL5");
 
 			SlashR_id = Animator.StringToHash ("SlashR");
 			SlashR2_id = Animator.StringToHash ("SlashR2");
 			SlashR3_id = Animator.StringToHash ("SlashR3");
+			SlashR4_id = Animator.StringToHash ("SlashR4");
+			SlashR5_id = Animator.StringToHash ("SlashR5");
 
 			BCNPose_id = Animator.StringToHash ("BCNPose");
 				

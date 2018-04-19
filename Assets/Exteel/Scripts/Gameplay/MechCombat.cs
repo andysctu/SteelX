@@ -15,8 +15,8 @@ public class MechCombat : Combat {
 	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 
 	// Boost variables
-	private float fuelDrain = 5.0f;
-	private float fuelGain = 20.0f;
+	private float fuelDrain = 250.0f;
+	private float fuelGain = 1000.0f;
 	private float minFuelRequired = 450;
 	private float currentFuel;
 	public float jumpPower = 70.0f;
@@ -357,7 +357,7 @@ public class MechCombat : Combat {
 
 			Sounds.PlaySlashOnHit ();
 			foreach(Transform target in targets){
-				if(target == null || target.transform.root.GetComponent<MechCombat>().isDead){//it causes bug if target disconnect
+				if (target == null || (target.tag != "Drone" && target.transform.root.GetComponent<MechCombat> ().isDead)) {//it causes bug if target disconnect
 					continue;
 				}
 				if (target.tag == "Player" || target.tag == "Drone") {
@@ -675,7 +675,7 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.MELEE:
-			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) ||  is_overheat[weaponOffset+handPosition] ) {
+			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) ||  is_overheat[weaponOffset+handPosition]) {
 				setIsFiring (handPosition, false);
 				return;
 			}
@@ -726,6 +726,11 @@ public class MechCombat : Combat {
 			return;
 		}
 
+		if (curWeaponNames [handPosition] == (int)WeaponTypes.RANGED || curWeaponNames [handPosition] == (int)WeaponTypes.SHIELD || curWeaponNames [handPosition] == (int)WeaponTypes.ENG)
+		if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.MELEE && animator.GetBool ("OnMelee"))
+			return;
+		
+
 		if(isSwitchingWeapon){
 			return;
 		}
@@ -747,15 +752,22 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.MELEE:
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!receiveNextSlash|| !CanMeleeAttack)
+				if (!receiveNextSlash || !CanMeleeAttack) {
 					return;
+				}
 
 				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
-				if (((handPosition == 1) ? isLMeleePlaying : isRMeleePlaying) != 0) { // only one can play at the same time
+				if (handPosition == 0 && animator.GetBool ("SlashL3"))
 					return;
-				}
+				if (handPosition == 1 && animator.GetBool ("SlashR3"))
+					return;
+				if(handPosition==0 && isRMeleePlaying==1 && !animator.GetBool("SlashR3"))
+					return;
+				if(handPosition==1 && isLMeleePlaying==1 && !animator.GetBool("SlashL3"))
+					return;
+				
 
 				CanMeleeAttack = false;
 				receiveNextSlash = false;
@@ -763,14 +775,9 @@ public class MechCombat : Combat {
 				if (handPosition == 0) {
 					HeatBar.IncreaseHeatBarL (5);
 					timeOfLastShotL = Time.time;
-					if (curWeaponNames[1]==(int)WeaponTypes.MELEE)
-						timeOfLastShotR = timeOfLastShotL;
-
 				} else if (handPosition == 1) {
 					HeatBar.IncreaseHeatBarR (5);
 					timeOfLastShotR = Time.time;
-					if (curWeaponNames[0]==(int)WeaponTypes.MELEE)
-						timeOfLastShotL = timeOfLastShotR;
 				}
 			}
 		break;
@@ -1139,12 +1146,12 @@ public class MechCombat : Combat {
 	}
 	// Public functions
 	public void IncrementFuel() {
-		currentFuel += fuelGain;
+		currentFuel += fuelGain*Time.fixedDeltaTime;
 		if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
 	}
 
 	public void DecrementFuel() {
-		currentFuel -= fuelDrain;
+		currentFuel -= fuelDrain*Time.fixedDeltaTime;
 		if (currentFuel < 0)
 			currentFuel = 0;
 	}

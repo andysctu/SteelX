@@ -2832,9 +2832,6 @@ MonoBehaviour:
     Name: Grounded
   - Type: 4
     SynchronizeType: 2
-    Name: AlreadyFalling
-  - Type: 4
-    SynchronizeType: 2
     Name: ShootL
   - Type: 4
     SynchronizeType: 2
@@ -2887,6 +2884,18 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: BCNLoad
+  - Type: 4
+    SynchronizeType: 1
+    Name: SlashL4
+  - Type: 4
+    SynchronizeType: 1
+    Name: SlashR4
+  - Type: 4
+    SynchronizeType: 1
+    Name: SlashL5
+  - Type: 4
+    SynchronizeType: 1
+    Name: SlashR5
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -3016,7 +3025,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   Gravity: 4.5
-  minDownSpeed: 0
   maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
   xSpeed: 0

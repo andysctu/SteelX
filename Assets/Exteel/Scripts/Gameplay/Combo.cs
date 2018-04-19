@@ -15,9 +15,14 @@ public class Combo : MonoBehaviour {
 	private int slashL_id;
 	private int slashL2_id;
 	private int slashL3_id;
+	private int slashL4_id;
+	private int slashL5_id;
+
 	private int slashR_id;
 	private int slashR2_id;
 	private int slashR3_id;
+	private int slashR4_id;
+	private int slashR5_id;
 
 	private int grounded_id;
 	private int onMelee_id;
@@ -30,9 +35,14 @@ public class Combo : MonoBehaviour {
 		slashL_id = AnimatorVars.SlashL_id;
 		slashL2_id = AnimatorVars.SlashL2_id;
 		slashL3_id = AnimatorVars.SlashL3_id;
+		slashL4_id = AnimatorVars.SlashL4_id;
+		slashL5_id = AnimatorVars.SlashL5_id;
+
 		slashR_id = AnimatorVars.SlashR_id;
 		slashR2_id = AnimatorVars.SlashR2_id;
 		slashR3_id = AnimatorVars.SlashR3_id;
+		slashR4_id = AnimatorVars.SlashR4_id;
+		slashR5_id = AnimatorVars.SlashR5_id;
 
 		grounded_id = AnimatorVars.grounded_id;
 		onMelee_id = AnimatorVars.onMelee_id;
@@ -68,6 +78,12 @@ public class Combo : MonoBehaviour {
 		case 3:
 			animator.SetBool (slashL3_id, false);
 			break;
+		case 4:
+			animator.SetBool (slashL4_id, false);
+			break;
+		case 5:
+			animator.SetBool (slashL5_id, false);
+			break;
 		}
 	}
 
@@ -86,6 +102,12 @@ public class Combo : MonoBehaviour {
 		case 3:
 			animator.SetBool (slashR3_id, false);
 			break;
+		case 4:
+			animator.SetBool (slashR4_id, false);
+			break;
+		case 5:
+			animator.SetBool (slashR5_id, false);
+			break;
 		}
 	}
 
@@ -94,9 +116,20 @@ public class Combo : MonoBehaviour {
 	}
 
 	public void Slash(int handposition){
+		if(animator.GetBool(slashL3_id) && handposition == 1){
+			animator.SetBool (slashL4_id, true);
+		}
+		if(animator.GetBool(slashR3_id) && handposition == 0){
+			animator.SetBool (slashR4_id, true);
+		}
+
+
+
 		if(handposition==0){
-			if(animator.GetBool(slashL2_id)){
-				animator.SetBool (slashL3_id,true);
+			if (animator.GetBool (slashL4_id)) {
+				animator.SetBool (slashL5_id, true);
+			} else if (animator.GetBool (slashL2_id)) {
+				animator.SetBool (slashL3_id, true);
 			}else{
 				if(animator.GetBool(slashL_id)){
 					animator.SetBool (slashL2_id, true);
@@ -117,7 +150,9 @@ public class Combo : MonoBehaviour {
 				}
 			}
 		}else{
-			if(animator.GetBool(slashR2_id)){
+			if (animator.GetBool (slashR4_id)) {
+				animator.SetBool (slashR5_id, true);
+			} else 	if(animator.GetBool(slashR2_id)){
 				animator.SetBool (slashR3_id,true);
 			}else{
 				if(animator.GetBool(slashR_id)){
@@ -254,7 +289,7 @@ public class Combo : MonoBehaviour {
 			}else{
 				//check if there is any target in front & the distance between
 				foreach (Transform t in targets) {
-					if (t == null || t.root.GetComponent<MechCombat> ().isDead)
+					if (t == null || (t.tag!="Drone" && t.root.GetComponent<MechCombat> ().isDead))
 						continue;
 
 					if (Vector3.Distance (transform.position, t.position) >= 10) {

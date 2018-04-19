@@ -42,6 +42,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		}
 
 		if (!Input.GetKey (KeyCode.LeftShift) || !mcbt.IsFuelAvailable ()) {
+			mctrl.Run ();
 			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
