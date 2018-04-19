@@ -2973,7 +2973,7 @@ MonoBehaviour:
   SwitchWeaponEffectR: {fileID: 198771028345185282}
   displayPlayerInfo: {fileID: 114619718678987610}
   crosshairImage: {fileID: 114672547102200730}
-  jumpPower: 90
+  jumpPower: 70
   moveSpeed: 30
   minBoostSpeed: 50
   acceleration: 2
@@ -3015,8 +3015,9 @@ MonoBehaviour:
   Terrain:
     serializedVersion: 2
     m_Bits: 1024
-  Gravity: 6.5
-  minDownSpeed: -40
+  Gravity: 4.5
+  minDownSpeed: 0
+  maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
   xSpeed: 0
   ySpeed: 0
@@ -5788,6 +5789,8 @@ MonoBehaviour:
   Right_handIK: {fileID: 4322625919955360}
   cam: {fileID: 2087740}
   Target: {fileID: 4739413548255820}
+  PoleTarget: {fileID: 0}
+  AimTransform: {fileID: 0}
 --- !u!114 &114123029246024616
 MonoBehaviour:
   m_ObjectHideFlags: 1

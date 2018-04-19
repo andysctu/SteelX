@@ -30,9 +30,5 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 			mctrl.VerticalBoost();
 		}
 	}
-	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		mctrl.ApplyVerMinDownSpeed ();
-	}
-		
 }
 	

@@ -19,8 +19,8 @@ public class MechCombat : Combat {
 	private float fuelGain = 20.0f;
 	private float minFuelRequired = 450;
 	private float currentFuel;
-	public float jumpPower = 90.0f;
-	public float moveSpeed = 35.0f;
+	public float jumpPower = 70.0f;
+	public float moveSpeed = 30.0f;
 	public float minBoostSpeed = 50;
 	public float acceleration = 2;
 	public float deceleration = 30;
