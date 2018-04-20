@@ -11,10 +11,7 @@ public class SlashState : MechStateMachineBehaviour {
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 
-		if (animator.GetBool (jump_id))
-			inAir = true;
-		else
-			inAir = false;
+		inAir = animator.GetBool (jump_id);
 
 		Sounds.StopBoostLoop ();
 		animator.SetBool (boost_id, false);

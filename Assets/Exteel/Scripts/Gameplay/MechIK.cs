@@ -4,110 +4,82 @@ using UnityEngine;
 using RootMotion.FinalIK;
 
 public class MechIK : MonoBehaviour {
-
-	[SerializeField]Transform Left_handIK, Right_handIK;
+	
 	[SerializeField]Camera cam;
-	MechCombat mechCombat;
-	BuildMech bm;
-	Animator Animator;
+	[SerializeField]MechCombat mechCombat;
+	[SerializeField]BuildMech bm;
 	Transform shoulderL,shoulderR;
-	Transform[] Hands;
 	float idealweight = 0;
 
+	[SerializeField]Transform upperArmL, upperArmR;
+	private Vector3 upperArmL_rot, upperArmR_rot;
+	private float rotOffsetL, rotOffsetR;
+	private float ideal_roL, ideal_roR;
+	public bool onTargetL, onTargetR;//TODO : implement this
+
 	//AimIK
+	[SerializeField]AimIK AimIK;
 	[SerializeField]Transform Target;
 	public Transform PoleTarget, AimTransform;
-	AimIK AimIK;
 
 	private int mode = 0;//mode 0 : one hand weapon ; 1 : BCN ; 2 : RCL
 	private bool isIKset = false;
 	private bool isOnTargetL = false, isOnTargetR = false , LeftIK_on = false, RightIK_on = false;
-	private float weight_L = 0, weight_R = 0;
 	private int weaponOffset = 0;
 
 	// Use this for initialization
 	void Start () {
-		bm = transform.root.GetComponent<BuildMech> ();
-		mechCombat = transform.root.GetComponent<MechCombat> ();
-		Animator = GetComponent<Animator> ();
 		AimIK = GetComponent<AimIK> ();
 		InitTransforms ();
 	}
 
 	void InitTransforms(){
-		shoulderL = transform.Find("metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.Find("metarig/hips/spine/chest/shoulder.R");
-
-		Hands = new Transform[2];
-		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
-		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
+		upperArmL = transform.Find ("metarig/hips/spine/chest/shoulder.L/upper_arm.L");
+		upperArmR = transform.Find ("metarig/hips/spine/chest/shoulder.R/upper_arm.R");
 	}
 
-	// Update is called once per frame
-	void Update () {
-		switch(mode){
-		case 0:
-			if (LeftIK_on && !isOnTargetL) {
-				Left_handIK.position = (transform.root.position + new Vector3 (0, 10, 0)) + cam.transform.forward * 10;
-			}
+	void LateUpdate(){
+		if (LeftIK_on) {
+			ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
+			ideal_roL = Mathf.Clamp (ideal_roL, -50, 40);
 
-			if(RightIK_on && !isOnTargetR){
-				Right_handIK.position = (transform.root.position + new Vector3 (0, 10, 0)) + cam.transform.forward * 10;
-			}
-			break;
-		case 1:
-			AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, idealweight, Time.deltaTime * 5);
-			Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3(0,10,0);
-
-			if(idealweight==0&&AimIK.solver.IKPositionWeight<0.1f){
-				AimIK.solver.IKPositionWeight = 0;
-				enabled = false;
-			}
-
-			break;
-		case 2:
-			Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
-			AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 0, Time.deltaTime * 2);
-			if (AimIK.solver.IKPositionWeight < 0.01f) {
-				AimIK.solver.IKPositionWeight = 0;
-				enabled = false;
-			}
-			break;
+			upperArmL_rot = upperArmL.localRotation.eulerAngles;
+			upperArmL.localRotation = Quaternion.Euler (upperArmL_rot + new Vector3 (0, rotOffsetL + ideal_roL, 0));
 		}
+
+		if (RightIK_on) {
+			ideal_roR = - Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
+			ideal_roR = Mathf.Clamp (ideal_roR, -50, 40);
+
+			upperArmR_rot = upperArmR.localRotation.eulerAngles;
+			upperArmR.localRotation = Quaternion.Euler (upperArmR_rot + new Vector3 (0, rotOffsetR + ideal_roR, 0));
+		}
+
 	}
 
-	void OnAnimatorIK(){
-		switch(mode){
-		case 0:
+	void Update () {
+		if (LeftIK_on) {//case 1&2 => leftIK_on
+			switch (mode) {
+			case 1:
+				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, idealweight, Time.deltaTime * 5);
+				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
 
-			if (!LeftIK_on && weight_L>0.1f) {
-				weight_L = Mathf.Lerp (weight_L, 0, Time.deltaTime * 6);
-				Animator.SetIKPosition (AvatarIKGoal.LeftHand, Left_handIK.position);
-				Animator.SetIKPositionWeight (AvatarIKGoal.LeftHand, weight_L);
-
-				if (weight_L <= 0.01) {
-					enabled = false;
-					weight_L = 0;
+				if (idealweight == 0 && AimIK.solver.IKPositionWeight < 0.1f) {
+					LeftIK_on = false;
+					AimIK.solver.IKPositionWeight = 0;
 				}
-			}else{
-				Animator.SetIKPosition (AvatarIKGoal.LeftHand, Left_handIK.position);
-				Animator.SetIKPositionWeight (AvatarIKGoal.LeftHand, weight_L);
-			}
-
-			if (!RightIK_on && weight_R>0.1f) {
-				weight_R = Mathf.Lerp (weight_R, 0, Time.deltaTime * 6);
-
-				Animator.SetIKPosition (AvatarIKGoal.RightHand, Right_handIK.position);
-				Animator.SetIKPositionWeight (AvatarIKGoal.RightHand, weight_R);
-				if (weight_R <= 0.01) {
-					enabled = false;
-					weight_R = 0;
+				break;
+			case 2:
+				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
+				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 0, Time.deltaTime * 2);
+				if (AimIK.solver.IKPositionWeight < 0.01f) {
+					LeftIK_on = false;
+					AimIK.solver.IKPositionWeight = 0;
 				}
-			}else{
-				Animator.SetIKPosition (AvatarIKGoal.RightHand, Right_handIK.position);
-				Animator.SetIKPositionWeight (AvatarIKGoal.RightHand, weight_R);
+				break;
+			default:
+				break;
 			}
-			break;
 		}
 	}
 
@@ -115,44 +87,25 @@ public class MechIK : MonoBehaviour {
 	public void SetIK(bool b, int mode, int hand){//mode 0 : one hand weapon ; 1 : BCN ; 2 : RCL
 		this.mode = mode;
 		if (b) {
-			enabled = true;//auto set to false if weight too low
-
-			if(mode==1 || mode == 2){//Final IK
-				weaponOffset = mechCombat.GetCurrentWeaponOffset ();
-				AimTransform = bm.weapons [weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
-				if (AimTransform == null)
-					Debug.Log ("null aim Transform");
-				else
-					AimIK.solver.transform = AimTransform;
-				
-				PoleTarget = bm.weapons [weaponOffset].transform.Find ("End");
-				if (PoleTarget == null)
-					Debug.Log ("null PoleTarget");
-				else
-					AimIK.solver.poleTarget = PoleTarget;
-			}
-
 			switch(mode){
 			case 0:
 				if(hand==0){
-					weight_L = 0.5f;
 					LeftIK_on = true;
-					Left_handIK.position = (transform.root.position + new Vector3 (0, 10, 0)) + cam.transform.forward * 10;
 				}else{
-					weight_R = 0.5f;
 					RightIK_on = true;
-					Right_handIK.position = (transform.root.position + new Vector3 (0, 10, 0)) + cam.transform.forward * 10;
 				}
 				break;
 			case 1:
-				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0) ;
+				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
 				AimIK.solver.IKPositionWeight = 0;
 				idealweight = 1;
+				LeftIK_on = true;
 				break;
 			case 2:
 				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0) ;
 				AimIK.solver.IKPositionWeight = 0.8f;
 				idealweight = 1;
+				LeftIK_on = true;
 				break;
 			}
 
@@ -162,8 +115,10 @@ public class MechIK : MonoBehaviour {
 			case 0:
 				if(hand==0){
 					LeftIK_on = false;
+					ideal_roL = 0;
 				}else{
 					RightIK_on = false;
+					ideal_roR = 0;
 				}
 				break;
 			case 1:
@@ -174,12 +129,28 @@ public class MechIK : MonoBehaviour {
 			}
 		}
 	}
-		
-	public void ResetIK(){
+
+	public void UpdateMechIK(){
+		weaponOffset = mechCombat.GetCurrentWeaponOffset ();
+		if(bm.weaponScripts[weaponOffset].isTwoHanded){
+			AimTransform = bm.weapons [weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
+			if (AimTransform == null)
+				Debug.Log ("null aim Transform");
+			else
+				AimIK.solver.transform = AimTransform;
+
+			PoleTarget = bm.weapons [weaponOffset].transform.Find ("End");
+			if (PoleTarget == null)
+				Debug.Log ("null PoleTarget");
+			else
+				AimIK.solver.poleTarget = PoleTarget;
+		}else{
+			mode = 0;
+		}
+
+		AimIK.solver.IKPositionWeight = 0;
 		LeftIK_on = false;
 		RightIK_on = false;
-		weight_L = 0;
-		weight_R = 0;
 		idealweight = 0;
 	}
 }

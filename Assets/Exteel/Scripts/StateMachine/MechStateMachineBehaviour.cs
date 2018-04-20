@@ -24,6 +24,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected int slashL3_id;
 	protected int slashR3_id;
 
+	protected int OnBCN_id;
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
 	/*	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		animatorVars = animator.GetComponent<AnimatorVars> ();
@@ -61,5 +62,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		slashR2_id = animatorVars.SlashR2_id;
 		slashL3_id = animatorVars.SlashL3_id;
 		slashR3_id = animatorVars.SlashR3_id;
+
+		OnBCN_id = animatorVars.OnBCN_id;
 	}
 }

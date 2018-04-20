@@ -31,6 +31,7 @@ public class AnimatorVars : MonoBehaviour {
 	public int SlashR5_id;
 
 	public int BCNPose_id;
+	public int OnBCN_id;
 
 	public bool inHangar = false;//in Store also manually set this to TRUE
 	// Use this for initialization
@@ -63,7 +64,7 @@ public class AnimatorVars : MonoBehaviour {
 			SlashR5_id = Animator.StringToHash ("SlashR5");
 
 			BCNPose_id = Animator.StringToHash ("BCNPose");
-				
+			OnBCN_id = Animator.StringToHash ("OnBCN");
 			if(Combo!=null){
 				Combo.InitVars ();
 			}

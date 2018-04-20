@@ -4013,21 +4013,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1188729122973890
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4294973381527764}
-  m_Layer: 0
-  m_Name: Lefthand_IK
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &1208278528463222
 GameObject:
   m_ObjectHideFlags: 1
@@ -4464,21 +4449,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!1 &1645123810760056
-GameObject:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4322625919955360}
-  m_Layer: 0
-  m_Name: Righthand_IK
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &1645236795553258
 GameObject:
   m_ObjectHideFlags: 1
@@ -4952,19 +4922,6 @@ Transform:
   m_Father: {fileID: 416958}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -47.69, y: 0, z: 0}
---- !u!4 &4294973381527764
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1188729122973890}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4905570990770024}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4303951412354452
 Transform:
   m_ObjectHideFlags: 1
@@ -4977,19 +4934,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4466924706810198}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4322625919955360
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1645123810760056}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4905570990770024}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4358015963791528
 Transform:
@@ -5207,8 +5151,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4739413548255820}
-  - {fileID: 4294973381527764}
-  - {fileID: 4322625919955360}
   m_Father: {fileID: 400766}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5793,9 +5735,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17790ff7025ab404f81df4bdf8504f19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Left_handIK: {fileID: 4294973381527764}
-  Right_handIK: {fileID: 4322625919955360}
   cam: {fileID: 2087740}
+  mechCombat: {fileID: 11445986}
+  bm: {fileID: 11422958}
+  upperArmL: {fileID: 0}
+  upperArmR: {fileID: 0}
+  onTargetL: 0
+  onTargetR: 0
+  AimIK: {fileID: 114999884067279722}
   Target: {fileID: 4739413548255820}
   PoleTarget: {fileID: 0}
   AimTransform: {fileID: 0}
@@ -5879,9 +5826,13 @@ MonoBehaviour:
   SlashL_id: 0
   SlashL2_id: 0
   SlashL3_id: 0
+  SlashL4_id: 0
+  SlashL5_id: 0
   SlashR_id: 0
   SlashR2_id: 0
   SlashR3_id: 0
+  SlashR4_id: 0
+  SlashR5_id: 0
   BCNPose_id: 0
   inHangar: 0
 --- !u!114 &114189640356066892

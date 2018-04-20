@@ -109,8 +109,8 @@ public class MechCombat : Combat {
 	void Start() {
 		findGameManager();
 		initMechStats();
-		initCombatVariables();
 		initComponents ();
+		initCombatVariables();
 		UpdateWeaponInfo();
 		initAnimatorControllers();
 		initTransforms();
@@ -205,6 +205,7 @@ public class MechCombat : Combat {
 		setIsFiring (1, false);
 
 		HeatBar.InitVars ();
+		MechIK.UpdateMechIK ();
 	}
 
 	void initHUD() {
@@ -946,7 +947,7 @@ public class MechCombat : Combat {
 		if(photonView.isMine)SetWeaponOffsetProperty (weaponOffset);
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
-		MechIK.ResetIK ();
+		MechIK.UpdateMechIK ();
 		UpdateCurWeaponType ();
 		SetSlashDetector ();
 		FindGunEnds ();
