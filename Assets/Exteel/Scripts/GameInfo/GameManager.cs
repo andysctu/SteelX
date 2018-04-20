@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.CrossPlatformInput;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -66,6 +67,14 @@ public class GameManager : Photon.MonoBehaviour {
 
 	private BuildMech mechBuilder;
 	float curtime;
+
+	//debug use
+	public bool FreezeTime = false;
+
+	//TODO : player can choose target frame rate
+	void Awake(){
+		Application.targetFrameRate = 60;//60:temp
+	}
 
 	void Start() {
 		if (Offline) {
@@ -343,10 +352,11 @@ public class GameManager : Photon.MonoBehaviour {
 			if (!OnSyncTimeRequest)
 				StartCoroutine (SyncTimeRequest(1f));
 		}
-
-		if (GameOver() && !gameEnding) {
-			if(PhotonNetwork.isMasterClient){
-				photonView.RPC ("EndGame", PhotonTargets.All);
+		if (!FreezeTime) {//debug use
+			if (GameOver () && !gameEnding) {
+				if (PhotonNetwork.isMasterClient) {
+					photonView.RPC ("EndGame", PhotonTargets.All);
+				}
 			}
 		}
 	}

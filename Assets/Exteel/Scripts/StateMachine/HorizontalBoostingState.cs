@@ -5,16 +5,16 @@ using UnityEngine;
 public class HorizontalBoostingState : MechStateMachineBehaviour {
 	
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		base.OnStateEnter(animator, stateInfo, layerIndex);
+		base.Init(animator);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 
-		mcbt.CanSlash = true;
+		mcbt.CanMeleeAttack = true;
 		mcbt.SetReceiveNextSlash (1);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled || !cc.isGrounded)
+		if (cc == null || !cc.enabled)
 			return;
 
 		float speed = Input.GetAxis("Vertical");
@@ -23,25 +23,33 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if (!Input.GetKey (KeyCode.LeftShift) || animator.GetBool(jump_id) || !mcbt.IsFuelAvailable ()) {
+		if(animator.GetBool(jump_id)){
+			return;
+		}
+
+		if(!mctrl.CheckIsGrounded()){//falling
+			mctrl.SetCanVerticalBoost (true);
+			mctrl.grounded = false;
+			animator.SetBool (grounded_id, false);
+			animator.SetBool (boost_id, false);//avoid dir go to next state (the transition interrupts by next state)
+			mctrl.Boost (false);
+			return;
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space)) {	
+			mctrl.SetCanVerticalBoost(true);
+			animator.SetBool(jump_id, true);
+		}
+
+		if (!Input.GetKey (KeyCode.LeftShift) || !mcbt.IsFuelAvailable ()) {
+			mctrl.Run ();
 			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
 			return;
 		} else {
-			if (mctrl.grounded)
-				mctrl.Boost (true);
-		}
-			
-		if (Input.GetKey(KeyCode.Space) && !animator.GetBool(onSlash_id)) {	
-			Sounds.StopBoostLoop ();
-			mctrl.Boost (false);
-			mctrl.SetCanVerticalBoost(true);
-			mctrl.Jump();
-			animator.SetBool(boost_id, false);
-			animator.SetBool(grounded_id, false);
-			mctrl.grounded = false;
-			animator.SetBool(jump_id, true);
+			animator.SetBool (boost_id, true);
+			mctrl.Boost (true);
 		}
 	}
 }

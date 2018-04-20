@@ -15,15 +15,15 @@ public class MechCombat : Combat {
 	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 
 	// Boost variables
-	private float fuelDrain = 5.0f;
-	private float fuelGain = 20.0f;
+	private float fuelDrain = 250.0f;
+	private float fuelGain = 1000.0f;
 	private float minFuelRequired = 450;
 	private float currentFuel;
-	public float jumpPower = 90.0f;
-	public float moveSpeed = 35.0f;
+	public float jumpPower = 70.0f;
+	public float moveSpeed = 30.0f;
 	public float minBoostSpeed = 50;
 	public float acceleration = 2;
-	public float deceleration = 50;
+	public float deceleration = 30;
 	private float verticalBoostSpeed = 1f;
 	public float maxVerticalBoostSpeed = 30f;
 	public float maxHorizontalBoostSpeed = 60f;
@@ -38,20 +38,23 @@ public class MechCombat : Combat {
 	private int weaponOffset = 0;
 	private int[] curWeaponNames = new int[2];
 	private int BCNPose_id;
+	private bool isBCNcanceled = false;//check if right click cancel
+	public int BCNbulletNum;
+	public bool isOnBCNPose;//called by BCNPoseState to check if on the right pose 
 
 	// Left
 	private const int LEFT_HAND = 0;
 	private float timeOfLastShotL;
 	private bool fireL = false;
-	public int isLSlashPlaying = 0;
+	public int isLMeleePlaying = 0;
 
 	// Right
 	private const int RIGHT_HAND = 1;
 	private float timeOfLastShotR;
 	private bool fireR = false;
-	public int isRSlashPlaying = 0;
+	public int isRMeleePlaying = 0;
 
-	public bool CanSlash = true;
+	public bool CanMeleeAttack = true;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 	// Transforms
@@ -85,10 +88,17 @@ public class MechCombat : Combat {
 	private MechController mechController;
 	private Sounds Sounds;
 	private Combo Combo;
-	private AnimatorVars AnimatorVars;
-	private Animator animator;
 	private ParticleSystem MuzL,MuzR;
 	private XWeaponTrail trailL,trailR;
+
+	//Animator
+	private AnimatorVars AnimatorVars;
+	private Animator animator;
+	AnimatorOverrideController animatorOverrideController;
+	private AnimationClipOverrides clipOverrides;
+	MovementClips MovementClips;
+	MechIK MechIK;
+
 
 	private Coroutine bulletCoroutine;
 
@@ -99,9 +109,10 @@ public class MechCombat : Combat {
 	void Start() {
 		findGameManager();
 		initMechStats();
-		initCombatVariables();
 		initComponents ();
+		initCombatVariables();
 		UpdateWeaponInfo();
+		initAnimatorControllers();
 		initTransforms();
 		initGameObjects();
 		initCam ();
@@ -153,8 +164,21 @@ public class MechCombat : Combat {
 		AnimatorVars = currentMech.GetComponent<AnimatorVars> ();
 		Combo = currentMech.GetComponent<Combo> ();
 		animator = currentMech.GetComponent<Animator> (); 
+		MechIK = currentMech.GetComponent<MechIK> ();
 		mechController = GetComponent<MechController> ();
 		bm = GetComponent<BuildMech>();
+		MovementClips = GetComponent<MovementClips> ();
+	}
+
+	void initAnimatorControllers(){
+		animatorOverrideController = new AnimatorOverrideController (animator.runtimeAnimatorController);
+		animator.runtimeAnimatorController = animatorOverrideController;
+
+		clipOverrides = new AnimationClipOverrides (animatorOverrideController.overridesCount);
+		animatorOverrideController.GetOverrides (clipOverrides);
+
+		ChangeMovementClips ((weaponScripts[0].isTwoHanded)? 1 : 0);
+		//ChangeWeaponClips ();
 	}
 
 	public void UpdateWeaponInfo() {
@@ -173,12 +197,15 @@ public class MechCombat : Combat {
 		timeOfLastShotL = Time.time;
 		timeOfLastShotR = Time.time;
 		isSwitchingWeapon = false;
-		CanSlash = true;
+		CanMeleeAttack = true;
 		receiveNextSlash = true;
+		isOnBCNPose = false;
+		BCNbulletNum = 2;
 		setIsFiring (0,false);
 		setIsFiring (1, false);
 
 		HeatBar.InitVars ();
+		MechIK.UpdateMechIK ();
 	}
 
 	void initHUD() {
@@ -331,7 +358,7 @@ public class MechCombat : Combat {
 
 			Sounds.PlaySlashOnHit ();
 			foreach(Transform target in targets){
-				if(target == null || target.transform.root.GetComponent<MechCombat>().isDead){//it causes bug if target disconnect
+				if (target == null || (target.tag != "Drone" && target.transform.root.GetComponent<MechCombat> ().isDead)) {//it causes bug if target disconnect
 					continue;
 				}
 				if (target.tag == "Player" || target.tag == "Drone") {
@@ -526,8 +553,6 @@ public class MechCombat : Combat {
 		if(photonView.isMine){
 			currentHP = 0;
 			animator.SetBool (BCNPose_id, false);
-			animator.SetBool ("UsingBCN", false);
-			animator.SetBool ("UsingRCL", false);
 			gm.ShowRespawnPanel ();
 		}
 
@@ -599,7 +624,7 @@ public class MechCombat : Combat {
 		//For debug
 		if(forceDead){
 			forceDead = false;
-			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", 0f);
+			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
 		}
 			
 		// Fix head to always look ahead
@@ -620,7 +645,7 @@ public class MechCombat : Combat {
 
 		updateHUD();
 	}
-
+		
 	// Set animations and tweaks
 	void LateUpdate() {
 		handleAnimation(LEFT_HAND);
@@ -651,7 +676,7 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.MELEE:
-			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) ||  is_overheat[weaponOffset+handPosition] ) {
+			if (!Input.GetKeyDown (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) ||  is_overheat[weaponOffset+handPosition]) {
 				setIsFiring (handPosition, false);
 				return;
 			}
@@ -673,17 +698,21 @@ public class MechCombat : Combat {
 			if (Time.time - timeOfLastShotL >= 0.5f)
 				setIsFiring (handPosition, false);
 			if (Input.GetKeyDown (KeyCode.Mouse1) || is_overheat[weaponOffset]) {//right click cancel BCNPose
+				isBCNcanceled = true;
 				animator.SetBool (BCNPose_id, false);
 				return;
-			} else if (Input.GetKeyDown (KeyCode.Mouse0)) {
+			} else if (Input.GetKey (KeyCode.Mouse0) && !isBCNcanceled &&!animator.GetBool(BCNPose_id) && mechController.grounded && !animator.GetBool("BCNLoad")) {
 				if (!is_overheat[weaponOffset]) {
 					if (!animator.GetBool (BCNPose_id)) {
+						Combo.BCNPose ();
 						animator.SetBool (BCNPose_id, true);
 						timeOfLastShotL = Time.time - 1 / bm.weaponScripts [weaponOffset + handPosition].Rate / 2;
 					}
 				} else {
 					animator.SetBool (BCNPose_id, false);
 				}
+			}else if(!Input.GetKey(KeyCode.Mouse0)){
+				isBCNcanceled = false;
 			}
 		break;
 		case (int)WeaponTypes.ENG:
@@ -697,6 +726,11 @@ public class MechCombat : Combat {
 		default: //Empty weapon
 			return;
 		}
+
+		if (curWeaponNames [handPosition] == (int)WeaponTypes.RANGED || curWeaponNames [handPosition] == (int)WeaponTypes.SHIELD || curWeaponNames [handPosition] == (int)WeaponTypes.ENG)
+		if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.MELEE && animator.GetBool ("OnMelee"))
+			return;
+		
 
 		if(isSwitchingWeapon){
 			return;
@@ -719,30 +753,32 @@ public class MechCombat : Combat {
 		break;
 		case (int)WeaponTypes.MELEE:
 			if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!receiveNextSlash|| !CanSlash)
+				if (!receiveNextSlash || !CanMeleeAttack) {
 					return;
+				}
 
 				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
-				if (((handPosition == 1) ? isLSlashPlaying : isRSlashPlaying) != 0) { // only one can play at the same time
+				if (handPosition == 0 && animator.GetBool ("SlashL3"))
 					return;
-				}
+				if (handPosition == 1 && animator.GetBool ("SlashR3"))
+					return;
+				if(handPosition==0 && isRMeleePlaying==1 && !animator.GetBool("SlashR3"))
+					return;
+				if(handPosition==1 && isLMeleePlaying==1 && !animator.GetBool("SlashL3"))
+					return;
+				
 
-				CanSlash = false;//this is set to true when grounded(update) , to avoid multi-hit in air
+				CanMeleeAttack = false;
 				receiveNextSlash = false;
 				setIsFiring (handPosition, true);
 				if (handPosition == 0) {
 					HeatBar.IncreaseHeatBarL (5);
 					timeOfLastShotL = Time.time;
-					if (curWeaponNames[1]==(int)WeaponTypes.MELEE)
-						timeOfLastShotR = timeOfLastShotL;
-
 				} else if (handPosition == 1) {
 					HeatBar.IncreaseHeatBarR (5);
 					timeOfLastShotR = Time.time;
-					if (curWeaponNames[0]==(int)WeaponTypes.MELEE)
-						timeOfLastShotL = timeOfLastShotR;
 				}
 			}
 		break;
@@ -760,9 +796,14 @@ public class MechCombat : Combat {
 			}
 		break;
 		case (int)WeaponTypes.BCN:
-			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate) {
-				if (!Input.GetKeyUp (KeyCode.Mouse0) || !animator.GetBool (BCNPose_id) || !mechController.grounded)
+			if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate && isOnBCNPose) {
+				if (Input.GetKey (KeyCode.Mouse0) || !animator.GetBool (BCNPose_id) || !mechController.grounded)
 					return;
+				
+				BCNbulletNum--;
+				if (BCNbulletNum <= 0)
+					animator.SetBool ("BCNLoad", true);
+				
 				setIsFiring (handPosition, true);
 				HeatBar.IncreaseHeatBarL (45); 
 				//**Start Position
@@ -801,10 +842,10 @@ public class MechCombat : Combat {
 				animator.SetBool(animationStr, true);
 			break;
 			case (int)WeaponTypes.MELEE:
-				if (weaponScripts [weaponOffset + handPosition].Animation == "Slash")
+				if (weaponScripts [weaponOffset + handPosition].Animation == "Slash")//sword
 					Combo.Slash (handPosition);
-				else
-					Combo.Lance (handPosition);
+				else//spear
+					Combo.Smash (handPosition);
 			break;
 			case (int)WeaponTypes.SHIELD:
 				animator.SetBool(animationStr, true);
@@ -890,7 +931,6 @@ public class MechCombat : Combat {
 			animator.SetBool(animationString(RIGHT_HAND), false);
 		}
 
-
 		if(bulletCoroutine != null)
 			StopCoroutine (bulletCoroutine);
 
@@ -907,15 +947,18 @@ public class MechCombat : Combat {
 		if(photonView.isMine)SetWeaponOffsetProperty (weaponOffset);
 		Sounds.UpdateSounds (weaponOffset);
 		HeatBar.UpdateHeatBar (weaponOffset);
+		MechIK.UpdateMechIK ();
 		UpdateCurWeaponType ();
 		SetSlashDetector ();
 		FindGunEnds ();
 		UpdateMuz ();
 		FindTrail();
 
-		//check if using RCL => RCLIdle
-		animator.SetBool ("UsingRCL", curWeaponNames[0] == (int)WeaponTypes.RCL);
-		animator.SetBool ("UsingBCN", curWeaponNames[0] == (int)WeaponTypes.BCN);
+		//Switch animator controller 
+		if (!weaponScripts [weaponOffset].isTwoHanded)
+			ChangeMovementClips (0);
+		else
+			ChangeMovementClips (1);
 
 		animator.SetBool (BCNPose_id, false);
 
@@ -927,14 +970,84 @@ public class MechCombat : Combat {
 		SwitchWeaponEffectR.Stop();
 
 		isSwitchingWeapon = false;
-
-
 	}
 
 	void SetWeaponOffsetProperty(int weaponOffset){
 		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
 		h.Add ("weaponOffset", weaponOffset);
 		photonView.owner.SetCustomProperties (h);
+	}
+
+	/*void ChangeWeaponClips(){
+		//switch weapon type
+		if(curWeaponNames[0] == (int)WeaponTypes.RANGED){
+			if(bm.curWeaponNames[weaponOffset].Contains("SMG")){
+				animatorOverrideController ["ShootingL"] = MovementClips.shootL [1];
+			}else{
+				animatorOverrideController ["ShootingL"] = MovementClips.shootL [0];
+			}
+		}
+		if(curWeaponNames[1] == (int)WeaponTypes.RANGED){
+			if(bm.curWeaponNames[weaponOffset+1].Contains("SMG")){
+				animatorOverrideController ["ShootingR"] = MovementClips.shootR [1];
+			}else{
+				animatorOverrideController ["ShootingR"] = MovementClips.shootR [0];
+			}
+		}
+	}*/
+
+	public void ChangeMovementClips(int num){
+		clipOverrides ["Idle"] = MovementClips.Idle [num];
+		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
+		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
+		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
+		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
+		clipOverrides ["BackWalk_Left"] = MovementClips.BackWalk [num];
+		clipOverrides ["BackWalk_Right"] = MovementClips.BackWalk [num];
+
+		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
+		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
+		clipOverrides ["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
+		clipOverrides ["Hover_Back_01_Left"] = MovementClips.Hover_Back_01_Left[num];
+		clipOverrides ["Hover_Back_02_Left"] = MovementClips.Hover_Back_02_Left[num];
+		clipOverrides ["Hover_Back_03_Left"] = MovementClips.Hover_Back_03_Left[num];
+		clipOverrides ["Hover_Back_01_Right"] = MovementClips.Hover_Back_01_Right[num];
+		clipOverrides ["Hover_Back_02_Right"] = MovementClips.Hover_Back_02_Right[num];
+		clipOverrides ["Hover_Back_03_Right"] = MovementClips.Hover_Back_03_Right[num];
+
+		clipOverrides ["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
+		clipOverrides ["Hover_Left_02"] = MovementClips.Hover_Left_02[num];
+		clipOverrides ["Hover_Left_03"] = MovementClips.Hover_Left_03[num];
+		clipOverrides ["Hover_Right_01"] = MovementClips.Hover_Right_01[num];
+		clipOverrides ["Hover_Right_02"] = MovementClips.Hover_Right_02[num];
+		clipOverrides ["Hover_Right_03"] = MovementClips.Hover_Right_03[num];
+		clipOverrides ["Hover_Front_01"] = MovementClips.Hover_Front_01[num];
+		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
+		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
+
+		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
+		clipOverrides ["Jump01_Left"] = MovementClips.Jump01_Left[num];
+		clipOverrides ["Jump01_Right"] = MovementClips.Jump01_Right[num];
+		clipOverrides ["Jump01_b"] = MovementClips.Jump01_b[num];
+		clipOverrides ["Jump01_Left_b"] = MovementClips.Jump01_Left_b[num];
+		clipOverrides ["Jump01_Right_b"] = MovementClips.Jump01_Right_b[num];
+		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
+		clipOverrides ["Jump02_Left"] = MovementClips.Jump02_Left[num];
+		clipOverrides ["Jump02_Right"] = MovementClips.Jump02_Right[num];
+		clipOverrides ["Jump03"] = MovementClips.Jump03[num];
+		clipOverrides ["Jump03_Left"] = MovementClips.Jump03_Left[num];
+		clipOverrides ["Jump03_Right"] = MovementClips.Jump03_Right[num];
+		clipOverrides ["Jump06"] = MovementClips.Jump06[num];
+		clipOverrides ["Jump06_Left"] = MovementClips.Jump06_Left[num];
+		clipOverrides ["Jump06_Right"] = MovementClips.Jump06_Right[num];
+		clipOverrides ["Jump07"] = MovementClips.Jump07[num];
+		clipOverrides ["Jump07_Left"] = MovementClips.Jump07_Left[num];
+		clipOverrides ["Jump07_Right"] = MovementClips.Jump07_Right[num];
+		clipOverrides ["Jump08"] = MovementClips.Jump08[num];
+		clipOverrides ["Jump08_Left"] = MovementClips.Jump08_Left[num];
+		clipOverrides ["Jump08_Right"] = MovementClips.Jump08_Right[num];
+
+		animatorOverrideController.ApplyOverrides (clipOverrides);
 	}
 
 	bool getIsFiring(int handPosition) {
@@ -978,7 +1091,7 @@ public class MechCombat : Combat {
 	}
 
 	bool usingMeleeWeapon(int handPosition) {
-		return (weaponScripts [weaponOffset + handPosition].Animation == "Slash" || weaponScripts [weaponOffset + handPosition].Animation == "Lance");
+		return (weaponScripts [weaponOffset + handPosition].Animation == "Slash" || weaponScripts [weaponOffset + handPosition].Animation == "Smash");
 	}
 
 	bool usingShieldWeapon(int handPosition) {
@@ -1034,12 +1147,12 @@ public class MechCombat : Combat {
 	}
 	// Public functions
 	public void IncrementFuel() {
-		currentFuel += fuelGain;
+		currentFuel += fuelGain*Time.fixedDeltaTime;
 		if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
 	}
 
 	public void DecrementFuel() {
-		currentFuel -= fuelDrain;
+		currentFuel -= fuelDrain*Time.fixedDeltaTime;
 		if (currentFuel < 0)
 			currentFuel = 0;
 	}
@@ -1103,12 +1216,12 @@ public class MechCombat : Combat {
 		return (currentHP >= MAX_HP);
 	}
 
-	public void SetLSlashPlaying(int isPlaying){
-		isLSlashPlaying = isPlaying;
+	public void SetLMeleePlaying(int isPlaying){
+		isLMeleePlaying = isPlaying;
 	}
 
-	public void SetRSlashPlaying(int isPlaying){// this is true when RSlash is playing ( slashR1 , ... )
-		isRSlashPlaying = isPlaying;
+	public void SetRMeleePlaying(int isPlaying){// this is true when RSlash is playing ( slashR1 , ... )
+		isRMeleePlaying = isPlaying;
 	}
 
 	public void SetReceiveNextSlash(int receive){ // this is called in the animation clip
@@ -1139,7 +1252,7 @@ public class MechCombat : Combat {
 			if(show){
 				trailL.Activate ();
 			}else{
-				trailL.Deactivate ();
+				trailL.StopSmoothly (0.1f);
 			}
 		}
 	}
@@ -1148,7 +1261,7 @@ public class MechCombat : Combat {
 			if (show) {
 				trailR.Activate ();
 			} else {
-				trailR.Deactivate ();
+				trailR.StopSmoothly (0.1f);
 			}
 		}
 	}
@@ -1173,6 +1286,11 @@ public class MechCombat : Combat {
 		finalStr += maxvalueStr [3];
 
 		return finalStr;
+	}
+
+
+	public int GetCurrentWeaponOffset(){
+		return weaponOffset;
 	}
 		
 //	public void BulletTraceEvent() {

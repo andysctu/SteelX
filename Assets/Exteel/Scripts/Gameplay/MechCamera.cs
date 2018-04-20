@@ -25,16 +25,20 @@ public class MechCamera : MonoBehaviour
 	[SerializeField]private GameObject currentMech;
 	float inputH;
 	float inputV;
-
+	float orbitAngle = 0;
+	float idealLocalAngle = 0;//this is cam local angle
 	private CharacterController parentCtrl;
+	public float orbitRadius = 19;
+	public float angleOffset = 33;
 
+	private float playerlerpspeed = 25f, orbitlerpspeed = 50f;
 	private void Start()
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
 		m_OriginalRotation = transform.localRotation;
+		orbitAngle = Vector3.SignedAngle (transform.parent.forward + transform.parent.up, transform.position - transform.parent.position - Vector3.up * 5, -transform.parent.right);
 	}
-	
-	
+
 	private void Update()
 	{
 		// we make initial calculations from the original local rotation
@@ -42,12 +46,16 @@ public class MechCamera : MonoBehaviour
 
 		if(lockPlayerRot){
 			currentMech.transform.rotation = tempCurrentMechRot;
+		}else{
+			if(currentMech.transform.localRotation != Quaternion.identity){
+				currentMech.transform.localRotation = Quaternion.Lerp (currentMech.transform.localRotation, Quaternion.identity, Time.deltaTime * playerlerpspeed);
+			}
 		}
 
-		if (lockCamRot) {
+		/*if (lockCamRot) {
 			transform.rotation = tempCamRot;
 			return;
-		}
+		}*/
 
 		// read input from mouse or mobile controls
 		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
@@ -55,26 +63,15 @@ public class MechCamera : MonoBehaviour
 
 		// with mouse input, we have direct control with no springback required.
 		m_TargetAngles.y += inputH * rotationSpeed;
-		m_TargetAngles.x += inputV * rotationSpeed;
 
 		// wrap values to avoid springing quickly the wrong way from positive to negative
 		if (m_TargetAngles.y > 180) {
-			m_TargetAngles.y -= 360;
-			m_FollowAngles.y -= 360;
-		}
-		if (m_TargetAngles.x > 180) {
-			m_TargetAngles.x -= 360;
-			m_FollowAngles.x -= 360;
+			m_TargetAngles.y = (m_TargetAngles.y%360) - 360;
 		}
 		if (m_TargetAngles.y < -180) {
-			m_TargetAngles.y += 360;
-			m_FollowAngles.y += 360;
+			m_TargetAngles.y = (m_TargetAngles.y%360) + 360;
 		}
-		if (m_TargetAngles.x < -180) {
-			m_TargetAngles.x += 360;
-			m_FollowAngles.x += 360;
-		}
-
+			
 		// clamp vertical, let 360 horizontal
 		//m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -rotationRange.x * 0.5f, rotationRange.x * 0.5f);
 		
@@ -82,36 +79,29 @@ public class MechCamera : MonoBehaviour
 //		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
 		m_FollowAngles = m_TargetAngles;
 
-
-		float outerRotate = ( - inputV) * rotationSpeed;
-
-		if (m_TargetAngles.x <= -120 || m_TargetAngles.x >= 70) {
-			outerRotate = 0;
-			m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -120, 70);
-		}
-		transform.RotateAround (transform.parent.position + transform.parent.up * 5, transform.parent.right, outerRotate);
-
+		//lerp parent rotation
+		//transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.deltaTime * playerlerpspeed);
 		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
-		transform.localRotation = m_OriginalRotation * Quaternion.Euler (-m_TargetAngles.x, 0, 0);
 
+		//lerp cam rotation
+		//orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), Time.deltaTime * orbitlerpspeed);
+		orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220);
 
-		Vector3 rot = transform.parent.eulerAngles;
-		rot.z = 0;
-		transform.parent.eulerAngles = rot;
+		idealLocalAngle = -1.0322f * (orbitAngle - 119.64f);
+		transform.localRotation = Quaternion.Euler(idealLocalAngle+angleOffset,0,0);
+		transform.localPosition = new Vector3 (transform.localPosition.x, orbitRadius * Mathf.Sin (orbitAngle * Mathf.Deg2Rad), orbitRadius * Mathf.Cos (orbitAngle * Mathf.Deg2Rad));
 	}
 
-	public float GetFollowAngle_x(){
-		return m_FollowAngles.x;
+	public float GetCamAngle(){
+		return ((transform.rotation.eulerAngles.x > 180) ? -(transform.rotation.eulerAngles.x - 360) : -transform.rotation.eulerAngles.x);
 	}
 
 	public void LockMechRotation(bool b){//cam not included
-		lockPlayerRot = b;
-
-		if(!b){
-			currentMech.transform.localRotation = Quaternion.identity;
-		}else{
+		if(b){
+			if (lockPlayerRot)return;//already locked
 			tempCurrentMechRot = currentMech.transform.rotation;
 		}
+		lockPlayerRot = b;
 	}
 
 	public void LockCamRotation(bool b){

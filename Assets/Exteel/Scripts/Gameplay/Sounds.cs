@@ -10,7 +10,7 @@ public class Sounds : MonoBehaviour {
 	[SerializeField] AudioClip Lock;
 	[SerializeField] AudioClip OnLocked;
 	[SerializeField] AudioClip[] Slash;
-	[SerializeField] AudioClip Lance;
+	[SerializeField] AudioClip Smash;
 	[SerializeField] AudioClip BoostStart;
 	[SerializeField] AudioClip BoostLoop;
 	[SerializeField] AudioClip[] RPCsounds;
@@ -20,7 +20,7 @@ public class Sounds : MonoBehaviour {
 
 	*/
 
-	AudioClip BCNload;
+	AudioClip BCNload,BCNPose;
 
 	int weaponOffset =0; // update by switchWeapon
 
@@ -31,7 +31,8 @@ public class Sounds : MonoBehaviour {
 	private AudioSource MovementSource;
 
 	void Awake(){
-		BCNload = Resources.Load ("Sounds/Sieze") as AudioClip;
+		BCNload = Resources.Load ("Sounds/reload") as AudioClip;
+		BCNPose = Resources.Load ("Sounds/Sieze") as AudioClip;
 	}
 
 	// Use this for initialization
@@ -62,8 +63,8 @@ public class Sounds : MonoBehaviour {
 		Source.PlayOneShot (Slash [num]);
 	}
 
-	public void PlayLance(){
-		Source.PlayOneShot (Lance);
+	public void PlaySmash(){
+		Source.PlayOneShot (Smash);
 	}
 
 	public void PlayLock(){
@@ -80,6 +81,10 @@ public class Sounds : MonoBehaviour {
 	}
 	public void PlayOnLocked(){
 		Source.PlayOneShot (OnLocked);
+	}
+
+	public void PlayBCNPose(){
+		Source.PlayOneShot (BCNPose);
 	}
 
 	public void PlayBCNload(){

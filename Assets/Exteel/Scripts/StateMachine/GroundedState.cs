@@ -5,47 +5,52 @@ using UnityEngine;
 public class GroundedState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		base.OnStateEnter(animator, stateInfo, layerIndex);
-		if (cc == null || !cc.enabled || !cc.isGrounded) return;
-		mcbt.CanSlash = true;
-		mcbt.SetReceiveNextSlash (1);
+		base.Init(animator);
+		if (cc == null || !cc.enabled) return;
+		animator.SetBool (grounded_id, true);//in case respawn not grounded
+		animator.SetBool (onMelee_id, false);
+		mcbt.CanMeleeAttack = true;//CanMeleeAttack is to avoid multi-slash in air 
+		mctrl.grounded = true;
 	}
-	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
+
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if (cc == null || !cc.enabled || !cc.isGrounded)
+		if (cc == null || !cc.enabled)
 			return;
-		
+
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
+		animator.SetFloat(speed_id, speed);
+		animator.SetFloat(direction_id, direction);
 
-		if(animator.GetBool(boost_id)&& !Input.GetKey(KeyCode.LeftShift)){
-			animator.SetBool (boost_id, false); // not shutting down ,happens when boosting before slashing
-			mctrl.Boost(false);
+		if(animator.GetBool(jump_id)){
+			mctrl.Run ();//not lose speed in air
+			return;
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onSlash_id)) {
-			mctrl.SetCanVerticalBoost (true);
-			mctrl.Jump();
-			animator.SetBool(grounded_id, false);
+		if(!mctrl.CheckIsGrounded()){//check not jumping but is falling
 			mctrl.grounded = false;
+			mctrl.SetCanVerticalBoost (true);
+			animator.SetBool (grounded_id, false);
+			return;
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onMelee_id) ) {
+			mctrl.SetCanVerticalBoost (true);
+			mctrl.grounded = false;
+			animator.SetBool(grounded_id, false);
 			animator.SetBool(jump_id, true);
 			return;
 		}
 
-		if (speed > 0 || speed < 0 || direction > 0 || direction < 0) {
-			mctrl.Run();
-
-			if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost() && !animator.IsInTransition(0)) {
-				Sounds.PlayBoostStart ();
-				Sounds.PlayBoostLoop ();
-				animator.SetBool(boost_id, true);
-				mctrl.Boost(true);
+		if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughFuelToBoost()) {
+			if (speed > 0 || speed < 0 || direction > 0 || direction < 0) {	
+				animator.SetBool (boost_id, true);
+				mctrl.Boost (true);
 			}
+		}else{
+			mctrl.Run();
 		}
-			
-		animator.SetFloat(speed_id, speed);
-		animator.SetFloat(direction_id, direction);
-
+		
 	}
 }

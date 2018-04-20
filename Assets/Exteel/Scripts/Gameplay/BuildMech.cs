@@ -17,6 +17,9 @@ public class BuildMech : Photon.MonoBehaviour {
 	private GameManager gm;
 	public AudioClip[] ShotSounds;
 	private Animator animator;
+	AnimatorOverrideController animatorOverrideController;
+	private AnimationClipOverrides clipOverrides;
+	MovementClips MovementClips;
 
 	private Transform shoulderL;
 	private Transform shoulderR;
@@ -75,6 +78,12 @@ public class BuildMech : Photon.MonoBehaviour {
 		// Get parts info
 		Data data = UserData.myData;
 		animator = transform.Find("CurrentMech").GetComponent<Animator> ();
+
+		MovementClips = GetComponent<MovementClips> ();
+		if(inHangar || inStore)//do not call this in game otherwise mechcombat gets null parameter
+			initAnimatorControllers ();
+
+
 		weaponOffset = 0;
 
 		if (inHangar || inStore) {
@@ -87,7 +96,15 @@ public class BuildMech : Photon.MonoBehaviour {
 			gameObject.transform.SetParent (RespawnPanel.transform);
 		}
 	}
-		
+
+	void initAnimatorControllers(){
+		animatorOverrideController = new AnimatorOverrideController (animator.runtimeAnimatorController);
+		animator.runtimeAnimatorController = animatorOverrideController;
+
+		clipOverrides = new AnimationClipOverrides (animatorOverrideController.overridesCount);
+		animatorOverrideController.GetOverrides (clipOverrides);
+	}
+
 	[PunRPC]
 	void SetName(string name) {
 		gameObject.name = name;
@@ -401,8 +418,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts[i] = new BCN029();
 					weapons [i].transform.rotation = hands [1].rotation;
 					weapons [i].transform.SetParent (hands [1]);
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(170,90,-25));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.5f - weapons [i].transform.forward*0.1f;
+					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f + weapons [i].transform.forward*0.2f;
 					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
 
@@ -435,8 +452,8 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts [i] = new RCL034 ();
 					weapons [i].transform.rotation = hands [1].rotation;
 					weapons [i].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0f - weapons [i].transform.forward*0.1f;
+					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f ;
 
 					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
 					ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
@@ -479,7 +496,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		UpdateCurWeaponNames (weaponNames);
 
 		animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
-		if (animator != null)CheckAnimatorState ();
+		if (animator != null && (inHangar || inStore))CheckAnimatorState ();
+
 		weapons [(weaponOffset+2)%4].SetActive (false);
 		weapons [(weaponOffset+3)%4].SetActive (false);
 
@@ -635,8 +653,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos] = new BCN029 ();
 				weapons [weapPos].transform.rotation = hands [1].rotation;
 				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(170,90,-25));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f;
+				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f + weapons [weapPos].transform.forward*0.2f;
 
 				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
@@ -661,8 +679,8 @@ public class BuildMech : Photon.MonoBehaviour {
 				weaponScripts [weapPos] = new RCL034 ();
 				weapons [weapPos].transform.rotation = hands [1].rotation;
 				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(95,90,-10));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward*0.1f;
+				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
+				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f ;
 
 				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
 				weaponScripts [weapPos + 1] = new EmptyWeapon ();
@@ -735,21 +753,41 @@ public class BuildMech : Photon.MonoBehaviour {
 		curWeaponNames [2] = weaponNames[2];
 		curWeaponNames [3] = weaponNames[3];
 	}
+
 	public void CheckAnimatorState(){
 		if (animator == null)
 			return;
-		
-		if(curWeaponNames[weaponOffset] == "RCL034"){
-			animator.SetBool ("UsingRCL", true);
-		}else{
-			animator.SetBool ("UsingRCL", false);
-		}
 
-		if(curWeaponNames[weaponOffset] == "BCN029"){
-			animator.SetBool ("UsingBCN", true);
-		}else{
-			animator.SetBool ("UsingBCN", false);
-		}
+		int num = (weaponScripts [weaponOffset].isTwoHanded)? 1 : 0;
+
+		clipOverrides ["Idle"] = MovementClips.Idle [num];
+		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
+		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
+		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
+		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
+
+		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
+		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
+		clipOverrides ["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
+
+		clipOverrides ["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
+		clipOverrides ["Hover_Left_02"] = MovementClips.Hover_Left_02[num];
+		clipOverrides ["Hover_Left_03"] = MovementClips.Hover_Left_03[num];
+		clipOverrides ["Hover_Right_01"] = MovementClips.Hover_Right_01[num];
+		clipOverrides ["Hover_Right_02"] = MovementClips.Hover_Right_02[num];
+		clipOverrides ["Hover_Right_03"] = MovementClips.Hover_Right_03[num];
+		clipOverrides ["Hover_Front_01"] = MovementClips.Hover_Front_01[num];
+		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
+		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
+
+		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
+		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
+		clipOverrides ["Jump03"] = MovementClips.Jump03[num];
+		clipOverrides ["Jump06"] = MovementClips.Jump06[num];
+		clipOverrides ["Jump07"] = MovementClips.Jump07[num];
+		clipOverrides ["Jump08"] = MovementClips.Jump08[num];
+
+		animatorOverrideController.ApplyOverrides (clipOverrides);
 	}
 
 	void SetMechDefaultIfEmpty(int mehc_num){
@@ -815,5 +853,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();
 		mcbt.FindGunEnds ();
+
+		mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].isTwoHanded) ? 1 : 0));
 	}
 }
