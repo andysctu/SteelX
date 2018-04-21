@@ -605,6 +605,7 @@ public class MechCombat : Combat {
 		transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(true);
 		transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(true);
 
+		EffectController.RespawnEffect ();
 	}
 
 	// Update is called once per frame

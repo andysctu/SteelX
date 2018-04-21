@@ -5,7 +5,7 @@ using UnityEngine;
 public class EffectController : MonoBehaviour {
 
 	[SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
-	[SerializeField]private ParticleSystem boostingDust;
+	[SerializeField]private ParticleSystem boostingDust, respawnEffect;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]AnimatorVars AnimatorVars;
@@ -65,5 +65,13 @@ public class EffectController : MonoBehaviour {
 
 	public void UpdateBoostingDust(){//called by horizontal boosting state
 		boostingDust.transform.localRotation = Quaternion.Euler (-90,Vector3.SignedAngle (Vector3.up, new Vector3 (-Animator.GetFloat("Direction"), Animator.GetFloat("Speed"), 0), Vector3.forward),90);
+	}
+
+	public void RespawnEffect(){
+		respawnEffect.Play ();
+	}
+
+	void OnEnable(){
+		RespawnEffect ();
 	}
 }
