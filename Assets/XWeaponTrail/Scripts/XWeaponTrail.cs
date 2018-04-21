@@ -191,7 +191,7 @@ namespace XftWeapon {
             Deactivate();
         }
 
-        void Update() {
+		/* void LateUpdate() {
 
             if (!mInited)
                 return;
@@ -212,15 +212,32 @@ namespace XftWeapon {
 
             UpdateVertex();
 
-        }
+        }*/
 
 
         void LateUpdate() {
             if (!mInited)
                 return;
 
+			mVertexPool.LateUpdate();
 
-            mVertexPool.LateUpdate();
+			UpdateHeadElem();
+
+
+			mElapsedTime += Time.deltaTime;
+			if (mElapsedTime > UpdateInterval) {
+				mElapsedTime = 0f;
+				RecordCurElem();
+			}
+
+
+			RefreshSpline();
+
+			UpdateFade();
+
+			UpdateVertex();
+
+       
         }
 
         void OnDestroy() {

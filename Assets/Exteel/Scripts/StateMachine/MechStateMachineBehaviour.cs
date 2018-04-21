@@ -9,6 +9,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected MechCombat mcbt;
 	protected Sounds Sounds;
 	protected MechIK mechIK;
+	protected EffectController EffectController;
 
 	protected int boost_id;
 	protected int grounded_id;
@@ -48,6 +49,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		mcbt = animatorVars.mcbt;
 		Sounds = animatorVars.Sounds;
 		mechIK = animatorVars.mechIK;
+		EffectController = animatorVars.EffectController;
 
 		boost_id = animatorVars.boost_id;
 		grounded_id = animatorVars.grounded_id;

@@ -17,9 +17,9 @@ public class JumpedState : MechStateMachineBehaviour {
 			jumpReleased = false;
 			mctrl.grounded = false;
 			animator.SetBool (grounded_id, false);
-		}else if(!Input.GetKey(KeyCode.Space)){//dir falling
+		}else if(!animator.GetBool(jump_id)){//dir falling
 			mctrl.Boost (false);
-			animator.SetBool(boost_id, false);
+			animator.SetBool (boost_id, false);
 			animator.SetBool (jump_id, true);
 			animator.SetBool (grounded_id, false);
 			jumpReleased = true;

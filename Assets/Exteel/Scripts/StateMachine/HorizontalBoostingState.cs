@@ -14,6 +14,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+		EffectController.UpdateBoostingDust ();
 		if (cc == null || !cc.enabled)
 			return;
 
@@ -43,7 +44,6 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 		if (!Input.GetKey (KeyCode.LeftShift) || !mcbt.IsFuelAvailable ()) {
 			mctrl.Run ();
-			Sounds.StopBoostLoop ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
 			return;
@@ -51,5 +51,10 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			animator.SetBool (boost_id, true);
 			mctrl.Boost (true);
 		}
+	}
+
+	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
+
 	}
 }

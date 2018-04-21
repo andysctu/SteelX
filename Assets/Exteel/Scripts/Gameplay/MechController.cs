@@ -6,14 +6,14 @@ using System.Collections;
 public class MechController : Photon.MonoBehaviour {
 
 	[SerializeField]private Camera cam;
-	[SerializeField]private ParticleSystem boostFlame;
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private MechCombat mechCombat;
 	[SerializeField]private MechCamera mechCamera;
 	[SerializeField]private Sounds Sounds;
-	[SerializeField]private ParticleSystem boostDust;
+	[SerializeField]private EffectController EffectController;
 	private GameManager gm;
+	private BoosterController BoosterController;
 
 	public CharacterController CharacterController;
 	public LayerMask Terrain;
@@ -64,6 +64,7 @@ public class MechController : Photon.MonoBehaviour {
 		initComponents();
 		initTransforms();
 		initControllerVar ();
+		FindBoosterController ();
 	}
 
 	public void initControllerVar(){
@@ -75,11 +76,14 @@ public class MechController : Photon.MonoBehaviour {
 		mechCamera.LockCamRotation (false);
 		mechCamera.LockMechRotation (false);
 		run_xzDir = Vector2.zero;
-		boostDust.Stop ();
 	}
 
 	public void InitVars(){//this is called by AniamtorVars
 		boost_id = AnimatorVars.boost_id;
+	}
+
+	public void FindBoosterController(){//TODO : put this in respawn update delegate 
+		BoosterController = transform.Find("CurrentMech").GetComponentInChildren<BoosterController>();
 	}
 
 	void initComponents() {
@@ -168,7 +172,6 @@ public class MechController : Photon.MonoBehaviour {
 			return;
 		}
 
-
 		move = Vector3.zero;
 		move += Vector3.right * xSpeed * Time.fixedDeltaTime;
 		move += Vector3.forward * zSpeed * Time.fixedDeltaTime;
@@ -249,19 +252,14 @@ public class MechController : Photon.MonoBehaviour {
 	}
 	public void Boost(bool b) {
 		if(b != isBoostFlameOn){
-			photonView.RPC ("BoostFlame", PhotonTargets.All, b);
+			photonView.RPC ("BoostFlame", PhotonTargets.All, b, grounded);
 			isBoostFlameOn = b;
 
-			if (!b) {//shut the boost first call
-				boostDust.Stop ();
-			}else{//toggle on the boost first call
+			if (b){//toggle on the boost first call
 				if (grounded) {
 					curboostingSpeed = mechCombat.MinHorizontalBoostSpeed ();
 					xSpeed = (curboostingSpeed * xzDir.x * transform.right).x + (curboostingSpeed * xzDir.y * transform.forward).x;
 					zSpeed = (curboostingSpeed * xzDir.y * transform.forward).z + (curboostingSpeed * xzDir.x * transform.right).z;
-
-					boostDust.transform.localRotation = Quaternion.Euler (-90, Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward),0);
-					boostDust.Play ();
 				}
 			}
 		}
@@ -293,10 +291,7 @@ public class MechController : Photon.MonoBehaviour {
 					zSpeed += Mathf.Sign(0 - zSpeed) * mechCombat.acceleration *decreaseDir.y* Time.deltaTime * 40;
 				}else{
 					zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime *100;
-				}
-
-				boostDust.transform.localRotation = Quaternion.Euler (-90,Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward),0);
-				
+				}				
 			}else{//boost in air
 				float inAirSpeed = mechCombat.MaxHorizontalBoostSpeed () * InAirSpeedCoeff;
 				xSpeed = inAirSpeed * xzDir.x * transform.right.x +  inAirSpeed * xzDir.y * transform.forward.x;
@@ -373,20 +368,19 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	[PunRPC]
-	void BoostFlame(bool boost) {
-		if (boost) {
-			boostFlame.Play ();
-			Sounds.PlayBoostStart ();
-			Sounds.PlayBoostLoop ();
+	void BoostFlame(bool boost, bool boostdust) {
+		if (boost) {			
+			BoosterController.StartBoost ();
+			if(boostdust)
+				EffectController.BoostingDustEffect (true);
 		}
 		else {
-			boostFlame.Stop ();
-			Sounds.StopBoostLoop ();
+			BoosterController.StopBoost ();
+			EffectController.BoostingDustEffect (false);
 		}
 	}
 
 	void GetXZDirection() {
-		//move = Vector3.zero;
 		float h = Input.GetAxis("Horizontal");
 		float v = Input.GetAxis("Vertical");
 
@@ -411,9 +405,4 @@ public class MechController : Photon.MonoBehaviour {
 	public void CallLockMechRot(bool b){
 		mechCamera.LockMechRotation (b);
 	}
-
-	/*void OnDrawGizmos(){
-		Gizmos.color = Color.red;
-		Gizmos.DrawWireSphere (transform.position + new Vector3 (0, 1.7f, 0), 2.0f);
-	}*/
 }

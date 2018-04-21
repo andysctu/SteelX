@@ -3,35 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AnimatorVars : MonoBehaviour {
-	[SerializeField]Combo Combo;
+	
+	private Combo Combo;
+	[HideInInspector]public CharacterController cc = null;
+	[HideInInspector]public MechController mctrl = null;
+	[HideInInspector]public MechCombat mcbt = null;
+	[HideInInspector]public Sounds Sounds = null;
+	[HideInInspector]public MechIK mechIK = null;
+	[HideInInspector]public EffectController EffectController = null;
 
-	public CharacterController cc = null;
-	public MechController mctrl = null;
-	public MechCombat mcbt = null;
-	public Sounds Sounds = null;
-	public MechIK mechIK = null;
+	[HideInInspector]public int boost_id;
+	[HideInInspector]public int grounded_id;
+	[HideInInspector]public int jump_id;
+	[HideInInspector]public int speed_id;
+	[HideInInspector]public int direction_id;
+	[HideInInspector]public int onMelee_id;
 
-	public int boost_id;
-	public int grounded_id;
-	public int jump_id;
-	public int speed_id;
-	public int direction_id;
-	public int onMelee_id;
+	[HideInInspector]public int SlashL_id;
+	[HideInInspector]public int SlashL2_id;
+	[HideInInspector]public int SlashL3_id;
+	[HideInInspector]public int SlashL4_id;
+	[HideInInspector]public int SlashL5_id;
 
-	public int SlashL_id;
-	public int SlashL2_id;
-	public int SlashL3_id;
-	public int SlashL4_id;
-	public int SlashL5_id;
+	[HideInInspector]public int SlashR_id;
+	[HideInInspector]public int SlashR2_id;
+	[HideInInspector]public int SlashR3_id;
+	[HideInInspector]public int SlashR4_id;
+	[HideInInspector]public int SlashR5_id;
 
-	public int SlashR_id;
-	public int SlashR2_id;
-	public int SlashR3_id;
-	public int SlashR4_id;
-	public int SlashR5_id;
-
-	public int BCNPose_id;
-	public int OnBCN_id;
+	[HideInInspector]public int BCNPose_id;
+	[HideInInspector]public int OnBCN_id;
 
 	public bool inHangar = false;//in Store also manually set this to TRUE
 	// Use this for initialization
@@ -42,6 +43,8 @@ public class AnimatorVars : MonoBehaviour {
 		mcbt = transform.parent.gameObject.GetComponent<MechCombat> ();
 		Sounds = GetComponent<Sounds> ();
 		mechIK = GetComponent<MechIK> ();
+		EffectController = transform.root.GetComponentInChildren<EffectController> ();
+		Combo = GetComponent<Combo> ();
 
 		if (!inHangar && transform.root.GetComponent<PhotonView>().isMine) {
 			boost_id = Animator.StringToHash ("Boost");
@@ -73,6 +76,9 @@ public class AnimatorVars : MonoBehaviour {
 			}
 			if(mcbt!=null){
 				mcbt.initAnimatorVarID ();
+			}
+			if(EffectController!=null){
+				EffectController.InitVars ();
 			}
 		}
 	}

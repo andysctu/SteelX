@@ -13,7 +13,6 @@ public class SlashState : MechStateMachineBehaviour {
 
 		inAir = animator.GetBool (jump_id);
 
-		Sounds.StopBoostLoop ();
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 

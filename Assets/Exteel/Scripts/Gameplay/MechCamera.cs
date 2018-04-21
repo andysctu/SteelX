@@ -51,12 +51,6 @@ public class MechCamera : MonoBehaviour
 				currentMech.transform.localRotation = Quaternion.Lerp (currentMech.transform.localRotation, Quaternion.identity, Time.deltaTime * playerlerpspeed);
 			}
 		}
-
-		/*if (lockCamRot) {
-			transform.rotation = tempCamRot;
-			return;
-		}*/
-
 		// read input from mouse or mobile controls
 		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
 		inputV = CrossPlatformInputManager.GetAxis ("Mouse Y");
@@ -72,11 +66,6 @@ public class MechCamera : MonoBehaviour
 			m_TargetAngles.y = (m_TargetAngles.y%360) + 360;
 		}
 			
-		// clamp vertical, let 360 horizontal
-		//m_TargetAngles.x = Mathf.Clamp (m_TargetAngles.x, -rotationRange.x * 0.5f, rotationRange.x * 0.5f);
-		
-		// smoothly interpolate current values to target angles
-//		m_FollowAngles = Vector3.SmoothDamp(m_FollowAngles, m_TargetAngles, ref m_FollowVelocity, dampingTime);
 		m_FollowAngles = m_TargetAngles;
 
 		//lerp parent rotation

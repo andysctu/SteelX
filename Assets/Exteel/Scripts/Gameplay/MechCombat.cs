@@ -9,9 +9,9 @@ public class MechCombat : Combat {
 
 	[SerializeField] Transform camTransform;
 	[SerializeField] HeatBar HeatBar;
-	[SerializeField] ParticleSystem SwitchWeaponEffectL,SwitchWeaponEffectR;
 	[SerializeField] DisplayPlayerInfo displayPlayerInfo;
 	[SerializeField] CrosshairImage crosshairImage;
+	[SerializeField] EffectController EffectController;
 	enum WeaponTypes {RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY};
 
 	// Boost variables
@@ -143,13 +143,6 @@ public class MechCombat : Combat {
 		Hands = new Transform[2];
 		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
 		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
-		SwitchWeaponEffectL.transform.SetParent (Hands [0]);
-		SwitchWeaponEffectL.transform.localPosition = Vector3.zero;
-		SwitchWeaponEffectL.Stop ();
-
-		SwitchWeaponEffectR.transform.SetParent (Hands [1]);
-		SwitchWeaponEffectR.transform.localPosition = Vector3.zero;
-		SwitchWeaponEffectR.Stop ();
 	}
 
 	void initGameObjects() {
@@ -206,6 +199,7 @@ public class MechCombat : Combat {
 
 		HeatBar.InitVars ();
 		MechIK.UpdateMechIK ();
+		mechController.FindBoosterController ();
 	}
 
 	void initHUD() {
@@ -906,10 +900,7 @@ public class MechCombat : Combat {
 	[PunRPC]
 	void CallSwitchWeapons() {
 		//Play switch weapon animation
-		SwitchWeaponEffectL.Play();
-		SwitchWeaponEffectR.Play();
-
-		Sounds.PlaySwitchWeapon ();
+		EffectController.SwitchWeaponEffect ();
 		isSwitchingWeapon = true;
 		Invoke ("SwitchWeaponsBegin", 1f);
 	}
@@ -964,10 +955,6 @@ public class MechCombat : Combat {
 
 		//Check crosshair
 		crosshair.updateCrosshair (weaponOffset);
-
-		//Stop switch weapon animation
-		SwitchWeaponEffectL.Stop();
-		SwitchWeaponEffectR.Stop();
 
 		isSwitchingWeapon = false;
 	}

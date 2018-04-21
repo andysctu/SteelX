@@ -11,8 +11,6 @@ public class Sounds : MonoBehaviour {
 	[SerializeField] AudioClip OnLocked;
 	[SerializeField] AudioClip[] Slash;
 	[SerializeField] AudioClip Smash;
-	[SerializeField] AudioClip BoostStart;
-	[SerializeField] AudioClip BoostLoop;
 	[SerializeField] AudioClip[] RPCsounds;
 	/*
 	0 : Switch weapons
@@ -38,7 +36,6 @@ public class Sounds : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		if (MovementSource != null) {
-			MovementSource.clip = BoostLoop;
 			MovementSource.volume = 0.3f;
 		}
 
@@ -69,15 +66,6 @@ public class Sounds : MonoBehaviour {
 
 	public void PlayLock(){
 		Source.PlayOneShot (Lock);
-	}
-	public void PlayBoostStart(){
-		Source.PlayOneShot(BoostStart);
-	}
-	public void PlayBoostLoop(){
-		MovementSource.Play ();
-	}
-	public void StopBoostLoop(){
-		MovementSource.Stop ();
 	}
 	public void PlayOnLocked(){
 		Source.PlayOneShot (OnLocked);
