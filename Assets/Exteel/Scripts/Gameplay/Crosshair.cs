@@ -281,7 +281,9 @@ public class Crosshair : MonoBehaviour {
 						return hit.transform;
 					}
 				}else{
-					return hit.transform;
+					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
+					if(targetpv.viewID != pv.viewID) //if not mine
+						return hit.transform;
 				}
 			}
 		}
@@ -303,7 +305,9 @@ public class Crosshair : MonoBehaviour {
 						return hit.transform;
 					}
 				}else{
-					return hit.transform;
+					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
+					if(targetpv.viewID != pv.viewID) //if not mine
+						return hit.transform;
 				}
 			}
 		}

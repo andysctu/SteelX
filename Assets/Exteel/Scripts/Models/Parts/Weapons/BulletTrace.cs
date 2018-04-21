@@ -10,6 +10,7 @@ public class BulletTrace : MonoBehaviour {
 	public Camera cam;
 	public LayerMask layerMask = 8, Terrain = 10;
 	public Vector3 direction;
+	public Transform Shield;
 	private Rigidbody rb;
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
 	private Transform Target;
@@ -35,7 +36,7 @@ public class BulletTrace : MonoBehaviour {
 			transform.LookAt (direction*9999);
 			Destroy(gameObject, 2f);
 		}else{//target exists
-			Target = gameObject.transform.parent.GetComponent<Transform>();
+			Target = transform.parent;
 			transform.LookAt (Target);
 			isfollow = true;
 			Destroy(gameObject, 2f);
@@ -83,7 +84,7 @@ public class BulletTrace : MonoBehaviour {
 				if (!isTargetShield) {
 					BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 				}else{
-					BI = Instantiate (bulletImpact_onShield, collisionHitLoc, Quaternion.identity);
+					BI = Instantiate (bulletImpact_onShield, Shield.position, Quaternion.identity);
 				}
 				BI.transform.LookAt (cam.transform);
 

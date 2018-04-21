@@ -58,10 +58,10 @@ public class MechCombat : Combat {
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
 	// Transforms
+	public Transform[] Hands;//other player use this to locate hand position quickly
 	private Transform shoulderL;
 	private Transform shoulderR;
 	private Transform head;
-	private Transform[] Hands;
 	private Transform[] Gun_ends;
 
 	// GameObjects
@@ -299,7 +299,7 @@ public class MechCombat : Combat {
 			if (curWeaponNames [handPosition] != (int)WeaponTypes.ENG) {
 				if (target.tag == "Player" || target.tag == "Drone") {
 				
-					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
+					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false, -1);
 
 					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, bm.curWeaponNames[weaponOffset+handPosition], weaponScripts [weaponOffset + handPosition].isSlowDown);
 					//Debug.Log ("Damage: " + damage + ", Range: " + range);
@@ -310,11 +310,10 @@ public class MechCombat : Combat {
 						hud.ShowText (cam, target.position, "Hit");
 					}
 				} else if (target.tag == "Shield") {
-					
-					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true);
-
 					//check what hand is it
 					int hand = (target.transform.parent.parent.name [target.transform.parent.parent.name.Length - 1] == 'L') ? 0 : 1;
+
+					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true, hand);
 
 					MechCombat targetMcbt = target.transform.root.GetComponent<MechCombat> ();
 
@@ -329,14 +328,14 @@ public class MechCombat : Combat {
 					hud.ShowText (cam, target.position, "Defense");
 				}
 			}else{//ENG
-				photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false);
+				photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, false, -1);
 
 				target.transform.root.GetComponent<PhotonView> ().RPC ("OnHeal", PhotonTargets.All, photonView.viewID, damage);
 
 				hud.ShowText (cam, target.position, "Hit");
 			}
 		}else{
-			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1, false);
+			photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1, false, -1);
 		}
 	}
 
@@ -373,11 +372,11 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
-	void RegisterBulletTrace(int handPosition, Vector3 direction , int playerPVid , bool isShield) {
-		bulletCoroutine = StartCoroutine (InstantiateBulletTrace (handPosition, direction, playerPVid, isShield));
+	void RegisterBulletTrace(int handPosition, Vector3 direction , int playerPVid , bool isShield, int hand_shield) {
+		bulletCoroutine = StartCoroutine (InstantiateBulletTrace (handPosition, direction, playerPVid, isShield, hand_shield));
 	}
 
-	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, int playerPVid, bool isShield){
+	IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, int playerPVid, bool isShield, int hand_shield){
 		GameObject Target;
 
 		if (playerPVid != -1)
@@ -430,6 +429,9 @@ public class MechCombat : Combat {
 				bulletTrace.cam = cam;
 				bulletTrace.ShooterName = gameObject.name;
 				bulletTrace.isTargetShield = isShield;
+
+				if(isShield)
+					bulletTrace.Shield = Target.GetComponent<MechCombat> ().Hands [hand_shield];//locate shield position
 				if (bN > 1)
 					bulletTrace.isLMG = true; //multiple messages
 				
