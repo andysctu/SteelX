@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class SmashState : MechStateMachineBehaviour {
 
+	private bool inAir = false;
+
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
 		if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
+
+		inAir = animator.GetBool (jump_id);
 
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
@@ -17,6 +21,7 @@ public class SmashState : MechStateMachineBehaviour {
 		}else{
 			mcbt.SlashDetect (1);
 		}
+		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
@@ -26,6 +31,7 @@ public class SmashState : MechStateMachineBehaviour {
 
 		mcbt.isRMeleePlaying = 0;
 		mcbt.isLMeleePlaying = 0;
+		mcbt.CanMeleeAttack = true;
 		mcbt.SetReceiveNextSlash (1);
 	}
 
@@ -44,10 +50,11 @@ public class SmashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
-		if (animator.GetBool (jump_id)) {//exiting from jump melee attack
+		if (inAir) {//exiting from jump melee attack
 			animator.SetBool (onMelee_id, false);
 			mcbt.isRMeleePlaying = 0;
 			mcbt.isLMeleePlaying = 0;
+			mcbt.SetReceiveNextSlash (1);
 		}
 	}
 }

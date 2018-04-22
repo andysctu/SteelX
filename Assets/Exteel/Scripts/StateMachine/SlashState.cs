@@ -45,6 +45,8 @@ public class SlashState : MechStateMachineBehaviour {
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if ( cc == null || !cc.enabled) return;
+		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
+
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 	}
 
