@@ -16,9 +16,9 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
-		if (!animator.GetBool ("SlashL5") && !animator.GetBool ("SlashR5")) {
+		if (!animator.GetBool ("SlashL4") && !animator.GetBool ("SlashR4")) {
 			mcbt.SetReceiveNextSlash (1);
-			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool ("SlashL3") || animator.GetBool ("SlashL4"))
+			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool ("SlashL3"))
 				mcbt.isLMeleePlaying = 1;
 			else
 				mcbt.isRMeleePlaying = 1;

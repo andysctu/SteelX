@@ -757,14 +757,14 @@ public class MechCombat : Combat {
 				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
-				if (handPosition == 0 && animator.GetBool ("SlashL3"))
+				/*if (handPosition == 0 && animator.GetBool ("SlashL3"))
 					return;
 				if (handPosition == 1 && animator.GetBool ("SlashR3"))
 					return;
 				if(handPosition==0 && isRMeleePlaying==1 && !animator.GetBool("SlashR3"))
 					return;
 				if(handPosition==1 && isLMeleePlaying==1 && !animator.GetBool("SlashL3"))
-					return;
+					return;*/
 				
 
 				CanMeleeAttack = false;
