@@ -24,6 +24,9 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected int slashR2_id;
 	protected int slashL3_id;
 	protected int slashR3_id;
+	protected int slashL4_id;
+	protected int slashR4_id;
+
 
 	protected int OnBCN_id;
 	// OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
@@ -64,6 +67,8 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		slashR2_id = animatorVars.SlashR2_id;
 		slashL3_id = animatorVars.SlashL3_id;
 		slashR3_id = animatorVars.SlashR3_id;
+		slashL4_id = animatorVars.SlashL4_id;
+		slashR4_id = animatorVars.SlashR4_id;
 
 		OnBCN_id = animatorVars.OnBCN_id;
 	}

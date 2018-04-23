@@ -362,11 +362,11 @@ public class BuildMech : Photon.MonoBehaviour {
 					weapons [i].transform.rotation = hands [i % 2].rotation;
 					weapons [i].transform.SetParent (hands [i % 2]);
 					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f  - weapons [i].transform.right*0.2f;
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 200));
+						weapons [i].transform.position = hands [i % 2].position + weapons [i].transform.up*0.3f - weapons [i].transform.forward * 0.8f  - weapons [i].transform.right*0.1f;
 					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 80, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f - weapons [i].transform.right*0.2f;
+						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 80, -20));
+						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0.3f - weapons [i].transform.forward * 0.8f - weapons [i].transform.right*0.1f;
 					}
 					bulletPrefabs [i] = null;
 
@@ -599,11 +599,11 @@ public class BuildMech : Photon.MonoBehaviour {
 				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
 				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
 				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f  - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 200));
+					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.up*0.3f - weapons [weapPos].transform.forward * 0.8f  - weapons [weapPos].transform.right*0.1f;
 				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f - weapons [weapPos].transform.right*0.2f;
+					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, -20));
+					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.3f - weapons [weapPos].transform.forward * 0.8f - weapons [weapPos].transform.right*0.1f;
 				}
 				break;
 			}

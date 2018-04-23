@@ -5,6 +5,7 @@ using UnityEngine;
 public class SlashState : MechStateMachineBehaviour {
 
 	private bool inAir = false;
+	public int hand, combo;//L1 => combo = 1 , in air => combo = -1
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
@@ -16,9 +17,9 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
-		if (!animator.GetBool ("SlashL4") && !animator.GetBool ("SlashR4")) {
+		if (!animator.GetBool (slashL4_id) && !animator.GetBool (slashR4_id)) {
 			mcbt.SetReceiveNextSlash (1);
-			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool ("SlashL3"))
+			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool (slashL3_id))
 				mcbt.isLMeleePlaying = 1;
 			else
 				mcbt.isRMeleePlaying = 1;
@@ -30,6 +31,8 @@ public class SlashState : MechStateMachineBehaviour {
 			mcbt.SlashDetect (1);
 		}
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
+
+		animator.SetFloat ("slashTime", 0);//test
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
@@ -44,9 +47,11 @@ public class SlashState : MechStateMachineBehaviour {
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+		if(!animator.IsInTransition(0))
+			Debug.Log ("time : " + stateInfo.normalizedTime);
+		animator.SetFloat ("slashTime", stateInfo.normalizedTime);//test
 		if ( cc == null || !cc.enabled) return;
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
-
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 	}
 
