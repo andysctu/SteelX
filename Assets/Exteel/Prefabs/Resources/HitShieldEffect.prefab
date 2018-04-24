@@ -84,7 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e6924f4484a4bf0acf2e79f0289f10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ImpactSound: {fileID: 0}
+  ImpactSound: {fileID: 8300000, guid: bb0838ef7620c417bbbb5d94c6e4195a, type: 3}
 --- !u!198 &198590244258558462
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -145,7 +145,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -2023532577
+  randomSeed: 98656726
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3554,14 +3554,14 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -667811136
+  randomSeed: -577010619
   InitialModule:
     serializedVersion: 3
     enabled: 1
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 0.25
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -3602,7 +3602,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 0.4
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -4507,8 +4507,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 0}
+        key0: {r: 1, g: 1, b: 1, a: 0.2784314}
+        key1: {r: 1, g: 1, b: 1, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -4523,9 +4523,9 @@ ParticleSystem:
         ctime5: 0
         ctime6: 0
         ctime7: 0
-        atime0: 34695
-        atime1: 64186
-        atime2: 59367
+        atime0: 2699
+        atime1: 20432
+        atime2: 64186
         atime3: 59367
         atime4: 0
         atime5: 0
@@ -4533,7 +4533,7 @@ ParticleSystem:
         atime7: 0
         m_Mode: 0
         m_NumColorKeys: 2
-        m_NumAlphaKeys: 2
+        m_NumAlphaKeys: 3
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

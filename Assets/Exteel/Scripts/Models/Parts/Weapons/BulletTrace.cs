@@ -27,7 +27,6 @@ public class BulletTrace : MonoBehaviour {
 		bulletImpact_onShield = Resources.Load ("HitShieldEffect") as GameObject;
 	}
 	void Start () {
-		bulletImpact_onShield.GetComponent<BulletImpact> ().ImpactSound = bulletImpact.GetComponent<BulletImpact> ().ImpactSound;
 		ParticleSystem ps = GetComponent<ParticleSystem>();
 		ps.Play();
 
@@ -73,7 +72,7 @@ public class BulletTrace : MonoBehaviour {
 					if (!isTargetShield)
 						HUD.ShowText (cam, other.transform.position + new Vector3 (0, 5f, 0), "Hit");
 					else {
-						HUD.ShowText (cam, other.transform.position, "Defense");
+						HUD.ShowText (cam, Shield.position, "Defense");
 					}
 				}
 
@@ -84,7 +83,7 @@ public class BulletTrace : MonoBehaviour {
 				if (!isTargetShield) {
 					BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
 				}else{
-					BI = Instantiate (bulletImpact_onShield, Shield.position, Quaternion.identity);
+					BI = Instantiate (bulletImpact_onShield, Shield.position - Shield.forward * 1f, Quaternion.identity);
 				}
 				BI.transform.LookAt (cam.transform);
 

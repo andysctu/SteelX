@@ -148,7 +148,6 @@ public class MechController : Photon.MonoBehaviour {
 	public void UpdateSpeed() {
 		// slash z-offset
 		if (mechCombat.isLMeleePlaying == 1 ||mechCombat.isRMeleePlaying == 1 || on_BCNShoot) {
-
 			if(grounded){
 				forcemove_dir = new Vector3 (forcemove_dir.x, 0, forcemove_dir.z);	// make sure not slashing to the sky
 			}
@@ -231,9 +230,9 @@ public class MechController : Photon.MonoBehaviour {
 			xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x +(run_xzDir.y * curboostingSpeed * transform.forward).x;
 			zSpeed =  (run_xzDir.x * curboostingSpeed * transform.right).z +(run_xzDir.y * curboostingSpeed * transform.forward).z;
 			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime/2 ;
-		}else{		
-			xSpeed = mechCombat.MoveSpeed()*xzDir.x*transform.right.x + mechCombat.MoveSpeed()*xzDir.y*transform.forward.x;
-			zSpeed = mechCombat.MoveSpeed()*xzDir.x*transform.right.z + mechCombat.MoveSpeed()*xzDir.y*transform.forward.z;
+		}else{
+			xSpeed = mechCombat.MoveSpeed()*xzDir.x*transform.right.x + mechCombat.MoveSpeed()*((xzDir.y<0)? xzDir.y/2 : xzDir.y)*transform.forward.x;
+			zSpeed = mechCombat.MoveSpeed () * xzDir.x * transform.right.z + mechCombat.MoveSpeed () * ((xzDir.y<0)? xzDir.y/2 : xzDir.y) * transform.forward.z;
 		}			
 	}
 

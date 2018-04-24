@@ -361,6 +361,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					weaponScripts [i] = new SHS309 ();
 					weapons [i].transform.rotation = hands [i % 2].rotation;
 					weapons [i].transform.SetParent (hands [i % 2]);
+
 					if(i % 2 == 0){
 						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 200));
 						weapons [i].transform.position = hands [i % 2].position + weapons [i].transform.up*0.3f - weapons [i].transform.forward * 0.8f  - weapons [i].transform.right*0.1f;
@@ -371,16 +372,17 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 
 					//also set the child collider
-					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
+					/*GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
+					collider.transform.SetParent (hands [i % 2].transform);
+
 					if(i % 2 == 0){
-						collider.transform.localRotation = Quaternion.Euler(0,5,10);
-						collider.transform.localPosition = new Vector3(0.10f,0,0);
+						collider.transform.localRotation = Quaternion.Euler(0,90,0);
+						collider.transform.localPosition = new Vector3(0f,0,0);
 					}else{
-						collider.transform.localRotation = Quaternion.Euler(0,5,-10);
-						collider.transform.localPosition =  new Vector3(0.10f,0,0);
+						collider.transform.localRotation = Quaternion.Euler(0,90,0);
+						collider.transform.localPosition =  new Vector3(0f,0,0);
 					}
-
-
+					collider.GetComponent<UpdateSHScollider> ().orgRot = collider.transform.rotation.eulerAngles;*/
 					break;
 				}
 			case "LMG012": {

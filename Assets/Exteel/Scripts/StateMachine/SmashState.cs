@@ -16,6 +16,10 @@ public class SmashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
+		if(inAir){
+			mctrl.Boost (true);
+		}
+
 		if(mcbt.isLMeleePlaying == 1){
 			mcbt.SlashDetect (0);
 		}else{
@@ -39,6 +43,11 @@ public class SmashState : MechStateMachineBehaviour {
 		if ( cc == null || !cc.enabled) return;
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 
+		if(inAir && mcbt.isLMeleePlaying==0 && mcbt.isRMeleePlaying==0){
+			mctrl.Boost (false);
+			mctrl.JumpMoveInAir ();
+		}
+
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 	}
 
@@ -55,6 +64,8 @@ public class SmashState : MechStateMachineBehaviour {
 			mcbt.isRMeleePlaying = 0;
 			mcbt.isLMeleePlaying = 0;
 			mcbt.SetReceiveNextSlash (1);
+		}else{
+			mcbt.CanMeleeAttack = true;
 		}
 	}
 }

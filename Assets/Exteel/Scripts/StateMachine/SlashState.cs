@@ -17,6 +17,10 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
+		if(inAir){
+			mctrl.Boost (true);
+		}
+
 		if (!animator.GetBool (slashL4_id) && !animator.GetBool (slashR4_id)) {
 			mcbt.SetReceiveNextSlash (1);
 			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool (slashL3_id))
@@ -32,7 +36,7 @@ public class SlashState : MechStateMachineBehaviour {
 		}
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 
-		animator.SetFloat ("slashTime", 0);//test
+		animator.SetFloat ("slashTime", 0);
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
@@ -47,10 +51,14 @@ public class SlashState : MechStateMachineBehaviour {
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		if(!animator.IsInTransition(0))
-			Debug.Log ("time : " + stateInfo.normalizedTime);
 		animator.SetFloat ("slashTime", stateInfo.normalizedTime);//test
 		if ( cc == null || !cc.enabled) return;
+
+		if(inAir && mcbt.isLMeleePlaying==0 && mcbt.isRMeleePlaying==0){
+			mctrl.Boost (false);
+			mctrl.JumpMoveInAir ();
+		}
+
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 	}
@@ -67,6 +75,8 @@ public class SlashState : MechStateMachineBehaviour {
 			mcbt.isRMeleePlaying = 0;
 			mcbt.isLMeleePlaying = 0;
 			mcbt.SetReceiveNextSlash (1);
+		}else{
+			mcbt.CanMeleeAttack = true;//sometimes OnstateMachineExit does not ensure canslash set to true ( called before update )
 		}
 	}
 }

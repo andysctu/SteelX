@@ -342,10 +342,6 @@ public class MechCombat : Combat {
 	public void SlashDetect(int handPosition){//called by animation event (Combo.cs) 
 		if (!photonView.isMine)
 			return;
-		
-		if(!mechController.grounded){
-			mechController.Boost (true); // jump slash boost effect
-		}
 
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
 
@@ -623,9 +619,6 @@ public class MechCombat : Combat {
 			forceDead = false;
 			photonView.RPC ("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
 		}
-			
-		// Fix head to always look ahead
-		head.LookAt(head.position + transform.forward * 10);
 
 		if (!gm.GameIsBegin)
 			return;
@@ -757,14 +750,10 @@ public class MechCombat : Combat {
 				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
-				/*if (handPosition == 0 && animator.GetBool ("SlashL3"))
+				if (animator.GetBool ("SlashL3") && !(weaponScripts [handPosition + weaponOffset +1].Animation == "Slash"))
 					return;
-				if (handPosition == 1 && animator.GetBool ("SlashR3"))
+				if (animator.GetBool ("SlashR3") && !(weaponScripts [handPosition + weaponOffset].Animation == "Slash"))
 					return;
-				if(handPosition==0 && isRMeleePlaying==1 && !animator.GetBool("SlashR3"))
-					return;
-				if(handPosition==1 && isLMeleePlaying==1 && !animator.GetBool("SlashL3"))
-					return;*/
 				
 
 				CanMeleeAttack = false;
@@ -846,7 +835,6 @@ public class MechCombat : Combat {
 			break;
 			case (int)WeaponTypes.SHIELD:
 				animator.SetBool(animationStr, true);
-				shoulderR.Rotate (0, x, 0);
 			break;
 			case (int)WeaponTypes.RCL:
 				animator.SetBool (animationStr, true);
@@ -992,8 +980,8 @@ public class MechCombat : Combat {
 		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
 		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
 		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
-		clipOverrides ["BackWalk_Left"] = MovementClips.BackWalk [num];
-		clipOverrides ["BackWalk_Right"] = MovementClips.BackWalk [num];
+		clipOverrides ["BackWalk_Left"] = MovementClips.BackWalk_Left [num];
+		clipOverrides ["BackWalk_Right"] = MovementClips.BackWalk_Right [num];
 
 		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
 		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
