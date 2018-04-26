@@ -67,8 +67,8 @@ public class SlashState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 		mctrl.SetCanVerticalBoost (false);
-		animator.SetBool (boost_id, false);
-		mctrl.Boost (false);
+		//animator.SetBool (boost_id, false);
+		//mctrl.Boost (false);
 
 		if (inAir) {//exiting from jump melee attack
 			animator.SetBool (onMelee_id, false);

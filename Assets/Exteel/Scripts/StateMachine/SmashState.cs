@@ -56,8 +56,8 @@ public class SmashState : MechStateMachineBehaviour {
 			return;
 
 		mctrl.SetCanVerticalBoost (false);
-		animator.SetBool (boost_id, false);
-		mctrl.Boost (false);
+		//animator.SetBool (boost_id, false);
+		//mctrl.Boost (false);
 
 		if (inAir) {//exiting from jump melee attack
 			animator.SetBool (onMelee_id, false);

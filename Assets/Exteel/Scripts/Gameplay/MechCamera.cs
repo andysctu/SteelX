@@ -31,7 +31,7 @@ public class MechCamera : MonoBehaviour
 	public float orbitRadius = 19;
 	public float angleOffset = 33;
 
-	private float playerlerpspeed = 25f, orbitlerpspeed = 50f;
+	private float playerlerpspeed = 50f, orbitlerpspeed = 50f;
 	private void Start()
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
@@ -69,8 +69,8 @@ public class MechCamera : MonoBehaviour
 		m_FollowAngles = m_TargetAngles;
 
 		//lerp parent rotation
-		//transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.deltaTime * playerlerpspeed);
-		transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
+		transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.deltaTime *playerlerpspeed);
+		//transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
 
 		//lerp cam rotation
 		//orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), Time.deltaTime * orbitlerpspeed);

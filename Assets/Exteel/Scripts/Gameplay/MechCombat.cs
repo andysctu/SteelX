@@ -311,7 +311,7 @@ public class MechCombat : Combat {
 					}
 				} else if (target.tag == "Shield") {
 					//check what hand is it
-					int hand = (target.transform.parent.parent.name [target.transform.parent.parent.name.Length - 1] == 'L') ? 0 : 1;
+					int hand = (target.transform.parent.name [target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
 
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target.transform.root.GetComponent<PhotonView> ().viewID, true, hand);
 
@@ -345,7 +345,7 @@ public class MechCombat : Combat {
 
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
 
-			Sounds.PlaySlashOnHit ();
+			Sounds.PlaySlashOnHit (weaponOffset+handPosition);
 			foreach(Transform target in targets){
 				if (target == null || (target.tag != "Drone" && target.transform.root.GetComponent<MechCombat> ().isDead)) {//it causes bug if target disconnect
 					continue;

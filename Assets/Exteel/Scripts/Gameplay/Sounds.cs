@@ -4,34 +4,23 @@ using System.Collections;
 public class Sounds : MonoBehaviour {
 
 	// Sound clip
-	public AudioClip[] ShotSounds = new AudioClip[4]; // init in MechCombat 
-	[SerializeField] PhotonView pv;
+	[HideInInspector]public AudioClip[] ShotSounds = new AudioClip[4]; // init in MechCombat 
+	[HideInInspector]public AudioClip[] SlashL = new AudioClip[6];
+	[HideInInspector]public AudioClip[] SlashR = new AudioClip[6];
+	[HideInInspector]public AudioClip[] SlashOnHit = new AudioClip[4];
+	//[HideInInspector]public AudioClip[] SmashOnHit = new AudioClip[4];  //no files
 
-	[SerializeField] AudioClip Lock;
-	[SerializeField] AudioClip OnLocked;
-	[SerializeField] AudioClip[] Slash;
-	[SerializeField] AudioClip Smash;
-	[SerializeField] AudioClip[] RPCsounds;
-	/*
-	0 : Switch weapons
-	1 : Slash On Hit
+	[SerializeField]PhotonView pv;
+	[SerializeField]AudioClip Lock;
+	[SerializeField]AudioClip OnLocked;
+	[SerializeField]AudioClip Smash;
+	[SerializeField]AudioClip SwitchWeapon;
+	[SerializeField]AudioClip BCNload,BCNPose;
 
-	*/
-
-	AudioClip BCNload,BCNPose;
+	[SerializeField]private AudioSource Source;
+	[SerializeField]private AudioSource MovementSource;
 
 	int weaponOffset =0; // update by switchWeapon
-
-	[SerializeField]
-	private AudioSource Source;
-
-	[SerializeField]
-	private AudioSource MovementSource;
-
-	void Awake(){
-		BCNload = Resources.Load ("Sounds/reload") as AudioClip;
-		BCNPose = Resources.Load ("Sounds/Sieze") as AudioClip;
-	}
 
 	// Use this for initialization
 	void Start () {
@@ -56,12 +45,11 @@ public class Sounds : MonoBehaviour {
 			Source.PlayOneShot(ShotSounds[weaponOffset+1]);
 	}
 
-	public void PlaySlash(int num){
-		Source.PlayOneShot (Slash [num]);
+	public void PlaySlashL(int num){
+		Source.PlayOneShot (SlashL[num + weaponOffset/2*3]);
 	}
-
-	public void PlaySmash(){
-		Source.PlayOneShot (Smash);
+	public void PlaySlashR(int num){
+		Source.PlayOneShot (SlashR[num + weaponOffset/2*3]);
 	}
 
 	public void PlayLock(){
@@ -79,14 +67,24 @@ public class Sounds : MonoBehaviour {
 		Source.PlayOneShot (BCNload);
 	}
 
-	public void PlaySlashOnHit(){
-		pv.RPC("RPCPlaySound", PhotonTargets.All, 1);
+	public void PlaySlashOnHit(int num){
+		pv.RPC("RPCPlaySlashOnHit", PhotonTargets.All, num);
 	}
+	/*public void PlaySmashOnHit(int num){
+		pv.RPC("RPCPlaySlashOnHit", PhotonTargets.All, num);
+	}*/
 	public void PlaySwitchWeapon(){
-		pv.RPC("RPCPlaySound", PhotonTargets.All, 0);
+		Source.PlayOneShot (SwitchWeapon);
 	}
+
 	[PunRPC]
-	private void RPCPlaySound(int num){
-		Source.PlayOneShot (RPCsounds[num]);
-	} 
+	void RPCPlaySlashOnHit(int num){
+		if(SlashOnHit[num]!=null)
+			Source.PlayOneShot (SlashOnHit[num]);
+	}
+
+	/*[PunRPC]
+	void RPCPlaySmashOnHit(int num){
+		Source.PlayOneShot (SmashOnHit[num]);
+	}*/
 }

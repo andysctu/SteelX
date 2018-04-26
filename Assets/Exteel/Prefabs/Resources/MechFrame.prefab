@@ -2941,6 +2941,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 11445986}
+  Sounds: {fileID: 114000010976113334}
   ShotSounds: []
   weapons: []
   bulletPrefabs: []
@@ -5765,17 +5766,32 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  SlashL:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  SlashR:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  SlashOnHit:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   pv: {fileID: 11496946}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
-  Slash:
-  - {fileID: 8300000, guid: a082e185c2fffb749af682a5bfe6dd68, type: 3}
-  - {fileID: 8300000, guid: ffd0c2b4857c76e42b947b1be1082462, type: 3}
-  - {fileID: 8300000, guid: 0356568b4115af0449d8dd12ac1de322, type: 3}
   Smash: {fileID: 8300000, guid: c04f75ca7962145f6a5401eae0dcb99f, type: 3}
-  RPCsounds:
-  - {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
-  - {fileID: 8300000, guid: 9ff28172d4d734086a981b761903c2e9, type: 3}
+  SwitchWeapon: {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
+  BCNload: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
+  BCNPose: {fileID: 8300000, guid: 2903ae5fb12411043b72b5c315b8a21c, type: 3}
   Source: {fileID: 82915054223986856}
   MovementSource: {fileID: 82000013355623540}
 --- !u!114 &114000012410893822
@@ -7211,7 +7227,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0.2
+    scalar: 0.5
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -7252,7 +7268,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 306218478
+  randomSeed: -236764400
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -10663,7 +10679,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 653914054
+  randomSeed: -1244524391
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -14018,7 +14034,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -790812672
+  randomSeed: 503632469
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -17319,7 +17335,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1441521584
+  randomSeed: 1896066267
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -20638,7 +20654,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 7170738
+  randomSeed: 2046026447
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -24005,7 +24021,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1372303328
+  randomSeed: 1125154520
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -27318,7 +27334,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1152532529
+  randomSeed: -891526600
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -30625,7 +30641,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1406740368
+  randomSeed: -81636086
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -33932,7 +33948,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1174784794
+  randomSeed: 923700233
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -37245,7 +37261,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 2051255489
+  randomSeed: 2024267159
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -40558,14 +40574,14 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -226643968
+  randomSeed: 699619500
   InitialModule:
     serializedVersion: 3
     enabled: 1
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 0.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -40740,7 +40756,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 8
-      minScalar: 12
+      minScalar: 10
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -40781,7 +40797,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 8
-      minScalar: 12
+      minScalar: 10
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -43988,7 +44004,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -848319806
+  randomSeed: 655907680
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -47337,7 +47353,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 951088104
+  randomSeed: 568038843
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -50650,7 +50666,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1742590253
+  randomSeed: -1983835346
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -53999,7 +54015,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 316192134
+  randomSeed: -94124068
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -57447,7 +57463,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1042831328
+  randomSeed: 2030226779
   InitialModule:
     serializedVersion: 3
     enabled: 1

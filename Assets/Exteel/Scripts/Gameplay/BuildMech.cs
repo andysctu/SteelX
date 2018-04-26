@@ -13,19 +13,19 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	[SerializeField]private GameObject RespawnPanel;
 	[SerializeField]private MechCombat mcbt = null;
+	[SerializeField]private Sounds Sounds;
 
 	private GameManager gm;
-	public AudioClip[] ShotSounds;
 	private Animator animator;
-	AnimatorOverrideController animatorOverrideController;
+	private AnimatorOverrideController animatorOverrideController;
 	private AnimationClipOverrides clipOverrides;
-	MovementClips MovementClips;
+	private MovementClips MovementClips;
 
 	private Transform shoulderL;
 	private Transform shoulderR;
 	private Transform[] hands;
 
-
+	public AudioClip[] ShotSounds;
 	public Weapon[] weaponScripts;
 	public GameObject[] weapons;
 	public GameObject[] bulletPrefabs;
@@ -338,7 +338,21 @@ public class BuildMech : Photon.MonoBehaviour {
 					}
 					bulletPrefabs [i] = null;
 
-					//Load sound 
+					if(Sounds!=null)
+						if(i%2==0){//left hand
+							Sounds.SlashL [0 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire1") as AudioClip;
+							Sounds.SlashL [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
+							Sounds.SlashL [2 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire3") as AudioClip;
+							Sounds.SlashOnHit[i] = Resources.Load ("Sounds/Hit10_im1_02") as AudioClip;
+						}else{
+							Sounds.SlashR [0 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire1") as AudioClip;
+							Sounds.SlashR [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
+							Sounds.SlashR [2 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire3") as AudioClip;
+						Debug.Log ("num is : "+(2 + 3 * (i / 2)));
+							Sounds.SlashOnHit[i] = Resources.Load ("Sounds/Hit10_im1_02") as AudioClip;
+						}
+
+
 					break;
 				}
 			case "ADR000": {
@@ -355,6 +369,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 
 					//Load sound 
+					ShotSounds [i] = Resources.Load ("Sounds/Hit7_im1_02") as AudioClip;
 					break;
 				}
 			case "SHS309": {
@@ -372,17 +387,22 @@ public class BuildMech : Photon.MonoBehaviour {
 					bulletPrefabs [i] = null;
 
 					//also set the child collider
-					/*GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
+					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
 					collider.transform.SetParent (hands [i % 2].transform);
 
 					if(i % 2 == 0){
 						collider.transform.localRotation = Quaternion.Euler(0,90,0);
-						collider.transform.localPosition = new Vector3(0f,0,0);
+
+						collider.transform.position = hands [i % 2].position + weapons [i].transform.right * 0.6f;
+						//collider.transform.localPosition = new Vector3(0,0,0);
 					}else{
 						collider.transform.localRotation = Quaternion.Euler(0,90,0);
-						collider.transform.localPosition =  new Vector3(0f,0,0);
+
+						collider.transform.position = hands [i % 2].position + weapons [i].transform.right * 0.6f;
+						//collider.transform.localPosition =  new Vector3(0,0,0);
 					}
-					collider.GetComponent<UpdateSHScollider> ().orgRot = collider.transform.rotation.eulerAngles;*/
+					collider.transform.rotation = Quaternion.Euler (0, collider.transform.rotation.eulerAngles.y, 0);
+					//collider.GetComponent<UpdateSHScollider> ().orgRot = collider.transform.rotation.eulerAngles;
 					break;
 				}
 			case "LMG012": {
