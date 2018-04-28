@@ -44,10 +44,6 @@ public class EffectController : MonoBehaviour {
 		switchWeaponEffectR.transform.SetParent (Hands [1]);
 		switchWeaponEffectR.transform.localPosition = Vector3.zero;
 	}
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	public void SwitchWeaponEffect(){
 		Sounds.PlaySwitchWeapon ();

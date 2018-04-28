@@ -271,8 +271,7 @@ public class MechCombat : Combat {
 
 	void SetSlashDetector(){
 		bool b = ((curWeaponNames [0] == (int)WeaponTypes.MELEE || curWeaponNames [1] == (int)WeaponTypes.MELEE) && photonView.isMine);
-		slashDetector.GetComponent<BoxCollider> ().enabled = b;
-		slashDetector.enabled = b;
+		slashDetector.EnableDetector (b);
 	}
 
 	void SyncWeaponOffset (){

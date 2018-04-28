@@ -5792,7 +5792,6 @@ MonoBehaviour:
   SwitchWeapon: {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
   BCNload: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
   BCNPose: {fileID: 8300000, guid: 2903ae5fb12411043b72b5c315b8a21c, type: 3}
-  WalkSound: {fileID: 8300000, guid: 49269f97780bf4ef683c341f1b3c2d5d, type: 3}
   Source: {fileID: 82915054223986856}
   MovementSource: {fileID: 82000013355623540}
 --- !u!114 &114000012410893822
@@ -6286,11 +6285,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9ada891e76aaa48a1a80e6e442858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  User: {fileID: 138214}
   cam: {fileID: 11415780}
   boxCollider: {fileID: 65341430746507112}
   mctrl: {fileID: 11462782}
-  is_lookingUp: 0
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!114 &114365142493992942
 MonoBehaviour:
   m_ObjectHideFlags: 1
