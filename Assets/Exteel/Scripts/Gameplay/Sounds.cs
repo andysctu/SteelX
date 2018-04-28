@@ -16,6 +16,7 @@ public class Sounds : MonoBehaviour {
 	[SerializeField]AudioClip Smash;
 	[SerializeField]AudioClip SwitchWeapon;
 	[SerializeField]AudioClip BCNload,BCNPose;
+	//[SerializeField]AudioClip WalkSound;
 
 	[SerializeField]private AudioSource Source;
 	[SerializeField]private AudioSource MovementSource;
@@ -24,9 +25,9 @@ public class Sounds : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if (MovementSource != null) {
-			MovementSource.volume = 0.3f;
-		}
+
+		MovementSource.volume = 0.3f;
+		//MovementSource.clip = WalkSound;
 
 		if(Source!=null)
 			Source.volume = 0.3f;
@@ -70,9 +71,15 @@ public class Sounds : MonoBehaviour {
 	public void PlaySlashOnHit(int num){
 		pv.RPC("RPCPlaySlashOnHit", PhotonTargets.All, num);
 	}
-	/*public void PlaySmashOnHit(int num){
-		pv.RPC("RPCPlaySlashOnHit", PhotonTargets.All, num);
+
+	/*public void PlayWalk(bool b){
+		if(b){
+			MovementSource.Play ();
+		}else{
+			MovementSource.Stop ();
+		}
 	}*/
+
 	public void PlaySwitchWeapon(){
 		Source.PlayOneShot (SwitchWeapon);
 	}
