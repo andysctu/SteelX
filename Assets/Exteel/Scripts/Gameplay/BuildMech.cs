@@ -348,7 +348,6 @@ public class BuildMech : Photon.MonoBehaviour {
 							Sounds.SlashR [0 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire1") as AudioClip;
 							Sounds.SlashR [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
 							Sounds.SlashR [2 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire3") as AudioClip;
-						Debug.Log ("num is : "+(2 + 3 * (i / 2)));
 							Sounds.SlashOnHit[i] = Resources.Load ("Sounds/Hit10_im1_02") as AudioClip;
 						}
 

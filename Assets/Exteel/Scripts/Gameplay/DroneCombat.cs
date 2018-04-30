@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DroneCombat : Combat {
 
+	private int default_layer = 0, player_layer = 8;
 	// Use this for initialization
 	void Start () {
 		currentHP = MAX_HP;
@@ -17,7 +18,16 @@ public class DroneCombat : Combat {
 		if (currentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
-			//gm.RegisterKill(PhotonNetwork.playerName, "Drone");
+			gm.RegisterKill(shooter_viewID, photonView.viewID);
+		}
+	}
+
+	[PunRPC]
+	public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
+		currentHP -= d;
+		if (currentHP <= 0) {
+			//			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
+			DisableDrone ();
 			gm.RegisterKill(shooter_viewID, photonView.viewID);
 		}
 	}
@@ -28,7 +38,7 @@ public class DroneCombat : Combat {
 	}
 
 	void DisableDrone() {
-		gameObject.layer = 2;
+		gameObject.layer = default_layer;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;
@@ -37,7 +47,7 @@ public class DroneCombat : Combat {
 	}
 
 	void EnableDrone() {
-		gameObject.layer = 8;
+		gameObject.layer = player_layer;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;

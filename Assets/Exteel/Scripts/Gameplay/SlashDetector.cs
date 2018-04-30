@@ -7,37 +7,31 @@ public class SlashDetector : MonoBehaviour {
 	[SerializeField]private MechCamera cam;
 	[SerializeField]private BoxCollider boxCollider;
 	[SerializeField]private MechController mctrl;
-	[SerializeField]private LayerMask playerLayer;
+	[SerializeField]private GameObject User;
 	private List<Transform> Target = new List<Transform>();
 	private float clamped_cam_angle_x;
-	private GameObject User;
-	private float clampAngle = 45;
+	private float clampAngle = 75;
 	private float mech_Midpoint = 5;
 	private float clamp_angle_coeff = 0.3f;//how much the cam angle affecting the y pos of box collider
-	private Vector3 inair_c = new Vector3(0,0.6f,3.6f),inair_s = new Vector3(10,18,15);
-	private Vector3 onground_c = new Vector3(0,0.6f,-1.4f), onground_s = new Vector3(10,11,5);
-
-	void Start(){
-		GetUser ();
-	}
-
-	void GetUser(){
-		User = transform.root.gameObject;
-	}
+	private float inair_start_z = 14f;
+	private Vector3 inair_c = new Vector3(0,0,3.6f),inair_s = new Vector3(10,18,36);
+	private Vector3 onground_c = new Vector3(0,0,1.5f), onground_s = new Vector3(10,11,10);
 
 	void Update(){
 		if (!mctrl.grounded) {
 			clamped_cam_angle_x = Mathf.Clamp (cam.GetCamAngle (), -clampAngle, clampAngle);
-			transform.localPosition = new Vector3 (transform.localPosition.x, mech_Midpoint + clamped_cam_angle_x * clamp_angle_coeff, transform.localPosition.z);
+			transform.parent.localPosition = new Vector3 (transform.parent.localPosition.x, mech_Midpoint, transform.parent.localPosition.z);
 
 			//set collider size
-			SetCenter (inair_c);
+			SetCenter (new Vector3(inair_c.x, inair_c.y, inair_start_z));
 			SetSize (inair_s);
+			SetlocalRotation (new Vector3 (-clamped_cam_angle_x, transform.parent.localRotation.eulerAngles.y, transform.parent.localRotation.eulerAngles.z));
 		}else{
-			transform.localPosition = new Vector3 (transform.localPosition.x, mech_Midpoint , transform.localPosition.z);
+			transform.parent.localPosition = new Vector3 (transform.parent.localPosition.x, mech_Midpoint , transform.parent.localPosition.z);
 
 			SetCenter (onground_c);
 			SetSize (onground_s);
+			SetlocalRotation (Vector3.zero);
 		}
 	}
 
@@ -59,6 +53,10 @@ public class SlashDetector : MonoBehaviour {
 			}
 			Target.Remove (target.transform);
 		}	
+	}
+
+	public void SetlocalRotation(Vector3 v){
+		transform.parent.localRotation = Quaternion.Euler (v);
 	}
 
 	void SetCenter(Vector3 v){

@@ -271,7 +271,7 @@ public class Crosshair : MonoBehaviour {
 		
 		if (targetL != null && !isTargetAllyL) {
 			//cast a ray to check if hitting shield
-			Debug.DrawRay (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), ((targetL.transform.root.position + new Vector3 (0, 5, 0)) - cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH))*100f, Color.red, 3f);
+			//Debug.DrawRay (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), ((targetL.transform.root.position + new Vector3 (0, 5, 0)) - cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH))*100f, Color.red, 3f);
 			RaycastHit[] hitpoints;
 			hitpoints = Physics.RaycastAll (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), (targetL.transform.root.position+new Vector3 (0,5,0))-cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), MaxDistanceL, playerlayer).OrderBy(h=>h.distance).ToArray();
 			foreach(RaycastHit hit in hitpoints){
@@ -282,8 +282,9 @@ public class Crosshair : MonoBehaviour {
 					}
 				}else{
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
-					if(targetpv.viewID != pv.viewID) //if not mine
+					if (targetpv.viewID != pv.viewID) {
 						return hit.transform;
+					}
 				}
 			}
 		}
