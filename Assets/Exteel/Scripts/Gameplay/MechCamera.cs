@@ -15,7 +15,7 @@ public class MechCamera : MonoBehaviour
 	// to have no constraints on an axis, set the rotationRange to 360 or greater.
 	public Vector2 rotationRange = new Vector3(70, 70);
 	public float rotationSpeed = 5;
-	public float dampingTime = 0.2f;
+	public float dampingTime = 0.2f, lerpYSpeed_g = 15f, lerpYSpeed_a = 8, lerpYSpeed, lerpcoeff = 10;
 	public bool lockPlayerRot = false, lockCamRot = false;
 
 	private Vector3 m_TargetAngles;
@@ -23,6 +23,7 @@ public class MechCamera : MonoBehaviour
 	private Vector3 m_FollowVelocity;
 	private Quaternion m_OriginalRotation, tempCurrentMechRot, tempCamRot;	
 	[SerializeField]private GameObject currentMech;
+	private MechController mctrl;
 	float inputH;
 	float inputV;
 	float orbitAngle = 0;
@@ -32,14 +33,24 @@ public class MechCamera : MonoBehaviour
 	public float angleOffset = 33;
 
 	private float playerlerpspeed = 50f, orbitlerpspeed = 50f;
+
+	float curYpos;
+
 	private void Start()
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
 		m_OriginalRotation = transform.localRotation;
 		orbitAngle = Vector3.SignedAngle (transform.parent.forward + transform.parent.up, transform.position - transform.parent.position - Vector3.up * 5, -transform.parent.right);
+		curYpos = transform.position.y;
+		mctrl = transform.root.GetComponent<MechController> ();
 	}
 
-	private void Update()
+	void Update(){
+		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
+		inputV = CrossPlatformInputManager.GetAxis ("Mouse Y");
+	}
+
+	void FixedUpdate()
 	{
 		// we make initial calculations from the original local rotation
 		transform.localRotation = m_OriginalRotation;
@@ -48,12 +59,12 @@ public class MechCamera : MonoBehaviour
 			currentMech.transform.rotation = tempCurrentMechRot;
 		}else{
 			if(currentMech.transform.localRotation != Quaternion.identity){
-				currentMech.transform.localRotation = Quaternion.Lerp (currentMech.transform.localRotation, Quaternion.identity, Time.deltaTime * playerlerpspeed);
+				currentMech.transform.localRotation = Quaternion.Lerp (currentMech.transform.localRotation, Quaternion.identity, Time.fixedDeltaTime * playerlerpspeed);
 			}
 		}
 		// read input from mouse or mobile controls
-		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
-		inputV = CrossPlatformInputManager.GetAxis ("Mouse Y");
+		/*inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
+		inputV = CrossPlatformInputManager.GetAxis ("Mouse Y");*/
 
 		// with mouse input, we have direct control with no springback required.
 		m_TargetAngles.y += inputH * rotationSpeed;
@@ -69,16 +80,28 @@ public class MechCamera : MonoBehaviour
 		m_FollowAngles = m_TargetAngles;
 
 		//lerp parent rotation
-		transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.deltaTime *playerlerpspeed);
+		transform.parent.rotation = Quaternion.Lerp (transform.parent.rotation, m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0), Time.fixedDeltaTime *playerlerpspeed);
 		//transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
 
 		//lerp cam rotation
 		//orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220), Time.deltaTime * orbitlerpspeed);
-		orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 10, 220);
+		orbitAngle = Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 50, 200);
+
 
 		idealLocalAngle = -1.0322f * (orbitAngle - 119.64f);
 		transform.localRotation = Quaternion.Euler(idealLocalAngle+angleOffset,0,0);
 		transform.localPosition = new Vector3 (transform.localPosition.x, orbitRadius * Mathf.Sin (orbitAngle * Mathf.Deg2Rad), orbitRadius * Mathf.Cos (orbitAngle * Mathf.Deg2Rad));
+
+		if (!mctrl.grounded) {
+			lerpYSpeed = lerpYSpeed_a;
+			curYpos = Mathf.Lerp (curYpos, transform.position.y, Time.fixedDeltaTime * lerpYSpeed);
+			transform.position = new Vector3 (transform.position.x, curYpos, transform.position.z);
+
+		}else{
+			lerpYSpeed = Mathf.Lerp (lerpYSpeed, lerpYSpeed_g, Time.fixedDeltaTime * lerpcoeff);
+			curYpos = Mathf.Lerp (curYpos, transform.position.y, Time.fixedDeltaTime * lerpYSpeed);
+			transform.position = new Vector3 (transform.position.x, curYpos, transform.position.z);
+		}
 	}
 
 	public float GetCamAngle(){

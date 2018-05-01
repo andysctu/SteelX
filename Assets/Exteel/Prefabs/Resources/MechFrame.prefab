@@ -2747,13 +2747,7 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed by
-    Humanoid clips.\n\tTransform 'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tTransform
-    'f_pinky.03.L'\n\tTransform 'f_pinky.01.R'\n\tTransform 'f_pinky.02.L'\n\tTransform
-    'palm.04.L'\n\tTransform 'f_pinky.03.R'\n\tTransform 'f_pinky.01.L'\n\tTransform
-    'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tand more ...\n\tFrom animation clip
-    'BlockR'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &11415780
@@ -2770,6 +2764,10 @@ MonoBehaviour:
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
+  lerpYSpeed_g: 50
+  lerpYSpeed_a: 15
+  lerpYSpeed: 0
+  lerpcoeff: 5
   lockPlayerRot: 0
   lockCamRot: 0
   currentMech: {fileID: 144000}
@@ -3033,6 +3031,7 @@ MonoBehaviour:
   xSpeed: 0
   ySpeed: 0
   zSpeed: 0
+  lerpCam_coeff: 2
   grounded: 1
   jump: 0
   on_BCNShoot: 0

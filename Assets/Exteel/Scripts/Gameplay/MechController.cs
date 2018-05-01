@@ -26,6 +26,7 @@ public class MechController : Photon.MonoBehaviour {
 	public float maxDownSpeed = -140f;
 	public float InAirSpeedCoeff = 0.7f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
+	public float lerpCam_coeff = 5;
 	private float runDir_coeff = 3,rundecel_rate = 0.5f;
 	private float curboostingSpeed;//global space
 	private Vector2 xzDir;
@@ -135,13 +136,13 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 newPos = camTransform.localPosition;
 
 		if (direction > 0) {
-			newPos = new Vector3(-5, curPos.y, curPos.z);
+			newPos = new Vector3(-7, curPos.y, curPos.z);
 		} else if (direction < 0) {
-			newPos = new Vector3(5, curPos.y,  curPos.z);
+			newPos = new Vector3(7, curPos.y,  curPos.z);
 		} else {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
-		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.08f);
+		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, Time.fixedDeltaTime * lerpCam_coeff);
 	}
 
 	public void UpdateSpeed() {
@@ -335,8 +336,8 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
 		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
 
-		mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 19, 0.05f);
-		mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 33, 0.05f);
+		mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 19, Time.fixedDeltaTime * lerpCam_coeff);
+		mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 33, Time.fixedDeltaTime * lerpCam_coeff);
 	}
 
 	public void DynamicCam() {
@@ -344,28 +345,28 @@ public class MechController : Photon.MonoBehaviour {
 		Vector3 newPos = camTransform.localPosition;
 
 		if (direction > 0) {
-			newPos = new Vector3(-7, curPos.y, curPos.z);
+			newPos = new Vector3(-11, curPos.y, curPos.z);
 		} else if (direction < 0) {
-			newPos = new Vector3(7, curPos.y,  curPos.z);
+			newPos = new Vector3(11, curPos.y,  curPos.z);
 		} else {
 			newPos = new Vector3(0, curPos.y,  curPos.z);
 		}
 
 		if (grounded) {//lerp camera z offset when boosting 
 			if (speed > 0) {
-				mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 26, 0.05f);
-				mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 36, 0.05f);
+				mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 26, Time.fixedDeltaTime * lerpCam_coeff);
+				mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 36, Time.fixedDeltaTime * lerpCam_coeff);
 			} else if (speed < 0) {
 				if(direction > 0 || direction < 0){
-					mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 16, 0.05f);
-					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, 0.05f);
+					mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 16, Time.fixedDeltaTime * lerpCam_coeff);
+					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, Time.fixedDeltaTime * lerpCam_coeff);
 				} else {
-					mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 14, 0.05f);
-					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, 0.05f);
+					mechCamera.orbitRadius = Mathf.Lerp (mechCamera.orbitRadius, 14, Time.fixedDeltaTime * lerpCam_coeff);
+					mechCamera.angleOffset = Mathf.Lerp (mechCamera.angleOffset, 30, Time.fixedDeltaTime * lerpCam_coeff);
 				}
 			}
 		}
-		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.05f);
+		camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, Time.fixedDeltaTime * lerpCam_coeff);
 	}
 
 	[PunRPC]
