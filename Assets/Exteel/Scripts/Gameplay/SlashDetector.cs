@@ -16,9 +16,11 @@ public class SlashDetector : MonoBehaviour {
 	private float inair_start_z = 14f;
 	private Vector3 inair_c = new Vector3(0,0,3.6f),inair_s = new Vector3(10,18,36);
 	private Vector3 onground_c = new Vector3(0,0,1.5f), onground_s = new Vector3(10,11,10);
+	private bool on_original_place = false;
 
 	void Update(){
 		if (!mctrl.grounded) {
+			on_original_place = false;
 			clamped_cam_angle_x = Mathf.Clamp (cam.GetCamAngle (), -clampAngle, clampAngle);
 			transform.parent.localPosition = new Vector3 (transform.parent.localPosition.x, mech_Midpoint, transform.parent.localPosition.z);
 
@@ -27,11 +29,14 @@ public class SlashDetector : MonoBehaviour {
 			SetSize (inair_s);
 			SetlocalRotation (new Vector3 (-clamped_cam_angle_x, transform.parent.localRotation.eulerAngles.y, transform.parent.localRotation.eulerAngles.z));
 		}else{
-			transform.parent.localPosition = new Vector3 (transform.parent.localPosition.x, mech_Midpoint , transform.parent.localPosition.z);
+			if (!on_original_place) {
+				on_original_place = true;
+				transform.parent.localPosition = new Vector3 (transform.parent.localPosition.x, mech_Midpoint, transform.parent.localPosition.z);
 
-			SetCenter (onground_c);
-			SetSize (onground_s);
-			SetlocalRotation (Vector3.zero);
+				SetCenter (onground_c);
+				SetSize (onground_s);
+				SetlocalRotation (Vector3.zero);
+			}
 		}
 	}
 

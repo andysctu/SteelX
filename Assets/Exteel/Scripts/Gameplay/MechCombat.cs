@@ -61,6 +61,7 @@ public class MechCombat : Combat {
 	public bool CanMeleeAttack = true;
 	private bool isSwitchingWeapon = false;
 	private bool receiveNextSlash = true;
+	private const int slashMaxDistance = 30;//the ray which checks if hitting shield max distance
 	// Transforms
 	public Transform[] Hands;//other player use this to locate hand position quickly
 	private Transform shoulderL;
@@ -299,16 +300,16 @@ public class MechCombat : Combat {
 	}
 
 	void FireRaycast(Vector3 start, Vector3 direction, int handPosition) {
-		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());
+		Transform target = ((handPosition == 0)? crosshair.getCurrentTargetL() :crosshair.getCurrentTargetR());//target might be shield collider
 		int damage = bm.weaponScripts [weaponOffset + handPosition].Damage;
 
 		if(target != null){
-			PhotonView targetpv = target.GetComponent<PhotonView> ();
+			PhotonView targetpv = target.transform.root.GetComponent<PhotonView> ();
 			int target_viewID = targetpv.viewID;
 			string weaponName = bm.curWeaponNames [weaponOffset + handPosition];
 
 			if (curWeaponNames [handPosition] != (int)WeaponTypes.ENG) {
-				if (target.tag == "Player" || target.tag == "Drone") {
+				if (target.tag != "Shield") {//not shield => player or drone
 				
 					photonView.RPC ("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target_viewID, false, -1);
 
@@ -319,7 +320,7 @@ public class MechCombat : Combat {
 					} else {
 						hud.ShowText (cam, target.position, "Hit");
 					}
-				} else if (target.tag == "Shield") {
+				} else{
 					//check what hand is it
 					int hand = (target.transform.parent.name [target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
 
@@ -349,17 +350,15 @@ public class MechCombat : Combat {
 		}
 	}
 
-	public void SlashDetect(int handPosition){//called by animation event (Combo.cs) 
-		if (!photonView.isMine)
-			return;
-
+	public void SlashDetect(int handPosition){
 		if ((targets = slashDetector.getCurrentTargets ()).Count != 0) {
 
 			int damage = bm.weaponScripts [weaponOffset + handPosition].Damage;
 			string weaponName = bm.curWeaponNames [weaponOffset + handPosition];
 			Sounds.PlaySlashOnHit (weaponOffset+handPosition);
+
 			foreach(Transform target in targets){
-				if (target == null || (target.tag != "Drone" && target.transform.root.GetComponent<MechCombat> ().isDead)) {//it causes bug if target disconnect
+				if (target == null) {//it causes bug if target disconnect
 					continue;
 				}
 
@@ -368,9 +367,9 @@ public class MechCombat : Combat {
 				RaycastHit[] hitpoints;
 				Transform t = target;
 
-				hitpoints = Physics.RaycastAll (transform.position + new Vector3(0,5,0), (target.transform.root.position+new Vector3 (0,5,0))- transform.position - new Vector3(0,5,0), 30, playerlayerMask).OrderBy(h=>h.distance).ToArray();
+				hitpoints = Physics.RaycastAll (transform.position + new Vector3(0,5,0), (target.transform.root.position+new Vector3 (0,5,0))- transform.position - new Vector3(0,5,0), slashMaxDistance, playerlayerMask).OrderBy(h=>h.distance).ToArray();
 				foreach(RaycastHit hit in hitpoints){
-					if(hit.transform == target){
+					if(hit.transform.root == target){
 						if (hit.collider.transform.tag == "Shield") {
 							isHitShield = true;
 							t = hit.collider.transform;
@@ -381,7 +380,7 @@ public class MechCombat : Combat {
 
 				if(isHitShield){
 					int hand = (t.transform.parent.name [t.transform.parent.name.Length - 1] == 'L') ? 0 : 1;//which hand holds the shield?
-					target.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, hand, weaponName);
+					target.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, damage/2, photonView.viewID, hand, weaponName);
 				}else{
 					target.GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, true);
 				}
@@ -390,7 +389,7 @@ public class MechCombat : Combat {
 					hud.ShowText (cam, target.position, "Kill");
 				} else {
 					if(isHitShield)
-						hud.ShowText (cam, t.GetComponent<Collider>().transform.position, "Defense");
+						hud.ShowText (cam, t.transform.position, "Defense");
 					else
 						hud.ShowText (cam, target.position, "Hit");
 				}
@@ -457,8 +456,14 @@ public class MechCombat : Combat {
 				bulletTrace.ShooterName = gameObject.name;
 				bulletTrace.isTargetShield = isShield;
 
-				if(isShield)
-					bulletTrace.Shield = Target.GetComponent<MechCombat> ().Hands [hand_shield];//locate shield position
+				if(isShield){
+					MechCombat mc = Target.GetComponent<MechCombat> ();
+					if(mc !=null)
+						bulletTrace.Shield = Target.GetComponent<MechCombat> ().Hands [hand_shield];//locate shield position
+					else
+						bulletTrace.Shield = Target.GetComponent<DroneCombat> ().Hands [hand_shield];
+				}
+
 				if (bN > 1)
 					bulletTrace.isLMG = true; //multiple messages
 				
@@ -502,7 +507,14 @@ public class MechCombat : Combat {
 		if (isDead) {
 			return;
 		}
-			
+
+		if(CheckIsMeleeByStr(weapon)){
+			EffectController.ShieldOnHitEffect (shield);
+
+			if(photonView.isMine)
+				mechController.SlowDown ();
+		}
+
 		currentHP -= damage;
 		Debug.Log ("HP: " + currentHP);
 		if (currentHP <= 0) {
@@ -783,11 +795,13 @@ public class MechCombat : Combat {
 				if (curWeaponNames [(handPosition + 1) % 2] == (int)WeaponTypes.SHIELD && getIsFiring ((handPosition + 1) % 2)) 
 					return;
 
-				if (animator.GetBool ("SlashL3") && !(weaponScripts [handPosition + weaponOffset +1].Animation == "Slash"))
+				if (animator.GetBool ("SlashL3") && !(weaponScripts [handPosition + weaponOffset +1].Animation == "Slash"))//if not both sword
 					return;
 				if (animator.GetBool ("SlashR3") && !(weaponScripts [handPosition + weaponOffset].Animation == "Slash"))
 					return;
-				
+
+				if ((handPosition == 0 && isRMeleePlaying==1) || (handPosition == 1 && isLMeleePlaying==1))
+					return;
 
 				CanMeleeAttack = false;
 				receiveNextSlash = false;
@@ -795,9 +809,13 @@ public class MechCombat : Combat {
 				if (handPosition == 0) {
 					HeatBar.IncreaseHeatBarL (5);
 					timeOfLastShotL = Time.time;
+					if (curWeaponNames [1] == (int)WeaponTypes.MELEE)
+						timeOfLastShotR = Time.time;
 				} else if (handPosition == 1) {
 					HeatBar.IncreaseHeatBarR (5);
 					timeOfLastShotR = Time.time;
+					if (curWeaponNames [0] == (int)WeaponTypes.MELEE)
+						timeOfLastShotL = Time.time;
 				}
 			}
 		break;
@@ -1124,6 +1142,10 @@ public class MechCombat : Combat {
 	bool usingENGWeapon(int handPosition){
 		return weaponScripts[weaponOffset+handPosition].Animation == "ENGShoot";
 	} 
+
+	bool CheckIsMeleeByStr(string weaponName){
+		return (weaponName.Contains ("ADR") || weaponName.Contains ("SHL"));
+	}
 
 	string animationString(int handPosition) {
 		switch(curWeaponNames[handPosition]){

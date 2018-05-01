@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class DroneCombat : Combat {
 
+	public Transform[] Hands;
 	private int default_layer = 0, player_layer = 8;
+	private EffectController EffectController;
 	// Use this for initialization
 	void Start () {
 		currentHP = MAX_HP;
+		EffectController = GetComponent<EffectController> ();
 		findGameManager();
 		gm.RegisterPlayer(photonView.viewID, 0);
 	}
@@ -24,6 +27,9 @@ public class DroneCombat : Combat {
 
 	[PunRPC]
 	public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
+		if(CheckIsMeleeByStr(weapon)){
+			EffectController.ShieldOnHitEffect (hand);	
+		}
 		currentHP -= d;
 		if (currentHP <= 0) {
 			//			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
@@ -43,7 +49,7 @@ public class DroneCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = false;
 		}
-		GetComponent<CapsuleCollider>().enabled = false;
+		StartCoroutine(RespawnAfterTime(3));
 	}
 
 	void EnableDrone() {
@@ -53,7 +59,6 @@ public class DroneCombat : Combat {
 			renderer.enabled = true;
 		}
 		currentHP = MAX_HP;
-		GetComponent<CapsuleCollider>().enabled = true;
 	}
 
 	// Update is called once per frame
@@ -61,5 +66,14 @@ public class DroneCombat : Combat {
 		if (Input.GetKeyDown(KeyCode.Z)) {
 			EnableDrone();
 		}
+	}
+
+	IEnumerator RespawnAfterTime(int time){
+		yield return new WaitForSeconds (time);
+		EnableDrone ();
+	}
+
+	bool CheckIsMeleeByStr(string weaponName){
+		return (weaponName.Contains ("ADR") || weaponName.Contains ("SHL"));
 	}
 }

@@ -82,10 +82,12 @@ public class BulletTrace : MonoBehaviour {
 				GameObject BI;
 				if (!isTargetShield) {
 					BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+
 				}else{
-					BI = Instantiate (bulletImpact_onShield, Shield.position - Shield.forward * 1f, Quaternion.identity);
+					BI = Instantiate (bulletImpact_onShield, Shield.position - Shield.forward * 2f, Quaternion.identity, Shield);
+					BI.transform.rotation = Quaternion.LookRotation (Shield.transform.forward);
 				}
-				BI.transform.LookAt (cam.transform);
+				//BI.transform.LookAt (cam.transform);
 
 				BI.GetComponent<ParticleSystem> ().Play ();
 

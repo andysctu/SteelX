@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4452643249143068}
   - component: {fileID: 33955555705297236}
   - component: {fileID: 23570045762872426}
+  - component: {fileID: 114622818805109446}
   m_Layer: 8
   m_Name: SHS309
   m_TagString: Shield
@@ -37,7 +38,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4366559176816790}
   - component: {fileID: 65578264574013680}
-  - component: {fileID: 114133899288015024}
   m_Layer: 8
   m_Name: collider
   m_TagString: Shield
@@ -65,7 +65,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1075376175430866}
   m_LocalRotation: {x: -0, y: -0, z: -1, w: 0}
-  m_LocalPosition: {x: 0, y: -0.99078, z: 0}
+  m_LocalPosition: {x: 217.0176, y: 2.904148, z: -9.58412}
   m_LocalScale: {x: 10.000022, y: 10, z: 10}
   m_Children:
   - {fileID: 4366559176816790}
@@ -125,18 +125,14 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.04439992, y: 0.7, z: 0.7}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114133899288015024
+--- !u!114 &114622818805109446
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1972302514668362}
+  m_GameObject: {fileID: 1075376175430866}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99235ba359bb91c45ae224283b3c686f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localp: {x: 0, y: 0, z: 0}
-  rot: {x: 0, y: 0, z: 0}
-  orgRot: {x: 0, y: 0, z: 0}
-  rotoffset: 0

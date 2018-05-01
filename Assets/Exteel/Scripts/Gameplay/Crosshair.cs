@@ -278,12 +278,12 @@ public class Crosshair : MonoBehaviour {
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
 					if(targetpv.owner.GetTeam()!=pv.owner.GetTeam()){
-						return hit.transform;
+						return hit.collider.transform;
 					}
 				}else{
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
 					if (targetpv.viewID != pv.viewID) {
-						return hit.transform;
+						return hit.collider.transform;
 					}
 				}
 			}
@@ -303,12 +303,12 @@ public class Crosshair : MonoBehaviour {
 				if(isTeamMode){
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
 					if(targetpv.owner.GetTeam()!=pv.owner.GetTeam()){
-						return hit.transform;
+						return hit.collider.transform;
 					}
 				}else{
 					PhotonView targetpv = hit.transform.root.GetComponent<PhotonView> ();
 					if(targetpv.viewID != pv.viewID) //if not mine
-						return hit.transform;
+						return hit.collider.transform;
 				}
 			}
 		}

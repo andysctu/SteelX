@@ -4,11 +4,19 @@ using UnityEngine;
 
 public class UpdateSHScollider : MonoBehaviour {
 
+	public GameObject boxcollider;
+
 	void Start(){
 
 	}
 
 	void LateUpdate () {
 
+	}
+
+	void OnDestroy(){
+		if(boxcollider!=null){
+			Destroy (boxcollider);
+		}
 	}
 }

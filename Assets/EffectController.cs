@@ -6,11 +6,12 @@ public class EffectController : MonoBehaviour {
 
 	[SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
 	[SerializeField]private ParticleSystem boostingDust, respawnEffect;
+	[SerializeField]private GameObject shieldOnHit;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]AnimatorVars AnimatorVars;
+	[SerializeField]private Transform[] Hands;
 	private MechController mctrl;
-	private Transform[] Hands;
 	private int speed_id, direction_id;
 
 	// Use this for initialization
@@ -65,6 +66,13 @@ public class EffectController : MonoBehaviour {
 
 	public void RespawnEffect(){
 		respawnEffect.Play ();
+	}
+
+	public void ShieldOnHitEffect(int shield){
+		GameObject g = Instantiate (shieldOnHit, Hands [shield].position - Hands[shield].forward*2, Quaternion.identity, Hands [shield]);
+		g.transform.rotation = Quaternion.LookRotation (Hands [shield].forward);
+		g.GetComponent<ParticleSystem> ().Play ();
+		Destroy (g, 2);
 	}
 
 	void OnEnable(){

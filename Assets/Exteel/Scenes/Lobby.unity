@@ -3979,12 +3979,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Combo: {fileID: 0}
   cc: {fileID: 0}
   mctrl: {fileID: 0}
   mcbt: {fileID: 0}
   Sounds: {fileID: 0}
   mechIK: {fileID: 0}
+  EffectController: {fileID: 0}
   boost_id: 0
   grounded_id: 0
   jump_id: 0
@@ -3994,10 +3994,13 @@ MonoBehaviour:
   SlashL_id: 0
   SlashL2_id: 0
   SlashL3_id: 0
+  SlashL4_id: 0
   SlashR_id: 0
   SlashR2_id: 0
   SlashR3_id: 0
+  SlashR4_id: 0
   BCNPose_id: 0
+  OnBCN_id: 0
   inHangar: 1
 --- !u!4 &428959976
 Transform:
@@ -6282,7 +6285,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: -513.0469}
+  m_AnchoredPosition: {x: 0, y: 0.000015258789}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &646861062
@@ -12680,6 +12683,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 0}
+  Sounds: {fileID: 0}
   ShotSounds: []
   weapons: []
   bulletPrefabs: []

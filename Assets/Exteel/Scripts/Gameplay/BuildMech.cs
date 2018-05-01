@@ -388,6 +388,7 @@ public class BuildMech : Photon.MonoBehaviour {
 					//also set the child collider
 					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
 					collider.transform.SetParent (hands [i % 2].transform);
+					weapons [i].GetComponent<UpdateSHScollider> ().boxcollider = collider;
 
 					if(i % 2 == 0){
 						collider.transform.localRotation = Quaternion.Euler(0,90,0);
