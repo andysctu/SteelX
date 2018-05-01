@@ -869,7 +869,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.initCombatVariables ();
 		mcbt.UpdateCurWeaponType ();
 		if(mcbt.crosshair!=null)
-			mcbt.crosshair.updateCrosshair (0);
+			mcbt.crosshair.UpdateCrosshair (0);
 		mcbt.FindTrail();
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);

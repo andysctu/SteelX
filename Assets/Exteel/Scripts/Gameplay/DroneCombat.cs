@@ -5,6 +5,7 @@ using UnityEngine;
 public class DroneCombat : Combat {
 
 	public Transform[] Hands;
+
 	private int default_layer = 0, player_layer = 8;
 	private EffectController EffectController;
 	// Use this for initialization

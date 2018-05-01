@@ -9,7 +9,7 @@ public class EffectController : MonoBehaviour {
 	[SerializeField]private GameObject shieldOnHit;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
-	[SerializeField]AnimatorVars AnimatorVars;
+	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private Transform[] Hands;
 	private MechController mctrl;
 	private int speed_id, direction_id;

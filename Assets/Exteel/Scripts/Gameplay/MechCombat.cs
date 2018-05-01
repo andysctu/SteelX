@@ -510,9 +510,6 @@ public class MechCombat : Combat {
 
 		if(CheckIsMeleeByStr(weapon)){
 			EffectController.ShieldOnHitEffect (shield);
-
-			if(photonView.isMine)
-				mechController.SlowDown ();
 		}
 
 		currentHP -= damage;
@@ -996,7 +993,7 @@ public class MechCombat : Combat {
 		animator.SetBool (BCNPose_id, false);
 
 		//Check crosshair
-		crosshair.updateCrosshair (weaponOffset);
+		crosshair.UpdateCrosshair (weaponOffset);
 
 		isSwitchingWeapon = false;
 	}

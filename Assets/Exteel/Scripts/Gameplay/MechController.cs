@@ -22,16 +22,16 @@ public class MechController : Photon.MonoBehaviour {
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
-	private float marginOfError = 0.1f;
 	public float Gravity = 4.5f;
 	public float maxDownSpeed = -140f;
 	public float InAirSpeedCoeff = 0.7f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
+	private float runDir_coeff = 3,rundecel_rate = 0.5f;
 	private float curboostingSpeed;//global space
 	private Vector2 xzDir;
 	private Vector2 run_xzDir;
 	private bool startBoosting = false;
-
+	private float marginOfError = 0.1f;
 	private Vector3 move = Vector3.zero;
 
 	private bool isBoostFlameOn = false;
@@ -53,11 +53,10 @@ public class MechController : Photon.MonoBehaviour {
 	// Animation
 	private float speed;
 	private float direction;
+
 	public bool grounded = true; //changes with animator bool "grounded"
 	public bool jump;
 	public bool on_BCNShoot = false;
-
-	private bool slashInJump = false;//temp
 
 	// Use this for initialization
 	void Start () {
@@ -223,13 +222,13 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void Run() {
-		run_xzDir.x = Mathf.Lerp (run_xzDir.x, xzDir.x, Time.deltaTime * 8);//smooth slow down (boosting -> Idle&Walk
-		run_xzDir.y = Mathf.Lerp (run_xzDir.y, xzDir.y, Time.deltaTime * 8);//not achieving by gravity because we don't want walk smooth slow down
+		run_xzDir.x = Mathf.Lerp (run_xzDir.x, xzDir.x, Time.deltaTime * runDir_coeff);//smooth slow down (boosting -> Idle&Walk
+		run_xzDir.y = Mathf.Lerp (run_xzDir.y, xzDir.y, Time.deltaTime * runDir_coeff);//not achieving by gravity because we don't want walk smooth slow down
 		//decelerating
 		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (boost_id)) {//not in transition to boost
 			xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x +(run_xzDir.y * curboostingSpeed * transform.forward).x;
 			zSpeed =  (run_xzDir.x * curboostingSpeed * transform.right).z +(run_xzDir.y * curboostingSpeed * transform.forward).z;
-			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime/2 ;
+			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime * rundecel_rate ;
 		}else{
 			xSpeed = mechCombat.MoveSpeed()*xzDir.x*transform.right.x + mechCombat.MoveSpeed()*((xzDir.y<0)? xzDir.y/2 : xzDir.y)*transform.forward.x;
 			zSpeed = mechCombat.MoveSpeed () * xzDir.x * transform.right.z + mechCombat.MoveSpeed () * ((xzDir.y<0)? xzDir.y/2 : xzDir.y) * transform.forward.z;
@@ -291,6 +290,9 @@ public class MechController : Photon.MonoBehaviour {
 				}else{
 					zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime *100;
 				}				
+
+				run_xzDir.x = xzDir.x;
+				run_xzDir.y = xzDir.y;
 			}else{//boost in air
 				float inAirSpeed = mechCombat.MaxHorizontalBoostSpeed () * InAirSpeedCoeff;
 				xSpeed = inAirSpeed * xzDir.x * transform.right.x +  inAirSpeed * xzDir.y * transform.forward.x;

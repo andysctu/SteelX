@@ -46,7 +46,7 @@ public class Crosshair : MonoBehaviour {
 		screenCoeff = (float)Screen.height / Screen.width;
 		weaponScripts = bm.weaponScripts;
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
-		updateCrosshair (0);
+		UpdateCrosshair (0);
 		isTeamMode = GameManager.isTeamMode;
 		cam = GetComponent<Camera> ();
 		Targets = new List<GameObject> ();
@@ -67,7 +67,7 @@ public class Crosshair : MonoBehaviour {
 			crosshairImage.EngTargetMark.enabled = false;
 		}
 	}
-	public void updateCrosshair(int offset){
+	public void UpdateCrosshair(int offset){
 		weaponScripts = bm.weaponScripts;//sometimes it's null, don't know why
 
 		CrosshairRadiusL = weaponScripts [offset].radius;
