@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SlashState : MechStateMachineBehaviour {
 
-	private bool inAir = false;
+	private bool inAir = false, detectGrounded;
 	public int hand, combo;//L1 => combo = 1 , in air => combo = -1
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
@@ -13,6 +13,7 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetBool (onMelee_id, true);
 
 		inAir = animator.GetBool (jump_id);
+		detectGrounded = false;
 
 		animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
@@ -37,6 +38,7 @@ public class SlashState : MechStateMachineBehaviour {
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 
 		animator.SetFloat ("slashTime", 0);
+		mctrl.ResetCurBoostingSpeed ();
 	}
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
@@ -54,13 +56,23 @@ public class SlashState : MechStateMachineBehaviour {
 		animator.SetFloat ("slashTime", stateInfo.normalizedTime);//test
 		if ( cc == null || !cc.enabled) return;
 
-		if(inAir && mcbt.isLMeleePlaying==0 && mcbt.isRMeleePlaying==0){
+		if (inAir && mcbt.isLMeleePlaying == 0 && mcbt.isRMeleePlaying == 0) {
 			mctrl.Boost (false);
 			mctrl.JumpMoveInAir ();
 		}
 
-		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
+
+		if(!detectGrounded){
+			mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
+			if(mctrl.CheckIsGrounded()){
+				detectGrounded = true;
+				mctrl.grounded = true;
+				mctrl.SetCanVerticalBoost (false);
+				animator.SetBool (jump_id, false);
+				animator.SetBool (grounded_id, true);
+			}
+		}
 	}
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){

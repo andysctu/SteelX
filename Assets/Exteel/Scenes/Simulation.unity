@@ -21012,7 +21012,10 @@ MonoBehaviour:
   lockPlayerRot: 0
   lockCamRot: 0
   currentMech: {fileID: 0}
+  animator: {fileID: 0}
   orbitRadius: 19
+  idealLerpFakePosSpeed: 20
+  curlerpFakePosSpeed: 0
   angleOffset: 33
 --- !u!81 &1608924967
 AudioListener:

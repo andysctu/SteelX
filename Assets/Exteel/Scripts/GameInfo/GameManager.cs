@@ -73,7 +73,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	//TODO : player can choose target frame rate
 	void Awake(){
-		Application.targetFrameRate = 100;//60:temp
+		Application.targetFrameRate = 60;//60:temp
 	}
 
 	void Start() {

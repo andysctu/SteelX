@@ -2766,12 +2766,15 @@ MonoBehaviour:
   dampingTime: 0.2
   lerpYSpeed_g: 50
   lerpYSpeed_a: 12
-  lerpYSpeed: 0
-  lerpcoeff: 5
+  lerpYSpeed: 25
+  lerpcoeff: 3.5
   lockPlayerRot: 0
   lockCamRot: 0
   currentMech: {fileID: 144000}
+  animator: {fileID: 9563454}
   orbitRadius: 19
+  idealLerpFakePosSpeed: 20
+  curlerpFakePosSpeed: 0
   angleOffset: 33
 --- !u!114 &11416036
 MonoBehaviour:
@@ -3021,6 +3024,7 @@ MonoBehaviour:
   mechCamera: {fileID: 11415780}
   Sounds: {fileID: 114000010976113334}
   EffectController: {fileID: 114512345716719972}
+  camTransform: {fileID: 405268}
   CharacterController: {fileID: 14356836}
   Terrain:
     serializedVersion: 2
@@ -3035,6 +3039,10 @@ MonoBehaviour:
   grounded: 1
   jump: 0
   on_BCNShoot: 0
+  cam_lerpSpeed: 13
+  LocalxOffset: -4
+  cam_orbitradius: 19
+  cam_angleoffset: 33
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -31,7 +31,7 @@ public class CheckIsRendered : MonoBehaviour {
 		if(crosshair == null){
 			if (Time.time - lastRequestTime >= requestDeltaTime) {
 				lastRequestTime = Time.time;
-				GameObject theplayer = GameObject.Find (PhotonNetwork.playerName);
+				GameObject theplayer = GameObject.Find ("PlayerCam");
 				if (theplayer != null)
 					crosshair = theplayer.GetComponentInChildren<Camera> ().GetComponent<Crosshair> ();
 				else {
@@ -41,18 +41,20 @@ public class CheckIsRendered : MonoBehaviour {
 			}else{
 				return;
 			}
+		}else{
+			if(theMeshRenderer.isVisible){
+				if(!isVisible){
+					isVisible = true;
+					crosshair.Targets.Add (transform.root.gameObject);
+				}
+			}else{
+				if(isVisible){
+					isVisible = false;
+					crosshair.Targets.Remove (transform.root.gameObject);
+				}
+			}
 		}
 
-		if(theMeshRenderer.isVisible){
-			if(!isVisible){
-				isVisible = true;
-				crosshair.Targets.Add (transform.root.gameObject);
-			}
-		}else{
-			if(isVisible){
-				isVisible = false;
-				crosshair.Targets.Remove (transform.root.gameObject);
-			}
-		}
+
 	}
 }
