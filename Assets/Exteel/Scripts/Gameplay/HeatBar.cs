@@ -13,13 +13,12 @@ public class HeatBar : MonoBehaviour {
 
 	private Weapon[] weaponScripts;
 	private float[] curValue = new float[4];
-	private int weaponOffset;
 	private int cooldown;
 	private int MaxHeat;
 	private Color32 RED = new Color32 (255, 0, 0, 200) , YELLOW = new Color32 (255, 255, 85, 200);
 
 	public void InitVars(){//called when finished buildmech
-		weaponOffset = 0;
+		mcbt.weaponOffset = 0;
 		weaponScripts = bm.weaponScripts;
 		barL_fill.fillAmount = 0;
 		barR_fill.fillAmount = 0;
@@ -29,7 +28,7 @@ public class HeatBar : MonoBehaviour {
 		for (int i = 0; i < 4; i++)
 			mcbt.is_overheat [i] = false;
 
-		UpdateHeatBar (weaponOffset);
+		UpdateHeatBar ();
 		ResetHeatBar ();
 	}
 
@@ -40,9 +39,9 @@ public class HeatBar : MonoBehaviour {
 
 			if (curValue [i] <= 0){
 				if(mcbt.is_overheat[i]){ // if previous is overheated => change color
-					if(i==weaponOffset){
+					if(i==mcbt.weaponOffset){
 						barL_fill.color = YELLOW;
-					}else if(i==weaponOffset+1){
+					}else if(i==mcbt.weaponOffset+1){
 						barR_fill.color = YELLOW;
 					}
 					pv.RPC ("SetOverHeat", PhotonTargets.All, false, i);
@@ -56,24 +55,22 @@ public class HeatBar : MonoBehaviour {
 		DrawBarR ();
 	}
 
-	public void UpdateHeatBar(int offset){
-		weaponOffset = offset;
-
-		if(bm.weaponScripts[offset].isTwoHanded){
-			EnableHeatBar (weaponOffset, true);
-			EnableHeatBar (weaponOffset+1, false);
+	public void UpdateHeatBar(){
+		if(bm.weaponScripts[mcbt.weaponOffset].isTwoHanded){
+			EnableHeatBar (mcbt.weaponOffset, true);
+			EnableHeatBar (mcbt.weaponOffset+1, false);
 		}else{
-			EnableHeatBar (weaponOffset, bm.weaponScripts [weaponOffset].Animation != "");
-			EnableHeatBar (weaponOffset+1, bm.weaponScripts [weaponOffset+1].Animation != "");
+			EnableHeatBar (mcbt.weaponOffset, bm.weaponScripts [mcbt.weaponOffset].Animation != "");
+			EnableHeatBar (mcbt.weaponOffset+1, bm.weaponScripts [mcbt.weaponOffset+1].Animation != "");
 		}
 
-		if(mcbt.is_overheat[offset]){//update color
+		if(mcbt.is_overheat[mcbt.weaponOffset]){//update color
 			barL_fill.color = RED;
 		}else{
 			barL_fill.color = YELLOW;
 		}
 
-		if(mcbt.is_overheat[offset+1]){
+		if(mcbt.is_overheat[mcbt.weaponOffset+1]){
 			barR_fill.color = RED;
 		}else{
 			barR_fill.color = YELLOW;
@@ -87,24 +84,24 @@ public class HeatBar : MonoBehaviour {
 	}
 
 	public void IncreaseHeatBarL(float value){ //value : [0,100]
-		curValue [weaponOffset] += value;
-		if (curValue [weaponOffset] >= MaxHeat) {
-			curValue[weaponOffset] = MaxHeat;
-			mcbt.is_overheat [weaponOffset] = true;
+		curValue [mcbt.weaponOffset] += value;
+		if (curValue [mcbt.weaponOffset] >= MaxHeat) {
+			curValue[mcbt.weaponOffset] = MaxHeat;
+			mcbt.is_overheat [mcbt.weaponOffset] = true;
 
-			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset);
+			pv.RPC ("SetOverHeat", PhotonTargets.All, true, mcbt.weaponOffset);
 
 			barL_fill.color = RED;
 		}
 	}
 
 	public void IncreaseHeatBarR(float value){
-		curValue [weaponOffset+1] += value;
-		if (curValue [weaponOffset + 1] >= MaxHeat) {
-			curValue[weaponOffset + 1] = MaxHeat;
-			mcbt.is_overheat [weaponOffset + 1] = true;
+		curValue [mcbt.weaponOffset+1] += value;
+		if (curValue [mcbt.weaponOffset + 1] >= MaxHeat) {
+			curValue[mcbt.weaponOffset + 1] = MaxHeat;
+			mcbt.is_overheat [mcbt.weaponOffset + 1] = true;
 
-			pv.RPC ("SetOverHeat", PhotonTargets.All, true, weaponOffset+1);
+			pv.RPC ("SetOverHeat", PhotonTargets.All, true, mcbt.weaponOffset+1);
 
 			barR_fill.color = RED;
 		}
@@ -121,10 +118,10 @@ public class HeatBar : MonoBehaviour {
 	}
 
 	private void DrawBarL(){
-		barL_fill.fillAmount = curValue[weaponOffset]/MaxHeat;
+		barL_fill.fillAmount = curValue[mcbt.weaponOffset]/MaxHeat;
 	}
 
 	private void DrawBarR(){
-		barR_fill.fillAmount = curValue [weaponOffset + 1]/MaxHeat;
+		barR_fill.fillAmount = curValue [mcbt.weaponOffset + 1]/MaxHeat;
 	}
 }

@@ -2846,13 +2846,7 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 1
-    Name: ShootRCL
-  - Type: 4
-    SynchronizeType: 1
     Name: BCNPose
-  - Type: 4
-    SynchronizeType: 1
-    Name: ShootBCN
   - Type: 4
     SynchronizeType: 0
     Name: OnBCN
@@ -2921,6 +2915,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   Sounds: {fileID: 114000010976113334}
+  mcbt: {fileID: 11445986}
   Targets: []
   MaxDistanceL: 0
   MaxDistanceR: 0
@@ -2994,6 +2989,7 @@ MonoBehaviour:
   cooldown: 16
   BCNbulletNum: 0
   isOnBCNPose: 0
+  weaponOffset: 0
   isLMeleePlaying: 0
   isRMeleePlaying: 0
   CanMeleeAttack: 1
@@ -6052,14 +6048,14 @@ MonoBehaviour:
   speed_id: 0
   direction_id: 0
   onMelee_id: 0
-  SlashL_id: 0
-  SlashL2_id: 0
-  SlashL3_id: 0
-  SlashL4_id: 0
-  SlashR_id: 0
-  SlashR2_id: 0
-  SlashR3_id: 0
-  SlashR4_id: 0
+  slashL_id: 0
+  slashL2_id: 0
+  slashL3_id: 0
+  slashL4_id: 0
+  slashR_id: 0
+  slashR2_id: 0
+  slashR3_id: 0
+  slashR4_id: 0
   BCNPose_id: 0
   OnBCN_id: 0
   inHangar: 0

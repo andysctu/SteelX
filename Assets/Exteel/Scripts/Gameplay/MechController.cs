@@ -19,7 +19,6 @@ public class MechController : Photon.MonoBehaviour {
 	private GameManager gm;
 	private BoosterController BoosterController;
 
-	private int boost_id;
 	private bool isHorizBoosting = false;
 	private bool isVertBoosting = false;
 
@@ -77,10 +76,6 @@ public class MechController : Photon.MonoBehaviour {
 		run_xzDir = Vector2.zero;
 	}
 
-	public void InitVars(){//this is called by AniamtorVars
-		boost_id = AnimatorVars.boost_id;
-	}
-
 	public void FindBoosterController(){//TODO : put this in respawn update delegate 
 		BoosterController = transform.Find("CurrentMech").GetComponentInChildren<BoosterController>();
 	}
@@ -118,7 +113,7 @@ public class MechController : Photon.MonoBehaviour {
 			return;
 		}
 
-		if (Animator.GetBool(boost_id)) {
+		if (Animator.GetBool(AnimatorVars.boost_id)) {
 			DynamicCam();
 			mechCombat.DecrementFuel();
 		} else {
@@ -219,7 +214,7 @@ public class MechController : Photon.MonoBehaviour {
 		run_xzDir.x = Mathf.Lerp (run_xzDir.x, xzDir.x, Time.deltaTime * runDir_coeff);//smooth slow down (boosting -> Idle&Walk
 		run_xzDir.y = Mathf.Lerp (run_xzDir.y, xzDir.y, Time.deltaTime * runDir_coeff);//not achieving by gravity because we don't want walk smooth slow down
 		//decelerating
-		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (boost_id)) {//not in transition to boost
+		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (AnimatorVars.boost_id)) {//not in transition to boost
 			xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x +(run_xzDir.y * curboostingSpeed * transform.forward).x;
 			zSpeed =  (run_xzDir.x * curboostingSpeed * transform.right).z +(run_xzDir.y * curboostingSpeed * transform.forward).z;
 			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime * runDecel_rate ;
@@ -233,7 +228,7 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void JumpMoveInAir(){
-		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (boost_id)) {//not in transition to boost
+		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (AnimatorVars.boost_id)) {//not in transition to boost
 			curboostingSpeed -= mechCombat.deceleration * Time.deltaTime * runDecel_rate * 2;
 
 			xSpeed = (xzDir.x * curboostingSpeed * transform.right).x +(xzDir.y * curboostingSpeed * transform.forward).x ;

@@ -12,36 +12,9 @@ public class Combo : MonoBehaviour {
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private SlashDetector SlashDetector;
 	private PhotonView pv;
-	private int slashL_id;
-	private int slashL2_id;
-	private int slashL3_id;
-	private int slashL4_id;
-
-	private int slashR_id;
-	private int slashR2_id;
-	private int slashR3_id;
-	private int slashR4_id;
-
-	private int grounded_id;
-	private int onMelee_id;
 
 	void Start(){
 		pv = GetComponent<PhotonView> ();
-	}
-
-	public void InitVars(){// called by AnimatorVars
-		slashL_id = AnimatorVars.SlashL_id;
-		slashL2_id = AnimatorVars.SlashL2_id;
-		slashL3_id = AnimatorVars.SlashL3_id;
-		slashL4_id = AnimatorVars.SlashL4_id;
-
-		slashR_id = AnimatorVars.SlashR_id;
-		slashR2_id = AnimatorVars.SlashR2_id;
-		slashR3_id = AnimatorVars.SlashR3_id;
-		slashR4_id = AnimatorVars.SlashR4_id;
-
-		grounded_id = AnimatorVars.grounded_id;
-		onMelee_id = AnimatorVars.onMelee_id;
 	}
 
 	public void CallLMeleePlaying(int isPlaying){//this is called when melee attack in air , to make the mech drop quicker when attacking ( for nicier look)
@@ -66,16 +39,16 @@ public class Combo : MonoBehaviour {
 		mcam.LockCamRotation (false);
 		switch(num){
 		case 1:
-			animator.SetBool (slashL_id, false);
+			animator.SetBool (AnimatorVars.slashL_id, false);
 			break;
 		case 2:
-			animator.SetBool (slashL2_id, false);
+			animator.SetBool (AnimatorVars.slashL2_id, false);
 			break;
 		case 3:
-			animator.SetBool (slashL3_id, false);
+			animator.SetBool (AnimatorVars.slashL3_id, false);
 			break;
 		case 4:
-			animator.SetBool (slashL4_id, false);
+			animator.SetBool (AnimatorVars.slashL4_id, false);
 			break;
 		}
 	}
@@ -87,16 +60,16 @@ public class Combo : MonoBehaviour {
 		mcam.LockCamRotation (false);
 		switch(num){
 		case 1:
-			animator.SetBool (slashR_id, false);
+			animator.SetBool (AnimatorVars.slashR_id, false);
 			break;
 		case 2:
-			animator.SetBool (slashR2_id, false);
+			animator.SetBool (AnimatorVars.slashR2_id, false);
 			break;
 		case 3:
-			animator.SetBool (slashR3_id, false);
+			animator.SetBool (AnimatorVars.slashR3_id, false);
 			break;
 		case 4:
-			animator.SetBool (slashR4_id, false);
+			animator.SetBool (AnimatorVars.slashR4_id, false);
 			break;
 		}
 	}
@@ -107,16 +80,16 @@ public class Combo : MonoBehaviour {
 
 	public void Slash(int handposition){
 		if(handposition==0){
-			if (animator.GetBool (slashL3_id)) {
-				animator.SetBool (slashL4_id, true);
-			} else if (animator.GetBool (slashL2_id)) {
-				animator.SetBool (slashL3_id, true);
+			if (animator.GetBool (AnimatorVars.slashL3_id)) {
+				animator.SetBool (AnimatorVars.slashL4_id, true);
+			} else if (animator.GetBool (AnimatorVars.slashL2_id)) {
+				animator.SetBool (AnimatorVars.slashL3_id, true);
 			}else{
-				if(animator.GetBool(slashL_id)){
-					animator.SetBool (slashL2_id, true);
+				if(animator.GetBool(AnimatorVars.slashL_id)){
+					animator.SetBool (AnimatorVars.slashL2_id, true);
 				}else{
-					if (!animator.GetBool (onMelee_id)) {
-						if (animator.GetBool (grounded_id)) {
+					if (!animator.GetBool (AnimatorVars.onMelee_id)) {
+						if (animator.GetBool (AnimatorVars.grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 0, 0);
 						}else{
 							if(mcam.GetCamAngle()<=-10)
@@ -126,21 +99,21 @@ public class Combo : MonoBehaviour {
 							else
 								pv.RPC ("SlashRPC", PhotonTargets.All, 0, 2);
 						}
-						animator.SetBool (slashL_id, true);
+						animator.SetBool (AnimatorVars.slashL_id, true);
 					}
 				}
 			}
 		}else{
-			if (animator.GetBool (slashR3_id)) {
-				animator.SetBool (slashR4_id, true);
-			} else 	if(animator.GetBool(slashR2_id)){
-				animator.SetBool (slashR3_id,true);
+			if (animator.GetBool (AnimatorVars.slashR3_id)) {
+				animator.SetBool (AnimatorVars.slashR4_id, true);
+			} else 	if(animator.GetBool(AnimatorVars.slashR2_id)){
+				animator.SetBool (AnimatorVars.slashR3_id,true);
 			}else{
-				if(animator.GetBool(slashR_id)){
-					animator.SetBool (slashR2_id, true);
+				if(animator.GetBool(AnimatorVars.slashR_id)){
+					animator.SetBool (AnimatorVars.slashR2_id, true);
 				}else{
-					if (!animator.GetBool (onMelee_id)) {
-						if (animator.GetBool (grounded_id)) {
+					if (!animator.GetBool (AnimatorVars.onMelee_id)) {
+						if (animator.GetBool (AnimatorVars.grounded_id)) {
 							pv.RPC ("SlashRPC", PhotonTargets.All, 1, 0);
 						}else{
 							if(mcam.GetCamAngle()<=-10)
@@ -150,7 +123,7 @@ public class Combo : MonoBehaviour {
 							else
 								pv.RPC ("SlashRPC", PhotonTargets.All, 1, 2);
 						}
-						animator.SetBool (slashR_id, true);
+						animator.SetBool (AnimatorVars.slashR_id, true);
 					}
 				}
 			}
@@ -164,7 +137,7 @@ public class Combo : MonoBehaviour {
 			mechCombat.isRMeleePlaying = 1;
 
 
-		if (animator.GetBool (grounded_id)) {
+		if (animator.GetBool (AnimatorVars.grounded_id)) {
 			pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 0);
 		} else {
 			if (mcam.GetCamAngle () <= -10)

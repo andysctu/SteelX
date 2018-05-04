@@ -11,8 +11,9 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]private CrosshairImage crosshairImage;
 	[SerializeField]private LayerMask playerlayer,Terrainlayer;
 	[SerializeField]private Sounds Sounds;
-	public List<GameObject> Targets;//control by checkisrendered.cs
-	private List<GameObject> TargetsToRemove;
+	[SerializeField]private MechCombat mcbt;
+	private List<GameObject> TargetsToRemove = new List<GameObject> ();
+	public List<GameObject> Targets = new List<GameObject> ();//control by checkisrendered.cs
 
 	private Weapon[] weaponScripts;
 	private Transform targetL,targetR;
@@ -43,17 +44,21 @@ public class Crosshair : MonoBehaviour {
 
 
 	void Start () {
-		screenCoeff = (float)Screen.height / Screen.width;
-		weaponScripts = bm.weaponScripts;
-		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
-		UpdateCrosshair (0);
-		isTeamMode = GameManager.isTeamMode;
-		cam = GetComponent<Camera> ();
-		Targets = new List<GameObject> ();
-		TargetsToRemove = new List<GameObject> ();
-		crosshairImage.targetMark.gameObject.SetActive (false);
+		GetGameVars ();
+		initComponent ();
+		UpdateCrosshair ();
 	}
 
+	void GetGameVars(){
+		screenCoeff = (float)Screen.height / Screen.width;
+		isTeamMode = GameManager.isTeamMode;
+	}
+
+	void initComponent(){
+		weaponScripts = bm.weaponScripts;
+		cam = GetComponent<Camera> ();
+	}
+		
 	public void NoAllCrosshairs() {//called when disabling player
 		if (crosshairImage != null) {
 			crosshairImage.CloseAllCrosshairs_L ();
@@ -67,17 +72,17 @@ public class Crosshair : MonoBehaviour {
 			crosshairImage.EngTargetMark.enabled = false;
 		}
 	}
-	public void UpdateCrosshair(int offset){
+	public void UpdateCrosshair(){
 		weaponScripts = bm.weaponScripts;//sometimes it's null, don't know why
 
-		CrosshairRadiusL = weaponScripts [offset].radius;
-		CrosshairRadiusR = weaponScripts [offset+1].radius;
-		MaxDistanceL = weaponScripts [offset].Range;
-		MaxDistanceR = weaponScripts [offset+1].Range;
+		CrosshairRadiusL = weaponScripts [mcbt.weaponOffset].radius;
+		CrosshairRadiusR = weaponScripts [mcbt.weaponOffset+1].radius;
+		MaxDistanceL = weaponScripts [mcbt.weaponOffset].Range;
+		MaxDistanceR = weaponScripts [mcbt.weaponOffset+1].Range;
 
-		isENG_L = (weaponScripts [offset].Animation == "ENGShoot");
-		isENG_R = (weaponScripts [offset + 1].Animation == "ENGShoot");
-		isRCL = (weaponScripts [offset].Animation == "ShootRCL");
+		isENG_L = (weaponScripts [mcbt.weaponOffset].Animation == "ENGShoot");
+		isENG_R = (weaponScripts [mcbt.weaponOffset + 1].Animation == "ENGShoot");
+		isRCL = (weaponScripts [mcbt.weaponOffset].Animation == "ShootRCL");
 
 		isTargetAllyL = isENG_L;
 		isTargetAllyR = isENG_R;

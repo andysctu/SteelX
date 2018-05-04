@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Sounds : MonoBehaviour {
 
+	private MechCombat MechCombat;
 	// Sound clip
 	[HideInInspector]public AudioClip[] ShotSounds = new AudioClip[4]; // init in MechCombat 
 	[HideInInspector]public AudioClip[] SlashL = new AudioClip[6];
@@ -21,36 +22,42 @@ public class Sounds : MonoBehaviour {
 	[SerializeField]private AudioSource Source;
 	[SerializeField]private AudioSource MovementSource;
 
-	int weaponOffset =0; // update by switchWeapon
-
 	// Use this for initialization
 	void Start () {
+		initComponent ();
+		SetVolume (0.3f);
+	}
+
+	void initComponent(){
+		MechCombat = transform.root.GetComponent<MechCombat> ();
+	}
+
+	void SetVolume(float v){
 		if(MovementSource!=null)
-			MovementSource.volume = 0.3f;
-		//MovementSource.clip = WalkSound;
+			MovementSource.volume = v;
 
 		if(Source!=null)
-			Source.volume = 0.3f;
+			Source.volume = v;
 	}
 
 	public void UpdateSounds(int Offset){
-		weaponOffset = Offset;
+		MechCombat.weaponOffset = Offset;
 	}
 	
 	public void PlayShotL() {  // RCL is also using this
-		if(ShotSounds[weaponOffset]!=null)
-			Source.PlayOneShot(ShotSounds[weaponOffset]);
+		if(ShotSounds[MechCombat.weaponOffset]!=null)
+			Source.PlayOneShot(ShotSounds[MechCombat.weaponOffset]);
 	}
 	public void PlayShotR() {
-		if(ShotSounds[weaponOffset+1]!=null)
-			Source.PlayOneShot(ShotSounds[weaponOffset+1]);
+		if(ShotSounds[MechCombat.weaponOffset+1]!=null)
+			Source.PlayOneShot(ShotSounds[MechCombat.weaponOffset+1]);
 	}
 
 	public void PlaySlashL(int num){
-		Source.PlayOneShot (SlashL[num + weaponOffset/2*3]);
+		Source.PlayOneShot (SlashL[num + MechCombat.weaponOffset/2*3]);
 	}
 	public void PlaySlashR(int num){
-		Source.PlayOneShot (SlashR[num + weaponOffset/2*3]);
+		Source.PlayOneShot (SlashR[num + MechCombat.weaponOffset/2*3]);
 	}
 
 	public void PlayLock(){

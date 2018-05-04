@@ -61,14 +61,14 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		onMelee_id = animatorVars.onMelee_id;
 		speed_id = animatorVars.speed_id;
 
-		slashL_id = animatorVars.SlashL_id;
-		slashR_id = animatorVars.SlashR_id;
-		slashL2_id = animatorVars.SlashL2_id;
-		slashR2_id = animatorVars.SlashR2_id;
-		slashL3_id = animatorVars.SlashL3_id;
-		slashR3_id = animatorVars.SlashR3_id;
-		slashL4_id = animatorVars.SlashL4_id;
-		slashR4_id = animatorVars.SlashR4_id;
+		slashL_id = animatorVars.slashL_id;
+		slashR_id = animatorVars.slashR_id;
+		slashL2_id = animatorVars.slashL2_id;
+		slashR2_id = animatorVars.slashR2_id;
+		slashL3_id = animatorVars.slashL3_id;
+		slashR3_id = animatorVars.slashR3_id;
+		slashL4_id = animatorVars.slashL4_id;
+		slashR4_id = animatorVars.slashR4_id;
 
 		OnBCN_id = animatorVars.OnBCN_id;
 	}
