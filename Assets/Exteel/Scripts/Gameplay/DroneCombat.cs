@@ -40,7 +40,7 @@ public class DroneCombat : Combat {
 	}
 
 	[PunRPC]
-	void ForceMove(Vector3 dir, float length){
+	void KnockBack(Vector3 dir, float length){
 		transform.position += dir * length;
 	}
 

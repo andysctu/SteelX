@@ -39,9 +39,9 @@ public class MechController : Photon.MonoBehaviour {
 	private Vector3 originalCamPos;
 
 	private float characterControllerSpeed;
-	private float forcemove_speed;
-	private Vector3 forcemove_dir;
-	private bool canVerticalBoost = false;
+	private float instantMoveSpeed, curInstantMoveSpeed;
+	private Vector3 instantMoveDir;
+	private bool canVerticalBoost = false, getJumpWhenSlash;
 	private float v_boost_start_yPos;
 	private float v_boost_upperbound ;
 	private float boostStartTime = 0;//this is for jump delay
@@ -94,7 +94,7 @@ public class MechController : Photon.MonoBehaviour {
 	void initCam(float radius, float offset){
 		mechCamera.LockCamRotation (false);
 		mechCamera.LockMechRotation (false);
-		mechCamera.SetLerpSpeed (cam_lerpSpeed);
+		mechCamera.SetLerpFakePosSpeed (cam_lerpSpeed);
 		mechCamera.orbitRadius = radius;
 		mechCamera.angleOffset = offset;
 		originalCamPos = camTransform.localPosition;
@@ -132,31 +132,11 @@ public class MechController : Photon.MonoBehaviour {
 	public void UpdateSpeed() {
 		// instant move
 		if (mechCombat.isLMeleePlaying == 1 ||mechCombat.isRMeleePlaying == 1 || on_BCNShoot) {
-			if(grounded){
-				forcemove_dir = new Vector3 (forcemove_dir.x, 0, forcemove_dir.z);	// make sure not slashing to the sky
-			}
-
-			forcemove_speed /= 1.6f;//1.6 : decrease coeff.
-			if (Mathf.Abs (forcemove_speed) > 0.01f) {
-				ySpeed = 0;
-			}
-				
-			CharacterController.Move(forcemove_dir * forcemove_speed);
-			move.x = 0;
-			move.z = 0;
-
-			//cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
-			RaycastHit hit;
-			if(!Animator.GetBool(AnimatorVars.jump_id) && Physics.Raycast(transform.position,-Vector3.up,out hit,Terrain)){
-				if(Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance && !Physics.CheckSphere(hit.point+new Vector3(0,2.1f,0), CharacterController.radius, Terrain)){
-					transform.position = hit.point;
-				}
-			}
+			InstantMove ();
 			return;
 		}
-
-		move = Vector3.zero;
-		move += Vector3.right * xSpeed * Time.fixedDeltaTime;
+			
+		move = Vector3.right * xSpeed * Time.fixedDeltaTime;
 		move += Vector3.forward * zSpeed * Time.fixedDeltaTime;
 		move.y += ySpeed * Time.fixedDeltaTime;
 
@@ -174,9 +154,38 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	public void SetMoving(float speed){//called by animation
-		forcemove_speed = speed;
-		forcemove_dir = cam.transform.forward;
+		instantMoveSpeed = speed;
+		instantMoveDir = cam.transform.forward;
+		curInstantMoveSpeed = instantMoveSpeed;
 	}
+
+	void InstantMove(){
+		if(grounded){
+			instantMoveDir = new Vector3 (instantMoveDir.x, 0, instantMoveDir.z);	// make sure not slashing to the sky
+		}
+		if (curInstantMoveSpeed == instantMoveSpeed)
+			getJumpWhenSlash = false;
+
+		instantMoveSpeed /= 1.6f;//1.6 : decrease coeff.
+		if (Mathf.Abs (instantMoveSpeed) > 0.01f) {
+			ySpeed = 0;
+		}
+
+		CharacterController.Move(instantMoveDir * instantMoveSpeed);
+		move.x = 0;
+		move.z = 0;
+
+		if (Animator.GetBool (AnimatorVars.jump_id))
+			getJumpWhenSlash = true;
+		//cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
+		RaycastHit hit;
+		if(!getJumpWhenSlash && Physics.Raycast(transform.position,-Vector3.up,out hit,Terrain)){
+			if(Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance && !Physics.CheckSphere(hit.point+new Vector3(0,2.1f,0), CharacterController.radius, Terrain)){
+				transform.position = hit.point;
+			}
+		}
+	}
+
 	public void SetCanVerticalBoost(bool canVBoost) {
 		canVerticalBoost = canVBoost;
 	}

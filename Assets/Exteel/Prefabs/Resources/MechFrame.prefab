@@ -2761,20 +2761,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e209798f836304cfabd478f5db070121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentMech: {fileID: 144000}
+  animator: {fileID: 9563454}
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
-  lerpYSpeed_g: 50
-  lerpYSpeed_a: 12
-  lerpYSpeed: 25
-  lerpcoeff: 3.5
   lockPlayerRot: 0
   lockCamRot: 0
-  currentMech: {fileID: 144000}
-  animator: {fileID: 9563454}
   orbitRadius: 19
-  idealLerpFakePosSpeed: 20
-  curlerpFakePosSpeed: 0
+  lerpFakePosSpeed: 12
   angleOffset: 33
 --- !u!114 &11416036
 MonoBehaviour:
@@ -3029,15 +3024,11 @@ MonoBehaviour:
   Terrain:
     serializedVersion: 2
     m_Bits: 1024
-  Gravity: 4.5
+  Gravity: 4
   maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
-  xSpeed: 0
-  ySpeed: 0
-  zSpeed: 0
   lerpCam_coeff: 2
   grounded: 1
-  jump: 0
   on_BCNShoot: 0
   cam_lerpSpeed: 13
   LocalxOffset: -4

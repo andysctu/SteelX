@@ -16,6 +16,7 @@ public class MechCamera : MonoBehaviour
 	private float idealLocalAngle = 0,orbitAngle = 0;//this is cam local angle
 	private CharacterController parentCtrl;
 	private float playerlerpspeed = 50f, orbitlerpspeed = 50f;
+	private float upamount = 1;
 
 	public Vector2 rotationRange = new Vector3(70, 70);
 	public float rotationSpeed = 5;
@@ -43,11 +44,19 @@ public class MechCamera : MonoBehaviour
 	void Update(){
 		inputH = CrossPlatformInputManager.GetAxis ("Mouse X");
 		inputV = CrossPlatformInputManager.GetAxis ("Mouse Y");
+
+		float scrollwheel;
+		if ((scrollwheel = Input.GetAxis ("Mouse ScrollWheel")) > 0) {
+			orbitRadius = Mathf.Clamp (--orbitRadius, 16, 23);
+		}else if(scrollwheel < 0){
+			orbitRadius = Mathf.Clamp (++orbitRadius, 16, 23);
+		}
+
 	}
 
 	void FixedUpdate()
 	{
-		fakeTransform.position = Vector3.Lerp (fakeTransform.position, player.position, Time.fixedDeltaTime * lerpFakePosSpeed);
+		fakeTransform.position = Vector3.Lerp (fakeTransform.position, player.position + new Vector3(0,upamount,0), Time.fixedDeltaTime * lerpFakePosSpeed);
 
 		transform.localRotation = m_OriginalRotation;
 
@@ -106,7 +115,7 @@ public class MechCamera : MonoBehaviour
 		tempCamRot = transform.rotation;
 	}
 
-	public void SetLerpSpeed(float n){
+	public void SetLerpFakePosSpeed(float n){
 		lerpFakePosSpeed = n;
 	}
 

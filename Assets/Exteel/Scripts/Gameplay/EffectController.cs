@@ -13,7 +13,7 @@ public class EffectController : MonoBehaviour {
 	[SerializeField]private Transform[] Hands;
 	private MechController mctrl;
 	private int speed_id, direction_id;
-
+	private bool isBoostingDustPlaying = false;
 	// Use this for initialization
 	void Start () {
 		initComponents ();
@@ -54,14 +54,27 @@ public class EffectController : MonoBehaviour {
 
 	public void BoostingDustEffect(bool b){//controlled by horizontal boosting state
 		if (b) {
+			if (!isBoostingDustPlaying) {
+				boostingDust.Play ();
+				isBoostingDustPlaying = true;
+			}
 			UpdateBoostingDust ();
-			boostingDust.Play ();
-		}else
+		} else {
+			isBoostingDustPlaying = false;
 			boostingDust.Stop ();
+		}
 	}
 
 	public void UpdateBoostingDust(){//called by horizontal boosting state
-		boostingDust.transform.localRotation = Quaternion.Euler (-90,Vector3.SignedAngle (Vector3.up, new Vector3 (-Animator.GetFloat("Direction"), Animator.GetFloat("Speed"), 0), Vector3.forward),90);
+		float direction = Animator.GetFloat ("Direction"), speed = Animator.GetFloat ("Speed");
+		if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && mctrl.grounded) {
+			if(!isBoostingDustPlaying)
+				BoostingDustEffect (true);
+			boostingDust.transform.localRotation = Quaternion.Euler (-90, Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward), 90);
+		}else{
+			if(isBoostingDustPlaying)
+				BoostingDustEffect (false);
+		}
 	}
 
 	public void RespawnEffect(){
