@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
-using UnityEditor.Animations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
@@ -935,7 +933,6 @@ public class MechCombat : Combat {
 		MechIK.UpdateMechIK ();
 		SetSlashDetector ();
 		FindTrail();
-		//GetAllTransitions ();
 
 		//Switch movement clips
 		ChangeMovementClips (weaponScripts [weaponOffset].isTwoHanded ? 1 : 0);
@@ -972,17 +969,7 @@ public class MechCombat : Combat {
 			weapons[i].SetActive(!weapons[i].activeSelf);
 		}
 	}
-
-	void GetAllTransitions(){
-		AnimatorController ctrl = animatorOverrideController.runtimeAnimatorController as AnimatorController;
-		AnimatorControllerLayer layer = ctrl.layers[1];
-		AnimatorStateMachine machine = layer.stateMachine;
-		AnimatorStateTransition[] list = machine.defaultState.transitions;
-		for (int i = list.Length - 1; 0 <= i; --i) {
-			AnimatorStateTransition t = list [i];
-			t.mute = true;
-		}
-	}
+		
 
 	/*void ChangeWeaponClips(){
 		//switch weapon type
