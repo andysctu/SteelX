@@ -2,108 +2,111 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletTrace : MonoBehaviour {
+public class BulletTrace : MonoBehaviour
+{
+    [SerializeField] private GameObject bulletImpact_onShield, bulletImpact;
+    [SerializeField] private LayerMask Terrain;
+    private ParticleSystem ps;
+    private Rigidbody rb;
+    private Camera cam;
+    private Transform target;
+    private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0), dir, destination;
 
-	public GameObject bulletImpact;
-	private GameObject bulletImpact_onShield;
-	public HUD HUD;
-	public Camera cam;
-	public LayerMask layerMask = 8, Terrain = 10;
-	public Vector3 direction;
-	public Transform Shield;
-	private Rigidbody rb;
-	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1];
-	private Transform Target;
+    private string ShooterName;
+    private bool isTargetShield;
+    private bool isfollow = false;
+    private float bulletSpeed = 400;
+    private bool isCollided = false;
+    private bool hasSlowdown = false;
 
-	public string ShooterName;
-	public bool isTargetShield;
-	public bool isLMG = false; //if it's LMG , then show Multiple Hit messages
-	private bool isfollow = false;
-	private float bulletSpeed = 400;
-	private bool isCollided = false;
-	private bool hasSlowdown = false;
+    void Start()
+    {
+        initComponents();
+        SetInitVelocity();     
+        ps.Play();
+        Destroy(gameObject, 2f);
+    }
 
-	void Awake(){
-		bulletImpact_onShield = Resources.Load ("HitShieldEffect") as GameObject;
-	}
-	void Start () {
-		ParticleSystem ps = GetComponent<ParticleSystem>();
-		ps.Play();
+    void initComponents()
+    {
+        ps = GetComponent<ParticleSystem>();
+        rb = GetComponent<Rigidbody>();
+    }
 
-		if(gameObject.transform.parent == null){//no target => move directly
-			GetComponent<Rigidbody> ().velocity = direction * bulletSpeed;
-			transform.LookAt (direction*9999);
-			Destroy(gameObject, 2f);
-		}else{//target exists
-			Target = transform.parent;
-			transform.LookAt (Target);
-			isfollow = true;
-			Destroy(gameObject, 2f);
-		}
-	}
+    void SetInitVelocity()
+    {
+        if (target == null){//no target => move directly
+            GetComponent<Rigidbody>().velocity = cam.transform.forward * bulletSpeed;
+            transform.LookAt(cam.transform.forward * 9999);
+        }else{//target exists
+            transform.LookAt(target);
+        }
+    }
 
-	void Update(){
-		if(!isfollow){
-			return;
-		}else{
-			if(!hasSlowdown){
-				if(Vector3.Distance(transform.position, Target.position) < 20f){
-					bulletSpeed = 280f;
-					hasSlowdown = true;
-				}
-			}
-			Vector3 dir = -(transform.position - Target.position - new Vector3(0,5,0)).normalized;
-			GetComponent<Rigidbody> ().velocity = bulletSpeed*dir;
-			transform.LookAt (Target);
-		}
-	}
+    void Update()
+    {
+        if (!isfollow){
+            return;
+        }else{
+            if (!isCollided){
+                if (isTargetShield){
+                    dir = (target.position - transform.position).normalized;
+                    transform.LookAt(target.position);
+                    destination = target.position;
+                }else{
+                    dir = (target.position + MECH_MID_POINT - transform.position).normalized;
+                    transform.LookAt(target.position + MECH_MID_POINT);
+                    destination = target.position + MECH_MID_POINT;
+                }
 
+                if (Vector3.Distance(transform.position, destination) < bulletSpeed * Time.deltaTime){
+                    isCollided = true; 
+                    PlayImpact(transform.position);
+                    Destroy(gameObject);
+                }
+                rb.velocity = bulletSpeed * dir;
+            }            
+        }
+    }
 
+    void OnParticleCollision(GameObject other)
+    {
+        if (isCollided)
+            return;
 
-	void OnParticleCollision(GameObject other){
-		if (isCollided)
-			return;
-		if(isfollow){
-			if (other.transform.root.name == Target.gameObject.name) {
-				isCollided = true;
-				GetComponent<ParticleSystem> ().Stop ();
+        isCollided = true;        
+        PlayImpact(transform.position);
+        Destroy(gameObject);
+    }
 
-				if(isLMG&&PhotonNetwork.playerName == ShooterName){
-					if (!isTargetShield)
-						HUD.ShowText (cam, other.transform.position + new Vector3 (0, 5f, 0), "Hit");
-					else {
-						HUD.ShowText (cam, Shield.position, "Defense");
-					}
-				}
+    void PlayImpact(Vector3 impactPoint)
+    {
+        GameObject impact;
+        if (!isTargetShield) {
+            impact = Instantiate(bulletImpact, impactPoint, Quaternion.identity);
+        }
+        else{
+            impact = Instantiate(bulletImpact_onShield, target.position - target.forward * 2f, Quaternion.identity, target);
+            impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
+        }
+        impact.GetComponent<ParticleSystem>().Play();
+        impact.GetComponent<BulletImpact>().PlayHitSound(impactPoint);
+    }
 
-				GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-				Vector3 collisionHitLoc = collisionEvents [0].intersection;
+    public void SetShooterName(string name)
+    {
+        ShooterName = name;
+    }
 
-				GameObject BI;
-				if (!isTargetShield) {
-					BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
+    public void SetCamera( Camera cam)
+    {
+        this.cam = cam;
+    }
 
-				}else{
-					BI = Instantiate (bulletImpact_onShield, Shield.position - Shield.forward * 2f, Quaternion.identity, Shield);
-					BI.transform.rotation = Quaternion.LookRotation (Shield.transform.forward);
-				}
-				//BI.transform.LookAt (cam.transform);
-
-				BI.GetComponent<ParticleSystem> ().Play ();
-
-				Destroy (gameObject, 0.5f);
-			}
-		}else{
-			if(other.layer==Terrain){
-				isCollided = true;
-				GetComponent<ParticleSystem> ().Stop ();
-				GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-				Vector3 collisionHitLoc = collisionEvents [0].intersection;
-				GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-				temp.GetComponent<ParticleSystem> ().Play ();
-
-				Destroy (gameObject, 0.5f);
-			}
-		}
-	}
+    public void SetTarget(Transform target, bool isTargetShield)
+    {
+        this.target = target;
+        this.isTargetShield = isTargetShield;
+        isfollow = (target!=null);
+}
 }

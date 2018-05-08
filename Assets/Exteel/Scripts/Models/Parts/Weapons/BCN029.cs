@@ -6,6 +6,6 @@
 		radius = 3f;
 		isTwoHanded = true;
 		isSlowDown = true;
-		Animation = "BCNPose";
+		Animation = "BCNShoot";
 	}
 }

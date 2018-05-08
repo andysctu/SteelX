@@ -21,9 +21,12 @@ public class LobbyManager: MonoBehaviour {
 			// the following line checks if this client was just created (and not yet online). if so, we connect
 			if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
 			{
-				// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
-				PhotonNetwork.ConnectUsingSettings("1.0");
-			}
+                // Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
+                //PhotonNetwork.ConnectUsingSettings("1.0");
+
+                //low ping for asia
+                PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.0");
+            }
 
 			// generate a name for this player, if none is assigned yet
 			if (string.IsNullOrEmpty(PhotonNetwork.playerName))

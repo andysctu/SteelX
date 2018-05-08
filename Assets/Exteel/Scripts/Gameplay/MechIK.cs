@@ -27,10 +27,21 @@ public class MechIK : MonoBehaviour {
 	private bool isOnTargetL = false, isOnTargetR = false , LeftIK_on = false, RightIK_on = false;
 	private int weaponOffset = 0;
 
+	public float weight=1;
+	[SerializeField]Transform Knob;//TODO : remove this
+	Animator animator;
 	// Use this for initialization
 	void Start () {
 		AimIK = GetComponent<AimIK> ();
+		animator = transform.GetComponent<Animator> ();
 		InitTransforms ();
+	}
+
+	void OnAnimatorIK(){
+		if (Knob != null) {
+			animator.SetIKPosition (AvatarIKGoal.LeftHand, Knob.position);
+			animator.SetIKPositionWeight (AvatarIKGoal.LeftHand, weight);
+		}
 	}
 
 	void InitTransforms(){
@@ -39,7 +50,8 @@ public class MechIK : MonoBehaviour {
 	}
 
 	void LateUpdate(){
-		if (LeftIK_on) {
+
+		if (LeftIK_on && mode==0) {
 			ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
 			ideal_roL = Mathf.Clamp (ideal_roL, -50, 40);
 
@@ -47,7 +59,7 @@ public class MechIK : MonoBehaviour {
 			upperArmL.localRotation = Quaternion.Euler (upperArmL_rot + new Vector3 (0, rotOffsetL + ideal_roL, 0));
 		}
 
-		if (RightIK_on) {
+		if (RightIK_on && mode==0) {
 			ideal_roR = - Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
 			ideal_roR = Mathf.Clamp (ideal_roR, -50, 40);
 

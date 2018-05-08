@@ -121,8 +121,8 @@ public class MechCombat : Combat {
 		initGameObjects();
 		initCam ();
 		initCrosshair();
-		FindSpecialCurWeaponType ();
-		FindGeneralCurWeaponType ();
+		UpdateSpecialCurWeaponType ();
+		UpdateGeneralCurWeaponType ();
 		UpdateArmAnimatorState ();
 		initSlashDetector();
 		SyncWeaponOffset ();
@@ -304,9 +304,9 @@ public class MechCombat : Combat {
 					targetpv.RPC ("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts [weaponOffset + handPosition].isSlowDown);
 
 					if (target.gameObject.GetComponent<Combat> ().CurrentHP () <= 0) {
-						hud.ShowText (cam, target.position, "Kill");
+						hud.ShowText (cam, target.position + new Vector3(0,5,0), "Kill");
 					} else {
-						hud.ShowText (cam, target.position, "Hit");
+						hud.ShowText (cam, target.position + new Vector3(0, 5, 0), "Hit");
 					}
 				} else{
 					//check what hand is it
@@ -424,42 +424,61 @@ public class MechCombat : Combat {
 				bullet.GetComponent<ElectricBolt> ().Target = Target.transform;
 			}
 		}else {
-			int bN = bm.weaponScripts[weaponOffset + handPosition].bulletNum;
+			int bN = 4;
 			GameObject b = bullets [weaponOffset + handPosition];
+            MechCombat mcbt = (Target==null)? null : Target.transform.root.GetComponent<MechCombat>();
 
-			if(photonView.isMine){
+            if (photonView.isMine){
 				crosshairImage.ShakingEffect (handPosition, bm.weaponScripts [weaponOffset + handPosition].Rate, bN);
+                if (Target!=null && !CheckTargetIsDead(Target))
+                {
+                    if (!isShield)
+                    {
+                        hud.ShowMultipleHitMsg(cam, Target.transform, new Vector3(0, 5, 0), "Hit", bN, 0.25f);
+                    }
+                    else{
+                        hud.ShowMultipleHitMsg(cam, (mcbt != null) ? mcbt.Hands[hand_shield] : Target.transform.root.GetComponent<DroneCombat>().Hands[hand_shield], Vector3.zero,"Defense", bN, 0.25f);
+                    }
+                }
 			}
 
+            
 			for (int i = 0; i < bN; i++) {
 				GameObject bullet = Instantiate (b , Gun_ends[weaponOffset+handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
-				bulletTrace.direction = cam.transform.forward;
-				bulletTrace.HUD = hud;
-				bulletTrace.cam = cam;
-				bulletTrace.ShooterName = gameObject.name;
-				bulletTrace.isTargetShield = isShield;
+                bulletTrace.SetCamera(cam);
+                bulletTrace.SetShooterName(gameObject.name);
 
-				if(isShield){
-					MechCombat mc = Target.GetComponent<MechCombat> ();
-					if(mc !=null)
-						bulletTrace.Shield = Target.GetComponent<MechCombat> ().Hands [hand_shield];//locate shield position
-					else
-						bulletTrace.Shield = Target.GetComponent<DroneCombat> ().Hands [hand_shield];
-				}
+                if (Target != null){
+                    if (isShield){                       
+                        bulletTrace.SetTarget((mcbt != null) ? mcbt.Hands[hand_shield] : Target.transform.root.GetComponent<DroneCombat>().Hands[hand_shield], true);
+                    }else{
+                        bulletTrace.SetTarget(Target.transform, false);
+                    }
+                    Vector3 scale = bullet.transform.localScale;
+                    bullet.transform.SetParent(Target.transform);
+                    bullet.transform.localScale = scale;
+                }else{
+                    bulletTrace.SetTarget(null, false);
+                }
 
-				if (bN > 1)
-					bulletTrace.isLMG = true; //multiple messages
-				
-				if (Target != null){
-					Vector3 scale = bullet.transform.localScale;
-					bullet.transform.SetParent (Target.transform);
-					bullet.transform.localScale = scale;
-				}
 				yield return new WaitForSeconds (1/bm.weaponScripts[weaponOffset + handPosition].Rate/bN);
 			}
 		}
 	}
+
+    bool CheckTargetIsDead(GameObject target)
+    {
+        MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
+        if(mcbt == null)//Drone
+        {
+            return target.transform.root.GetComponent<DroneCombat>().CurrentHP() <= 0;
+        }
+        else
+        {
+            return mcbt.CurrentHP() <= 0;
+        }
+    }
 
 	// Applies damage, and updates scoreboard + disables player on kill
 	[PunRPC]
@@ -666,7 +685,7 @@ public class MechCombat : Combat {
 	void handleCombat(int handPosition) {
 		switch(curGeneralWeaponTypes[weaponOffset + handPosition]){
 		case (int)GeneralWeaponTypes.RANGED:
-			if (bm.weaponScripts [weaponOffset + handPosition].bulletNum > 1) { //LMG : has a delay before putting down hands
+			if (curSpecialWeaponTypes[weaponOffset+handPosition] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.LMG) {//has a delay before putting down hands
 				if (!Input.GetKey (handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset+handPosition] ) {
 					if(handPosition == LEFT_HAND){
 						if(Time.time - timeOfLastShotL >= 1 / bm.weaponScripts [weaponOffset + handPosition].Rate * 0.95f)
@@ -1072,7 +1091,7 @@ public class MechCombat : Combat {
 		}
 	}
 
-	public void FindSpecialCurWeaponType(){
+	public void UpdateSpecialCurWeaponType(){//those types all use different animations
 		for(int i=0;i<4;i++){
 			string name = bm.curWeaponNames [i];
 			if(name.Contains("APS")){
@@ -1101,7 +1120,7 @@ public class MechCombat : Combat {
 		}
 	}
 
-	public void FindGeneralCurWeaponType(){
+	public void UpdateGeneralCurWeaponType(){
 		for(int i=0;i<4;i++){
 			switch(curSpecialWeaponTypes [i]){
 			case (int)SpecialWeaponTypes.APS:
@@ -1134,7 +1153,7 @@ public class MechCombat : Combat {
 	}
 
 	[PunRPC]
-	void SetOverHeat(bool b, int weaponOffset){
+	void SetOverHeat(bool b, int weaponOffset){//let other player know if shield overheat
 		is_overheat [weaponOffset] = b;
 	}
 
@@ -1145,9 +1164,8 @@ public class MechCombat : Combat {
 	string animationString(int handPosition) {
 		switch(curGeneralWeaponTypes[weaponOffset + handPosition]){
 		case (int)GeneralWeaponTypes.RCL:
-			return "RCLShoot";
 		case (int)GeneralWeaponTypes.BCN:
-			return "BCNShoot";
+			return weaponScripts [weaponOffset + handPosition].Animation;
 		case (int)GeneralWeaponTypes.EMPTY:
 			return "";
 		default:

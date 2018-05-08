@@ -362,7 +362,7 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	void FixedUpdate(){
-		if(!GameIsBegin){
+        if (!GameIsBegin){
 			if(currentTimer <= GameBeginTime){
 				SetGameBegin ();
 				hud.ShowWaitOtherPlayer (false);

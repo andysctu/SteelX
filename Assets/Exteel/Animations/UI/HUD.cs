@@ -9,6 +9,7 @@ public class HUD : MonoBehaviour {
 	[SerializeField] Sprite Hit, Kill, Defense, GameOver;
 	[SerializeField] GameObject WaitOtherPlayer;
 	[SerializeField] GameObject GameStart;
+    [SerializeField] Text Ping;
 
 	public void ShowText(Camera cam, Vector3 p, string Text) {
 		GameObject i = Instantiate(Placeholder, cam.WorldToScreenPoint(p), Quaternion.identity) as GameObject;
@@ -30,6 +31,20 @@ public class HUD : MonoBehaviour {
 		if (Text != "GameOver") Destroy(i, 0.5f);
 	}
 
+    public void ShowMultipleHitMsg(Camera cam, Transform target, Vector3 offset, string msg, int times, float interval)
+    {
+        StartCoroutine(MultipleHitMsg(cam, target, offset, msg, times, interval));
+    }
+
+    IEnumerator MultipleHitMsg(Camera cam, Transform target, Vector3 offset, string msg, int times, float interval)
+    {
+        for(int i = 0; i < times; i++)
+        {
+            ShowText(cam, target.position + offset, msg);
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
 	public void ShowWaitOtherPlayer(bool b){
 		if(b){
 			WaitOtherPlayer.SetActive (true);
@@ -41,4 +56,9 @@ public class HUD : MonoBehaviour {
 	public void ShowGameStart(){
 		GameStart.SetActive(true);
 	}
+
+    private void FixedUpdate()
+    {
+        Ping.text = "Ping : " + PhotonNetwork.GetPing();
+    }
 }

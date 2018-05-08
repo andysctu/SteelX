@@ -6,7 +6,7 @@
 		radius = 2f;
 		isTwoHanded = true;
 		isSlowDown = true;
-		Animation = "ShootRCL";
+		Animation = "RCLShoot";
 	}
 }
 
