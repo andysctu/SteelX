@@ -69,20 +69,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cb4bb06fb89a42daa1f25bfbcd1a824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletImpact_onShield: {fileID: 0}
   bulletImpact: {fileID: 1854620981243150, guid: 6db1d23db654eb8449eab0ab8a694b97,
     type: 2}
-  HUD: {fileID: 0}
-  cam: {fileID: 0}
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 8
   Terrain:
     serializedVersion: 2
     m_Bits: 10
-  direction: {x: 0, y: 0, z: 0}
-  ShooterName: 
-  isTargetShield: 0
-  isLMG: 0
 --- !u!198 &198615941964575300
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -90,7 +82,7 @@ ParticleSystem:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1089007466238554}
   serializedVersion: 5
-  lengthInSec: 0.5
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   looping: 1
@@ -150,7 +142,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 2
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -233,7 +225,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.007352948, g: 0.38689458, b: 1, a: 1}
+      maxColor: {r: 1, g: 0.24264705, b: 0.50902635, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -703,7 +695,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 200
+      scalar: 20
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1037,7 +1029,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 1
   ColorModule:
-    enabled: 0
+    enabled: 1
     gradient:
       serializedVersion: 2
       minMaxState: 1
@@ -1046,7 +1038,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 0.9705882, g: 0, b: 0, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}

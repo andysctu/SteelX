@@ -45,6 +45,7 @@ public class MechCombat : Combat {
 	private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
 	private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
 	private bool isBCNcanceled = false;//check if right click cancel
+    private const float APS_INTERVAL = 0.2f, LMG_INTERVAL = 0.2f; 
 
 	// Left
 	private const int LEFT_HAND = 0;
@@ -424,26 +425,43 @@ public class MechCombat : Combat {
 				bullet.GetComponent<ElectricBolt> ().Target = Target.transform;
 			}
 		}else {
-			int bN = 4;
+            int bulletNum;
+            float interval;
+			switch(curSpecialWeaponTypes[weaponOffset + handPosition])
+            {
+                case (int)SpecialWeaponTypes.APS:
+                    bulletNum = 4;
+                    interval = APS_INTERVAL;
+                    break;
+                case (int)SpecialWeaponTypes.LMG:
+                    bulletNum = 6;
+                    interval = LMG_INTERVAL;
+                    break;
+                default:
+                    bulletNum = 1;
+                    interval = 1;
+                    break;
+                   
+            }
 			GameObject b = bullets [weaponOffset + handPosition];
             MechCombat mcbt = (Target==null)? null : Target.transform.root.GetComponent<MechCombat>();
 
             if (photonView.isMine){
-				crosshairImage.ShakingEffect (handPosition, bm.weaponScripts [weaponOffset + handPosition].Rate, bN);
+				crosshairImage.ShakingEffect (handPosition, bm.weaponScripts [weaponOffset + handPosition].Rate, bulletNum);
                 if (Target!=null && !CheckTargetIsDead(Target))
                 {
                     if (!isShield)
                     {
-                        hud.ShowMultipleHitMsg(cam, Target.transform, new Vector3(0, 5, 0), "Hit", bN, 0.25f);
+                        hud.ShowMultipleHitMsg(cam, Target.transform, new Vector3(0, 5, 0), "Hit", bulletNum, 0.25f);
                     }
                     else{
-                        hud.ShowMultipleHitMsg(cam, (mcbt != null) ? mcbt.Hands[hand_shield] : Target.transform.root.GetComponent<DroneCombat>().Hands[hand_shield], Vector3.zero,"Defense", bN, 0.25f);
+                        hud.ShowMultipleHitMsg(cam, (mcbt != null) ? mcbt.Hands[hand_shield] : Target.transform.root.GetComponent<DroneCombat>().Hands[hand_shield], Vector3.zero,"Defense", bulletNum, interval);
                     }
                 }
 			}
 
             
-			for (int i = 0; i < bN; i++) {
+			for (int i = 0; i < bulletNum; i++) {
 				GameObject bullet = Instantiate (b , Gun_ends[weaponOffset+handPosition].position, Quaternion.LookRotation (direction)) as GameObject;
 				BulletTrace bulletTrace = bullet.GetComponent<BulletTrace> ();
                 bulletTrace.SetCamera(cam);
@@ -462,7 +480,7 @@ public class MechCombat : Combat {
                     bulletTrace.SetTarget(null, false);
                 }
 
-				yield return new WaitForSeconds (1/bm.weaponScripts[weaponOffset + handPosition].Rate/bN);
+				yield return new WaitForSeconds (1/bm.weaponScripts[weaponOffset + handPosition].Rate/ bulletNum);
 			}
 		}
 	}

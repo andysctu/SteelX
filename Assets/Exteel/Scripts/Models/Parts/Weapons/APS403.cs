@@ -2,7 +2,7 @@
 	public APS403() {
 		Damage = 135;
 		Range = 100;
-		Rate = 1;
+		Rate = 1.66f;
 		radius = 6f;
 	}
 }

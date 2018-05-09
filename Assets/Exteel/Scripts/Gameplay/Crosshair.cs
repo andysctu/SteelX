@@ -73,7 +73,7 @@ public class Crosshair : MonoBehaviour {
 		}
 	}
 	public void UpdateCrosshair(){
-		weaponScripts = bm.weaponScripts;//sometimes it's null, don't know why
+		weaponScripts = bm.weaponScripts;
 
 		CrosshairRadiusL = weaponScripts [mcbt.weaponOffset].radius;
 		CrosshairRadiusR = weaponScripts [mcbt.weaponOffset+1].radius;
@@ -82,7 +82,7 @@ public class Crosshair : MonoBehaviour {
 
 		isENG_L = (weaponScripts [mcbt.weaponOffset].Animation == "ENGShoot");
 		isENG_R = (weaponScripts [mcbt.weaponOffset + 1].Animation == "ENGShoot");
-		isRCL = (weaponScripts [mcbt.weaponOffset].Animation == "ShootRCL");
+		isRCL = (weaponScripts [mcbt.weaponOffset].Animation == "RCLShoot");
 
 		isTargetAllyL = isENG_L;
 		isTargetAllyR = isENG_R;

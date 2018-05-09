@@ -3989,6 +3989,9 @@ MonoBehaviour:
   displayPlayerInfo: {fileID: 2101929232}
   crosshairImage: {fileID: 262239217}
   EffectController: {fileID: 2072591068}
+  playerlayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   jumpPower: 70
   moveSpeed: 30
   minBoostSpeed: 50
@@ -4002,6 +4005,7 @@ MonoBehaviour:
   cooldown: 16
   BCNbulletNum: 0
   isOnBCNPose: 0
+  weaponOffset: 0
   isLMeleePlaying: 0
   isRMeleePlaying: 0
   CanMeleeAttack: 1
@@ -4095,6 +4099,7 @@ MonoBehaviour:
   mechCamera: {fileID: 961498331}
   Sounds: {fileID: 1887434909}
   EffectController: {fileID: 2072591068}
+  camTransform: {fileID: 0}
   CharacterController: {fileID: 49186763}
   Terrain:
     serializedVersion: 2
@@ -4102,12 +4107,13 @@ MonoBehaviour:
   Gravity: 4.5
   maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
-  xSpeed: 0
-  ySpeed: 0
-  zSpeed: 0
+  lerpCam_coeff: 5
   grounded: 1
-  jump: 0
   on_BCNShoot: 0
+  cam_lerpSpeed: 10
+  LocalxOffset: -4
+  cam_orbitradius: 19
+  cam_angleoffset: 33
 --- !u!143 &49186763
 CharacterController:
   m_ObjectHideFlags: 0
@@ -11317,6 +11323,52 @@ Transform:
   m_Father: {fileID: 58577993}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &144293707
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 2.448267
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 5.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 18.915056
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4929633210940460, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1089007466238554, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 4dc398f818ee4cd48b534a7bff5a72d1, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &149661080
 GameObject:
   m_ObjectHideFlags: 0
@@ -31502,6 +31554,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   Sounds: {fileID: 1887434909}
+  mcbt: {fileID: 0}
   Targets: []
   MaxDistanceL: 0
   MaxDistanceR: 0
@@ -31517,13 +31570,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e209798f836304cfabd478f5db070121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentMech: {fileID: 1887434908}
+  animator: {fileID: 0}
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
   lockPlayerRot: 0
   lockCamRot: 0
-  currentMech: {fileID: 1887434908}
   orbitRadius: 19
+  lerpFakePosSpeed: 12
   angleOffset: 33
 --- !u!81 &961498332
 AudioListener:
@@ -36162,11 +36217,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9ada891e76aaa48a1a80e6e442858a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  User: {fileID: 49186752}
   cam: {fileID: 961498331}
   boxCollider: {fileID: 1424779055}
   mctrl: {fileID: 49186762}
-  is_lookingUp: 0
+  User: {fileID: 49186752}
 --- !u!65 &1424779055
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -59084,6 +59138,8 @@ MonoBehaviour:
   Target: {fileID: 1629524919}
   PoleTarget: {fileID: 0}
   AimTransform: {fileID: 0}
+  weight: 1
+  Knob: {fileID: 0}
 --- !u!114 &1887434916
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59108,14 +59164,14 @@ MonoBehaviour:
   speed_id: 0
   direction_id: 0
   onMelee_id: 0
-  SlashL_id: 0
-  SlashL2_id: 0
-  SlashL3_id: 0
-  SlashL4_id: 0
-  SlashR_id: 0
-  SlashR2_id: 0
-  SlashR3_id: 0
-  SlashR4_id: 0
+  slashL_id: 0
+  slashL2_id: 0
+  slashL3_id: 0
+  slashL4_id: 0
+  slashR_id: 0
+  slashR2_id: 0
+  slashR3_id: 0
+  slashR4_id: 0
   BCNPose_id: 0
   OnBCN_id: 0
   inHangar: 0
@@ -59165,13 +59221,7 @@ Animator:
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed by
-    Humanoid clips.\n\tTransform 'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tTransform
-    'f_pinky.03.L'\n\tTransform 'f_pinky.01.R'\n\tTransform 'f_pinky.02.L'\n\tTransform
-    'palm.04.L'\n\tTransform 'f_pinky.03.R'\n\tTransform 'f_pinky.01.L'\n\tTransform
-    'palm.04.R'\n\tTransform 'f_pinky.02.R'\n\tand more ...\n\tFrom animation clip
-    'BlockR'"
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
 --- !u!4 &1887434920
@@ -63130,9 +63180,11 @@ MonoBehaviour:
   switchWeaponEffectR: {fileID: 1468393092}
   boostingDust: {fileID: 819831875}
   respawnEffect: {fileID: 1638392936}
+  shieldOnHit: {fileID: 0}
   Sounds: {fileID: 1887434909}
   Animator: {fileID: 1887434919}
   AnimatorVars: {fileID: 1887434916}
+  Hands: []
 --- !u!4 &2072591069
 Transform:
   m_ObjectHideFlags: 0

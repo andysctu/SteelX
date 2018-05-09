@@ -2,14 +2,13 @@
 
 public class BulletImpact : MonoBehaviour {
 
-	public AudioClip ImpactSound;
+    public AudioClip ImpactSound;
 
-    private void Start()
-    {
+    private void Start() {
+        PlayHitSound(transform.position);
         Destroy(gameObject, 2);
     }
-    public void PlayHitSound(Vector3 intersection)
-    {
+    void PlayHitSound(Vector3 intersection) {
         if (ImpactSound != null)
             AudioSource.PlayClipAtPoint(ImpactSound, intersection);
     }
