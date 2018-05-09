@@ -4,75 +4,73 @@ using System;
 
 public class RCLBulletTrace : MonoBehaviour {
 
-	public GameObject bulletImpact;
-	private GameObject bulletImpact_onShield;
+	[SerializeField]private GameObject bulletImpact_onShield, bulletImpact;
+    [SerializeField]private LayerMask playerLayer, terrain;
+    [SerializeField]private int bulletdmg = 450;
+    [SerializeField]private float bulletSpeed = 200, impact_radius = 6;
 
-	public HUD hud;
-	public Camera cam;
-	public GameObject Shooter;
+    private ParticleSystem ps;
+    private PhotonView shooter_pv, bullet_pv;
+    private HUD hud;
+    private Camera cam;
+    private GameObject shooter;
+    private Transform target;
+    private int shooter_viewID;
 
-	private int ShooterID; // for efficiency
-	[SerializeField]
-	private LayerMask PlayerlayerMask;
-	[SerializeField]
-	private PhotonView pv;
-	private int bulletdmg = 450;
-
-	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1] ;
-	private Transform Target;
-	private float bulletSpeed = 200;
-	private bool isCollided = false;
-	ParticleSystem ps ;
-
-	void Awake(){
-		bulletImpact_onShield = Resources.Load ("HitShieldEffect") as GameObject;
-	}
+	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1] ;	
+	private bool isCollided = false, hasCalledPlayImpact = false;
+    private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
 
 	void Start () {
-		ps = GetComponent<ParticleSystem>();
-		ps.Play();
-		ShooterID = Shooter.GetComponent<PhotonView> ().viewID;
-		GetComponent<Rigidbody> ().velocity = transform.forward * bulletSpeed;
-		Destroy(gameObject, 2f);
+        InitComponents();        
+        InitVelocity();
+
+        ps.Play();
+        Destroy(gameObject, 2f);
 	}
 
-	void OnParticleCollision(GameObject other){
-		if (isCollided || other == Shooter)
+    void InitComponents() {
+        ps = GetComponent<ParticleSystem>();
+        bullet_pv = GetComponent<PhotonView>();
+    }
+
+    void InitVelocity() {
+        GetComponent<Rigidbody>().velocity = transform.forward * bulletSpeed;
+    }
+
+    public void SetShooterInfo(GameObject shooter, HUD hud, Camera cam) {
+        this.shooter = shooter;
+        this.hud = hud;
+        this.cam = cam;
+        shooter_pv = shooter.GetComponent<PhotonView>();
+        shooter_viewID = shooter_pv.viewID;
+    }
+
+	void OnParticleCollision(GameObject other){//player do the logic ; master destroy this 
+		if (isCollided || shooter_pv==null || other == shooter)
 			return;
 		
 		if(GameManager.isTeamMode){
-			if (other.layer == 8) {
-				print (other.transform.root.GetComponent<PhotonView> ().owner.GetTeam () +" "+ Shooter.GetComponent<PhotonView> ().owner.GetTeam ());
-				if (other.tag == "Drone" || other.transform.root.GetComponent<PhotonView> ().owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
+			if (((1<<other.layer)&playerLayer) != 0) {//check if other.layer equals player layer
+				if (other.tag == "Drone" || other.transform.root.GetComponent<PhotonView> ().owner.GetTeam () == shooter_pv.owner.GetTeam ())
 					return;
 			}
 		}	
 
-		isCollided = true;
-		ps.Stop ();
-		GetComponent<ParticleSystem> ().GetCollisionEvents (other, collisionEvents);
-		Vector3 collisionHitLoc = collisionEvents[0].intersection;
 
-		//pv.RPC ("CallPlayImpact", PhotonTargets.All, collisionHitLoc);
+        isCollided = true;
+        GetComponent<ParticleSystem>().GetCollisionEvents(other, collisionEvents);
+        Vector3 impact_point = collisionEvents[0].intersection;
 
-		GameObject BI;
-		if(other.tag == "Shield"){
-			BI = Instantiate (bulletImpact_onShield, collisionHitLoc, Quaternion.identity);
-		}else{
-			BI = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-		}
-		BI.transform.LookAt (cam.transform);
-		BI.GetComponent<ParticleSystem> ().Play ();//play bullet impact
-
-		Collider[] hitColliders = Physics.OverlapSphere(collisionHitLoc, 6f, PlayerlayerMask); // get overlap targets
+        Collider[] hitColliders = Physics.OverlapSphere(impact_point, impact_radius, playerLayer); // get overlap targets
 		//sort the distance to increasing order
 		Array.Sort (hitColliders, delegate (Collider A, Collider B) {
 			Vector3 A_midpoint,B_midpoint;
 
-			A_midpoint = (A.tag!="Shield")? A.transform.position + new Vector3(0,5,0) : A.transform.position;//player mid point
-			B_midpoint = (B.tag!="Shield")? B.transform.position + new Vector3(0,5,0) : B.transform.position;//player mid point
+			A_midpoint = (A.tag!="Shield")? A.transform.position + MECH_MID_POINT : A.transform.position;
+			B_midpoint = (B.tag!="Shield")? B.transform.position + MECH_MID_POINT : B.transform.position;
 
-			return (Vector3.Distance(A_midpoint,collisionHitLoc) >= Vector3.Distance(B_midpoint,collisionHitLoc))? 1 : -1;
+			return (Vector3.Distance(A_midpoint,impact_point) >= Vector3.Distance(B_midpoint,impact_point))? 1 : -1;
 		});
 
 		List<int> colliderViewIds = new List<int> ();
@@ -81,60 +79,64 @@ public class RCLBulletTrace : MonoBehaviour {
 		{
 			//check duplicated
 			PhotonView colliderPV = hitColliders [i].transform.root.GetComponent<PhotonView> ();
-			if(colliderViewIds.Contains(colliderPV.viewID)){
+			if(colliderViewIds.Contains(colliderPV.viewID) || colliderPV.viewID == shooter_viewID) {
 				continue;
-			}else{
-				if(GameManager.isTeamMode){
-					//PhotonView pv = other.GetComponent<PhotonView> ();
-					if (other.tag == "Drone" || colliderPV.owner.GetTeam () == Shooter.GetComponent<PhotonView> ().owner.GetTeam ())
-						continue;
-				}
+            } 
 
-				colliderViewIds.Add (colliderPV.viewID);
+            //check team & drone
+			if(GameManager.isTeamMode){
+				if (other.tag == "Drone" || colliderPV.owner.GetTeam () == shooter_pv.owner.GetTeam ())
+					continue;
 			}
+			colliderViewIds.Add (colliderPV.viewID);
 
-			if(colliderPV.viewID!=ShooterID){
+            if (hitColliders [i].tag == "Shield") {//TODO : check if shield overheat
 
-				if (hitColliders [i].tag == "Shield") {
-					
-					if (Shooter.GetComponent<PhotonView> ().isMine) {
-						if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP () - bulletdmg / 2 <= 0) {
-							hud.ShowText (cam, hitColliders [i].transform.position, "Kill");
-						} else {
-							hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
-						}
-						int hand = (hitColliders[i].transform.parent.name [hitColliders[i].transform.parent.name.Length - 1] == 'L') ? 0 : 1;
-						hitColliders [i].transform.root.GetComponent<PhotonView> ().RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, ShooterID, hand, "RCL"); 
-					}
-
+				if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP () - bulletdmg / 2 <= 0) {
+					hud.ShowText (cam, hitColliders [i].transform.position, "Kill");
 				} else {
-					//hitColliders [i].transform.root.GetComponent<Transform> ().position += transform.forward * 5f;  
-					//colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
-
-					if (Shooter.GetComponent<PhotonView> ().isMine) {
-
-						//colliderPV.RPC ("ForceMove", PhotonTargets.All, transform.forward, 5f);
-
-						if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP () - bulletdmg <= 0) {
-							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Kill");
-						} else {
-							hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
-						}
-						hitColliders [i].GetComponent<PhotonView> ().RPC ("OnHit", PhotonTargets.All, bulletdmg, ShooterID, "RCL", true); 
-
-					}else if(colliderPV.isMine){
-						colliderPV.RPC ("KnockBack", PhotonTargets.All, transform.forward, 5f);
-					}
+					hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 				}
-			}
+				int hand = (hitColliders[i].transform.parent.name [hitColliders[i].transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+                colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, shooter_viewID, hand, "RCL");
+
+                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
+			} else {
+				if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP () - bulletdmg <= 0) {
+					hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Kill");
+				} else {
+					hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
+				}
+                colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_viewID, "RCL", true);
+                colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);
+
+                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position + MECH_MID_POINT, cam.transform.position, false);
+            }            
 		}
+
+        if (colliderViewIds.Count == 0) {//if no target is hit , then play impact on ground
+            bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, impact_point, cam.transform.position, false);
+        }
+    }
+
+	
+	[PunRPC]
+	void CallPlayImpact(Vector3 collisionHitLoc, Vector3 camPos, bool isShield){
+        if (!hasCalledPlayImpact) {
+            hasCalledPlayImpact = true;
+            ps.Clear();
+
+            if (PhotonNetwork.isMasterClient)
+                Invoke("DestroyThis", 5f);
+        }
+
+		GameObject impact = Instantiate ((isShield)? bulletImpact_onShield : bulletImpact, collisionHitLoc, Quaternion.identity);
+        impact.transform.LookAt(camPos);
+        impact.GetComponent<ParticleSystem> ().Play ();//play bullet impact
 	}
 
-	/*
-	[PunRPC]
-	void CallPlayImpact(Vector3 collisionHitLoc){
-		GameObject temp = Instantiate (bulletImpact, collisionHitLoc, Quaternion.identity);
-		temp.GetComponent<ParticleSystem> ().Play ();//play bullet impact
-	}
-	*/
+    void DestroyThis() {
+        PhotonNetwork.Destroy(gameObject);
+    }
+	
 }

@@ -55,7 +55,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1346241026468800}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -83.01837, y: 20, z: 16.206806}
+  m_LocalPosition: {x: 263.4, y: 2.7, z: -30.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4713573112347286}
@@ -101,15 +101,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbd6deb84fd72a14db87c289eb8942fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletImpact_onShield: {fileID: 1761321348719524, guid: a24d5b63ce4027a4d9f6a244126c5b1c,
+    type: 2}
   bulletImpact: {fileID: 1268594371034638, guid: bde2c2899e4dd7e4fa7607ccd378626d,
     type: 2}
-  hud: {fileID: 0}
-  cam: {fileID: 0}
-  Shooter: {fileID: 0}
-  PlayerlayerMask:
+  playerLayer:
     serializedVersion: 2
     m_Bits: 256
-  pv: {fileID: 114860107532845624}
+  terrain:
+    serializedVersion: 2
+    m_Bits: 1024
+  bulletdmg: 450
+  bulletSpeed: 200
 --- !u!114 &114860107532845624
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -151,7 +154,7 @@ ParticleSystem:
   playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 0
-  useRigidbodyForVelocity: 0
+  useRigidbodyForVelocity: 1
   startDelay:
     serializedVersion: 2
     minMaxState: 0
@@ -244,7 +247,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: -1
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -842,7 +845,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 10
+        scalar: 5
         minScalar: 0
         maxCurve:
           serializedVersion: 2
@@ -2728,7 +2731,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 0.48
+    radiusScale: 0.5
     collidesWith:
       serializedVersion: 2
       m_Bits: 4294964680
@@ -3602,7 +3605,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: -203648679
+  randomSeed: -1322905710
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -5916,7 +5919,7 @@ ParticleSystem:
   CollisionModule:
     enabled: 0
     serializedVersion: 3
-    type: 0
+    type: 1
     collisionMode: 0
     colliderForce: 0
     multiplyColliderForceByParticleSize: 0
@@ -6056,7 +6059,7 @@ ParticleSystem:
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 4294967292
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5

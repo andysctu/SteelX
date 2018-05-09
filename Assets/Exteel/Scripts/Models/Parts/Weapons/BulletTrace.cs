@@ -20,7 +20,7 @@ public class BulletTrace : MonoBehaviour {
 
     void Start() {
         initComponents();
-        SetInitVelocity();
+        initVelocity();
         ps.Play();
         Destroy(gameObject, 2f);
     }
@@ -30,7 +30,7 @@ public class BulletTrace : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
     }
 
-    void SetInitVelocity() {
+    void initVelocity() {
         if (target == null) {//no target => move directly
             GetComponent<Rigidbody>().velocity = cam.transform.forward * bulletSpeed;
             transform.LookAt(cam.transform.forward * 9999);
