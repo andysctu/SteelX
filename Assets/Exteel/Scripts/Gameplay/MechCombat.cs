@@ -152,7 +152,8 @@ public class MechCombat : Combat {
 
     void initGameObjects() {
         InRoomChat = GameObject.Find("InRoomChat").GetComponent<InRoomChat>();
-        hud = GameObject.FindObjectOfType<HUD>();
+        //hud = GameObject.FindObjectOfType<HUD>();
+        hud = GameObject.Find("ShowTextCanvas").GetComponent<HUD>();
         displayPlayerInfo.gameObject.SetActive(!photonView.isMine);//do not show my name & hp bar
     }
 
@@ -396,6 +397,8 @@ public class MechCombat : Combat {
 
         Target = (playerPVid != -1)? PhotonView.Find(playerPVid).gameObject : null;
 
+        yield return new WaitForSeconds(0.05f);//wait for hand on right position
+
         if (Muz[weaponOffset + handPosition] != null) {
             Muz[weaponOffset + handPosition].Play();
         }
@@ -495,7 +498,7 @@ public class MechCombat : Combat {
             return;
         }
 
-        if (isSlowDown && photonView.isMine) {
+        if (photonView.isMine && isSlowDown) {
             mechController.SlowDown();
         }
 
@@ -523,8 +526,10 @@ public class MechCombat : Combat {
             EffectController.ShieldOnHitEffect(shield);
         }
 
-        currentHP -= damage;
-        Debug.Log("HP: " + currentHP);
+        if(photonView.isMine)
+            currentHP -= damage;
+
+        //Debug.Log("HP: " + currentHP);
         if (currentHP <= 0) {
 
             DisablePlayer();
@@ -612,14 +617,14 @@ public class MechCombat : Combat {
             ch.NoAllCrosshairs();
             ch.enabled = false;
         }
-        GetComponent<MechController>().enabled = false;
+        mechController.enabled = false;
         EnableAllRenderers(false);
         EnableAllColliders(false);
 
-        gameObject.GetComponent<Collider>().enabled = true;
+        GetComponent<Collider>().enabled = true;
 
-        cam.transform.Find("Canvas/CrosshairImage").gameObject.SetActive(false);
-        cam.transform.Find("Canvas/HeatBar").gameObject.SetActive(false);
+        crosshairImage.gameObject.SetActive(false);
+        HeatBar.gameObject.SetActive(false);
 
         //transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
         //transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(false);
@@ -646,12 +651,12 @@ public class MechCombat : Combat {
         if (!photonView.isMine) return;
 
         // If this is me, enable MechController and Crosshair
-        GetComponent<MechController>().enabled = true;
-        Crosshair ch = GetComponentInChildren<Crosshair>();
+        mechController.enabled = true;
+        Crosshair ch = cam.GetComponent<Crosshair>();
         ch.enabled = true;
 
-        cam.transform.Find("Canvas/CrosshairImage").gameObject.SetActive(true);
-        cam.transform.Find("Canvas/HeatBar").gameObject.SetActive(true);
+        crosshairImage.gameObject.SetActive(true);
+        HeatBar.gameObject.SetActive(true);
 
         //transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(true);
         //transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(true);

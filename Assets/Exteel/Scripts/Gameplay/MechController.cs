@@ -19,14 +19,10 @@ public class MechController : Photon.MonoBehaviour {
 	private GameManager gm;
 	private BoosterController BoosterController;
 
-	private bool isHorizBoosting = false;
-	private bool isVertBoosting = false;
-
 	private float runDir_coeff = 3,runDecel_rate = 0.5f;
 	private float curboostingSpeed;//global space
 	private Vector2 xzDir;
 	private Vector2 run_xzDir;
-	private bool startBoosting = false;
 	private float marginOfError = 0.1f;
 	private Vector3 move = Vector3.zero;
 
@@ -35,16 +31,13 @@ public class MechController : Photon.MonoBehaviour {
 	private const float slowDownDuration = 0.3f;
 	private Coroutine coroutine = null;
 
-	private Vector3 originalCamPos;
-
-	private float characterControllerSpeed;
 	private float instantMoveSpeed, curInstantMoveSpeed;
 	private Vector3 instantMoveDir;
 	private bool canVerticalBoost = false, getJumpWhenSlash;
 	private float v_boost_start_yPos;
 	private float v_boost_upperbound ;
 	private float boostStartTime = 0;//this is for jump delay
-	private float slashTeleportMinDistance = 5f;
+	private float slashTeleportMinDistance = 3f;
 
 	// Animation
 	private float speed;
@@ -59,8 +52,7 @@ public class MechController : Photon.MonoBehaviour {
 	public bool on_BCNShoot = false;
 	public float cam_lerpSpeed = 10, LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
-
-	void Start () {
+    void Start () {
 		initComponents();
 		initControllerVar ();
 		FindBoosterController ();
@@ -92,7 +84,6 @@ public class MechController : Photon.MonoBehaviour {
 		mechCamera.SetLerpFakePosSpeed (cam_lerpSpeed);
 		mechCamera.orbitRadius = radius;
 		mechCamera.angleOffset = offset;
-		originalCamPos = camTransform.localPosition;
 	}
 
 	void Update () {

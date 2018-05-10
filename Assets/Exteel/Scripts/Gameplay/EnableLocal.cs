@@ -1,44 +1,40 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
 
 public class EnableLocal : MonoBehaviour {
 
-	[SerializeField]Canvas canvas;//setting the screen space
-	[SerializeField]Camera cam;
-	// Use this for initialization
-	void Start () {
+	[SerializeField] private Camera cam;
+    private Canvas canvas;//setting the screen space
+
+    void Start () {
 
 		if (!GetComponent<PhotonView> ().isMine)
 			return;
+
 		// Enable mech controller
 		GetComponent<MechController>().enabled = true;
 
 		// Enable camera/radar
 		foreach (Camera c in GetComponentsInChildren<Camera>()){
-				c.enabled = true;
+			c.enabled = true;
 		}
 
-		canvas = GameObject.Find("PanelCanvas").GetComponent<Canvas>();
+        GameObject PanelCanvas = GameObject.Find("PanelCanvas");
+        if (PanelCanvas != null) {
+            canvas = PanelCanvas.GetComponent<Canvas>();
+            canvas.worldCamera = cam;
+            canvas.planeDistance = 1;
+        } else {
+            Debug.LogError("Can't find PanelCanvas");
+        }
 
-		GetComponentInChildren<MechCamera>().enabled = true;
+        cam.GetComponent<MechCamera>().enabled = true;
 		GetComponentInChildren<AudioListener> ().enabled = true;
-//		GetComponent<NameTags>().enabled = true;
-//		GetComponentInChildren<AudioListener>().enabled = true;
-		// Enable crosshair
-		GetComponentInChildren<Crosshair>().enabled = true;
-		//GetComponentInChildren<HeatBar> ().enabled = true;
-		transform.Find ("Camera/Canvas/HeatBar").GetComponent<HeatBar> ().enabled = true;
 
-		canvas.worldCamera = cam;
-		canvas.planeDistance = 1;
-		
-		GameObject crossHairImage = transform.Find("Camera/Canvas/CrosshairImage").gameObject;
+        cam.GetComponent<Crosshair>().enabled = true;
+
+        cam.transform.Find("Canvas/HeatBar").gameObject.SetActive(true);
+
+        GameObject crossHairImage = cam.transform.Find("Canvas/CrosshairImage").gameObject;
 		crossHairImage.SetActive(true);
-		GameObject HeatBar = transform.Find("Camera/Canvas/HeatBar").gameObject;
-		HeatBar.SetActive (true);
-
-		// Disable your own cube
-//		transform.Find("Cube").gameObject.SetActive(false);
 	}
 }

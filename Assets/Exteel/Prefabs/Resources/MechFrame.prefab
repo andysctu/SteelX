@@ -676,8 +676,6 @@ GameObject:
   - component: {fileID: 11436158}
   - component: {fileID: 11422958}
   - component: {fileID: 11445986}
-  - component: {fileID: 95000010712001338}
-  - component: {fileID: 114000010080436828}
   - component: {fileID: 114000012410893822}
   - component: {fileID: 114718916726667884}
   - component: {fileID: 114365142493992942}
@@ -2955,7 +2953,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ca87e29fb2ce47b3be85f2139582c1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
   cam: {fileID: 2087740}
 --- !u!114 &11445986
 MonoBehaviour:
@@ -5605,23 +5602,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!95 &95000010712001338
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!102 &102478876017525726
 TextMesh:
   serializedVersion: 3
@@ -5715,21 +5695,6 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &114000010080436828
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters: []
-  m_SynchronizeLayers: []
 --- !u!114 &114000010656035922
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5971,6 +5936,8 @@ MonoBehaviour:
   Target: {fileID: 4739413548255820}
   PoleTarget: {fileID: 0}
   AimTransform: {fileID: 0}
+  weight: 1
+  Knob: {fileID: 0}
 --- !u!114 &114123029246024616
 MonoBehaviour:
   m_ObjectHideFlags: 1

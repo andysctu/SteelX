@@ -134,13 +134,18 @@ public class BuildMech : Photon.MonoBehaviour {
 		findHands ();
 		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
 
-		//intentionally not checking if weapon is null 
 		for (int i = 0; i < parts.Length-4; i++) {
 			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
 		}
-			
-		// Create new array to store skinned mesh renderers 
-		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
+
+        //set weapons if null ( in offline )
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[5];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[5];
+
+        // Create new array to store skinned mesh renderers 
+        SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
 
 		Material[] materials = new Material[5];
 		for (int i = 0; i < 5; i++) {
@@ -179,6 +184,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
 
+    
 	private void initMechProperties(){
 		HP = EN = SP = MPU = 0;
 		ENOutputRate = 0;

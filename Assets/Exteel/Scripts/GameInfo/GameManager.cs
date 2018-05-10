@@ -38,7 +38,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	private bool showboard = false;
 	private HUD hud;
-	public Camera cam;
+	private Camera cam;
 	private MechCombat mcbt;
 	private bool gameEnding = false;
 	private bool OnSyncTimeRequest = false;
@@ -56,7 +56,7 @@ public class GameManager : Photon.MonoBehaviour {
 	private int sendTimes = 0;
 	private int respawnPoint;
 	private int playerfinishedloading = 0;
-	//debug
+	
 	public bool callEndGame = false;
 
 	private Dictionary<string, GameObject> playerScorePanels;
@@ -68,9 +68,6 @@ public class GameManager : Photon.MonoBehaviour {
 	private BuildMech mechBuilder;
 	float curtime;
 
-	//debug use
-	public bool FreezeTime = false;
-
 	//TODO : player can choose target frame rate
 	void Awake(){
 		Application.targetFrameRate = 60;//60:temp
@@ -78,11 +75,17 @@ public class GameManager : Photon.MonoBehaviour {
 
 	void Start() {
 		if (Offline) {
-			PhotonNetwork.offlineMode = true;
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.0");
+            PhotonNetwork.player.NickName = "Player1";
+            PhotonNetwork.offlineMode = true;
 			PhotonNetwork.CreateRoom("offline");
-			GameInfo.MaxKills = 1;
+			GameInfo.MaxKills = 100;
 			GameInfo.MaxTime = 1;
-		}
+            InstantiatePlayer(PlayerPrefab.name, RandomXZposition(SpawnPoints[0].position, 20), SpawnPoints[0].rotation, 0);
+            GameIsBegin = true;
+            hud.ShowWaitOtherPlayer(false);
+            return;
+        }
 		//Load game info
 		GameInfo.Map = PhotonNetwork.room.CustomProperties ["Map"].ToString();
 		GameInfo.GameMode = PhotonNetwork.room.CustomProperties ["GameMode"].ToString();
@@ -183,20 +186,31 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 
 	public void InstantiatePlayer(string name, Vector3 StartPos, Quaternion StartRot, int group){
+        Mech m;
+        if (Offline) {//TODO : comment this
+            m = new Mech();
+        } else {
+            m = UserData.myData.Mech[0];//default 0
+        }
 		player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
 		mechBuilder = player.GetComponent<BuildMech>();
-		Mech m = UserData.myData.Mech[0];//default 0
 		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
 
 		if(player.GetComponent<PhotonView>().isMine){
-			cam = player.transform.Find("Camera").GetComponent<Camera>();
-			hud = GameObject.Find("PanelCanvas").GetComponent<HUD>();
+            Transform cam_transform;
+            GameObject hud_GameObject;
+            cam_transform = player.transform.Find("Camera");
+            hud_GameObject = GameObject.Find("PanelCanvas");
+            cam = (cam_transform == null)? null : cam_transform.GetComponent<Camera>();
+			hud = (hud_GameObject == null) ? null : hud_GameObject.GetComponent<HUD>();
 			mcbt = player.GetComponent<MechCombat> ();
 		}
 	}
 		
 	public void RegisterPlayer(int viewID, int team) {
-		PhotonView pv = PhotonView.Find (viewID);
+        if (Offline) return;//TODO : comment this
+
+        PhotonView pv = PhotonView.Find (viewID);
 		string name;
 		if(viewID == 2){//Drone
 			name = "Drone";
@@ -332,9 +346,10 @@ public class GameManager : Photon.MonoBehaviour {
 			}
 			Scoreboard.SetActive(Input.GetKey(KeyCode.CapsLock));
 		}
-	
 
-		if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Offline) return;//TODO : comment this
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 			PhotonNetwork.LeaveRoom();
@@ -352,13 +367,13 @@ public class GameManager : Photon.MonoBehaviour {
 			if (!OnSyncTimeRequest)
 				StartCoroutine (SyncTimeRequest(1f));
 		}
-		if (!FreezeTime) {//debug use
-			if (GameOver () && !gameEnding) {
-				if (PhotonNetwork.isMasterClient) {
-					photonView.RPC ("EndGame", PhotonTargets.All);
-				}
+
+		if (GameOver () && !gameEnding) {
+			if (PhotonNetwork.isMasterClient) {
+				photonView.RPC ("EndGame", PhotonTargets.All);
 			}
 		}
+		
 	}
 
 	void FixedUpdate(){

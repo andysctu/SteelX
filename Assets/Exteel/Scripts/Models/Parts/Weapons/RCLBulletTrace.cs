@@ -124,7 +124,8 @@ public class RCLBulletTrace : MonoBehaviour {
 	void CallPlayImpact(Vector3 collisionHitLoc, Vector3 camPos, bool isShield){
         if (!hasCalledPlayImpact) {
             hasCalledPlayImpact = true;
-            ps.Clear();
+            ps.Stop(true);
+            ps.Clear(true);
 
             if (PhotonNetwork.isMasterClient)
                 Invoke("DestroyThis", 5f);

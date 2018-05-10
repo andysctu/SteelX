@@ -5,22 +5,37 @@ using UnityEngine.UI;
 
 public class DisplayPlayerInfo : MonoBehaviour {
 	[SerializeField]private TextMesh textMesh;
-	[SerializeField]Canvas barcanvas;
-	[SerializeField]Image bar;
+	[SerializeField]private Canvas barcanvas;
+	[SerializeField]private Image bar;
 
-	MechCombat mcbt;
-	Camera cam;
-	GameObject player;
-	private string text ; //name
+    private MechCombat mcbt;
+    private DroneCombat drone_mcbt;
+    private Camera cam;
+    private GameObject player;
+	private string name_text ; //name
 	private float LastInitRequestTime;
 	private Color32 color_ally = new Color32 (223, 234, 11, 255);
+    private delegate int GetCurrentHp();//get mech or drone
+    private GetCurrentHp getCurrentHp, getCurrentMaxHp;
+
 	void Start () {
-		mcbt = transform.root.GetComponent<MechCombat> ();
-		text = transform.root.GetComponent<PhotonView> ().owner.NickName;
-		textMesh.text = text;
+        PhotonView pv = transform.root.GetComponent<PhotonView>();
+        mcbt = transform.root.GetComponent<MechCombat> ();
+
+        if (mcbt == null) {//drone
+            drone_mcbt = transform.root.GetComponent<DroneCombat>();
+            getCurrentHp = GetCurrentDroneHP;
+            getCurrentMaxHp = GetCurrentDroneMaxHP;
+        } else {//player
+            getCurrentHp = GetCurrentMechHP;
+            getCurrentMaxHp = GetCurrentMechMaxHP;
+        }
+
+        name_text = (pv.owner == null) ? "Drone"+Random.Range(0,999) : pv.owner.NickName;
+		textMesh.text = name_text;
 
 		if(GameManager.isTeamMode){
-			if(PhotonNetwork.player.GetTeam() != transform.root.GetComponent<PhotonView> ().owner.GetTeam()){
+			if(PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()){
 				bar.color = Color.red; //enemy
 				textMesh.color = Color.red; 
 			} else {
@@ -35,8 +50,11 @@ public class DisplayPlayerInfo : MonoBehaviour {
 	
 
 	void Update () {
-		if (cam != null) {
+		if (cam != null) {            
 			transform.LookAt (cam.transform);
+            Vector3 angle = transform.rotation.eulerAngles;
+           
+            transform.rotation = Quaternion.Euler(0, angle.y, angle.z);
 
 			//update scale
 			float distance = Vector3.Distance (transform.position, cam.transform.position);
@@ -52,6 +70,22 @@ public class DisplayPlayerInfo : MonoBehaviour {
 		}
 
 		//update bar value
-		bar.fillAmount = (float)mcbt.CurrentHP () / mcbt.GetMaxHp ();
+		bar.fillAmount = (float)getCurrentHp() / getCurrentMaxHp();
 	}
+
+    int GetCurrentMechHP() {
+        return mcbt.CurrentHP();
+    }
+
+    int GetCurrentMechMaxHP() {
+        return mcbt.GetMaxHp();
+    }
+
+    int GetCurrentDroneHP() {
+        return drone_mcbt.CurrentHP();
+    }
+
+    int GetCurrentDroneMaxHP() {
+        return drone_mcbt.CurrentHP();
+    }
 }

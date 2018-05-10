@@ -16,7 +16,6 @@ public class HUD : MonoBehaviour {
 		if (Text != "GameOver") i.GetComponent<HUDText>().Set(cam, p);
 		i.transform.SetParent(gameObject.transform);
 		Image im = i.GetComponent<Image>();
-
 		switch (Text) {
 		case "Hit": im.sprite = Hit; break;
 		case "Kill": im.sprite = Kill; break;

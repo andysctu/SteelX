@@ -8,7 +8,7 @@ public class DroneCombat : Combat {
 
 	private int default_layer = 0, player_layer = 8;
 	private EffectController EffectController;
-	// Use this for initialization
+
 	void Start () {
 		currentHP = MAX_HP;
 		EffectController = GetComponent<EffectController> ();
@@ -60,13 +60,6 @@ public class DroneCombat : Combat {
 			renderer.enabled = true;
 		}
 		currentHP = MAX_HP;
-	}
-
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetKeyDown(KeyCode.Z)) {
-			EnableDrone();
-		}
 	}
 
 	IEnumerator RespawnAfterTime(int time){

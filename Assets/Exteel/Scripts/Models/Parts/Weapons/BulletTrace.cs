@@ -39,6 +39,20 @@ public class BulletTrace : MonoBehaviour {
         }
     }
 
+    public void SetShooterName(string name) {
+        ShooterName = name;
+    }
+
+    public void SetCamera(Camera cam) {
+        this.cam = cam;
+    }
+
+    public void SetTarget(Transform target, bool isTargetShield) {
+        this.target = target;
+        this.isTargetShield = isTargetShield;
+        isfollow = (target != null);
+    }
+
     void Update() {
         if (!isfollow) {
             return;
@@ -82,19 +96,5 @@ public class BulletTrace : MonoBehaviour {
             impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
         }
         impact.GetComponent<ParticleSystem>().Play();
-    }
-
-    public void SetShooterName(string name) {
-        ShooterName = name;
-    }
-
-    public void SetCamera(Camera cam) {
-        this.cam = cam;
-    }
-
-    public void SetTarget(Transform target, bool isTargetShield) {
-        this.target = target;
-        this.isTargetShield = isTargetShield;
-        isfollow = (target != null);
     }
 }
