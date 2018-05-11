@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AnimatorVars : MonoBehaviour {
 
-	private Combo Combo;
+	private AnimationEventController AnimationEventController;
 
 	[HideInInspector]public CharacterController cc = null;
 	[HideInInspector]public MechController mctrl = null;
@@ -52,7 +52,7 @@ public class AnimatorVars : MonoBehaviour {
 		Sounds = GetComponent<Sounds> ();
 		mechIK = GetComponent<MechIK> ();
 		EffectController = transform.root.GetComponentInChildren<EffectController> ();
-		Combo = GetComponent<Combo> ();
+		AnimationEventController = GetComponent<AnimationEventController> ();
 	}
 
 	void HashAnimatorVars(){

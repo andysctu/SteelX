@@ -11,7 +11,7 @@ public class MechCamera : MonoBehaviour
 	private Vector3 m_TargetAngles;
 	private Vector3 m_FollowAngles;
 	private Vector3 m_FollowVelocity;
-	private Quaternion m_OriginalRotation, tempCurrentMechRot, tempCamRot;
+	private Quaternion m_OriginalRotation, tempCurrentMechRot;
 	private float inputH,inputV;
 	private float idealLocalAngle = 0,orbitAngle = 0;//this is cam local angle
 	private CharacterController parentCtrl;
@@ -21,7 +21,7 @@ public class MechCamera : MonoBehaviour
 	public Vector2 rotationRange = new Vector3(70, 70);
 	public float rotationSpeed = 5;
 	public float dampingTime = 0.2f;
-	public bool lockPlayerRot = false, lockCamRot = false;
+	public bool lockPlayerRot = false;
 	public float orbitRadius = 19, lerpFakePosSpeed = 12;
 	public float angleOffset = 33;
 
@@ -108,11 +108,6 @@ public class MechCamera : MonoBehaviour
 			tempCurrentMechRot = currentMech.transform.rotation;
 		}
 		lockPlayerRot = b;
-	}
-
-	public void LockCamRotation(bool b){
-		lockCamRot = b;
-		tempCamRot = transform.rotation;
 	}
 
 	public void SetLerpFakePosSpeed(float n){

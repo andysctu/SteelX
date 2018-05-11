@@ -89,10 +89,11 @@ public class BulletTrace : MonoBehaviour {
 
     void PlayImpact(Vector3 impactPoint) {
         GameObject impact;
+        Transform bulletCollector = transform.parent;
         if (!isTargetShield) {
-            impact = Instantiate(bulletImpact, impactPoint, Quaternion.identity);
+            impact = Instantiate(bulletImpact, impactPoint, Quaternion.identity, bulletCollector);
         } else {
-            impact = Instantiate(bulletImpact_onShield, target.position - target.forward * 2f, Quaternion.identity, target);
+            impact = Instantiate(bulletImpact_onShield, target.position - target.forward * 2f, Quaternion.identity, bulletCollector);
             impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
         }
         impact.GetComponent<ParticleSystem>().Play();

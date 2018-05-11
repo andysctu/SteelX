@@ -79,7 +79,6 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
 	void initCam(float radius, float offset){
-		mechCamera.LockCamRotation (false);
 		mechCamera.LockMechRotation (false);
 		mechCamera.SetLerpFakePosSpeed (cam_lerpSpeed);
 		mechCamera.orbitRadius = radius;

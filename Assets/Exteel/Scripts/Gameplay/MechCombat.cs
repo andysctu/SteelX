@@ -71,8 +71,8 @@ public class MechCombat : Combat {
     private Transform[] Gun_ends = new Transform[4];
 
     // GameObjects
-    private GameObject[] weapons;
-    private GameObject[] bullets;
+    private GameObject[] weapons, bullets;
+    private GameObject BulletCollector;//collect all bullets
     private List<Transform> targets;
     private InRoomChat InRoomChat;
     private Weapon[] weaponScripts;
@@ -93,7 +93,7 @@ public class MechCombat : Combat {
     private SlashDetector slashDetector;
     private MechController mechController;
     private Sounds Sounds;
-    private Combo Combo;
+    private AnimationEventController AnimationEventController;
     private ParticleSystem[] Muz = new ParticleSystem[4];
     private XWeaponTrail trailL, trailR;
 
@@ -151,6 +151,7 @@ public class MechCombat : Combat {
     }
 
     void initGameObjects() {
+        BulletCollector = GameObject.Find("BulletCollector");
         InRoomChat = GameObject.Find("InRoomChat").GetComponent<InRoomChat>();
         //hud = GameObject.FindObjectOfType<HUD>();
         hud = GameObject.Find("ShowTextCanvas").GetComponent<HUD>();
@@ -161,7 +162,7 @@ public class MechCombat : Combat {
         Transform currentMech = transform.Find("CurrentMech");
         Sounds = currentMech.GetComponent<Sounds>();
         AnimatorVars = currentMech.GetComponent<AnimatorVars>();
-        Combo = currentMech.GetComponent<Combo>();
+        AnimationEventController = currentMech.GetComponent<AnimationEventController>();
         animator = currentMech.GetComponent<Animator>();
         MechIK = currentMech.GetComponent<MechIK>();
         mechController = GetComponent<MechController>();
@@ -399,10 +400,6 @@ public class MechCombat : Combat {
 
         yield return new WaitForSeconds(0.05f);//wait for hand on right position
 
-        if (Muz[weaponOffset + handPosition] != null) {
-            Muz[weaponOffset + handPosition].Play();
-        }
-
         if (bullets[weaponOffset + handPosition] == null) {//it happens when player die when shooting or switching weapons
             yield break;
         }
@@ -411,12 +408,20 @@ public class MechCombat : Combat {
             //GameObject bullet = Instantiate(bullets[weaponOffset], (Hands[handPosition].position + Hands[handPosition + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(direction)) as GameObject;
             GameObject bullet = null;
             if (photonView.isMine) {
+                if (Muz[weaponOffset + handPosition] != null) {
+                    Muz[weaponOffset + handPosition].Play();
+                }
+
                 bullet = PhotonNetwork.Instantiate("RCL034B", (Hands[handPosition].position + Hands[handPosition + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(direction), 0);
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
                 bulletTrace.SetShooterInfo(gameObject, hud, cam);
             } else
                 yield break;
         } else if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.ENG) {
+            if (Muz[weaponOffset + handPosition] != null) {
+                Muz[weaponOffset + handPosition].Play();
+            }
+
             GameObject bullet = Instantiate(bullets[weaponOffset + handPosition], Gun_ends[weaponOffset + handPosition].position, Quaternion.LookRotation(direction)) as GameObject;
             bullet.transform.SetParent(Gun_ends[weaponOffset + handPosition]);
             bullet.GetComponent<ElectricBolt>().dir = direction;
@@ -458,7 +463,10 @@ public class MechCombat : Combat {
 
 
             for (int i = 0; i < bulletNum; i++) {
-                GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + handPosition].position, Quaternion.LookRotation(direction)) as GameObject;
+                if (Muz[weaponOffset + handPosition] != null) {
+                    Muz[weaponOffset + handPosition].Play();
+                }
+                GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + handPosition].position, Quaternion.LookRotation(direction), BulletCollector.transform) as GameObject;
                 BulletTrace bulletTrace = bullet.GetComponent<BulletTrace>();
                 bulletTrace.SetCamera(cam);
                 bulletTrace.SetShooterName(gameObject.name);
@@ -750,7 +758,7 @@ public class MechCombat : Combat {
             } else if (Input.GetKey(KeyCode.Mouse0) && !isBCNcanceled && !animator.GetBool(AnimatorVars.BCNPose_id) && mechController.grounded && !animator.GetBool("BCNLoad")) {
                 if (!is_overheat[weaponOffset]) {
                     if (!animator.GetBool(AnimatorVars.BCNPose_id)) {
-                        Combo.BCNPose();
+                        AnimationEventController.BCNPose();
                         animator.SetBool(AnimatorVars.BCNPose_id, true);
                         timeOfLastShotL = Time.time - 1 / bm.weaponScripts[weaponOffset + handPosition].Rate / 2;
                     }
@@ -888,9 +896,9 @@ public class MechCombat : Combat {
                 break;
                 case (int)GeneralWeaponTypes.MELEE:
                 if (curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.SHL)//sword
-                    Combo.Slash(handPosition);
+                    AnimationEventController.Slash(handPosition);
                 else//spear
-                    Combo.Smash(handPosition);
+                    AnimationEventController.Smash(handPosition);
                 break;
                 case (int)GeneralWeaponTypes.SHIELD:
                 animator.SetBool(animationStr, true);
