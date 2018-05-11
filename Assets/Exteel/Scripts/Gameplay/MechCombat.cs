@@ -1,21 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 using XftWeapon;
 using System.Linq;
 
 public class MechCombat : Combat {
 
-    [SerializeField] Transform camTransform;
-    [SerializeField] HeatBar HeatBar;
-    [SerializeField] DisplayPlayerInfo displayPlayerInfo;
-    [SerializeField] CrosshairImage crosshairImage;
-    [SerializeField] EffectController EffectController;
-    [SerializeField] LayerMask playerlayerMask;
+    [SerializeField]private Transform camTransform;
+    [SerializeField]private HeatBar HeatBar;
+    [SerializeField]private DisplayPlayerInfo displayPlayerInfo;
+    [SerializeField]private CrosshairImage crosshairImage;
+    [SerializeField]private EffectController EffectController;
+    [SerializeField]private LayerMask playerlayerMask;
+    private InRoomChat InRoomChat;
+
     enum GeneralWeaponTypes { RANGED, ENG, MELEE, SHIELD, RCL, BCN, EMPTY };
     enum SpecialWeaponTypes { APS, BRF, LMG, SGN, ENG, SHL, ADR, SHS, RCL, BCN, EMPTY };
+
     // Boost variables
     private float fuelDrain = 250.0f;
     private float fuelGain = 1000.0f;
@@ -45,7 +47,6 @@ public class MechCombat : Combat {
     private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
     private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
     private bool isBCNcanceled = false;//check if right click cancel
-    private const float APS_INTERVAL = 0.2f, LMG_INTERVAL = 0.2f;
 
     // Left
     private const int LEFT_HAND = 0;
@@ -70,11 +71,17 @@ public class MechCombat : Combat {
     private Transform head;
     private Transform[] Gun_ends = new Transform[4];
 
+
+    //Targets
+    private List<Transform> targets_in_collider;
+    private GameObject[] Targets;
+    private bool[] isTargetShield;
+    private int[] target_HandOnShield;
+    private Vector3[] bullet_directions;
+
     // GameObjects
     private GameObject[] weapons, bullets;
     private GameObject BulletCollector;//collect all bullets
-    private List<Transform> targets;
-    private InRoomChat InRoomChat;
     private Weapon[] weaponScripts;
 
     // HUD
@@ -105,8 +112,6 @@ public class MechCombat : Combat {
     private MovementClips MovementClips;
     private MechIK MechIK;
 
-    private Coroutine bulletCoroutine;
-
     //for Debug
     public bool forceDead = false;
 
@@ -120,6 +125,7 @@ public class MechCombat : Combat {
         initAnimatorControllers();
         initTransforms();
         initGameObjects();
+        initTargetProperties();
         initCam();
         initCrosshair();
         UpdateSpecialCurWeaponType();
@@ -157,6 +163,13 @@ public class MechCombat : Combat {
         hud = GameObject.Find("ShowTextCanvas").GetComponent<HUD>();
         displayPlayerInfo.gameObject.SetActive(!photonView.isMine);//do not show my name & hp bar
     }
+
+    void initTargetProperties() {
+        Targets = new GameObject[2];
+        isTargetShield = new bool[2];
+        target_HandOnShield = new int[2];
+        bullet_directions = new Vector3[2];
+}
 
     void initComponents() {
         Transform currentMech = transform.Find("CurrentMech");
@@ -290,21 +303,21 @@ public class MechCombat : Combat {
         }
     }
 
-    void FireRaycast(Vector3 start, Vector3 direction, int handPosition) {
-        Transform target = ((handPosition == 0) ? crosshair.getCurrentTargetL() : crosshair.getCurrentTargetR());//target might be shield collider
-        int damage = bm.weaponScripts[weaponOffset + handPosition].Damage;
+    void FireRaycast(Vector3 start, Vector3 direction, int hand) {
+        Transform target = ((hand == 0) ? crosshair.getCurrentTargetL() : crosshair.getCurrentTargetR());//target might be shield collider
+        int damage = bm.weaponScripts[weaponOffset + hand].Damage;
 
         if (target != null) {
             PhotonView targetpv = target.transform.root.GetComponent<PhotonView>();
             int target_viewID = targetpv.viewID;
-            string weaponName = bm.curWeaponNames[weaponOffset + handPosition];
+            string weaponName = bm.curWeaponNames[weaponOffset + hand];
 
-            if (curGeneralWeaponTypes[weaponOffset + handPosition] != (int)GeneralWeaponTypes.ENG) {
+            if (curGeneralWeaponTypes[weaponOffset + hand] != (int)GeneralWeaponTypes.ENG) {
                 if (target.tag != "Shield") {//not shield => player or drone
 
-                    photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target_viewID, false, -1);
+                    photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, false, -1);
 
-                    targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + handPosition].isSlowDown);
+                    targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + hand].isSlowDown);
 
                     if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
                         hud.ShowText(cam, target.position + new Vector3(0, 5, 0), "Kill");
@@ -313,42 +326,42 @@ public class MechCombat : Combat {
                     }
                 } else {
                     //check what hand is it
-                    int hand = target.parent.GetComponent<ShieldUpdater>().GetHand();
+                    int target_handOnShield = target.parent.GetComponent<ShieldUpdater>().GetHand();
 
-                    photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target_viewID, true, hand);
+                    photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, true, target_handOnShield);
 
                     MechCombat targetMcbt = target.transform.root.GetComponent<MechCombat>();
 
                     if (targetMcbt != null) {
-                        if (targetMcbt.is_overheat[targetMcbt.weaponOffset + hand]) {
-                            targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, hand, weaponName);
+                        if (targetMcbt.is_overheat[targetMcbt.weaponOffset + target_handOnShield]) {
+                            targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, target_handOnShield, weaponName);
                         } else {
-                            targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, hand, weaponName);
+                            targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, target_handOnShield, weaponName);
                         }
                     }
 
                     hud.ShowText(cam, target.position, "Defense");
                 }
             } else {//ENG
-                photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target_viewID, false, -1);
+                photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, false, -1);
 
                 targetpv.RPC("OnHeal", PhotonTargets.All, photonView.viewID, damage);
 
                 hud.ShowText(cam, target.position, "Hit");
             }
         } else {
-            photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, -1, false, -1);
+            photonView.RPC("Shoot", PhotonTargets.All, hand, direction, -1, false, -1);
         }
     }
 
-    public void SlashDetect(int handPosition) {
-        if ((targets = slashDetector.getCurrentTargets()).Count != 0) {
+    public void SlashDetect(int hand) {
+        if ((targets_in_collider = slashDetector.getCurrentTargets()).Count != 0) {
 
-            int damage = bm.weaponScripts[weaponOffset + handPosition].Damage;
-            string weaponName = bm.curWeaponNames[weaponOffset + handPosition];
-            Sounds.PlaySlashOnHit(weaponOffset + handPosition);
+            int damage = bm.weaponScripts[weaponOffset + hand].Damage;
+            string weaponName = bm.curWeaponNames[weaponOffset + hand];
+            Sounds.PlaySlashOnHit(weaponOffset + hand);
 
-            foreach (Transform target in targets) {
+            foreach (Transform target in targets_in_collider) {
                 if (target == null) {//it causes bug if target disconnect
                     continue;
                 }
@@ -370,8 +383,8 @@ public class MechCombat : Combat {
                 }
 
                 if (isHitShield) {
-                    int hand = t.transform.parent.GetComponent<ShieldUpdater>().GetHand();//which hand holds the shield?
-                    target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, hand, weaponName);
+                    int target_handOnShield = t.transform.parent.GetComponent<ShieldUpdater>().GetHand();//which hand holds the shield?
+                    target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, target_handOnShield, weaponName);
                 } else {
                     target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, true);
                 }
@@ -389,104 +402,123 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    void RegisterBulletTrace(int handPosition, Vector3 direction, int playerPVid, bool isShield, int hand_shield) {
-        bulletCoroutine = StartCoroutine(InstantiateBulletTrace(handPosition, direction, playerPVid, isShield, hand_shield));
-    }
+    void Shoot(int hand, Vector3 direction, int playerPVid, bool isShield, int target_handOnShield) {
+        SetTargetInfo(hand, direction, playerPVid, isShield, target_handOnShield);
+        string clipName = "";
 
-    IEnumerator InstantiateBulletTrace(int handPosition, Vector3 direction, int playerPVid, bool isShield, int hand_shield) {
-        GameObject Target;
-
-        Target = (playerPVid != -1)? PhotonView.Find(playerPVid).gameObject : null;
-
-        yield return new WaitForSeconds(0.05f);//wait for hand on right position
-
-        if (bullets[weaponOffset + handPosition] == null) {//it happens when player die when shooting or switching weapons
-            yield break;
+        switch (curSpecialWeaponTypes[weaponOffset+ hand]) {
+            case (int)SpecialWeaponTypes.APS:
+            clipName += "APS";
+            break;
+            case (int)SpecialWeaponTypes.BRF:
+            clipName += "BRF";
+            break;
+            case (int)SpecialWeaponTypes.SGN:
+            clipName += "SGN";
+            break;
+            case (int)SpecialWeaponTypes.LMG:
+            clipName += "LMG";
+            break;
+            case (int)SpecialWeaponTypes.RCL:
+            clipName += "RCL";
+            break;
+            case (int)SpecialWeaponTypes.ENG:
+            clipName += "ENG";
+            break;
+            case (int)SpecialWeaponTypes.BCN:
+            clipName += "BCN";
+            break;
+            default:
+            Debug.LogError("Should never get here");
+            break;
         }
 
-        if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.RCL) {
-            //GameObject bullet = Instantiate(bullets[weaponOffset], (Hands[handPosition].position + Hands[handPosition + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(direction)) as GameObject;
-            GameObject bullet = null;
-            if (photonView.isMine) {
-                if (Muz[weaponOffset + handPosition] != null) {
-                    Muz[weaponOffset + handPosition].Play();
-                }
+        clipName += "Shoot" + ((hand == 0) ? "L" : "R");
+        animator.Play(clipName, hand + 1);
+    }
 
-                bullet = PhotonNetwork.Instantiate("RCL034B", (Hands[handPosition].position + Hands[handPosition + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(direction), 0);
+    void SetTargetInfo(int hand, Vector3 direction, int playerPVid, bool isShield, int target_handOnShield) {
+        if(playerPVid != -1) {
+            Targets[hand] = PhotonView.Find(playerPVid).gameObject;
+            isTargetShield[hand] = isShield;
+            target_HandOnShield[hand] = target_handOnShield;
+            bullet_directions[hand] = direction;
+        } else {
+            Targets[hand] = null;
+            bullet_directions[hand] = direction;
+        }
+    }
+
+    public void InstantiateBulletTrace(int hand) {
+        if (bullets[weaponOffset + hand] == null) {
+            Debug.LogError("bullet is null");
+            return;
+        }
+
+        if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.RCL) {
+            if (Muz[weaponOffset + hand] != null) {
+                Muz[weaponOffset + hand].Play();
+            }
+            Sounds.PlayShotL();
+
+            if (photonView.isMine) {
+                GameObject bullet = PhotonNetwork.Instantiate("RCL034B", (Hands[hand].position + Hands[hand + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(bullet_directions[hand]), 0);
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
                 bulletTrace.SetShooterInfo(gameObject, hud, cam);
             } else
-                yield break;
-        } else if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.ENG) {
-            if (Muz[weaponOffset + handPosition] != null) {
-                Muz[weaponOffset + handPosition].Play();
+                return;
+        } else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.ENG) {
+            if (Muz[weaponOffset + hand] != null) {
+                Muz[weaponOffset + hand].Play();
             }
+            if (hand == 0) Sounds.PlayShotL();
+            else Sounds.PlayShotR();
 
-            GameObject bullet = Instantiate(bullets[weaponOffset + handPosition], Gun_ends[weaponOffset + handPosition].position, Quaternion.LookRotation(direction)) as GameObject;
-            bullet.transform.SetParent(Gun_ends[weaponOffset + handPosition]);
-            bullet.GetComponent<ElectricBolt>().dir = direction;
+            GameObject bullet = Instantiate(bullets[weaponOffset + hand], Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
+            bullet.transform.SetParent(Gun_ends[weaponOffset + hand]);
+            bullet.GetComponent<ElectricBolt>().dir = bullet_directions[hand];
             bullet.GetComponent<ElectricBolt>().cam = cam;
-            if (Target != null) {
-                bullet.GetComponent<ElectricBolt>().Target = Target.transform;
+            if (Targets[hand] != null) {
+                bullet.GetComponent<ElectricBolt>().Target = Targets[hand].transform;
             }
         } else {
-            int bulletNum;
-            float interval;
-            switch (curSpecialWeaponTypes[weaponOffset + handPosition]) {
-                case (int)SpecialWeaponTypes.APS:
-                bulletNum = 4;
-                interval = APS_INTERVAL;
-                break;
-                case (int)SpecialWeaponTypes.LMG:
-                bulletNum = 6;
-                interval = LMG_INTERVAL;
-                break;
-                default:
-                bulletNum = 1;
-                interval = 1;
-                break;
+            GameObject b = bullets[weaponOffset + hand];
+            MechCombat mcbt = (Targets[hand] == null) ? null : Targets[hand].transform.root.GetComponent<MechCombat>();
 
-            }
-            GameObject b = bullets[weaponOffset + handPosition];
-            MechCombat mcbt = (Target == null) ? null : Target.transform.root.GetComponent<MechCombat>();
+            if (hand == 0) Sounds.PlayShotL();
+            else Sounds.PlayShotR();
 
             if (photonView.isMine) {
-                crosshairImage.ShakingEffect(handPosition, bm.weaponScripts[weaponOffset + handPosition].Rate, bulletNum);
-                if (Target != null && !CheckTargetIsDead(Target)) {
-                    if (!isShield) {
-                        hud.ShowMultipleHitMsg(cam, Target.transform, new Vector3(0, 5, 0), "Hit", bulletNum, 0.25f);
+                crosshairImage.ShakingEffect(hand);
+                if (Targets[hand] != null && !CheckTargetIsDead(Targets[hand])) {
+                    if (!isTargetShield[hand]) {
+                        hud.ShowMultipleHitMsg(cam, Targets[hand].transform, new Vector3(0, 5, 0), "Hit", 1, 0.25f);
                     } else {
-                        hud.ShowMultipleHitMsg(cam, (mcbt != null) ? mcbt.Hands[hand_shield] : Target.transform.root.GetComponent<DroneCombat>().Hands[hand_shield], Vector3.zero, "Defense", bulletNum, interval);
+                        hud.ShowMultipleHitMsg(cam, (mcbt != null) ? mcbt.Hands[target_HandOnShield[hand]] : Targets[hand].transform.root.GetComponent<DroneCombat>().Hands[target_HandOnShield[hand]], Vector3.zero, "Defense", 1, 0.25f);
                     }
                 }
             }
 
+            if (Muz[weaponOffset + hand] != null) {
+                Muz[weaponOffset + hand].Play();
+            }
 
-            for (int i = 0; i < bulletNum; i++) {
-                if (Muz[weaponOffset + handPosition] != null) {
-                    Muz[weaponOffset + handPosition].Play();
-                }
-                GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + handPosition].position, Quaternion.LookRotation(direction), BulletCollector.transform) as GameObject;
-                BulletTrace bulletTrace = bullet.GetComponent<BulletTrace>();
-                bulletTrace.SetCamera(cam);
-                bulletTrace.SetShooterName(gameObject.name);
+            GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand]), BulletCollector.transform) as GameObject;
+            BulletTrace bulletTrace = bullet.GetComponent<BulletTrace>();
+            bulletTrace.SetCamera(cam);
+            bulletTrace.SetShooterName(gameObject.name);
 
-                if (Target != null) {
-                    if (isShield) {
-                        bulletTrace.SetTarget((mcbt != null) ? mcbt.Hands[hand_shield] : Target.transform.root.GetComponent<DroneCombat>().Hands[hand_shield], true);
-                    } else {
-                        bulletTrace.SetTarget(Target.transform, false);
-                    }
-                    //Vector3 scale = bullet.transform.localScale;
-                    //bullet.transform.SetParent(Target.transform);
-                    //bullet.transform.localScale = scale;
+            if (Targets[hand] != null) {
+                if (isTargetShield[hand]) {
+                    bulletTrace.SetTarget((mcbt != null) ? mcbt.Hands[target_HandOnShield[hand]] : Targets[hand].transform.root.GetComponent<DroneCombat>().Hands[target_HandOnShield[hand]], true);
                 } else {
-                    bulletTrace.SetTarget(null, false);
+                    bulletTrace.SetTarget(Targets[hand].transform, false);
                 }
-
-                yield return new WaitForSeconds(1 / bm.weaponScripts[weaponOffset + handPosition].Rate / bulletNum);
+            } else {
+                bulletTrace.SetTarget(null, false);
             }
         }
+        
     }
 
     bool CheckTargetIsDead(GameObject target) {
@@ -607,9 +639,6 @@ public class MechCombat : Combat {
         }
 
         gameObject.layer = default_layer;
-
-        if (bulletCoroutine != null)
-            StopCoroutine(bulletCoroutine);
 
         setIsFiring(0, false);
         setIsFiring(1, false);
@@ -999,9 +1028,6 @@ public class MechCombat : Combat {
         if (strR != "" && curSpecialWeaponTypes[weaponOffset + 1] != (int)GeneralWeaponTypes.MELEE) {
             animator.SetBool(strR, false);
         }
-
-        if (bulletCoroutine != null)
-            StopCoroutine(bulletCoroutine);
     }
 
     void ActivateWeapons() {

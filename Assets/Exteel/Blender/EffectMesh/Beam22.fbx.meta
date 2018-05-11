@@ -1,19 +1,22 @@
 fileFormatVersion: 2
-guid: 5c4ca2db5935ece46bf9cbe2b8b5150a
-timeCreated: 1525826958
+guid: 23f47a7becf8443468943378d2e1f654
+timeCreated: 1526037557
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Beam22
-    100002: //RootNode
-    400000: Beam22
-    400002: //RootNode
-    2100000: pskmat0.001
-    2300000: Beam22
-    3300000: Beam22
+    100000: //RootNode
+    400000: //RootNode
+    2100000: Beam22
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: Beam22
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Beam22
+    second: {fileID: 2100000, guid: 905037ca2c4140d4e89671d282c3d8b4, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

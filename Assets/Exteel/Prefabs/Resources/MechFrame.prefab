@@ -2765,7 +2765,6 @@ MonoBehaviour:
   rotationSpeed: 5
   dampingTime: 0.2
   lockPlayerRot: 0
-  lockCamRot: 0
   orbitRadius: 19
   lerpFakePosSpeed: 12
   angleOffset: 33
@@ -6952,10 +6951,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mechCombat: {fileID: 11445986}
-  mctrl: {fileID: 11462782}
-  mcam: {fileID: 11415780}
-  animator: {fileID: 9563454}
+  MechCombat: {fileID: 11445986}
+  MechController: {fileID: 11462782}
+  MechCamera: {fileID: 11415780}
+  Animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
   SlashDetector: {fileID: 114057908317756476}
 --- !u!114 &114958770677456614

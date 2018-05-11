@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public enum Ctype{// order of crosshairs in crosshairImage gameObject
-	N_L0, N_L1, N_R0, N_R1, RCL_0, RCL_1, ENG
+	N_L0, N_L1, N_R0, N_R1, RCL_0, RCL_1, ENG   // N: normal , L0 : BLUE , L1 : RED 
 }
 
 public class CrosshairImage : MonoBehaviour {
@@ -18,7 +18,7 @@ public class CrosshairImage : MonoBehaviour {
 	private int radiusCoeff = 22;
 	private int curImageL, curImageR;
 
-	private bool isShaking = false;
+	private bool isShakingL = false, isShakingR = false;
 	private Coroutine[] shakeCoroutine = new Coroutine[2];
 
 	//shaking
@@ -26,17 +26,20 @@ public class CrosshairImage : MonoBehaviour {
 	private float shakingAmount = 1.33f;
 
 	void Update(){
-		if(isShaking){
+		if(isShakingL){
 			SetLoffset (radiusL);
-			SetRoffset (radiusR);
-
 			radiusL = Mathf.Lerp (radiusL, orgRadiusL, 0.05f);
-			radiusR = Mathf.Lerp (radiusR, orgRadiusR, 0.05f);
 		}
-	}
+        if (isShakingR) {
+            SetRoffset(radiusR);
+            radiusR = Mathf.Lerp(radiusR, orgRadiusR, 0.05f);
+        }
+    }
 
 	public void SetRadius(float L, float R){
-		radiusL = L * radiusCoeff;
+        Initvariables();
+
+        radiusL = L * radiusCoeff;
 		radiusR = R * radiusCoeff;
 
 		orgRadiusL = radiusL;
@@ -44,7 +47,8 @@ public class CrosshairImage : MonoBehaviour {
 
 		SetRoffset (radiusR);
 		SetLoffset (radiusL);
-	}
+    }
+
 	void SetLoffset(float radiusL){
 		crosshairsL0.offsetMin = new Vector2 (-radiusL, -radiusL);
 		crosshairsL0.offsetMax = new Vector2 (radiusL, radiusL);
@@ -59,6 +63,17 @@ public class CrosshairImage : MonoBehaviour {
 		crosshairsR1.offsetMin = new Vector2 (-radiusR, -radiusR);
 		crosshairsR1.offsetMax = new Vector2 (radiusR, radiusR);
 	}
+
+    void Initvariables() {
+        isShakingL = false;
+        isShakingR = false;
+
+        for (int i = 0; i < 2; i++) {
+           if (shakeCoroutine[i] != null) {
+                StopCoroutine(shakeCoroutine[i]);
+            }
+        }
+    }
 
 	public void OnTargetL(bool b){
 		switch(curImageL){
@@ -131,30 +146,36 @@ public class CrosshairImage : MonoBehaviour {
 		crosshairs [(int)Ctype.N_R1].SetActive (false);
 	}
 
-	public void ShakingEffect(int handPosition, float rate,  int bulletNum){
-		isShaking = true;
+	public void ShakingEffect(int handPosition){
+        if (handPosition == 0)
+            isShakingL = true;
+        else
+            isShakingR = true;
+
 		if (shakeCoroutine[handPosition] == null) {
-			shakeCoroutine[handPosition] = StartCoroutine (Shaking (handPosition, rate, bulletNum));
+			shakeCoroutine[handPosition] = StartCoroutine (PlayShakingEffect (handPosition));
 		}else{//stop the current shaking & start a new one
 			StopCoroutine (shakeCoroutine[handPosition]);
-			shakeCoroutine[handPosition] = StartCoroutine (Shaking (handPosition, rate, bulletNum));
+			shakeCoroutine[handPosition] = StartCoroutine (PlayShakingEffect (handPosition));
 		}
 	}
 
-	IEnumerator Shaking(int handPosition, float rate,  int bulletNum){
-		for(int i=0;i<bulletNum;i++){
-			if(handPosition==0){
-				radiusL = orgRadiusL*shakingAmount;
-			}else{
-				radiusR = orgRadiusR*shakingAmount;
-			}
-			yield return (bulletNum==1)? new WaitForSeconds (0.2f):new WaitForSeconds (1 / rate / bulletNum);
+	IEnumerator PlayShakingEffect(int handPosition){
+		if(handPosition==0){
+			radiusL = orgRadiusL*shakingAmount;
+		}else{
+			radiusR = orgRadiusR*shakingAmount;
 		}
-		isShaking = false;
+		yield return new WaitForSeconds (0.2f);
 
-		radiusL = orgRadiusL;
-		radiusR = orgRadiusR;
-		SetLoffset (radiusL);
-		SetRoffset (radiusR);
+        if (handPosition == 0) {
+            isShakingL = false;
+            radiusL = orgRadiusL;
+            SetLoffset(radiusL);
+        } else {
+            isShakingR = false;
+            radiusR = orgRadiusR;
+            SetRoffset(radiusR);
+        }
 	}
 }

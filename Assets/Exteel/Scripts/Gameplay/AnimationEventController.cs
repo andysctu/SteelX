@@ -282,11 +282,12 @@ public class AnimationEventController : MonoBehaviour {
 	public void CallJump(){
 		MechController.Jump ();
 	}
+
     //
     //Ranged weapon animation events
     //
-    public void CallShoot() {
-        
-    }
 
+    public void CallShoot(int hand) {
+        MechCombat.InstantiateBulletTrace(hand);
+    }
 }
