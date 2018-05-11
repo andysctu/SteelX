@@ -8,7 +8,7 @@ using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "EMPTY" };
 																																								//eng : 13
 
 	[SerializeField]private GameObject RespawnPanel;
@@ -139,10 +139,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null ( in offline )
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[12];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[11];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[5];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[9];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[15];
 
         // Create new array to store skinned mesh renderers 
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];

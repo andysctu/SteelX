@@ -337,7 +337,10 @@ LineRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: b9f281572cfa9084f8ca34860f3b502f, type: 2}
+  - {fileID: 2100000, guid: 61f9045f7818de844aad5d38011c8d5f, type: 2}
+  - {fileID: 2100000, guid: efa1dcc9363e32c409dbb75cce2c37b1, type: 2}
+  - {fileID: 2100000, guid: 84782f685b2d8f246b4633dfd112f0e1, type: 2}
+  - {fileID: 2100000, guid: a965dc347e79a1e44bf3c1805dd12b8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -365,7 +368,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 2
-    widthMultiplier: 3
+    widthMultiplier: 1
     widthCurve:
       serializedVersion: 2
       m_Curve:

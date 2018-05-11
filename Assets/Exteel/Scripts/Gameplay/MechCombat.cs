@@ -421,13 +421,13 @@ public class MechCombat : Combat {
             break;
             case (int)SpecialWeaponTypes.RCL:
             clipName += "RCL";
+            animator.Play("RCLShootR", 2);
             break;
             case (int)SpecialWeaponTypes.ENG:
             clipName += "ENG";
             break;
             case (int)SpecialWeaponTypes.BCN:
-            clipName += "BCN";
-            break;
+            return;
             default:
             Debug.LogError("Should never get here");
             break;
@@ -475,12 +475,13 @@ public class MechCombat : Combat {
             else Sounds.PlayShotR();
 
             GameObject bullet = Instantiate(bullets[weaponOffset + hand], Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
+            ElectricBolt eb = bullet.GetComponent<ElectricBolt>();
             bullet.transform.SetParent(Gun_ends[weaponOffset + hand]);
-            bullet.GetComponent<ElectricBolt>().dir = bullet_directions[hand];
-            bullet.GetComponent<ElectricBolt>().cam = cam;
-            if (Targets[hand] != null) {
-                bullet.GetComponent<ElectricBolt>().Target = Targets[hand].transform;
-            }
+            bullet.transform.localPosition = Vector3.zero;
+            eb.SetCamera(cam);
+            
+            eb.SetTarget((Targets[hand]==null)? null : Targets[hand].transform);
+                
         } else {
             GameObject b = bullets[weaponOffset + hand];
             MechCombat mcbt = (Targets[hand] == null) ? null : Targets[hand].transform.root.GetComponent<MechCombat>();
