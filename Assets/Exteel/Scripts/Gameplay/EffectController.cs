@@ -75,14 +75,18 @@ public class EffectController : MonoBehaviour {
 	}
 
 	public void RespawnEffect(){
-		respawnEffect.Play ();
+        StartCoroutine(PlayRespawnEffect());		
 	}
+
+    IEnumerator PlayRespawnEffect() {
+        respawnEffect.Play();
+        yield return new WaitForSeconds(2);
+        respawnEffect.Clear();
+        respawnEffect.Stop();
+    }
 
     public void SlashOnHitEffect(bool isShield, int hand) {
         if (isShield) {
-            Debug.Log("name : " + Hands[hand]);
-            Debug.Log("pos : " + Hands[hand].position);
-            Debug.DrawRay(Hands[hand].position, -Hands[hand].transform.forward * 5, Color.green, 2);
             GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
             g.GetComponent<ParticleSystem>().Play();
         } else {

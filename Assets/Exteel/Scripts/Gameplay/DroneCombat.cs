@@ -13,6 +13,7 @@ public class DroneCombat : Combat {
 		currentHP = MAX_HP;
 		EffectController = GetComponent<EffectController> ();
 		findGameManager();
+        EffectController.RespawnEffect();
 		gm.RegisterPlayer(photonView.viewID, 0);
 	}
 
@@ -27,7 +28,7 @@ public class DroneCombat : Combat {
 		if (currentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
-			gm.RegisterKill(shooter_viewID, photonView.viewID);
+			//gm.RegisterKill(shooter_viewID, photonView.viewID);
 		}
 	}
 
@@ -61,7 +62,8 @@ public class DroneCombat : Combat {
 	}
 
 	void EnableDrone() {
-		gameObject.layer = player_layer;
+        EffectController.RespawnEffect();
+        gameObject.layer = player_layer;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
