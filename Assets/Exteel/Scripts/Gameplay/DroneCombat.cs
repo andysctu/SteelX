@@ -19,6 +19,11 @@ public class DroneCombat : Combat {
 	[PunRPC]
 	public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
 		currentHP -= d;
+
+        if (CheckIsMeleeByStr(weapon)){
+            EffectController.SlashOnHitEffect(false, 0);
+        }
+
 		if (currentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
@@ -28,11 +33,13 @@ public class DroneCombat : Combat {
 
 	[PunRPC]
 	public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
-		if(CheckIsMeleeByStr(weapon)){
-			EffectController.ShieldOnHitEffect (hand);	
-		}
 		currentHP -= d;
-		if (currentHP <= 0) {
+
+        if (CheckIsMeleeByStr(weapon)){
+            EffectController.SlashOnHitEffect(true, hand);
+        }
+
+        if (currentHP <= 0) {
 			//			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
 			gm.RegisterKill(shooter_viewID, photonView.viewID);
@@ -67,7 +74,7 @@ public class DroneCombat : Combat {
 		EnableDrone ();
 	}
 
-	bool CheckIsMeleeByStr(string weaponName){
-		return (weaponName.Contains ("ADR") || weaponName.Contains ("SHL"));
-	}
+    bool CheckIsMeleeByStr(string weapon_name) {
+        return (weapon_name.Contains("DR") || weapon_name.Contains("SHL"));
+    }
 }

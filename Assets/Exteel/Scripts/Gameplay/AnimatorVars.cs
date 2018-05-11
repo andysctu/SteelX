@@ -20,7 +20,10 @@ public class AnimatorVars : MonoBehaviour {
 	[HideInInspector]public int direction_id;
 	[HideInInspector]public int onMelee_id;
 
-	[HideInInspector]public int slashL_id;
+    [HideInInspector] public int blockL_id;
+    [HideInInspector] public int blockR_id;
+
+    [HideInInspector]public int slashL_id;
 	[HideInInspector]public int slashL2_id;
 	[HideInInspector]public int slashL3_id;
 	[HideInInspector]public int slashL4_id;
@@ -63,7 +66,10 @@ public class AnimatorVars : MonoBehaviour {
 		onMelee_id = Animator.StringToHash ("OnMelee");
 		speed_id = Animator.StringToHash ("Speed");
 
-		slashL_id = Animator.StringToHash ("SlashL");
+        blockL_id = Animator.StringToHash("BlockL");
+        blockR_id = Animator.StringToHash("BlockR");
+
+        slashL_id = Animator.StringToHash ("SlashL");
 		slashL2_id = Animator.StringToHash ("SlashL2");
 		slashL3_id = Animator.StringToHash ("SlashL3");
 		slashL4_id =  Animator.StringToHash ("SlashL4");

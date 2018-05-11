@@ -312,7 +312,7 @@ public class MechCombat : Combat {
                     }
                 } else {
                     //check what hand is it
-                    int hand = (target.transform.parent.name[target.transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+                    int hand = target.parent.GetComponent<ShieldUpdater>().GetHand();
 
                     photonView.RPC("RegisterBulletTrace", PhotonTargets.All, handPosition, direction, target_viewID, true, hand);
 
@@ -369,7 +369,7 @@ public class MechCombat : Combat {
                 }
 
                 if (isHitShield) {
-                    int hand = (t.transform.parent.name[t.transform.parent.name.Length - 1] == 'L') ? 0 : 1;//which hand holds the shield?
+                    int hand = t.transform.parent.GetComponent<ShieldUpdater>().GetHand();//which hand holds the shield?
                     target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, hand, weaponName);
                 } else {
                     target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, true);
@@ -520,10 +520,6 @@ public class MechCombat : Combat {
     void ShieldOnHit(int damage, int shooter_viewID, int shield, string weapon) {
         if (isDead) {
             return;
-        }
-
-        if (CheckIsMeleeByStr(weapon)) {
-            EffectController.ShieldOnHitEffect(shield);
         }
 
         if(photonView.isMine)
@@ -1175,10 +1171,6 @@ public class MechCombat : Combat {
     [PunRPC]
     void SetOverHeat(bool b, int weaponOffset) {//let other player know if shield overheat
         is_overheat[weaponOffset] = b;
-    }
-
-    bool CheckIsMeleeByStr(string weaponName) {
-        return (weaponName.Contains("DR") || weaponName.Contains("SHL") || weaponName.Contains("LSN"));
     }
 
     string animationString(int handPosition) {

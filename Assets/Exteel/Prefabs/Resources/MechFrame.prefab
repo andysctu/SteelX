@@ -6015,6 +6015,8 @@ MonoBehaviour:
   speed_id: 0
   direction_id: 0
   onMelee_id: 0
+  blockL_id: 0
+  blockR_id: 0
   slashL_id: 0
   slashL2_id: 0
   slashL3_id: 0
@@ -6596,6 +6598,8 @@ MonoBehaviour:
   boostingDust: {fileID: 198040932698162666}
   respawnEffect: {fileID: 198102542420025458}
   shieldOnHit: {fileID: 1761321348719524, guid: a24d5b63ce4027a4d9f6a244126c5b1c,
+    type: 2}
+  slashOnHitEffect: {fileID: 1308042831187524, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}
   Sounds: {fileID: 114000010976113334}
   Animator: {fileID: 9563454}

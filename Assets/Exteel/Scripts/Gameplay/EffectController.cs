@@ -6,14 +6,15 @@ public class EffectController : MonoBehaviour {
 
 	[SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
 	[SerializeField]private ParticleSystem boostingDust, respawnEffect;
-	[SerializeField]private GameObject shieldOnHit;
+	[SerializeField]private GameObject shieldOnHit, slashOnHitEffect;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private Transform[] Hands;
 	private MechController mctrl;
 	private bool isBoostingDustPlaying = false;
-	// Use this for initialization
+    private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
+
 	void Start () {
 		initComponents ();
 		initTransforms ();
@@ -77,12 +78,18 @@ public class EffectController : MonoBehaviour {
 		respawnEffect.Play ();
 	}
 
-	public void ShieldOnHitEffect(int shield){
-		GameObject g = Instantiate (shieldOnHit, Hands [shield].position - Hands[shield].forward*2, Quaternion.identity, Hands [shield]);
-		g.transform.rotation = Quaternion.LookRotation (Hands [shield].forward);
-		g.GetComponent<ParticleSystem> ().Play ();
-		Destroy (g, 2);
-	}
+    public void SlashOnHitEffect(bool isShield, int hand) {
+        if (isShield) {
+            Debug.Log("name : " + Hands[hand]);
+            Debug.Log("pos : " + Hands[hand].position);
+            Debug.DrawRay(Hands[hand].position, -Hands[hand].transform.forward * 5, Color.green, 2);
+            GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
+            g.GetComponent<ParticleSystem>().Play();
+        } else {
+            GameObject g = Instantiate(slashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
+            g.GetComponent<ParticleSystem>().Play();
+        }
+    }
 
 	void OnEnable(){
 		RespawnEffect ();

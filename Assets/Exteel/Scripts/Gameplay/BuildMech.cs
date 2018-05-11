@@ -140,7 +140,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //set weapons if null ( in offline )
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[5];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[5];
 
@@ -391,25 +391,11 @@ public class BuildMech : Photon.MonoBehaviour {
 					}
 					bulletPrefabs [i] = null;
 
-					//also set the child collider
-					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
-					collider.transform.SetParent (hands [i % 2].transform);
-					weapons [i].GetComponent<UpdateSHScollider> ().boxcollider = collider;
+					//set properties of shieldUpdater
+					ShieldUpdater shieldUpdater = weapons [i].GetComponentInChildren<ShieldUpdater> ();
+                    shieldUpdater.SetHand(i%2);
 
-					if(i % 2 == 0){
-						collider.transform.localRotation = Quaternion.Euler(0,90,0);
-
-						collider.transform.position = hands [i % 2].position + weapons [i].transform.right * 0.6f;
-						//collider.transform.localPosition = new Vector3(0,0,0);
-					}else{
-						collider.transform.localRotation = Quaternion.Euler(0,90,0);
-
-						collider.transform.position = hands [i % 2].position + weapons [i].transform.right * 0.6f;
-						//collider.transform.localPosition =  new Vector3(0,0,0);
-					}
-					collider.transform.rotation = Quaternion.Euler (0, collider.transform.rotation.eulerAngles.y, 0);
-					//collider.GetComponent<UpdateSHScollider> ().orgRot = collider.transform.rotation.eulerAngles;
-					break;
+                    break;
 				}
 			case "LMG012": {
 					weaponScripts [i] = new LMG012 ();

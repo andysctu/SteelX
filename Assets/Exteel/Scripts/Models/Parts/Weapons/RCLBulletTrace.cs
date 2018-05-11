@@ -97,7 +97,7 @@ public class RCLBulletTrace : MonoBehaviour {
 				} else {
 					hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 				}
-				int hand = (hitColliders[i].transform.parent.name [hitColliders[i].transform.parent.name.Length - 1] == 'L') ? 0 : 1;
+                int hand = hitColliders[i].transform.parent.GetComponent<ShieldUpdater>().GetHand();
                 colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, shooter_viewID, hand, "RCL");
 
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
