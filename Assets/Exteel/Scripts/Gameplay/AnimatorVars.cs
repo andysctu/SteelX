@@ -32,7 +32,7 @@ public class AnimatorVars : MonoBehaviour {
 	[HideInInspector]public int slashR2_id;
 	[HideInInspector]public int slashR3_id;
 	[HideInInspector]public int slashR4_id;
-
+    
 	[HideInInspector]public int BCNPose_id;
 	[HideInInspector]public int OnBCN_id;
 

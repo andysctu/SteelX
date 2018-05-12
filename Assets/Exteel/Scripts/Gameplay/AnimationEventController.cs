@@ -9,6 +9,7 @@ public class AnimationEventController : MonoBehaviour {
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private SlashDetector SlashDetector;
 	private PhotonView pv;
+    private int minCallMoveDistance = 10;
 
 	void Start(){
 		pv = GetComponent<PhotonView> ();
@@ -17,6 +18,7 @@ public class AnimationEventController : MonoBehaviour {
 	public void CallLMeleePlaying(int isPlaying){//this can control the drop time when attacking in air
 		MechCombat.SetLMeleePlaying(isPlaying);
 	}
+
 	public void CallRMeleePlaying(int isPlaying){
 		MechCombat.SetRMeleePlaying(isPlaying);
 	}
@@ -30,7 +32,7 @@ public class AnimationEventController : MonoBehaviour {
 	}
 		
 	public void CallSlashLToFalse(int num){
-		if (!pv.isMine)
+		if (!pv.isMine)//other player does not have the hash id
 			return;
 
 		switch(num){
@@ -69,7 +71,7 @@ public class AnimationEventController : MonoBehaviour {
 		}
 	}
 
-	public void ReceiveNextSlash(int receive){
+	public void ReceiveNextSlash(int receive){//if receive => get mouse button
 		MechCombat.SetReceiveNextSlash (receive);
 	}
 
@@ -149,7 +151,7 @@ public class AnimationEventController : MonoBehaviour {
 		if (hand == 0) {
 			switch(mode){
 			case 0:
-				Animator.Play ("SlashL1");
+				Animator.Play ("SlashL");
 				break;
 			case 1:
 				Animator.Play ("SlashLlow");
@@ -164,7 +166,7 @@ public class AnimationEventController : MonoBehaviour {
 		}else{
 			switch(mode){
 			case 0:
-				Animator.Play ("SlashR1");
+				Animator.Play ("SlashR");
 				break;
 			case 1:
 				Animator.Play ("SlashRlow");
@@ -233,15 +235,15 @@ public class AnimationEventController : MonoBehaviour {
 		if(speed >0){
 			List<Transform> targets = SlashDetector.getCurrentTargets ();
 			if(targets.Count == 0 || !MechController.grounded){
-				MechController.SetMoving(speed);
+				MechController.SetMoving(speed);//complete move
 			}else{
-				//check if there is any target in front & the distance between
+				//check if there is any target in front & the distance between is higher than a number
 				foreach (Transform t in targets) {
 					if (t == null || (t.tag!="Drone" && t.root.GetComponent<MechCombat> ().isDead))
 						continue;
 
-					if (Vector3.Distance (transform.position, t.position) >= 10) {
-						MechController.SetMoving (speed / 2);
+					if (Vector3.Distance (transform.position, t.position) >= minCallMoveDistance) {
+						MechController.SetMoving (speed / 2);//not getting too far
 					}
 				}
 			}

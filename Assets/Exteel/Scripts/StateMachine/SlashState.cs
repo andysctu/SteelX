@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SlashState : MechStateMachineBehaviour {
 
-	private bool inAir = false, detectGrounded;
-	public int hand, combo;//L1 => combo = 1 , in air => combo = -1
+    private float threshold = 0.8f; // tmp  ; note that threshold must bigger than slash min time 0.75 ~1 
+	private bool inAir = false, detectGrounded, canExit = false;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
@@ -14,8 +14,10 @@ public class SlashState : MechStateMachineBehaviour {
 
 		inAir = animator.GetBool (jump_id);
 		detectGrounded = false;
+        animator.SetBool("CanExit", false);
 
-		animator.SetBool (boost_id, false);
+
+        animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
 		if(inAir){
@@ -53,8 +55,9 @@ public class SlashState : MechStateMachineBehaviour {
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		animator.SetFloat ("slashTime", stateInfo.normalizedTime);//test
-		if ( cc == null || !cc.enabled) return;
+		animator.SetFloat ("slashTime", stateInfo.normalizedTime);
+
+        if ( cc == null || !cc.enabled) return;
 
 		if (inAir && mcbt.isLMeleePlaying == 0 && mcbt.isRMeleePlaying == 0) {
 			mctrl.Boost (false);
@@ -73,7 +76,11 @@ public class SlashState : MechStateMachineBehaviour {
 				animator.SetBool (grounded_id, true);
 			}
 		}
-	}
+
+        if (stateInfo.normalizedTime > threshold && !animator.IsInTransition(0)) {
+            animator.SetBool("CanExit", true);
+        }
+    }
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (cc == null || !cc.enabled)
@@ -90,5 +97,8 @@ public class SlashState : MechStateMachineBehaviour {
 		}else{
 			mcbt.CanMeleeAttack = true;//sometimes OnstateMachineExit does not ensure canslash set to true ( called before update )
 		}
-	}
+
+            if(stateInfo.tagHash!=0)animator.SetBool(stateInfo.tagHash, false);
+            mctrl.CallLockMechRot(false);
+    }
 }

@@ -26,7 +26,8 @@ public class SmashState : MechStateMachineBehaviour {
 			mcbt.SlashDetect (1);
 		}
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
-	}
+        mctrl.ResetCurBoostingSpeed();
+    }
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {

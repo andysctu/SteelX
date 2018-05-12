@@ -7,7 +7,8 @@ public class BCNPoseState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
 		if (mcbt == null)return;
-		mechIK.SetIK (true, 1, 0);
+        mctrl.ResetCurBoostingSpeed();
+        mechIK.SetIK (true, 1, 0);
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
