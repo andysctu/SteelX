@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e82af62f59454044890b7fdd3024bfd6, type: 3}
+  m_Name: LMG012
+  m_EditorClassIdentifier: 
+  weaponType: LMG
+  weaponPrefab: {fileID: 1182912435295938, guid: 59c7a3cbd0cd15b4da56eee3e332b42b,
+    type: 2}
+  Grip:
+  - {fileID: 1096434313937498, guid: 5b0b9c5a77b46624b948932ba204b4c6, type: 2}
+  - {fileID: 1096434313937498, guid: bfb15ce42fc23954ea62986df08c6f1b, type: 2}
+  damage: 120
+  Range: 100
+  Rate: 1
+  radius: 6
+  heat_increase_amount: 20
+  slowDown: 0
+  twoHanded: 0
+  bulletPrefab: {fileID: 1447274583941618, guid: 7d5466a4f2e6ad84f93549dc21836832,
+    type: 2}
+  shoot_sound: {fileID: 8300000, guid: a306b29fffc5e1b40b00efcf96bf9665, type: 3}
+  reload_sound: {fileID: 0}

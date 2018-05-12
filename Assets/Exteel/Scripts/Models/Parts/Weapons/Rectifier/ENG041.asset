@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc6eb7a02e93cca4bbb2b834e66a5c28, type: 3}
+  m_Name: ENG041
+  m_EditorClassIdentifier: 
+  weaponType: Rectifier
+  weaponPrefab: {fileID: 1008741706056464, guid: 3dacf733236a76f499e5528fe56a1b7b,
+    type: 2}
+  Grip:
+  - {fileID: 1096434313937498, guid: 5ade168637b141e49b6c5107727dc052, type: 2}
+  - {fileID: 1096434313937498, guid: 8c28f4fbe97687747a81c814a99b68c7, type: 2}
+  damage: 150
+  Range: 120
+  Rate: 0.6
+  radius: 8
+  heat_increase_amount: 20
+  slowDown: 0
+  twoHanded: 0
+  bulletPrefab: {fileID: 1667889749490334, guid: a1f4322b38872b84785dd0057aedea95,
+    type: 2}
+  shoot_sound: {fileID: 8300000, guid: 644cc743a2c965e4daafc3783805c627, type: 3}
+  reload_sound: {fileID: 0}

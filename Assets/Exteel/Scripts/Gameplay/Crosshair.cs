@@ -80,9 +80,9 @@ public class Crosshair : MonoBehaviour {
 		MaxDistanceL = weaponScripts [mcbt.weaponOffset].Range;
 		MaxDistanceR = weaponScripts [mcbt.weaponOffset+1].Range;
 
-		isENG_L = (weaponScripts [mcbt.weaponOffset].Animation == "ENGShoot");
-		isENG_R = (weaponScripts [mcbt.weaponOffset + 1].Animation == "ENGShoot");
-		isRCL = (weaponScripts [mcbt.weaponOffset].Animation == "RCLShoot");
+		//isENG_L = (weaponScripts [mcbt.weaponOffset].Animation == "ENGShoot");
+		//isENG_R = (weaponScripts [mcbt.weaponOffset + 1].Animation == "ENGShoot");
+		//isRCL = (weaponScripts [mcbt.weaponOffset].Animation == "RCLShoot");
 
 		isTargetAllyL = isENG_L;
 		isTargetAllyR = isENG_R;

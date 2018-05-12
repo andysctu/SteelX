@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0de86d7dc4fc5214bba24a3b16c24e82, type: 3}
+  m_Name: BCN029
+  m_EditorClassIdentifier: 
+  weaponType: Cannon
+  weaponPrefab: {fileID: 1356490343191830, guid: 86fb51bc15b639247b8a8e26762a722b,
+    type: 2}
+  Grip:
+  - {fileID: 0}
+  - {fileID: 1096434313937498, guid: cab6ccf5c933fbf45b88e4da61268fa8, type: 2}
+  damage: 800
+  Range: 200
+  Rate: 1
+  radius: 4
+  heat_increase_amount: 60
+  slowDown: 1
+  twoHanded: 1
+  bulletPrefab: {fileID: 1089007466238554, guid: 4dc398f818ee4cd48b534a7bff5a72d1,
+    type: 2}
+  shoot_sound: {fileID: 8300000, guid: 0a2ec240add284e41a492dbfebb4426f, type: 3}
+  reload_sound: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
+  maxBullet: 2

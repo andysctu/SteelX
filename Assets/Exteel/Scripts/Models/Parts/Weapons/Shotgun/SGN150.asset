@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85c003a33c19e93448c7220613b6123b, type: 3}
+  m_Name: SGN150
+  m_EditorClassIdentifier: 
+  weaponType: Shotgun
+  weaponPrefab: {fileID: 1498799846306878, guid: f53fb62607df01a42a0bb4bc08c98f6d,
+    type: 2}
+  Grip:
+  - {fileID: 1096434313937498, guid: 6896c23376b229f4a94e67125490ec0a, type: 2}
+  - {fileID: 1096434313937498, guid: 29f73c51e41892743a98ab87783c3de7, type: 2}
+  damage: 275
+  Range: 80
+  Rate: 1
+  radius: 7
+  heat_increase_amount: 20
+  slowDown: 1
+  twoHanded: 0
+  bulletPrefab: {fileID: 1000012364431528, guid: ec663680a4d9f6a48a50a3a5b0ebecf0,
+    type: 2}
+  shoot_sound: {fileID: 8300000, guid: 6285197b29316084d9d96ccc912a3b2a, type: 3}
+  reload_sound: {fileID: 0}

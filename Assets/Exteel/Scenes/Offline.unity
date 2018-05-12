@@ -372,52 +372,6 @@ Transform:
   m_Father: {fileID: 1060443846}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &49072069
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 226.36113
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 6.57
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -76.58
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4555169329412506, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_RootOrder
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 1601572771021754, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 9250e23a8a60b594d893e8f1c28f336d, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &49997734
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,9 +729,6 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: Grounded
   - Type: 4
-    SynchronizeType: 2
-    Name: AlreadyFalling
-  - Type: 4
     SynchronizeType: 0
     Name: ShootL
   - Type: 4
@@ -797,19 +748,7 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 0
-    Name: OnSlash
-  - Type: 4
-    SynchronizeType: 0
-    Name: UsingRCL
-  - Type: 4
-    SynchronizeType: 0
-    Name: ShootRCL
-  - Type: 4
-    SynchronizeType: 0
     Name: BCNPose
-  - Type: 4
-    SynchronizeType: 0
-    Name: ShootBCN
   - Type: 4
     SynchronizeType: 0
     Name: OnBCN
@@ -819,9 +758,45 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: ENGShootR
+  - Type: 1
+    SynchronizeType: 0
+    Name: slashTime
   - Type: 4
     SynchronizeType: 0
-    Name: UsingBCN
+    Name: CanExit
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnMelee
+  - Type: 4
+    SynchronizeType: 0
+    Name: RCLShoot
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNShoot
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNLoad
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL3
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR3
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL4
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR4
+  - Type: 1
+    SynchronizeType: 0
+    Name: rate
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -11097,19 +11072,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: viewIdField
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: instantiationId
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: viewIdField
-      value: 7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: instantiationId
-      value: 7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_IsActive
@@ -22351,7 +22326,9 @@ MonoBehaviour:
   RespawnPanel: {fileID: 1274096486}
   mcbt: {fileID: 0}
   Sounds: {fileID: 0}
+  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
   ShotSounds: []
+  weaponScripts: []
   weapons: []
   bulletPrefabs: []
   curWeaponNames:
@@ -22362,6 +22339,7 @@ MonoBehaviour:
   onPanel: 1
   Total_Mech: 4
   Mech_Num: 0
+  handOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &1879575823
 GameObject:
   m_ObjectHideFlags: 0

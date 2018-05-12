@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dadc3860d2a949d4f9e15cdff693ea75, type: 3}
+  m_Name: BRF025
+  m_EditorClassIdentifier: 
+  weaponType: Rifle
+  weaponPrefab: {fileID: 1314195332162444, guid: 1936991c451580142b64b191d157599a,
+    type: 2}
+  Grip:
+  - {fileID: 1096434313937498, guid: 706fac2882989864980a8194e0d03a6d, type: 2}
+  - {fileID: 1096434313937498, guid: 0aa71d80a0e12094f9b049caefae86cd, type: 2}
+  damage: 200
+  Range: 200
+  Rate: 1
+  radius: 4
+  heat_increase_amount: 20
+  slowDown: 0
+  twoHanded: 0
+  bulletPrefab: {fileID: 1000012364431528, guid: add2b4546a086a74884f7da8cfc2bb6c,
+    type: 2}
+  shoot_sound: {fileID: 8300000, guid: 7a8b6c7eb37f53945b431acd63e173ce, type: 3}
+  reload_sound: {fileID: 0}

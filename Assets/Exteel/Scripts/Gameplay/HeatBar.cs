@@ -56,12 +56,13 @@ public class HeatBar : MonoBehaviour {
 	}
 
 	public void UpdateHeatBar(){
-		if(bm.weaponScripts[mcbt.weaponOffset].isTwoHanded){
-			EnableHeatBar (mcbt.weaponOffset, true);
+        //if(bm.weaponScripts[mcbt.weaponOffset].isTwoHanded){
+        if (true){//temp
+            EnableHeatBar (mcbt.weaponOffset, true);
 			EnableHeatBar (mcbt.weaponOffset+1, false);
 		}else{
-			EnableHeatBar (mcbt.weaponOffset, bm.weaponScripts [mcbt.weaponOffset].Animation != "");
-			EnableHeatBar (mcbt.weaponOffset+1, bm.weaponScripts [mcbt.weaponOffset+1].Animation != "");
+			//EnableHeatBar (mcbt.weaponOffset, bm.weaponScripts [mcbt.weaponOffset].Animation != "");
+			//EnableHeatBar (mcbt.weaponOffset+1, bm.weaponScripts [mcbt.weaponOffset+1].Animation != "");
 		}
 
 		if(mcbt.is_overheat[mcbt.weaponOffset]){//update color

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 263ed7253479dd94a92e8dd6bbafde33, type: 3}
+  m_Name: ADR000
+  m_EditorClassIdentifier: 
+  weaponType: Spear
+  weaponPrefab: {fileID: 1497959119452962, guid: bbf69376bdcca63478e0775fba70ec88,
+    type: 2}
+  Grip:
+  - {fileID: 1096434313937498, guid: 8fa33346c45fa9b4a83651136d903e0f, type: 2}
+  - {fileID: 1096434313937498, guid: 94c0a2720dfed1740b469b3854b96949, type: 2}
+  damage: 400
+  Range: 0
+  Rate: 0
+  radius: 0
+  heat_increase_amount: 10
+  slowDown: 1
+  twoHanded: 0
+  hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
+    type: 2}
+  smash_sound: {fileID: 8300000, guid: 5650034b756d1fb41b1149b0096f4f8a, type: 3}
+  smash_hit_sound: {fileID: 0}

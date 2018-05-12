@@ -2933,7 +2933,9 @@ MonoBehaviour:
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 11445986}
   Sounds: {fileID: 114000010976113334}
+  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
   ShotSounds: []
+  weaponScripts: []
   weapons: []
   bulletPrefabs: []
   curWeaponNames:
@@ -2944,6 +2946,7 @@ MonoBehaviour:
   onPanel: 0
   Total_Mech: 4
   Mech_Num: 0
+  handOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &11436158
 MonoBehaviour:
   m_ObjectHideFlags: 1

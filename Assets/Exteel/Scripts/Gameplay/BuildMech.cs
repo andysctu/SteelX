@@ -10,10 +10,10 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "EMPTY" };
 																																								//eng : 13
-
 	[SerializeField]private GameObject RespawnPanel;
 	[SerializeField]private MechCombat mcbt = null;
 	[SerializeField]private Sounds Sounds;
+    [SerializeField]private WeaponManager WeaponManager;
 
 	private GameManager gm;
 	private Animator animator;
@@ -59,6 +59,9 @@ public class BuildMech : Photon.MonoBehaviour {
 
 	int DashOutput;
 	int DashENDrain, JumpENDrain;
+
+
+    public Vector3 handOffset = Vector3.zero;//every hand has dif offset
 
 	void Start () {
 		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
@@ -295,9 +298,16 @@ public class BuildMech : Photon.MonoBehaviour {
 		bulletPrefabs = new GameObject[4];
 		ShotSounds = new AudioClip[4];
 
-		for (int i = 0; i < weaponNames.Length; i++) {
-			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, Vector3.zero, transform.rotation) as GameObject;
+        for (int i = 0; i < weaponNames.Length; i++) {
+            weaponScripts[i] = WeaponManager.FindData(weaponNames[i]);
+            if (weaponScripts[i] == null) {
+                Debug.LogError("Can't find weapon data : "+weaponNames[i]);
+                continue;
+            }
 
+            weapons [i] = Instantiate(weaponScripts[i].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+
+            //TODO : remake this
 			if(onPanel){//resize
 				weapons [i].transform.localScale *=22f;
 			}else if(SceneManagerHelper.ActiveSceneName == "Lobby"){
@@ -306,45 +316,20 @@ public class BuildMech : Photon.MonoBehaviour {
 				
 			}
 
-			//turn off muz
-			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
-			if (Muz != null) {
-				Muz.Stop ();
-				if (inHangar||inStore) {
-					Muz.gameObject.SetActive (false);
-				}
-			}
-				
-			switch (weaponNames[i]) {
-			case "APS403": {
-					weaponScripts [i] = new APS403 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (170, -90, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0.5f - weapons [i].transform.forward*0.1f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (170, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0.5f - weapons [i].transform.forward*0.1f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = Resources.Load ("APS403B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire 04") as AudioClip;
-					break;
-				}
-			case "SHL009": {
-					weaponScripts [i] = new SHL009 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.5f  + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.5f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = null;
+            weapons[i].transform.SetParent(hands[i % 2]);
+            weapons[i].transform.localPosition = handOffset;
+            //weapons[i].transform.localRotation = weaponData.Grip[i % 2].transform.rotation;
+            
 
-					if(Sounds!=null)
+            switch (weaponScripts[i].weaponType) {
+                case "APS":
+                case "LMG":
+                    bulletPrefabs[i] = ((SMG)weaponScripts[i]).bulletPrefab;
+                    //ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire 04") as AudioClip;
+                break;
+                case "Sword":
+                    bulletPrefabs[i] = null;
+                /*if(Sounds!=null)
 						if(i%2==0){//left hand
 							Sounds.SlashL [0 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire1") as AudioClip;
 							Sounds.SlashL [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
@@ -355,155 +340,48 @@ public class BuildMech : Photon.MonoBehaviour {
 							Sounds.SlashR [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
 							Sounds.SlashR [2 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire3") as AudioClip;
 							Sounds.SlashOnHit[i] = Resources.Load ("Sounds/Hit10_im1_02") as AudioClip;
-						}
+						}*/
+                break;
+                case "Spear":
+                    bulletPrefabs[i] = null;
+                    //ShotSounds [i] = Resources.Load ("Sounds/Hit7_im1_02") as AudioClip;
+                break;
+                case "Shield":
+                    bulletPrefabs[i] = null;
+                    ShieldUpdater shieldUpdater = weapons[i].GetComponentInChildren<ShieldUpdater>();
+                    shieldUpdater.SetHand(i % 2);
+                break;
+                case "Rifle":
+                    bulletPrefabs[i] = ((Rifle)weaponScripts[i]).bulletPrefab;
+                    //ShotSounds [i] = Resources.Load ("Sounds/Zeus_Fire") as AudioClip;
+                break;
+                case "Cannon":
+                    bulletPrefabs[i] = ((Cannon)weaponScripts[i]).bulletPrefab;
+                    weapons[i + 1] = null;
+                    bulletPrefabs[i + 1] = null;
+                    i++;
+                    //ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
+                break;
+                case "Shotgun":
+                    bulletPrefabs[i] = ((Shotgun)weaponScripts[i]).bulletPrefab;
+                    //ShotSounds [i] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
+                break;
+                case "Rocket":
+                    bulletPrefabs[i] = ((Rocket)weaponScripts[i]).bulletPrefab;
+                    weapons[i + 1] = null;
+                    bulletPrefabs[i + 1] = null;
+                    i++;
+                //ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
+                break;
+                case "Rectifier":
+                    bulletPrefabs[i] = ((Rectifier)weaponScripts[i]).bulletPrefab;
+                    //ShotSounds [i] = Resources.Load ("Sounds/Heal_loop") as AudioClip;
+                break;
 
-
-					break;
-				}
-			case "ADR000": {
-					weaponScripts [i] = new ADR000 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f  + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = null;
-
-					//Load sound 
-					ShotSounds [i] = Resources.Load ("Sounds/Hit7_im1_02") as AudioClip;
-					break;
-				}
-			case "SHS309": {
-					weaponScripts [i] = new SHS309 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 200));
-						weapons [i].transform.position = hands [i % 2].position + weapons [i].transform.up*0.3f - weapons [i].transform.forward * 0.8f  - weapons [i].transform.right*0.1f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 80, -20));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0.3f - weapons [i].transform.forward * 0.8f - weapons [i].transform.right*0.1f;
-					}
-					bulletPrefabs [i] = null;
-
-					//set properties of shieldUpdater
-					ShieldUpdater shieldUpdater = weapons [i].GetComponentInChildren<ShieldUpdater> ();
-                    shieldUpdater.SetHand(i%2);
-
-                    break;
-				}
-			case "LMG012": {
-					weaponScripts [i] = new LMG012 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f + weapons [i].transform.forward*0.6f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f + weapons [i].transform.forward*0.6f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = Resources.Load ("LMG012B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/beam_fire 2") as AudioClip;
-					break;
-				}
-			case "BRF025": {
-					weaponScripts [i] = new BRF025 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -90, 0));
-						weapons [i].transform.position = hands[i % 2].position - weapons [i].transform.up*0.5f + weapons [i].transform.forward*0.1f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-						weapons [i].transform.position = hands[i % 2].position - weapons [i].transform.up*0.5f + weapons [i].transform.forward*0.1f - weapons [i].transform.right*0.2f;
-					}
-
-					bulletPrefabs [i] = Resources.Load ("BRF025B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Zeus_Fire") as AudioClip;
-					break;
-				}
-			case "BCN029": {
-					weaponScripts[i] = new BCN029();
-					weapons [i].transform.rotation = hands [1].rotation;
-					weapons [i].transform.SetParent (hands [1]);
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f + weapons [i].transform.forward*0.2f;
-					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
-
-					weaponScripts [i + 1] = new EmptyWeapon ();
-					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, Vector3.zero, transform.rotation) as GameObject;
-					weapons [i+1].transform.SetParent (hands [i % 2]);
-					weapons [i + 1].SetActive (false);
-					bulletPrefabs [i+1] = null;
-
-					i++;//skip the right hand
-					break;
-				}
-			case "SGN150": {
-					weaponScripts [i] = new SGN150 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f - weapons [i].transform.right*0.2f;
-					}
-
-					bulletPrefabs [i] = Resources.Load ("SGN150B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
-					break;
-				}
-			case "RCL034":{
-					weaponScripts [i] = new RCL034 ();
-					weapons [i].transform.rotation = hands [1].rotation;
-					weapons [i].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f ;
-
-					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
-
-					weaponScripts [i + 1] = new EmptyWeapon ();
-					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, Vector3.zero, transform.rotation) as GameObject;
-					weapons [i+1].transform.SetParent (hands [i % 2]);
-					weapons [i + 1].SetActive (false);
-					bulletPrefabs [i+1] = null;
-
-					i++;//skip the right hand
-					break;
-				}
-			case "ENG041":{
-					weaponScripts [i] = new ENG041 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f - weapons [i].transform.right*0.2f;
-					}
-
-					bulletPrefabs [i] = Resources.Load ("ENG041B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Heal_loop") as AudioClip;
-
-					break;
-				}
-			default:{
-					weaponScripts [i] = new EmptyWeapon ();
-					weapons [i].transform.SetParent (hands [i % 2]);
-			break;
-			}
-
+		        default:
+                //weaponScripts [i] = new EmptyWeapon ();
+                //weapons [i].transform.SetParent (hands [i % 2]);
+                break;
 			}
 		}
 
@@ -512,13 +390,12 @@ public class BuildMech : Photon.MonoBehaviour {
 		animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
 		if (animator != null && (inHangar || inStore))CheckAnimatorState ();
 
-		weapons [(weaponOffset+2)%4].SetActive (false);
-		weapons [(weaponOffset+3)%4].SetActive (false);
+        if (weapons[(weaponOffset + 2) % 4] != null) weapons [(weaponOffset+2)%4].SetActive (false);
+		if(weapons[(weaponOffset + 3) % 4] != null) weapons [(weaponOffset+3)%4].SetActive (false);
 
 		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
 		for (int i = 0; i < 4; i++)//turn off trail
 			ShutDownTrail (weapons [i]);
-
 	}
 
 
@@ -562,181 +439,40 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (weapons [weapPos] != null) 
 			Destroy (weapons [weapPos]);
 
-		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, Vector3.zero, transform.rotation) as GameObject;
+        Weapon weaponData = WeaponManager.FindData(weapon);
+        if (weaponData == null) {
+            Debug.LogError("Can't find weapon data : " + weapon);
+            return;
+        }
 
-		switch (weapon) {
-		case "APS403":
-			{
-				weaponScripts [weapPos] = new APS403 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (170, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos%2].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (170, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos%2].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "SHL009":
-			{
-				weaponScripts [weapPos] = new SHL009 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f  + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "ADR000":
-			{
-				weaponScripts [weapPos] = new ADR000 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f  + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "SHS309":
-			{
-				weaponScripts [weapPos] = new SHS309 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 200));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.up*0.3f - weapons [weapPos].transform.forward * 0.8f  - weapons [weapPos].transform.right*0.1f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, -20));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.3f - weapons [weapPos].transform.forward * 0.8f - weapons [weapPos].transform.right*0.1f;
-				}
-				break;
-			}
-		case "LMG012": {
-				weaponScripts [weapPos] = new LMG012 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "SGN150": {
-				weaponScripts [weapPos] = new SGN150 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "BRF025": {
-				weaponScripts [weapPos] = new BRF025 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "BCN029":
-			{
-				weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
+        switch (weaponData.weaponType) {
+            case "Cannon":
+            case "Rocket":
+                weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
 
-				weaponScripts [weapPos] = new BCN029 ();
-				weapons [weapPos].transform.rotation = hands [1].rotation;
-				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f + weapons [weapPos].transform.forward*0.2f;
+                weapons[weapPos + 1] = null;
+                if (weapPos >= 2) {
+                    if (!inStore)
+                        UserData.myData.Mech[Mech_Num].Weapon2R = "EmptyWeapon";
+                    curWeaponNames[3] = "EmptyWeapon";
+                } else {
+                    if (!inStore)
+                        UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
+                    curWeaponNames[1] = "EmptyWeapon";
+                }
+            break;
+            default:
+            break;
+        }
 
-				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
-				weaponScripts [weapPos + 1] = new EmptyWeapon ();
-				weapons [weapPos + 1].SetActive (false);
+        weapons[weapPos] = Instantiate(weaponData.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
-				if (weapPos >= 2) {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-					curWeaponNames[3] = "EmptyWeapon";
-				} else {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-					curWeaponNames[1] = "EmptyWeapon";
-				}
+        weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
+        weapons[weapPos].transform.localPosition = handOffset;
+        weapons[weapPos].transform.localRotation = weaponData.Grip[weapPos % 2].transform.rotation;
 
-				break;
-			}
-		case "RCL034":
-			{
-				weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
-
-				weaponScripts [weapPos] = new RCL034 ();
-				weapons [weapPos].transform.rotation = hands [1].rotation;
-				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f ;
-
-				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
-				weaponScripts [weapPos + 1] = new EmptyWeapon ();
-				weapons [weapPos + 1].SetActive (false);
-
-				if (weapPos >= 2) {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-					curWeaponNames[3] = "EmptyWeapon";
-				} else {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-					curWeaponNames[1] = "EmptyWeapon";
-				}
-
-				break;
-			}
-
-		case "ENG041":{
-				weaponScripts [weapPos] = new LMG012 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		}
-			
-		weapons [weapPos].SetActive (weapPos == weaponOffset || weapPos == weaponOffset+1);
-
-		Muz = weapons [weapPos].GetComponentInChildren<ParticleSystem> ();
-		if (Muz != null) {
-			Muz.Stop ();
-			if (inHangar||inStore) {
-				Muz.gameObject.SetActive (false);
-			}
-		}
+	
+		weapons[weapPos].SetActive (weapPos == weaponOffset || weapPos == weaponOffset+1);
 			
 		curWeaponNames [weapPos] = weapon;
 		ShutDownTrail (weapons[weapPos]);
@@ -772,7 +508,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (animator == null)
 			return;
 
-		int num = (weaponScripts [weaponOffset].isTwoHanded)? 1 : 0;
+        //int num = (weaponScripts [weaponOffset].isTwoHanded)? 1 : 0;
+        int num = 0;//temp
 
 		clipOverrides ["Idle"] = MovementClips.Idle [num];
 		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
@@ -846,6 +583,9 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void ShutDownTrail(GameObject weapon){
+        if (weapon == null)
+            return;
+
 		XWeaponTrail trail = weapon.GetComponentInChildren<XWeaponTrail> ();
 
 		if (trail == null)
@@ -870,6 +610,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.UpdateMuz ();
 		mcbt.FindGunEnds ();
 
-		mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].isTwoHanded) ? 1 : 0));
+		//mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].isTwoHanded) ? 1 : 0));
 	}
 }

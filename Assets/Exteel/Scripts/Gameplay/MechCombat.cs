@@ -190,7 +190,7 @@ public class MechCombat : Combat {
         clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
         animatorOverrideController.GetOverrides(clipOverrides);
 
-        ChangeMovementClips((weaponScripts[0].isTwoHanded) ? 1 : 0);
+        //ChangeMovementClips((weaponScripts[0].isTwoHanded) ? 1 : 0);
         //ChangeWeaponClips ();
     }
 
@@ -305,7 +305,7 @@ public class MechCombat : Combat {
 
     void FireRaycast(Vector3 start, Vector3 direction, int hand) {
         Transform target = ((hand == 0) ? crosshair.getCurrentTargetL() : crosshair.getCurrentTargetR());//target might be shield collider
-        int damage = bm.weaponScripts[weaponOffset + hand].Damage;
+        int damage = bm.weaponScripts[weaponOffset + hand].damage;
 
         if (target != null) {
             PhotonView targetpv = target.transform.root.GetComponent<PhotonView>();
@@ -317,7 +317,7 @@ public class MechCombat : Combat {
 
                     photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, false, -1);
 
-                    targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + hand].isSlowDown);
+                    //targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + hand].isSlowDown);
 
                     if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
                         hud.ShowText(cam, target.position + new Vector3(0, 5, 0), "Kill");
@@ -357,7 +357,7 @@ public class MechCombat : Combat {
     public void SlashDetect(int hand) {
         if ((targets_in_collider = slashDetector.getCurrentTargets()).Count != 0) {
 
-            int damage = bm.weaponScripts[weaponOffset + hand].Damage;
+            int damage = bm.weaponScripts[weaponOffset + hand].damage;
             string weaponName = bm.curWeaponNames[weaponOffset + hand];
             Sounds.PlaySlashOnHit(weaponOffset + hand);
 
@@ -562,6 +562,10 @@ public class MechCombat : Combat {
             return;
         }
 
+        if (CheckIsMeleeByStr(weapon)) {
+            EffectController.SlashOnHitEffect(true, shield);
+        }
+
         if(photonView.isMine)
             currentHP -= damage;
 
@@ -584,7 +588,9 @@ public class MechCombat : Combat {
             }
         }
     }
-
+    bool CheckIsMeleeByStr(string name) {
+        return (name.Contains("ADR") || name.Contains("SHL"));
+    }
     void DisplayKillMsg(string shooter, string target, string weapon) {
         InRoomChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
     }
@@ -924,7 +930,7 @@ public class MechCombat : Combat {
                 animator.SetBool(animationStr, true);
                 break;
                 case (int)GeneralWeaponTypes.Melee:
-                if (curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.SHL)//sword
+                if (curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.SHL)//sword                    
                     AnimationEventController.Slash(handPosition);
                 else//spear
                     AnimationEventController.Smash(handPosition);
@@ -1004,7 +1010,7 @@ public class MechCombat : Combat {
 
         UpdateArmAnimatorState();
         //Switch movement clips
-        ChangeMovementClips(weaponScripts[weaponOffset].isTwoHanded ? 1 : 0);
+        //ChangeMovementClips(weaponScripts[weaponOffset].isTwoHanded ? 1 : 0);
 
         //Check crosshair
         crosshair.UpdateCrosshair();
@@ -1032,7 +1038,8 @@ public class MechCombat : Combat {
 
     void ActivateWeapons() {
         for (int i = 0; i < weapons.Length; i++) {
-            weapons[i].SetActive(!weapons[i].activeSelf);
+            if(weapons[i]!=null)
+                weapons[i].SetActive(!weapons[i].activeSelf);
         }
     }
 
@@ -1210,12 +1217,13 @@ public class MechCombat : Combat {
     string animationString(int handPosition) {
         switch (curGeneralWeaponTypes[weaponOffset + handPosition]) {
             case (int)GeneralWeaponTypes.Rocket:
+            return "RCLShoot";
             case (int)GeneralWeaponTypes.Cannon:
-            return weaponScripts[weaponOffset + handPosition].Animation;
-            case (int)GeneralWeaponTypes.Empty:
             return "";
+            case (int)GeneralWeaponTypes.Ranged:
+            return "Shoot" + ((handPosition == LEFT_HAND) ? "L" : "R");
             default:
-            return weaponScripts[weaponOffset + handPosition].Animation + (handPosition == LEFT_HAND ? "L" : "R");
+            return "";
         }
     }
 

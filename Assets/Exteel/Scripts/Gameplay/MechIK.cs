@@ -144,7 +144,8 @@ public class MechIK : MonoBehaviour {
 
 	public void UpdateMechIK(){
 		weaponOffset = mechCombat.GetCurrentWeaponOffset ();
-		if(bm.weaponScripts[weaponOffset].isTwoHanded){
+        //if(bm.weaponScripts[weaponOffset].isTwoHanded){
+        if (true) { 
 			AimTransform = bm.weapons [weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
 			if (AimTransform == null)
 				Debug.Log ("null aim Transform");

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 890afb3303b655443be0005c550e8859, type: 3}
+  m_Name: RCL034
+  m_EditorClassIdentifier: 
+  weaponType: Rocket
+  weaponPrefab: {fileID: 1839086705267362, guid: 9262ac27ef5b49e49be2a8760e0bfe47,
+    type: 2}
+  Grip:
+  - {fileID: 0}
+  - {fileID: 1096434313937498, guid: e17e069a6ee40824aaa63b9784736718, type: 2}
+  damage: 300
+  Range: 600
+  Rate: 0.8
+  radius: 0
+  heat_increase_amount: 20
+  slowDown: 1
+  twoHanded: 1
+  bulletPrefab: {fileID: 1346241026468800, guid: 45a2af6408f32d2469f4db65ae68552e,
+    type: 2}
+  shoot_sound: {fileID: 8300000, guid: 0562b950c3f24cd499f3b76e97102e29, type: 3}
+  reload_sound: {fileID: 0}
