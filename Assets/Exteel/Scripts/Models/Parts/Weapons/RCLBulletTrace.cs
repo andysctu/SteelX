@@ -38,6 +38,12 @@ public class RCLBulletTrace : MonoBehaviour {
         GetComponent<Rigidbody>().velocity = transform.forward * bulletSpeed;
     }
 
+    public void SetBulletPropertis(int bulletdmg, int bulletSpeed, int impact_radius) {
+        this.bulletdmg = bulletdmg;
+        this.bulletSpeed = bulletSpeed;
+        this.impact_radius = impact_radius;
+    }
+
     public void SetShooterInfo(GameObject shooter, HUD hud, Camera cam) {
         this.shooter = shooter;
         this.hud = hud;
@@ -97,8 +103,9 @@ public class RCLBulletTrace : MonoBehaviour {
 				} else {
 					hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
 				}
-                int hand = hitColliders[i].transform.parent.GetComponent<ShieldUpdater>().GetHand();
-                colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, bulletdmg/2, shooter_viewID, hand, "RCL");
+                ShieldUpdater shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldUpdater>();
+                int hand = shieldUpdater.GetHand();
+                colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, (int)(bulletdmg * shieldUpdater.GetDefendEfficiency(false)), shooter_viewID, hand, "RCL");
 
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
 			} else {

@@ -325,7 +325,8 @@ public class MechCombat : Combat {
                     }
                 } else {
                     //check what hand is it
-                    int target_handOnShield = target.parent.GetComponent<ShieldUpdater>().GetHand();
+                    ShieldUpdater shieldUpdater = target.parent.GetComponent<ShieldUpdater>();
+                    int target_handOnShield = shieldUpdater.GetHand();
 
                     photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, true, target_handOnShield);
 
@@ -335,7 +336,7 @@ public class MechCombat : Combat {
                         if (targetMcbt.is_overheat[targetMcbt.weaponOffset + target_handOnShield]) {
                             targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, target_handOnShield, weaponName);
                         } else {
-                            targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, target_handOnShield, weaponName);
+                            targetpv.RPC("ShieldOnHit", PhotonTargets.All, (int)(damage * shieldUpdater.GetDefendEfficiency(false)), photonView.viewID, target_handOnShield, weaponName);
                         }
                     }
 
@@ -382,8 +383,9 @@ public class MechCombat : Combat {
                 }
 
                 if (isHitShield) {
-                    int target_handOnShield = t.transform.parent.GetComponent<ShieldUpdater>().GetHand();//which hand holds the shield?
-                    target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, damage / 2, photonView.viewID, target_handOnShield, weaponName);
+                    ShieldUpdater shieldUpdater = t.transform.parent.GetComponent<ShieldUpdater>();
+                    int target_handOnShield = shieldUpdater.GetHand();//which hand holds the shield?
+                    target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, (int)(damage * shieldUpdater.GetDefendEfficiency(true)), photonView.viewID, target_handOnShield, weaponName);
                 } else {
                     target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, true);
                 }
@@ -447,60 +449,48 @@ public class MechCombat : Combat {
         }
     }
 
-    public void InstantiateBulletTrace(int hand) {
+    public void InstantiateBulletTrace(int hand) {//aniamtion event driven
         if (bullets[weaponOffset + hand] == null) {
             Debug.LogError("bullet is null");
             return;
         }
+        //Play Muz
+        if (Muz[weaponOffset + hand] != null) {
+            Muz[weaponOffset + hand].Play();
+        }
+        //Play Sound
+        Sounds.PlayShot(hand);
 
         if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rocket) {
-            if (Muz[weaponOffset + hand] != null) {
-                Muz[weaponOffset + hand].Play();
-            }
-            Sounds.PlayShot(LEFT_HAND);
-
             if (photonView.isMine) {
-                GameObject bullet = PhotonNetwork.Instantiate("RCL034B", (Hands[hand].position + Hands[hand + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(bullet_directions[hand]), 0);
+                GameObject bullet = PhotonNetwork.Instantiate("RCL034B", Gun_ends[weaponOffset].position, Quaternion.LookRotation(bullet_directions[hand]), 0);
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
                 bulletTrace.SetShooterInfo(gameObject, hud, cam);
+                bulletTrace.SetBulletPropertis(weaponScripts[weaponOffset].damage, ((Rocket)weaponScripts[weaponOffset]).bullet_speed, ((Rocket)weaponScripts[weaponOffset]).impact_radius);
             }
         } else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier) {
-            if (Muz[weaponOffset + hand] != null) {
-                Muz[weaponOffset + hand].Play();
-            }
-            if (hand == 0) Sounds.PlayShot(LEFT_HAND);
-            else Sounds.PlayShot(RIGHT_HAND);
-
             GameObject bullet = Instantiate(bullets[weaponOffset + hand], Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
             ElectricBolt eb = bullet.GetComponent<ElectricBolt>();
             bullet.transform.SetParent(Gun_ends[weaponOffset + hand]);
             bullet.transform.localPosition = Vector3.zero;
             eb.SetCamera(cam);
-            
-            eb.SetTarget((Targets[hand]==null)? null : Targets[hand].transform);
-                
+            eb.SetTarget((Targets[hand]==null)? null : Targets[hand].transform);      
         } else {
             GameObject b = bullets[weaponOffset + hand];
             MechCombat mcbt = (Targets[hand] == null) ? null : Targets[hand].transform.root.GetComponent<MechCombat>();
 
-            if (hand == 0) Sounds.PlayShot(LEFT_HAND);
-            else Sounds.PlayShot(RIGHT_HAND);
-
             if (photonView.isMine) {
                 crosshairImage.ShakingEffect(hand);
                 if (Targets[hand] != null && !CheckTargetIsDead(Targets[hand])) {
+                    //only APS & LMG have multiple msgs.
                     if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.LMG) {
                         if (!isTargetShield[hand]) {
-                            hud.ShowMultipleHitMsg(cam, Targets[hand].transform, new Vector3(0, 5, 0), "Hit", 1, 0.25f);
+                            hud.ShowText(cam, Targets[hand].transform.position + new Vector3(0, 5, 0), "Hit");
                         } else {
-                            hud.ShowMultipleHitMsg(cam, (mcbt != null) ? mcbt.Hands[target_HandOnShield[hand]] : Targets[hand].transform.root.GetComponent<DroneCombat>().Hands[target_HandOnShield[hand]], Vector3.zero, "Defense", 1, 0.25f);
+                            hud.ShowText(cam, (mcbt != null) ? mcbt.Hands[target_HandOnShield[hand]].position : Targets[hand].transform.root.GetComponent<DroneCombat>().Hands[target_HandOnShield[hand]].position,"Defense");
                         }
                     }
                 }
-            }
-
-            if (Muz[weaponOffset + hand] != null) {
-                Muz[weaponOffset + hand].Play();
             }
 
             GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand]), BulletCollector.transform) as GameObject;
@@ -565,13 +555,12 @@ public class MechCombat : Combat {
             EffectController.SlashOnHitEffect(true, shield);
         }
 
-        if(photonView.isMine)
-            currentHP -= damage;
+        currentHP -= damage;
 
         //Debug.Log("HP: " + currentHP);
         if (currentHP <= 0) {
 
-            DisablePlayer();
+            DisablePlayer();//TODO : sync this
 
             // Update scoreboard
             gm.RegisterKill(shooter_viewID, photonView.viewID);
@@ -829,10 +818,10 @@ public class MechCombat : Combat {
                 setIsFiring(hand, true);
                 FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, hand);
                 if (hand == 1) {
-                    HeatBar.IncreaseHeatBarR(20);
+                    HeatBar.IncreaseHeatBarR(weaponScripts[weaponOffset + hand].heat_increase_amount);
                     timeOfLastShotR = Time.time;
                 } else {
-                    HeatBar.IncreaseHeatBarL(20);
+                    HeatBar.IncreaseHeatBarL(weaponScripts[weaponOffset + hand].heat_increase_amount);
                     timeOfLastShotL = Time.time;
                 }
             }
@@ -932,7 +921,6 @@ public class MechCombat : Combat {
                 break;
                 case (int)GeneralWeaponTypes.Cannon:
                 animator.SetBool(animationStr, true);
-                //animator.SetBool ("BCNPose", false);
                 break;
             }
         } else {// melee is set to false by animation

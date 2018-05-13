@@ -14,7 +14,7 @@ public class BulletTrace : MonoBehaviour {
     private string ShooterName;
     private bool isTargetShield;
     private bool isfollow = false;
-    private float bulletSpeed = 400;
+    private float bulletSpeed = 350;
     private bool isCollided = false;
     private bool hasSlowdown = false;
 

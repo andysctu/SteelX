@@ -8,6 +8,7 @@ public class ShieldUpdater : MonoBehaviour {
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
     private float rotOffset = 10;//make
     private int hand;//which hand holds this?  ;  set in buildMech
+    private float defend_melee_efficiency = 0.5f, defend_ranged_efficiency = 0.5f;
 
     void Start(){
         if ((cc =transform.root.GetComponent<CharacterController>())!=null &&  !cc.enabled)
@@ -28,6 +29,15 @@ public class ShieldUpdater : MonoBehaviour {
             AnimatorVars = CurrentMech.GetComponent<AnimatorVars>();
         }
     } 
+
+    public void SetDefendEfficiency(float melee, float ranged) {
+        defend_melee_efficiency = melee;
+        defend_ranged_efficiency = ranged;
+    }
+
+    public float GetDefendEfficiency(bool isMelee) {
+        return (isMelee) ? defend_melee_efficiency : defend_ranged_efficiency;
+    }
 
     public void SetHand(int hand) {
         this.hand = hand;

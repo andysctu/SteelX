@@ -142,10 +142,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null ( in offline )
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[12];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[12];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[5];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[8];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[15];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[12];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[12];
 
         // Create new array to store skinned mesh renderers 
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
@@ -350,6 +350,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 case "Shield":
                     bulletPrefabs[i] = null;
                     ShieldUpdater shieldUpdater = weapons[i].GetComponentInChildren<ShieldUpdater>();
+                    shieldUpdater.SetDefendEfficiency(((Shield)weaponScripts[i]).defend_melee_efficiency, ((Shield)weaponScripts[i]).defend_ranged_efficiency);
                     shieldUpdater.SetHand(i % 2);
                 break;
                 case "Rifle":
