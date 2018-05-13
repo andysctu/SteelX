@@ -32,7 +32,7 @@ public class Crosshair : MonoBehaviour {
 	private bool isOnLocked = false;
 	private bool isTeamMode;
 	private bool isTargetAllyL = false, isTargetAllyR = false;
-	private bool isRCL = false, isENG_L = false, isENG_R = false;
+	private bool isRocket = false, isRectifier_L = false, isRectifier_R = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
 	public const float CAM_DISTANCE_TO_MECH = 15f;
 
@@ -75,28 +75,38 @@ public class Crosshair : MonoBehaviour {
 	public void UpdateCrosshair(){
 		weaponScripts = bm.weaponScripts;
 
+        if (weaponScripts[mcbt.weaponOffset] == null) {
+            CrosshairRadiusL = 0;
+            MaxDistanceL = 0;
+        } else {
+            CrosshairRadiusL = weaponScripts[mcbt.weaponOffset].radius;
+            MaxDistanceL = weaponScripts[mcbt.weaponOffset].Range;
+        }
 
-		CrosshairRadiusL = (weaponScripts[mcbt.weaponOffset] == null)? 0 : weaponScripts [mcbt.weaponOffset].radius;
-		CrosshairRadiusR = (weaponScripts[mcbt.weaponOffset + 1] == null)? 0 : weaponScripts [mcbt.weaponOffset+1].radius;
-		MaxDistanceL = (weaponScripts[mcbt.weaponOffset] == null) ? 0 : weaponScripts[mcbt.weaponOffset].Range;
-		MaxDistanceR = (weaponScripts[mcbt.weaponOffset + 1] == null) ? 0 : weaponScripts [mcbt.weaponOffset+1].Range;
+        if (weaponScripts[mcbt.weaponOffset + 1] == null) {
+            CrosshairRadiusR = 0;
+            MaxDistanceR = 0;
+        } else {
+            CrosshairRadiusR = weaponScripts[mcbt.weaponOffset + 1].radius;
+            MaxDistanceR = weaponScripts[mcbt.weaponOffset + 1].Range;
+        }
 
-		//isENG_L = (weaponScripts [mcbt.weaponOffset].Animation == "ENGShoot");
-		//isENG_R = (weaponScripts [mcbt.weaponOffset + 1].Animation == "ENGShoot");
-		//isRCL = (weaponScripts [mcbt.weaponOffset].Animation == "RCLShoot");
+		isRectifier_L = (weaponScripts[mcbt.weaponOffset] != null && weaponScripts[mcbt.weaponOffset].weaponType == "Rectifier");
+		isRectifier_R = (weaponScripts[mcbt.weaponOffset+1] != null && weaponScripts [mcbt.weaponOffset + 1].weaponType == "Rectifier");
+		isRocket = (weaponScripts[mcbt.weaponOffset] != null && weaponScripts [mcbt.weaponOffset].weaponType == "Rocket");
 
-		isTargetAllyL = isENG_L;
-		isTargetAllyR = isENG_R;
+		isTargetAllyL = isRectifier_L;
+		isTargetAllyR = isRectifier_R;
 
 		crosshairImage.SetRadius (CrosshairRadiusL,CrosshairRadiusR);
 
 		//first turn all off
 		crosshairImage.CloseAllCrosshairs_L ();
 
-		if(CrosshairRadiusL != 0){
-			if(isRCL){
+		if(CrosshairRadiusL != 0 ){
+			if(isRocket){
 				crosshairImage.SetCurrentLImage ((int)Ctype.RCL_0);
-			}else if(!isENG_L){//ENG does not have crosshair
+			}else if(!isRectifier_L){//ENG does not have crosshair
 				crosshairImage.SetCurrentLImage ((int)Ctype.N_L0);
 			}else{
 				crosshairImage.SetCurrentLImage ((int)Ctype.ENG);
@@ -106,7 +116,7 @@ public class Crosshair : MonoBehaviour {
 		crosshairImage.CloseAllCrosshairs_R ();
 
 		if (CrosshairRadiusR != 0) {
-			if(!isENG_R){
+			if(!isRectifier_R){
 				crosshairImage.SetCurrentRImage ((int)Ctype.N_R0);
 			}else{
 				crosshairImage.SetCurrentRImage ((int)Ctype.ENG);
@@ -117,7 +127,7 @@ public class Crosshair : MonoBehaviour {
 		targetR = null; 
 
 		//enable middle cross
-		if (isENG_L && isENG_R)
+		if (isRectifier_L && isRectifier_R)
 			crosshairImage.middlecross.enabled = false;
 		else 
 			crosshairImage.middlecross.enabled = true;
@@ -272,7 +282,7 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	public Transform getCurrentTargetL(){
-		if (isRCL)
+		if (isRocket)
 			return null;
 		
 		if (targetL != null && !isTargetAllyL) {
@@ -298,7 +308,7 @@ public class Crosshair : MonoBehaviour {
 		return targetL;
 	}
 	public Transform getCurrentTargetR(){
-		if (isRCL)
+		if (isRocket)
 			return null;
 		
 		if (targetR != null && !isTargetAllyR) {
@@ -323,7 +333,7 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	private void MarkTarget(){
-		if(isENG_L){
+		if(isRectifier_L){
 			if(targetL!=null){
 				crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint (targetL.transform.position + new Vector3 (0, 5, 0));
 			}
@@ -333,7 +343,7 @@ public class Crosshair : MonoBehaviour {
 			}
 		}
 
-		if(isENG_R){
+		if(isRectifier_R){
 			if(targetR!=null){
 				crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint (targetR.transform.position + new Vector3 (0, 5, 0));
 			}
@@ -342,14 +352,14 @@ public class Crosshair : MonoBehaviour {
 				crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint (targetR.transform.position + new Vector3 (0, 5, 0));
 			}
 		}
-		if((!isENG_L && targetL != null) || (!isENG_R && targetR != null)){
+		if((!isRectifier_L && targetL != null) || (!isRectifier_R && targetR != null)){
 			crosshairImage.middlecross.enabled = false;
 		}else{
 			crosshairImage.middlecross.enabled = true;
 		}
 
-		crosshairImage.EngTargetMark.enabled = ((isENG_L && targetL != null) || (isENG_R && targetR != null));
-		crosshairImage.targetMark.gameObject.SetActive((!isENG_L && targetL != null) || (!isENG_R && targetR != null));
+		crosshairImage.EngTargetMark.enabled = ((isRectifier_L && targetL != null) || (isRectifier_R && targetR != null));
+		crosshairImage.targetMark.gameObject.SetActive((!isRectifier_L && targetL != null) || (!isRectifier_R && targetR != null));
 	}
 
 	void SendLockedMessage(int id, string Name){

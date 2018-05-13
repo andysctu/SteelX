@@ -919,14 +919,8 @@ public class MechCombat : Combat {
         string animationStr = animationString(hand);
 
         if (getIsFiring(hand)) {
-            // Rotate arm to point to where you are looking (left hand is opposite)
-            float x = cam.transform.rotation.eulerAngles.x * (hand == LEFT_HAND ? -1 : 1);
-
             // Tweaks
             switch (curGeneralWeaponTypes[weaponOffset + hand]) {
-                case (int)GeneralWeaponTypes.Ranged:
-                animator.SetBool(animationStr, true);
-                break;
                 case (int)GeneralWeaponTypes.Melee:
                 if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.SHL)//sword                    
                     AnimationEventController.Slash(hand);
@@ -936,25 +930,16 @@ public class MechCombat : Combat {
                 case (int)GeneralWeaponTypes.Shield:
                 animator.SetBool(animationStr, true);
                 break;
-                case (int)GeneralWeaponTypes.Rocket:
-                animator.SetBool(animationStr, true);
-                break;
                 case (int)GeneralWeaponTypes.Cannon:
                 animator.SetBool(animationStr, true);
                 //animator.SetBool ("BCNPose", false);
                 break;
-                case (int)GeneralWeaponTypes.Rectifier:
-                animator.SetBool(animationStr, true);
-                break;
             }
         } else {// melee is set to false by animation
-            if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Ranged || curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rocket || curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield)
+            if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield)
                 animator.SetBool(animationStr, false);
             else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Cannon)
                 animator.SetBool("BCNShoot", false);
-            else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier) {
-                animator.SetBool(animationStr, false);
-            }
         }
     }
 
@@ -1218,8 +1203,8 @@ public class MechCombat : Combat {
             return "RCLShoot";
             case (int)GeneralWeaponTypes.Cannon:
             return "BCNShoot";
-            case (int)GeneralWeaponTypes.Ranged:
-            return "Shoot" + ((hand == LEFT_HAND) ? "L" : "R");
+            case (int)GeneralWeaponTypes.Shield:
+            return "Block" + ((hand == 0) ? "L" : "R");
             default:
             return "";
         }

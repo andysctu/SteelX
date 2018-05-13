@@ -51,7 +51,7 @@ public class Sounds : MonoBehaviour {
             if(weap%2==0)
                 this.slashClips[4 * weap + i] = slashClips[i];
             else
-                this.slashClips[8 + 4 * (weap-1) + i] = slashClips[i];
+                this.slashClips[8 + 4 * ((weap-1)/2) + i] = slashClips[i];
         }
     }
 
@@ -81,6 +81,11 @@ public class Sounds : MonoBehaviour {
     public void PlayReload(int hand) {
         if(reloadClips[MechCombat.weaponOffset + hand]!=null)
             Source.PlayOneShot(reloadClips[MechCombat.weaponOffset + hand]);
+    }
+
+    public void PlaySmash(int hand) {
+        if(smashClips[MechCombat.weaponOffset + hand] != null)
+            Source.PlayOneShot(smashClips[MechCombat.weaponOffset + hand]);
     }
 
 	public void PlayLock(){
