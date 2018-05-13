@@ -75,10 +75,11 @@ public class Crosshair : MonoBehaviour {
 	public void UpdateCrosshair(){
 		weaponScripts = bm.weaponScripts;
 
-		CrosshairRadiusL = weaponScripts [mcbt.weaponOffset].radius;
-		CrosshairRadiusR = weaponScripts [mcbt.weaponOffset+1].radius;
-		MaxDistanceL = weaponScripts [mcbt.weaponOffset].Range;
-		MaxDistanceR = weaponScripts [mcbt.weaponOffset+1].Range;
+
+		CrosshairRadiusL = (weaponScripts[mcbt.weaponOffset] == null)? 0 : weaponScripts [mcbt.weaponOffset].radius;
+		CrosshairRadiusR = (weaponScripts[mcbt.weaponOffset + 1] == null)? 0 : weaponScripts [mcbt.weaponOffset+1].radius;
+		MaxDistanceL = (weaponScripts[mcbt.weaponOffset] == null) ? 0 : weaponScripts[mcbt.weaponOffset].Range;
+		MaxDistanceR = (weaponScripts[mcbt.weaponOffset + 1] == null) ? 0 : weaponScripts [mcbt.weaponOffset+1].Range;
 
 		//isENG_L = (weaponScripts [mcbt.weaponOffset].Animation == "ENGShoot");
 		//isENG_R = (weaponScripts [mcbt.weaponOffset + 1].Animation == "ENGShoot");

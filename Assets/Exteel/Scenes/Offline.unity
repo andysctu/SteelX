@@ -672,6 +672,7 @@ GameObject:
   - component: {fileID: 80214931}
   - component: {fileID: 80214930}
   - component: {fileID: 80214929}
+  - component: {fileID: 80214932}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -849,6 +850,25 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &80214932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 80214927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pv: {fileID: 0}
+  Lock: {fileID: 0}
+  OnLocked: {fileID: 0}
+  SwitchWeapon: {fileID: 0}
+  BCNload: {fileID: 0}
+  BCNPose: {fileID: 0}
+  Source: {fileID: 0}
+  MovementSource: {fileID: 0}
 --- !u!1 &83663420
 GameObject:
   m_ObjectHideFlags: 0
@@ -22325,9 +22345,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RespawnPanel: {fileID: 1274096486}
   mcbt: {fileID: 0}
-  Sounds: {fileID: 0}
+  Sounds: {fileID: 80214932}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
   ShotSounds: []
+  ReloadSounds: []
   weaponScripts: []
   weapons: []
   bulletPrefabs: []

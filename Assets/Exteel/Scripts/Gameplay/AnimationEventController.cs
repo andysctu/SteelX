@@ -75,8 +75,8 @@ public class AnimationEventController : MonoBehaviour {
 		MechCombat.SetReceiveNextSlash (receive);
 	}
 
-	public void Slash(int handposition){
-		if(handposition==0){
+	public void Slash(int hand){
+		if(hand==0){
 			if (Animator.GetBool (AnimatorVars.slashL3_id)) {
 				Animator.SetBool (AnimatorVars.slashL4_id, true);
 			} else if (Animator.GetBool (AnimatorVars.slashL2_id)) {
@@ -127,22 +127,22 @@ public class AnimationEventController : MonoBehaviour {
 		}
 	}
 
-	public void Smash(int handposition){
-		if (handposition == 0)
+	public void Smash(int hand){
+		if (hand == 0)
 			MechCombat.isLMeleePlaying = 1;
 		else
 			MechCombat.isRMeleePlaying = 1;
 
 
 		if (Animator.GetBool (AnimatorVars.grounded_id)) {
-			pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 0);
+			pv.RPC ("SmashRPC", PhotonTargets.All, hand, 0);
 		} else {
 			if (MechCamera.GetCamAngle () <= -10)
-				pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 1);
+				pv.RPC ("SmashRPC", PhotonTargets.All, hand, 1);
 			else if (MechCamera.GetCamAngle () >= 10)
-				pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 3);
+				pv.RPC ("SmashRPC", PhotonTargets.All, hand, 3);
 			else
-				pv.RPC ("SmashRPC", PhotonTargets.All, handposition, 2);
+				pv.RPC ("SmashRPC", PhotonTargets.All, hand, 2);
 		}
 	}
 

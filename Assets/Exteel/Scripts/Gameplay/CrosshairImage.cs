@@ -146,29 +146,29 @@ public class CrosshairImage : MonoBehaviour {
 		crosshairs [(int)Ctype.N_R1].SetActive (false);
 	}
 
-	public void ShakingEffect(int handPosition){
-        if (handPosition == 0)
+	public void ShakingEffect(int hand){
+        if (hand == 0)
             isShakingL = true;
         else
             isShakingR = true;
 
-		if (shakeCoroutine[handPosition] == null) {
-			shakeCoroutine[handPosition] = StartCoroutine (PlayShakingEffect (handPosition));
+		if (shakeCoroutine[hand] == null) {
+			shakeCoroutine[hand] = StartCoroutine (PlayShakingEffect (hand));
 		}else{//stop the current shaking & start a new one
-			StopCoroutine (shakeCoroutine[handPosition]);
-			shakeCoroutine[handPosition] = StartCoroutine (PlayShakingEffect (handPosition));
+			StopCoroutine (shakeCoroutine[hand]);
+			shakeCoroutine[hand] = StartCoroutine (PlayShakingEffect (hand));
 		}
 	}
 
-	IEnumerator PlayShakingEffect(int handPosition){
-		if(handPosition==0){
+	IEnumerator PlayShakingEffect(int hand){
+		if(hand==0){
 			radiusL = orgRadiusL*shakingAmount;
 		}else{
 			radiusR = orgRadiusR*shakingAmount;
 		}
 		yield return new WaitForSeconds (0.2f);
 
-        if (handPosition == 0) {
+        if (hand == 0) {
             isShakingL = false;
             radiusL = orgRadiusL;
             SetLoffset(radiusL);

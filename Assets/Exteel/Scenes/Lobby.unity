@@ -6298,7 +6298,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: -0.0000073820725}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &646861062
@@ -12710,7 +12710,7 @@ MonoBehaviour:
   onPanel: 0
   Total_Mech: 4
   Mech_Num: 0
-  handOffset: {x: 0, y: 0, z: 0}
+  handOffset: {x: 0, y: 0.0005, z: 0.0005}
 --- !u!4 &1314102012
 Transform:
   m_ObjectHideFlags: 0
@@ -12765,7 +12765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Idle:
-  - {fileID: 7400000, guid: e83e12dcd8ea842878693d1bde49f7ee, type: 3}
+  - {fileID: 7400000, guid: 2e818879a5b9a0f438e02a40ea1d0f3f, type: 2}
   - {fileID: 7400000, guid: ba147f0a6af8b7543bc4fcba6d718f08, type: 3}
   BackWalk:
   - {fileID: 7400000, guid: d8d4ddcdc6c07424ba534dea9f4117ef, type: 3}

@@ -190,7 +190,7 @@ public class MechCombat : Combat {
         clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
         animatorOverrideController.GetOverrides(clipOverrides);
 
-        //ChangeMovementClips((weaponScripts[0].isTwoHanded) ? 1 : 0);
+        ChangeMovementClips((weaponScripts[0].twoHanded) ? 1 : 0);
         //ChangeWeaponClips ();
     }
 
@@ -198,7 +198,6 @@ public class MechCombat : Combat {
         weapons = bm.weapons;
         bullets = bm.bulletPrefabs;
         weaponScripts = bm.weaponScripts;
-        Sounds.ShotSounds = bm.ShotSounds;
     }
 
     public void initCombatVariables() {// this will be called also when respawn
@@ -260,8 +259,8 @@ public class MechCombat : Combat {
         }
     }
 
-    float timeOfLastShot(int handPosition) {
-        return handPosition == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
+    float timeOfLastShot(int hand) {
+        return hand == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
     }
 
     void initHealthAndFuelBars() {
@@ -458,7 +457,7 @@ public class MechCombat : Combat {
             if (Muz[weaponOffset + hand] != null) {
                 Muz[weaponOffset + hand].Play();
             }
-            Sounds.PlayShotL();
+            Sounds.PlayShot(LEFT_HAND);
 
             if (photonView.isMine) {
                 GameObject bullet = PhotonNetwork.Instantiate("RCL034B", (Hands[hand].position + Hands[hand + 1].position) / 2 + transform.forward * 3f + transform.up * 3f, Quaternion.LookRotation(bullet_directions[hand]), 0);
@@ -469,8 +468,8 @@ public class MechCombat : Combat {
             if (Muz[weaponOffset + hand] != null) {
                 Muz[weaponOffset + hand].Play();
             }
-            if (hand == 0) Sounds.PlayShotL();
-            else Sounds.PlayShotR();
+            if (hand == 0) Sounds.PlayShot(LEFT_HAND);
+            else Sounds.PlayShot(RIGHT_HAND);
 
             GameObject bullet = Instantiate(bullets[weaponOffset + hand], Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
             ElectricBolt eb = bullet.GetComponent<ElectricBolt>();
@@ -484,8 +483,8 @@ public class MechCombat : Combat {
             GameObject b = bullets[weaponOffset + hand];
             MechCombat mcbt = (Targets[hand] == null) ? null : Targets[hand].transform.root.GetComponent<MechCombat>();
 
-            if (hand == 0) Sounds.PlayShotL();
-            else Sounds.PlayShotR();
+            if (hand == 0) Sounds.PlayShot(LEFT_HAND);
+            else Sounds.PlayShot(RIGHT_HAND);
 
             if (photonView.isMine) {
                 crosshairImage.ShakingEffect(hand);
@@ -681,7 +680,6 @@ public class MechCombat : Combat {
         initMechStats();
 
         mechController.initControllerVar();
-        Sounds.UpdateSounds(weaponOffset);
         displayPlayerInfo.gameObject.SetActive(!photonView.isMine);
 
         transform.position = gm.SpawnPoints[respawnPoint].position;
@@ -741,51 +739,51 @@ public class MechCombat : Combat {
         handleAnimation(RIGHT_HAND);
     }
 
-    void handleCombat(int handPosition) {
-        switch (curGeneralWeaponTypes[weaponOffset + handPosition]) {
+    void handleCombat(int hand) {
+        switch (curGeneralWeaponTypes[weaponOffset + hand]) {
             case (int)GeneralWeaponTypes.Ranged:
-            if (curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.LMG) {//has a delay before putting down hands
-                if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + handPosition]) {
-                    if (handPosition == LEFT_HAND) {
-                        if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate * 0.95f)
-                            setIsFiring(handPosition, false);
+            if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.LMG) {//has a delay before putting down hands
+                if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + hand]) {
+                    if (hand == LEFT_HAND) {
+                        if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + hand].Rate * 0.95f)
+                            setIsFiring(hand, false);
                         return;
                     } else {
-                        if (Time.time - timeOfLastShotR >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate * 0.95f)
-                            setIsFiring(handPosition, false);
+                        if (Time.time - timeOfLastShotR >= 1 / bm.weaponScripts[weaponOffset + hand].Rate * 0.95f)
+                            setIsFiring(hand, false);
                         return;
                     }
                 }
             } else {
-                if (!Input.GetKeyDown(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + handPosition]) {
-                    if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 0.1f)//0.1 < time of playing shoot animation once , to make sure other player catch this
-                        setIsFiring(handPosition, false);
+                if (!Input.GetKeyDown(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + hand]) {
+                    if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 0.1f)//0.1 < time of playing shoot animation once , to make sure other player catch this
+                        setIsFiring(hand, false);
                     return;
                 }
             }
             break;
             case (int)GeneralWeaponTypes.Melee:
-            if (!Input.GetKeyDown(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + handPosition]) {
-                setIsFiring(handPosition, false);
+            if (!Input.GetKeyDown(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + hand]) {
+                setIsFiring(hand, false);
                 return;
             }
             break;
             case (int)GeneralWeaponTypes.Shield:
-            if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || getIsFiring((handPosition + 1) % 2)) {
-                setIsFiring(handPosition, false);
+            if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || getIsFiring((hand + 1) % 2)) {
+                setIsFiring(hand, false);
                 return;
             }
             break;
             case (int)GeneralWeaponTypes.Rocket:
-            if (!Input.GetKeyDown(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset]) {
+            if (!Input.GetKeyDown(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset]) {
                 if (Time.time - timeOfLastShotL >= 0.4f)//0.4 < time of playing shoot animation once , to make sure other player catch this
-                    setIsFiring(handPosition, false);
+                    setIsFiring(hand, false);
                 return;
             }
             break;
             case (int)GeneralWeaponTypes.Cannon:
             if (Time.time - timeOfLastShotL >= 0.5f)
-                setIsFiring(handPosition, false);
+                setIsFiring(hand, false);
             if (Input.GetKeyDown(KeyCode.Mouse1) || is_overheat[weaponOffset]) {//right click cancel BCNPose
                 isBCNcanceled = true;
                 animator.SetBool(AnimatorVars.BCNPose_id, false);
@@ -795,7 +793,7 @@ public class MechCombat : Combat {
                     if (!animator.GetBool(AnimatorVars.BCNPose_id)) {
                         AnimationEventController.BCNPose();
                         animator.SetBool(AnimatorVars.BCNPose_id, true);
-                        timeOfLastShotL = Time.time - 1 / bm.weaponScripts[weaponOffset + handPosition].Rate / 2;
+                        timeOfLastShotL = Time.time - 1 / bm.weaponScripts[weaponOffset + hand].Rate / 2;
                     }
                 } else {
                     animator.SetBool(AnimatorVars.BCNPose_id, false);
@@ -805,9 +803,9 @@ public class MechCombat : Combat {
             }
             break;
             case (int)GeneralWeaponTypes.Rectifier:
-            if (!Input.GetKey(handPosition == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + handPosition]) {
-                if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate)
-                    setIsFiring(handPosition, false);
+            if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + hand]) {
+                if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + hand].Rate)
+                    setIsFiring(hand, false);
                 return;
             }
             break;
@@ -816,21 +814,21 @@ public class MechCombat : Combat {
             return;
         }
 
-        if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Ranged || curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Shield || curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Rectifier)
-            if (curGeneralWeaponTypes[weaponOffset + (handPosition + 1) % 2] == (int)GeneralWeaponTypes.Melee && animator.GetBool("OnMelee"))
+        if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Ranged || curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield || curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier)
+            if (curGeneralWeaponTypes[weaponOffset + (hand + 1) % 2] == (int)GeneralWeaponTypes.Melee && animator.GetBool("OnMelee"))
                 return;
 
         if (isSwitchingWeapon) {
             return;
         }
 
-        switch (curGeneralWeaponTypes[weaponOffset + handPosition]) {
+        switch (curGeneralWeaponTypes[weaponOffset + hand]) {
 
             case (int)GeneralWeaponTypes.Ranged:
-            if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate) {
-                setIsFiring(handPosition, true);
-                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, handPosition);
-                if (handPosition == 1) {
+            if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + hand].Rate) {
+                setIsFiring(hand, true);
+                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, hand);
+                if (hand == 1) {
                     HeatBar.IncreaseHeatBarR(20);
                     timeOfLastShotR = Time.time;
                 } else {
@@ -840,29 +838,29 @@ public class MechCombat : Combat {
             }
             break;
             case (int)GeneralWeaponTypes.Melee:
-            if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate) {
+            if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + hand].Rate) {
                 if (!receiveNextSlash || !CanMeleeAttack) {
                     return;
                 }
 
-                if (curGeneralWeaponTypes[weaponOffset + (handPosition + 1) % 2] == (int)GeneralWeaponTypes.Shield && getIsFiring((handPosition + 1) % 2))
+                if (curGeneralWeaponTypes[weaponOffset + (hand + 1) % 2] == (int)GeneralWeaponTypes.Shield && getIsFiring((hand + 1) % 2))
                     return;
 
-                if ((animator.GetBool(AnimatorVars.slashL3_id) || animator.GetBool(AnimatorVars.slashR3_id)) && curSpecialWeaponTypes[(handPosition + 1) % 2 + weaponOffset] != (int)SpecialWeaponTypes.SHL)//if not both sword
+                if ((animator.GetBool(AnimatorVars.slashL3_id) || animator.GetBool(AnimatorVars.slashR3_id)) && curSpecialWeaponTypes[(hand + 1) % 2 + weaponOffset] != (int)SpecialWeaponTypes.SHL)//if not both sword
                     return;
 
-                if ((handPosition == 0 && isRMeleePlaying == 1) || (handPosition == 1 && isLMeleePlaying == 1))
+                if ((hand == 0 && isRMeleePlaying == 1) || (hand == 1 && isLMeleePlaying == 1))
                     return;
 
                 CanMeleeAttack = false;
                 receiveNextSlash = false;
-                setIsFiring(handPosition, true);
-                if (handPosition == 0) {
+                setIsFiring(hand, true);
+                if (hand == 0) {
                     HeatBar.IncreaseHeatBarL(5);
                     timeOfLastShotL = Time.time;
                     if (curGeneralWeaponTypes[weaponOffset + 1] == (int)GeneralWeaponTypes.Melee)
                         timeOfLastShotR = Time.time;
-                } else if (handPosition == 1) {
+                } else if (hand == 1) {
                     HeatBar.IncreaseHeatBarR(5);
                     timeOfLastShotR = Time.time;
                     if (curGeneralWeaponTypes[weaponOffset] == (int)GeneralWeaponTypes.Melee)
@@ -871,20 +869,20 @@ public class MechCombat : Combat {
             }
             break;
             case (int)GeneralWeaponTypes.Shield:
-            if (!getIsFiring((handPosition + 1) % 2))
-                setIsFiring(handPosition, true);
+            if (!getIsFiring((hand + 1) % 2))
+                setIsFiring(hand, true);
             break;
             case (int)GeneralWeaponTypes.Rocket:
-            if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate) {
-                setIsFiring(handPosition, true);
+            if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + hand].Rate) {
+                setIsFiring(hand, true);
                 HeatBar.IncreaseHeatBarL(25);
 
-                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, handPosition);
+                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, hand);
                 timeOfLastShotL = Time.time;
             }
             break;
             case (int)GeneralWeaponTypes.Cannon:
-            if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate && isOnBCNPose) {
+            if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + hand].Rate && isOnBCNPose) {
                 if (Input.GetKey(KeyCode.Mouse0) || !animator.GetBool(AnimatorVars.BCNPose_id) || !mechController.grounded)
                     return;
 
@@ -892,18 +890,18 @@ public class MechCombat : Combat {
                 if (BCNbulletNum <= 0)
                     animator.SetBool("BCNLoad", true);
 
-                setIsFiring(handPosition, true);
+                setIsFiring(hand, true);
                 HeatBar.IncreaseHeatBarL(45);
                 //**Start Position
-                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, handPosition);
+                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, hand);
                 timeOfLastShotL = Time.time;
             }
             break;
             case (int)GeneralWeaponTypes.Rectifier:
-            if (Time.time - ((handPosition == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + handPosition].Rate) {
-                setIsFiring(handPosition, true);
-                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, handPosition);
-                if (handPosition == 1) {
+            if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.weaponScripts[weaponOffset + hand].Rate) {
+                setIsFiring(hand, true);
+                FireRaycast(cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), cam.transform.forward, hand);
+                if (hand == 1) {
                     HeatBar.IncreaseHeatBarR(30);
                     timeOfLastShotR = Time.time;
                 } else {
@@ -916,24 +914,24 @@ public class MechCombat : Combat {
         }
     }
 
-    void handleAnimation(int handPosition) {
+    void handleAnimation(int hand) {
         // Name of animation, i.e. ShootR, SlashL, etc
-        string animationStr = animationString(handPosition);
+        string animationStr = animationString(hand);
 
-        if (getIsFiring(handPosition)) {
+        if (getIsFiring(hand)) {
             // Rotate arm to point to where you are looking (left hand is opposite)
-            float x = cam.transform.rotation.eulerAngles.x * (handPosition == LEFT_HAND ? -1 : 1);
+            float x = cam.transform.rotation.eulerAngles.x * (hand == LEFT_HAND ? -1 : 1);
 
             // Tweaks
-            switch (curGeneralWeaponTypes[weaponOffset + handPosition]) {
+            switch (curGeneralWeaponTypes[weaponOffset + hand]) {
                 case (int)GeneralWeaponTypes.Ranged:
                 animator.SetBool(animationStr, true);
                 break;
                 case (int)GeneralWeaponTypes.Melee:
-                if (curSpecialWeaponTypes[weaponOffset + handPosition] == (int)SpecialWeaponTypes.SHL)//sword                    
-                    AnimationEventController.Slash(handPosition);
+                if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.SHL)//sword                    
+                    AnimationEventController.Slash(hand);
                 else//spear
-                    AnimationEventController.Smash(handPosition);
+                    AnimationEventController.Smash(hand);
                 break;
                 case (int)GeneralWeaponTypes.Shield:
                 animator.SetBool(animationStr, true);
@@ -950,11 +948,11 @@ public class MechCombat : Combat {
                 break;
             }
         } else {// melee is set to false by animation
-            if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Ranged || curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Rocket || curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Shield)
+            if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Ranged || curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rocket || curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield)
                 animator.SetBool(animationStr, false);
-            else if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Cannon)
+            else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Cannon)
                 animator.SetBool("BCNShoot", false);
-            else if (curGeneralWeaponTypes[weaponOffset + handPosition] == (int)GeneralWeaponTypes.Rectifier) {
+            else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier) {
                 animator.SetBool(animationStr, false);
             }
         }
@@ -1010,7 +1008,7 @@ public class MechCombat : Combat {
 
         UpdateArmAnimatorState();
         //Switch movement clips
-        //ChangeMovementClips(weaponScripts[weaponOffset].isTwoHanded ? 1 : 0);
+        ChangeMovementClips(weaponScripts[weaponOffset].twoHanded ? 1 : 0);
 
         //Check crosshair
         crosshair.UpdateCrosshair();
@@ -1136,12 +1134,12 @@ public class MechCombat : Combat {
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 
-    bool getIsFiring(int handPosition) {
-        return handPosition == LEFT_HAND ? fireL : fireR;
+    bool getIsFiring(int hand) {
+        return hand == LEFT_HAND ? fireL : fireR;
     }
 
-    void setIsFiring(int handPosition, bool isFiring) {
-        if (handPosition == LEFT_HAND) {
+    void setIsFiring(int hand, bool isFiring) {
+        if (hand == LEFT_HAND) {
             fireL = isFiring;
         } else {
             fireR = isFiring;
@@ -1214,14 +1212,14 @@ public class MechCombat : Combat {
         is_overheat[weaponOffset] = b;
     }
 
-    string animationString(int handPosition) {
-        switch (curGeneralWeaponTypes[weaponOffset + handPosition]) {
+    string animationString(int hand) {
+        switch (curGeneralWeaponTypes[weaponOffset + hand]) {
             case (int)GeneralWeaponTypes.Rocket:
             return "RCLShoot";
             case (int)GeneralWeaponTypes.Cannon:
-            return "";
+            return "BCNShoot";
             case (int)GeneralWeaponTypes.Ranged:
-            return "Shoot" + ((handPosition == LEFT_HAND) ? "L" : "R");
+            return "Shoot" + ((hand == LEFT_HAND) ? "L" : "R");
             default:
             return "";
         }

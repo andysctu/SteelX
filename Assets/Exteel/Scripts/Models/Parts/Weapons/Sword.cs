@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/Sword", order = 0)]
 public class Sword : MeleeWeapon {
-    [Tooltip("Normalized time")]
+    [Tooltip("When can the slash animations exit in normalized time?")]
     [Range(0.75f, 1)]
     public float threshold = 1;
 

@@ -12,7 +12,7 @@ public class Weapon : ScriptableObject {
     public int Range = 0;
 
     [Range(0, 5)]
-    public float Rate = 0;
+    public float Rate = 0;//if it is melee weapon , then it's the time from slash start to the start of receiving the button
 
     [Tooltip("Crosshair size")]
     [Range(0, 15)]

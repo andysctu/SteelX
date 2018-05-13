@@ -158,7 +158,7 @@ public class HangarManager : MonoBehaviour {
 
 	public void Equip(string part, int weap) {
 		Debug.Log("Equipping weap: " + weap);
-		GameObject partGO = Resources.Load (part, typeof(GameObject)) as GameObject;
+		GameObject partGO = Resources.Load (part, typeof(GameObject)) as GameObject;//no need to load the weapon , just call equip
 		SkinnedMeshRenderer newSMR = (partGO==null)? null : partGO.GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
 		SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer> ();
 		Material material = Resources.Load (part + "mat", typeof(Material)) as Material;

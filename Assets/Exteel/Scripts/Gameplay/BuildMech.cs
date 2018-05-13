@@ -25,7 +25,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	private Transform shoulderR;
 	private Transform[] hands;
 
-	public AudioClip[] ShotSounds;
+	public AudioClip[] ShotSounds, ReloadSounds;
 	public Weapon[] weaponScripts;
 	public GameObject[] weapons;
 	public GameObject[] bulletPrefabs;
@@ -291,71 +291,61 @@ public class BuildMech : Photon.MonoBehaviour {
 		EnergyDrain += booster.EnergyDrain;
 	}
 
-    //adjust offset use
-    /*private void Update() {
-        for(int i = 0; i < 4; i++) {
-            if (weapons[i] != null) {
-               //weapons[i].transform.position = 
-            }
-        }
-    }*/
-
     private void buildWeapons (string[] weaponNames) {
 		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		bulletPrefabs = new GameObject[4];
 		ShotSounds = new AudioClip[4];
+        ReloadSounds = new AudioClip[4];
 
         for (int i = 0; i < weaponNames.Length; i++) {
             weaponScripts[i] = WeaponManager.FindData(weaponNames[i]);
             if (weaponScripts[i] == null) {
-                Debug.LogError("Can't find weapon data : "+weaponNames[i]);
+                Debug.Log("Can't find weapon data : " + weaponNames[i]);
                 continue;
             }
 
-            weapons [i] = Instantiate(weaponScripts[i].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+            weapons[i] = Instantiate(weaponScripts[i].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
             //TODO : remake this
-			if(onPanel){//resize
-				weapons [i].transform.localScale *=22f;
-			}else if(SceneManagerHelper.ActiveSceneName == "Lobby"){
-				weapons [i].transform.localScale *= 0.7f;
-			}else if(SceneManagerHelper.ActiveSceneName == "Hangar"){
-				
-			}
+            if (onPanel) {//resize
+                weapons[i].transform.localScale *= 22f;
+            } else if (SceneManagerHelper.ActiveSceneName == "Lobby") {
+                weapons[i].transform.localScale *= 0.7f;
+            } else if (SceneManagerHelper.ActiveSceneName == "Hangar") {
 
-            weapons[i].transform.SetParent(hands[i % 2]);
+            }
+
+            if (weaponScripts[i].twoHanded) {
+                weapons[i].transform.SetParent(hands[(i + 1) % 2]);
+                if (weaponScripts[i].Grip[(i+1) % 2] == null) { Debug.LogError("The right hand grip is null, two handed weapons must have right hand grip"); continue; }
+                weapons[i].transform.localRotation = weaponScripts[i].Grip[(i+1) % 2].transform.rotation;
+            } else {
+                weapons[i].transform.SetParent(hands[i % 2]);
+                if (weaponScripts[i].Grip[i % 2] == null) { Debug.LogError(i+" weapon grip is null"); continue; }
+                weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
+            }
+
+            //Adjust weapon local position by arm offset
             weapons[i].transform.localPosition = handOffset;
-
-            if (weaponScripts[i].Grip[i % 2] == null) { Debug.Log("i : "+(i%2) + " grip is null"); continue; }
-            weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
-            
 
             switch (weaponScripts[i].weaponType) {
                 case "APS":
                 case "LMG":
                     bulletPrefabs[i] = ((SMG)weaponScripts[i]).bulletPrefab;
-                    //ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire 04") as AudioClip;
+                    ShotSounds[i] = ((SMG)weaponScripts[i]).shoot_sound;
+                    ReloadSounds[i] = ((SMG)weaponScripts[i]).reload_sound;
                 break;
                 case "Sword":
                     bulletPrefabs[i] = null;
-                /*if(Sounds!=null)
-						if(i%2==0){//left hand
-							Sounds.SlashL [0 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire1") as AudioClip;
-							Sounds.SlashL [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
-							Sounds.SlashL [2 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire3") as AudioClip;
-							Sounds.SlashOnHit[i] = Resources.Load ("Sounds/Hit10_im1_02") as AudioClip;
-						}else{
-							Sounds.SlashR [0 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire1") as AudioClip;
-							Sounds.SlashR [1 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire2") as AudioClip;
-							Sounds.SlashR [2 + 3*(i/2)] = Resources.Load ("Sounds/Crimson_Fire3") as AudioClip;
-							Sounds.SlashOnHit[i] = Resources.Load ("Sounds/Hit10_im1_02") as AudioClip;
-						}*/
+                    Sounds.LoadSlashClips(i, ((Sword)weaponScripts[i]).slash_sound);
+                    Sounds.LoadSlashOnHitClips(i, ((Sword)weaponScripts[i]).slash_hit_sound);
                 break;
                 case "Spear":
                     bulletPrefabs[i] = null;
-                    //ShotSounds [i] = Resources.Load ("Sounds/Hit7_im1_02") as AudioClip;
+                    Sounds.LoadSmashClips(i, ((Spear)weaponScripts[i]).smash_sound);
+                    Sounds.LoadSmashOnHitClips(i, ((Spear)weaponScripts[i]).smash_hit_sound);
                 break;
                 case "Shield":
                     bulletPrefabs[i] = null;
@@ -364,37 +354,39 @@ public class BuildMech : Photon.MonoBehaviour {
                 break;
                 case "Rifle":
                     bulletPrefabs[i] = ((Rifle)weaponScripts[i]).bulletPrefab;
-                    //ShotSounds [i] = Resources.Load ("Sounds/Zeus_Fire") as AudioClip;
+                    ShotSounds[i] = ((Rifle)weaponScripts[i]).shoot_sound;
                 break;
                 case "Cannon":
                     bulletPrefabs[i] = ((Cannon)weaponScripts[i]).bulletPrefab;
+                    ShotSounds[i] = ((Cannon)weaponScripts[i]).shoot_sound;
+                    ReloadSounds[i] = ((Cannon)weaponScripts[i]).reload_sound;
                     weapons[i + 1] = null;
                     bulletPrefabs[i + 1] = null;
                     i++;
-                    //ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
                 break;
                 case "Shotgun":
                     bulletPrefabs[i] = ((Shotgun)weaponScripts[i]).bulletPrefab;
-                    //ShotSounds [i] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
+                    ShotSounds[i] = ((Shotgun)weaponScripts[i]).shoot_sound;
                 break;
                 case "Rocket":
                     bulletPrefabs[i] = ((Rocket)weaponScripts[i]).bulletPrefab;
+                    ShotSounds[i] = ((Rocket)weaponScripts[i]).shoot_sound;
                     weapons[i + 1] = null;
                     bulletPrefabs[i + 1] = null;
                     i++;
-                //ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
                 break;
                 case "Rectifier":
                     bulletPrefabs[i] = ((Rectifier)weaponScripts[i]).bulletPrefab;
-                    //ShotSounds [i] = Resources.Load ("Sounds/Heal_loop") as AudioClip;
+                    ShotSounds[i] = ((Rectifier)weaponScripts[i]).shoot_sound;
                 break;
-
 		        default:
-                //weaponScripts [i] = new EmptyWeapon ();
-                //weapons [i].transform.SetParent (hands [i % 2]);
+                    Debug.LogError("Should not get here");
                 break;
 			}
 		}
+
+        Sounds.LoadReloadClips(ReloadSounds);
+        Sounds.LoadShotClips(ShotSounds);
 
 		UpdateCurWeaponNames (weaponNames);
 
@@ -449,14 +441,14 @@ public class BuildMech : Photon.MonoBehaviour {
 		//destroy the current weapon on the hand position
 		if (weapons [weapPos] != null) 
 			Destroy (weapons [weapPos]);
-
-        Weapon weaponData = WeaponManager.FindData(weapon);
-        if (weaponData == null) {
+        
+        weaponScripts[weapPos] = WeaponManager.FindData(weapon);
+        if (weaponScripts[weapPos] == null) {
             Debug.LogError("Can't find weapon data : " + weapon);
             return;
         }
 
-        switch (weaponData.weaponType) {
+        switch (weaponScripts[weapPos].weaponType) {
             case "Cannon":
             case "Rocket":
                 weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
@@ -472,20 +464,20 @@ public class BuildMech : Photon.MonoBehaviour {
                     curWeaponNames[1] = "EmptyWeapon";
                 }
 
-                weapons[weapPos] = Instantiate(weaponData.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+                weapons[weapPos] = Instantiate(weaponScripts[weapPos].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
-                weapons[weapPos].transform.SetParent(hands[weapPos+1 % 2]);
+                weapons[weapPos].transform.SetParent(hands[(weapPos+1) % 2]);
                 weapons[weapPos].transform.localPosition = handOffset;
-                weapons[weapPos].transform.localRotation = weaponData.Grip[weapPos+1 % 2].transform.rotation;
+                weapons[weapPos].transform.localRotation = weaponScripts[weapPos].Grip[(weapPos+1) % 2].transform.rotation;
 
             break;
             default:
 
-            weapons[weapPos] = Instantiate(weaponData.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+            weapons[weapPos] = Instantiate(weaponScripts[weapPos].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
             weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
             weapons[weapPos].transform.localPosition = handOffset;
-            weapons[weapPos].transform.localRotation = weaponData.Grip[weapPos % 2].transform.rotation;
+            weapons[weapPos].transform.localRotation = weaponScripts[weapPos].Grip[weapPos % 2].transform.rotation;
 
             break;
         }	
@@ -525,8 +517,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (animator == null)
 			return;
 
-        //int num = (weaponScripts [weaponOffset].isTwoHanded)? 1 : 0;
-        int num = 0;//temp
+        int num = (weaponScripts [weaponOffset].twoHanded)? 1 : 0;
 
 		clipOverrides ["Idle"] = MovementClips.Idle [num];
 		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
