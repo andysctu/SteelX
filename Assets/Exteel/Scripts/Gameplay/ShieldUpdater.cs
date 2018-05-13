@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class ShieldUpdater : MonoBehaviour {
-
+    private CharacterController cc;
     private AnimatorVars AnimatorVars;
     private Animator Animator;
 	private GameObject boxcollider;
@@ -10,6 +10,8 @@ public class ShieldUpdater : MonoBehaviour {
     private int hand;//which hand holds this?  ;  set in buildMech
 
     void Start(){
+        if ((cc =transform.root.GetComponent<CharacterController>())!=null &&  !cc.enabled)
+            enabled = false;
         InitComponents();
 	}
 

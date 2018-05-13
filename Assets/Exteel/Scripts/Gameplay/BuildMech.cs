@@ -291,7 +291,16 @@ public class BuildMech : Photon.MonoBehaviour {
 		EnergyDrain += booster.EnergyDrain;
 	}
 
-	private void buildWeapons (string[] weaponNames) {
+    //adjust offset use
+    /*private void Update() {
+        for(int i = 0; i < 4; i++) {
+            if (weapons[i] != null) {
+               //weapons[i].transform.position = 
+            }
+        }
+    }*/
+
+    private void buildWeapons (string[] weaponNames) {
 		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
@@ -318,7 +327,9 @@ public class BuildMech : Photon.MonoBehaviour {
 
             weapons[i].transform.SetParent(hands[i % 2]);
             weapons[i].transform.localPosition = handOffset;
-            //weapons[i].transform.localRotation = weaponData.Grip[i % 2].transform.rotation;
+
+            if (weaponScripts[i].Grip[i % 2] == null) { Debug.Log("i : "+(i%2) + " grip is null"); continue; }
+            weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
             
 
             switch (weaponScripts[i].weaponType) {
@@ -460,18 +471,24 @@ public class BuildMech : Photon.MonoBehaviour {
                         UserData.myData.Mech[Mech_Num].Weapon1R = "EmptyWeapon";
                     curWeaponNames[1] = "EmptyWeapon";
                 }
+
+                weapons[weapPos] = Instantiate(weaponData.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+
+                weapons[weapPos].transform.SetParent(hands[weapPos+1 % 2]);
+                weapons[weapPos].transform.localPosition = handOffset;
+                weapons[weapPos].transform.localRotation = weaponData.Grip[weapPos+1 % 2].transform.rotation;
+
             break;
             default:
+
+            weapons[weapPos] = Instantiate(weaponData.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+
+            weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
+            weapons[weapPos].transform.localPosition = handOffset;
+            weapons[weapPos].transform.localRotation = weaponData.Grip[weapPos % 2].transform.rotation;
+
             break;
-        }
-
-        weapons[weapPos] = Instantiate(weaponData.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-
-        weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
-        weapons[weapPos].transform.localPosition = handOffset;
-        weapons[weapPos].transform.localRotation = weaponData.Grip[weapPos % 2].transform.rotation;
-
-	
+        }	
 		weapons[weapPos].SetActive (weapPos == weaponOffset || weapPos == weaponOffset+1);
 			
 		curWeaponNames [weapPos] = weapon;
