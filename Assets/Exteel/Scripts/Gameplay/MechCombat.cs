@@ -64,7 +64,8 @@ public class MechCombat : Combat {
     private bool isSwitchingWeapon = false;
     private bool receiveNextSlash = true;
     private const int slashMaxDistance = 30;//the ray which checks if hitting shield max distance
-                                            // Transforms
+    public float slashL_threshold, slashR_threshold;
+
     public Transform[] Hands;//other player use this to locate hand position quickly
     private Transform shoulderL;
     private Transform shoulderR;
@@ -130,6 +131,8 @@ public class MechCombat : Combat {
         initCrosshair();
         UpdateSpecialCurWeaponType();
         UpdateGeneralCurWeaponType();
+        UpdateSlashAnimationThreshold();
+        UpdateSMGAnimationSpeed();
         UpdateArmAnimatorState();
         initSlashDetector();
         SyncWeaponOffset();
@@ -218,7 +221,7 @@ public class MechCombat : Combat {
 
         HeatBar.InitVars();
         MechIK.UpdateMechIK();
-        mechController.FindBoosterController();
+        mechController.FindBoosterController();        
     }
 
     void initHUD() {
@@ -316,7 +319,7 @@ public class MechCombat : Combat {
 
                     photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, false, -1);
 
-                    //targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + hand].isSlowDown);
+                    targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + hand].slowDown);
 
                     if (target.gameObject.GetComponent<Combat>().CurrentHP() <= 0) {
                         hud.ShowText(cam, target.position + new Vector3(0, 5, 0), "Kill");
@@ -335,9 +338,11 @@ public class MechCombat : Combat {
                     if (targetMcbt != null) {
                         if (targetMcbt.is_overheat[targetMcbt.weaponOffset + target_handOnShield]) {
                             targetpv.RPC("ShieldOnHit", PhotonTargets.All, damage, photonView.viewID, target_handOnShield, weaponName);
-                        } else {
+                        } else {                            
                             targetpv.RPC("ShieldOnHit", PhotonTargets.All, (int)(damage * shieldUpdater.GetDefendEfficiency(false)), photonView.viewID, target_handOnShield, weaponName);
                         }
+                    } else {//target is drone
+                        targetpv.RPC("ShieldOnHit", PhotonTargets.All, (int)(damage * shieldUpdater.GetDefendEfficiency(false)), photonView.viewID, target_handOnShield, weaponName);
                     }
 
                     hud.ShowText(cam, target.position, "Defense");
@@ -974,6 +979,8 @@ public class MechCombat : Combat {
 
         weaponOffset = (weaponOffset + 2) % 4;
         if (photonView.isMine) SetWeaponOffsetProperty(weaponOffset);
+        UpdateSlashAnimationThreshold();
+        UpdateSMGAnimationSpeed();
         HeatBar.UpdateHeatBar();
         MechIK.UpdateMechIK();
         SetSlashDetector();
@@ -1284,6 +1291,30 @@ public class MechCombat : Combat {
 
     public bool IsHpFull() {
         return (currentHP >= MAX_HP);
+    }
+
+    void UpdateSMGAnimationSpeed() {
+        if(curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.APS) {//animation clip length 1.066s
+            animator.SetFloat("rateL", (((SMG)weaponScripts[weaponOffset]).Rate) *1.066f);
+        } else if(curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.LMG){//animation clip length 0.8s
+            animator.SetFloat("rateL", (((SMG)weaponScripts[weaponOffset]).Rate)*0.8f);
+        }
+
+
+        if (curSpecialWeaponTypes[weaponOffset+1] == (int)SpecialWeaponTypes.APS) {
+            animator.SetFloat("rateR",(((SMG)weaponScripts[weaponOffset+1]).Rate) * 1.066f);
+        } else if (curSpecialWeaponTypes[weaponOffset+1] == (int)SpecialWeaponTypes.LMG) {
+            animator.SetFloat("rateR", (((SMG)weaponScripts[weaponOffset+1]).Rate) * 0.8f);
+        }
+
+
+    }
+
+    void UpdateSlashAnimationThreshold() {
+        if (curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.SHL)
+            slashL_threshold = ((Sword)weaponScripts[weaponOffset]).threshold;
+        if (curSpecialWeaponTypes[weaponOffset+1] == (int)SpecialWeaponTypes.SHL)
+            slashR_threshold = ((Sword)weaponScripts[weaponOffset+1]).threshold;
     }
 
     public void SetLMeleePlaying(int isPlaying) {

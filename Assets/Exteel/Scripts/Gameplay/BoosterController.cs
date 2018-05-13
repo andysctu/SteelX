@@ -7,8 +7,8 @@ public class BoosterController : MonoBehaviour {
 
 	[SerializeField]private AudioClip BoostStart,BoostLoop;
 	[SerializeField]private ParticleSystem ps;
-	private AudioSource AudioSource;
-
+	private AudioSource audioSource;
+    private float volume = 0.3f;
 	void Start () {
 		Transform neck = transform.root.Find ("CurrentMech/metarig/hips/spine/chest/neck");
 		ParticleSystem g = neck.GetComponentInChildren<ParticleSystem> ();
@@ -16,18 +16,18 @@ public class BoosterController : MonoBehaviour {
 			Destroy (g.gameObject);
 		}
 		ps.transform.SetParent (neck);
-		AudioSource = GetComponent<AudioSource> ();	
-		AudioSource.clip = BoostLoop;
+		audioSource = GetComponent<AudioSource> ();	
+		audioSource.clip = BoostLoop;
 	}
 
 	public void StartBoost(){
-		AudioSource.PlayOneShot (BoostStart);
-		AudioSource.Play ();
+		AudioSource.PlayClipAtPoint(BoostStart,transform.position, 1);
+		audioSource.Play ();
 		ps.Play ();
 	}
 
 	public void StopBoost(){
-		AudioSource.Stop ();
+		audioSource.Stop ();
 		ps.Stop();
 	}
 }

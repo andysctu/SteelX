@@ -6,7 +6,7 @@ public class BulletImpact : MonoBehaviour {
 
     private void Start() {
         PlayHitSound(transform.position);
-        Destroy(gameObject, 2);
+        Destroy(gameObject, 1.5f);
     }
     void PlayHitSound(Vector3 intersection) {
         if (ImpactSound != null)

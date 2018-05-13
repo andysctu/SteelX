@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SlashState : MechStateMachineBehaviour {
 
-    private float threshold = 0.8f; // tmp  ; note that threshold must bigger than slash min time 0.75 ~1 
 	private bool inAir = false, detectGrounded, canExit = false;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
@@ -59,25 +56,30 @@ public class SlashState : MechStateMachineBehaviour {
 
         if ( cc == null || !cc.enabled) return;
 
-		if (inAir && mcbt.isLMeleePlaying == 0 && mcbt.isRMeleePlaying == 0) {
-			mctrl.Boost (false);
+        bool b = (inAir && mcbt.isLMeleePlaying == 0 && mcbt.isRMeleePlaying == 0);
+		if (b) {
 			mctrl.JumpMoveInAir ();
 		}
 
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 
 		if(!detectGrounded){
-			mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
+            if (b) {
+                mctrl.Boost(false);
+            }
+
+            mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 			if(mctrl.CheckIsGrounded()){
 				detectGrounded = true;
 				mctrl.grounded = true;
 				mctrl.SetCanVerticalBoost (false);
 				animator.SetBool (jump_id, false);
 				animator.SetBool (grounded_id, true);
-			}
+                mctrl.Boost(false);
+            }
 		}
 
-        if (stateInfo.normalizedTime > threshold && !animator.IsInTransition(0)) {
+        if (stateInfo.normalizedTime > ((mcbt.isLMeleePlaying==0)? mcbt.slashL_threshold : mcbt.slashR_threshold) && !animator.IsInTransition(0)) {
             animator.SetBool("CanExit", true);
         }
     }
@@ -86,8 +88,6 @@ public class SlashState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 		mctrl.SetCanVerticalBoost (false);
-		//animator.SetBool (boost_id, false);
-		//mctrl.Boost (false);
 
 		if (inAir) {//exiting from jump melee attack
 			animator.SetBool (onMelee_id, false);

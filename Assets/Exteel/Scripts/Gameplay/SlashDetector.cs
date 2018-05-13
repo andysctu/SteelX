@@ -15,7 +15,7 @@ public class SlashDetector : MonoBehaviour {
 	private float clamp_angle_coeff = 0.3f;//how much the cam angle affecting the y pos of box collider
 	private float inair_start_z = 14f;
 	private Vector3 inair_c = new Vector3(0,0,3.6f),inair_s = new Vector3(10,18,36);
-	private Vector3 onground_c = new Vector3(0,0,1.5f), onground_s = new Vector3(10,11,10);
+	private Vector3 onground_c = new Vector3(0,0,2.5f), onground_s = new Vector3(10,11,15);
 	private bool on_original_place = false;
 
 	void Update(){
