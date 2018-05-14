@@ -1,32 +1,38 @@
 fileFormatVersion: 2
-guid: 18430aa1217a9f84dabe5d7248e026e9
-timeCreated: 1517540017
+guid: 942f89d9154223c4497d80148382823b
+timeCreated: 1526276557
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Bone
-    100002: Bone_end
+    100000: EffectEnd
+    100002: //RootNode
     100004: RCL034
-    100006: //RootNode
-    400000: Bone
-    400002: Bone_end
+    100006: RCL034 1
+    100008: RCL034_knob
+    100010: RCL034_Muzzle
+    400000: EffectEnd
+    400002: //RootNode
     400004: RCL034
-    400006: //RootNode
-    2300000: RCL034
-    3300000: RCL034
+    400006: RCL034 1
+    400008: RCL034_knob
+    400010: RCL034_Muzzle
+    2100000: RCL034
     4300000: RCL034
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: RCL034 1
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: pskmat0.011
-    second: {fileID: 2100000, guid: 302427f813672bd4aa1bc751559f878b, type: 2}
+      name: RCL034
+    second: {fileID: 2100000, guid: 83c48dd2431426842a38a0f2cb9d38f5, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -54,16 +60,18 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
-    importVisibility: 0
+    importVisibility: 1
     importBlendShapes: 1
-    importCameras: 0
-    importLights: 0
+    importCameras: 1
+    importLights: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -93,7 +101,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

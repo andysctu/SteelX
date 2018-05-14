@@ -1,36 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using RootMotion.FinalIK;
 
 public class MechIK : MonoBehaviour {
 	
-	[SerializeField]Camera cam;
-	[SerializeField]MechCombat mechCombat;
-	[SerializeField]BuildMech bm;
-	Transform shoulderL,shoulderR;
-	float idealweight = 0;
+	[SerializeField]private Camera cam;
+	[SerializeField]private MechCombat mechCombat;
+	[SerializeField]private BuildMech bm;
+    [SerializeField]private Transform upperArmL, upperArmR;
+    private Transform Knob;
+    private Animator animator;
 
-	[SerializeField]Transform upperArmL, upperArmR;
+    //AimIK
+    [SerializeField] private AimIK AimIK;
+    [SerializeField] private Transform Target;
+    [SerializeField] private Transform PoleTarget, AimTransform;
+
+    float idealweight = 0;
 	private Vector3 upperArmL_rot, upperArmR_rot;
-	private float rotOffsetL, rotOffsetR;
 	private float ideal_roL, ideal_roR;
-	public bool onTargetL, onTargetR;//TODO : implement this
 
-	//AimIK
-	[SerializeField]AimIK AimIK;
-	[SerializeField]Transform Target;
-	public Transform PoleTarget, AimTransform;
-
-	private int mode = 0;//mode 0 : one hand weapon ; 1 : BCN ; 2 : RCL
-	private bool isIKset = false;
-	private bool isOnTargetL = false, isOnTargetR = false , LeftIK_on = false, RightIK_on = false;
-	private int weaponOffset = 0;
-
+	private int mode = 0;//mode 0 : one hand weapon ; 1 : Cannon ; 2 : Rocket
+	private bool LeftIK_on = false, RightIK_on = false;
 	public float weight=1;
-	[SerializeField]Transform Knob;//TODO : remove this
-	Animator animator;
-	// Use this for initialization
+
 	void Start () {
 		AimIK = GetComponent<AimIK> ();
 		animator = transform.GetComponent<Animator> ();
@@ -51,12 +43,16 @@ public class MechIK : MonoBehaviour {
 
 	void LateUpdate(){
 
-		if (LeftIK_on && mode==0) {
-			ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
-			ideal_roL = Mathf.Clamp (ideal_roL, -50, 40);
+		if (LeftIK_on) {
+            if (mode == 0) {
+                ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
+                ideal_roL = Mathf.Clamp(ideal_roL, -50, 40);
 
-			upperArmL_rot = upperArmL.localRotation.eulerAngles;
-			upperArmL.localRotation = Quaternion.Euler (upperArmL_rot + new Vector3 (0, rotOffsetL + ideal_roL, 0));
+                upperArmL_rot = upperArmL.localRotation.eulerAngles;
+                upperArmL.localRotation = Quaternion.Euler(upperArmL_rot + new Vector3(0, ideal_roL, 0));
+            }else{
+
+            }
 		}
 
 		if (RightIK_on && mode==0) {
@@ -64,7 +60,7 @@ public class MechIK : MonoBehaviour {
 			ideal_roR = Mathf.Clamp (ideal_roR, -50, 40);
 
 			upperArmR_rot = upperArmR.localRotation.eulerAngles;
-			upperArmR.localRotation = Quaternion.Euler (upperArmR_rot + new Vector3 (0, rotOffsetR + ideal_roR, 0));
+			upperArmR.localRotation = Quaternion.Euler (upperArmR_rot + new Vector3 (0, ideal_roR, 0));
 		}
 
 	}
@@ -74,7 +70,7 @@ public class MechIK : MonoBehaviour {
 			switch (mode) {
 			case 1:
 				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, idealweight, Time.deltaTime * 5);
-				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
+				Target.position = cam.transform.forward * 1000 + transform.root.position + new Vector3 (0, 10, 0);
 
 				if (idealweight == 0 && AimIK.solver.IKPositionWeight < 0.1f) {
 					LeftIK_on = false;
@@ -82,8 +78,8 @@ public class MechIK : MonoBehaviour {
 				}
 				break;
 			case 2:
-				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
-				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 0, Time.deltaTime * 2);
+				Target.position = cam.transform.position + cam.transform.forward * 1000;
+				AimIK.solver.IKPositionWeight = Mathf.Lerp (AimIK.solver.IKPositionWeight, 0, Time.deltaTime *2);
 				if (AimIK.solver.IKPositionWeight < 0.01f) {
 					LeftIK_on = false;
 					AimIK.solver.IKPositionWeight = 0;
@@ -108,15 +104,14 @@ public class MechIK : MonoBehaviour {
 				}
 				break;
 			case 1:
-				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0);
+				Target.position = cam.transform.forward * 1000 + transform.root.position + new Vector3 (0, 10, 0);
 				AimIK.solver.IKPositionWeight = 0;
 				idealweight = 1;
 				LeftIK_on = true;
 				break;
 			case 2:
-				Target.position = cam.transform.forward * 100 + transform.root.position + new Vector3 (0, 10, 0) ;
-				AimIK.solver.IKPositionWeight = 0.8f;
-				idealweight = 1;
+				Target.position = cam.transform.forward * 1000 + transform.root.position + new Vector3 (0, 10, 0) ;
+				AimIK.solver.IKPositionWeight = 1f;
 				LeftIK_on = true;
 				break;
 			}
@@ -137,27 +132,27 @@ public class MechIK : MonoBehaviour {
 				idealweight = 0;
 				break;
 			case 2:
-				break;
+                break;
 			}
 		}
 	}
 
 	public void UpdateMechIK(){
-		weaponOffset = mechCombat.GetCurrentWeaponOffset ();
-        //if(bm.weaponScripts[weaponOffset].isTwoHanded){
-        if (true) { 
-			AimTransform = bm.weapons [weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
+        if(bm.weaponScripts[mechCombat.weaponOffset].twoHanded){
+            Knob = FindKnob(bm.weapons[mechCombat.weaponOffset].transform);
+            AimTransform = bm.weapons [mechCombat.weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
 			if (AimTransform == null)
-				Debug.Log ("null aim Transform");
+				Debug.LogError ("null aim Transform");
 			else
 				AimIK.solver.transform = AimTransform;
 
-			PoleTarget = bm.weapons [weaponOffset].transform.Find ("End");
+			PoleTarget = bm.weapons [mechCombat.weaponOffset].transform.Find ("End");
 			if (PoleTarget == null)
 				Debug.Log ("null PoleTarget");
 			else
 				AimIK.solver.poleTarget = PoleTarget;
 		}else{
+            Knob = null;
 			mode = 0;
 		}
 
@@ -166,4 +161,12 @@ public class MechIK : MonoBehaviour {
 		RightIK_on = false;
 		idealweight = 0;
 	}
+
+    Transform FindKnob(Transform weapon) {//knob must under the first child
+        Transform t = weapon;
+        while (t.childCount != 0) {
+            t = t.GetChild(0);
+        }
+        return t;
+    }
 }
