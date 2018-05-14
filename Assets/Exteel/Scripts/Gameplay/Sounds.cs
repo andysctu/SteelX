@@ -79,7 +79,7 @@ public class Sounds : MonoBehaviour {
 	}
 
     public void PlayReload(int hand) {
-        if(reloadClips[MechCombat.weaponOffset + hand]!=null)
+        if (reloadClips[MechCombat.weaponOffset + hand] != null)
             Source.PlayOneShot(reloadClips[MechCombat.weaponOffset + hand]);
     }
 

@@ -1,36 +1,35 @@
 fileFormatVersion: 2
-guid: fb790c91f494b6d409b78947453d2c0b
-timeCreated: 1517533661
+guid: 19261649eea7ce2458f9cefc59f223ba
+timeCreated: 1526281546
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: ArmObject
-    100002: EffectEnd
-    100004: EffectEnd_end
-    100006: //RootNode
-    100008: LMG012_lft
-    100010: LMG012_lft 1
-    400000: ArmObject
-    400002: EffectEnd
-    400004: EffectEnd_end
-    400006: //RootNode
-    400008: LMG012_lft
-    400010: LMG012_lft 1
+    100000: EffectEnd
+    100002: //RootNode
+    100004: LMG012_lft
+    100006: LMG012_lft 1
+    400000: EffectEnd
+    400002: //RootNode
+    400004: LMG012_lft
+    400006: LMG012_lft 1
+    2100000: LMG012_shd
     4300000: LMG012_lft
+    7400000: Take 001
+    7400002: aa
     9500000: //RootNode
-    13700000: LMG012_lft
+    13700000: LMG012_lft 1
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: pskmat0.001
-    second: {fileID: 2100000, guid: daa8cd5434ae6448d8dee0251d2bd024, type: 2}
+      name: LMG012_shd
+    second: {fileID: 2100000, guid: 0aadb2dd26855a34ab815a38072ae877, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -51,7 +50,63 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 92
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: aa
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 2
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -68,6 +123,8 @@ ModelImporter:
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88

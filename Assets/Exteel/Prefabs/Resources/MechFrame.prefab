@@ -2943,6 +2943,7 @@ MonoBehaviour:
   mcbt: {fileID: 11445986}
   Sounds: {fileID: 114000010976113334}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
+  AnimationEventController: {fileID: 114895722533198232}
   ShotSounds: []
   ReloadSounds: []
   weaponScripts: []
@@ -5859,14 +5860,11 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   upperArmL: {fileID: 0}
   upperArmR: {fileID: 0}
-  onTargetL: 0
-  onTargetR: 0
   AimIK: {fileID: 114999884067279722}
   Target: {fileID: 4739413548255820}
   PoleTarget: {fileID: 0}
   AimTransform: {fileID: 0}
   weight: 1
-  Knob: {fileID: 0}
 --- !u!114 &114123029246024616
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6944,11 +6942,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MechCombat: {fileID: 11445986}
+  bm: {fileID: 11422958}
   MechController: {fileID: 11462782}
   MechCamera: {fileID: 11415780}
   Animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
   SlashDetector: {fileID: 114057908317756476}
+  Sounds: {fileID: 114000010976113334}
 --- !u!114 &114958770677456614
 MonoBehaviour:
   m_ObjectHideFlags: 1

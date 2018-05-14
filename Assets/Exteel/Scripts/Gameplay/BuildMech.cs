@@ -14,8 +14,8 @@ public class BuildMech : Photon.MonoBehaviour {
 	[SerializeField]private MechCombat mcbt = null;
 	[SerializeField]private Sounds Sounds;
     [SerializeField]private WeaponManager WeaponManager;
-
-	private GameManager gm;
+    [SerializeField] private AnimationEventController AnimationEventController;
+    private GameManager gm;
 	private Animator animator;
 	private AnimatorOverrideController animatorOverrideController;
 	private AnimationClipOverrides clipOverrides;
@@ -142,8 +142,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null ( in offline )
-        parts[5] = defaultParts[9];
-        parts[6] = defaultParts[16];
+        parts[5] = defaultParts[13];
+        parts[6] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[10];
@@ -374,6 +374,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 case "Rocket":
                     bulletPrefabs[i] = ((Rocket)weaponScripts[i]).bulletPrefab;
                     ShotSounds[i] = ((Rocket)weaponScripts[i]).shoot_sound;
+                    ReloadSounds[i] = ((Rocket)weaponScripts[i]).reload_sound;
                     weapons[i + 1] = null;
                     bulletPrefabs[i + 1] = null;
                     i++;
@@ -616,7 +617,9 @@ public class BuildMech : Photon.MonoBehaviour {
 		mcbt.EnableAllColliders (true);
 		mcbt.UpdateMuz ();
 		mcbt.FindGunEnds ();
+        AnimationEventController.UpdateWeaponAnimators();
 
-		mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].twoHanded) ? 1 : 0));
+
+        mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].twoHanded) ? 1 : 0));
 	}
 }

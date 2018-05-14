@@ -134,6 +134,7 @@ public class MechCombat : Combat {
         UpdateSlashAnimationThreshold();
         UpdateSMGAnimationSpeed();
         UpdateArmAnimatorState();
+        AnimationEventController.UpdateWeaponAnimators();
         initSlashDetector();
         SyncWeaponOffset();
         FindTrail();
