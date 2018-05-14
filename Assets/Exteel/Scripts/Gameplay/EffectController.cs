@@ -6,7 +6,7 @@ public class EffectController : MonoBehaviour {
 
 	[SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
 	[SerializeField]private ParticleSystem boostingDust, respawnEffect;
-	[SerializeField]private GameObject shieldOnHit, slashOnHitEffect;
+	[SerializeField]private GameObject shieldOnHit, slashOnHitEffect, smashOnHitEffect;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
@@ -63,8 +63,9 @@ public class EffectController : MonoBehaviour {
 	}
 
 	public void UpdateBoostingDust(){//called by horizontal boosting state
-		float direction = Animator.GetFloat (AnimatorVars.direction_id), speed = Animator.GetFloat (AnimatorVars.speed_id);
-		if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool(AnimatorVars.boost_id)) {
+		float direction = Animator.GetFloat ("Direction"), speed = Animator.GetFloat ("Speed");//other player also call this
+
+        if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool(AnimatorVars.boost_id)) {
 			if(!isBoostingDustPlaying)
 				BoostingDustEffect (true);
 			boostingDust.transform.localRotation = Quaternion.Euler (-90, Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward), 90);
@@ -95,7 +96,17 @@ public class EffectController : MonoBehaviour {
         }
     }
 
-	void OnEnable(){
+    public void SmashOnHitEffect(bool isShield, int hand) {
+        if (isShield) {
+            GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
+            g.GetComponent<ParticleSystem>().Play();
+        } else {
+            GameObject g = Instantiate(smashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
+            g.GetComponent<ParticleSystem>().Play();
+        }
+    }
+
+    void OnEnable(){
 		RespawnEffect ();
 	}
 }

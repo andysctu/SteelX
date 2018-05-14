@@ -41,7 +41,7 @@ public class SlashDetector : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider target){
-		if (target.gameObject != User && target.tag[0]!='S') {//in player layer but not shield => player
+        if (target.gameObject != User && target.tag[0]!='S') {//in player layer but not shield => player
 			if(GameManager.isTeamMode){
 				if ( target.tag == "Drone" || target.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
 					return;
@@ -51,12 +51,12 @@ public class SlashDetector : MonoBehaviour {
 	}
 	 
 	void OnTriggerExit(Collider target){
-		if(target.gameObject != User && target.tag[0]!='S'){
+        if (target.gameObject != User && target.tag[0]!='S'){
 			if(GameManager.isTeamMode){
 				if ( target.tag == "Drone" || target.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
 					return;
 			}
-			Target.Remove (target.transform);
+            Target.Remove (target.transform);
 		}	
 	}
 

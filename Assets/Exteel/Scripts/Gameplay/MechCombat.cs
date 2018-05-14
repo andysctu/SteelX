@@ -532,6 +532,13 @@ public class MechCombat : Combat {
             return;
         }
 
+        if (CheckIsSwordByStr(weapon)) {
+            EffectController.SlashOnHitEffect(false, 0);
+        }else if (CheckIsSpearByStr(weapon)) {
+            EffectController.SlashOnHitEffect(false, 0);
+        }
+
+
         if (photonView.isMine && isSlowDown) {
             mechController.SlowDown();
         }
@@ -556,7 +563,9 @@ public class MechCombat : Combat {
             return;
         }
 
-        if (CheckIsMeleeByStr(weapon)) {
+        if (CheckIsSwordByStr(weapon)) {
+            EffectController.SlashOnHitEffect(true, shield);
+        } else if (CheckIsSpearByStr(weapon)) {
             EffectController.SlashOnHitEffect(true, shield);
         }
 
@@ -581,9 +590,13 @@ public class MechCombat : Combat {
             }
         }
     }
-    bool CheckIsMeleeByStr(string name) {
-        return (name.Contains("ADR") || name.Contains("SHL"));
+    bool CheckIsSwordByStr(string name) {
+        return name.Contains("SHL");
     }
+    bool CheckIsSpearByStr(string name) {
+        return name.Contains("ADR");
+    }
+
     void DisplayKillMsg(string shooter, string target, string weapon) {
         InRoomChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
     }
@@ -653,13 +666,10 @@ public class MechCombat : Combat {
         EnableAllRenderers(false);
         EnableAllColliders(false);
 
-        GetComponent<Collider>().enabled = true;
+        GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
 
         crosshairImage.gameObject.SetActive(false);
         HeatBar.gameObject.SetActive(false);
-
-        //transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(false);
-        //transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(false);
     }
 
     // Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
@@ -1003,7 +1013,7 @@ public class MechCombat : Combat {
     }
 
     void StopCurWeaponAnimations() {
-        animator.SetBool(AnimatorVars.BCNPose_id, false);
+        animator.SetBool("BCNPose", false);
 
         string strL = animationString(LEFT_HAND), strR = animationString(RIGHT_HAND);
         if (strL != "" && curSpecialWeaponTypes[weaponOffset] != (int)GeneralWeaponTypes.Melee) { // not empty weapon or melee
@@ -1216,10 +1226,10 @@ public class MechCombat : Combat {
         Collider[] colliders = GetComponentsInChildren<Collider>();
         foreach (Collider collider in colliders) {
             if (!b) {
-                if (collider.gameObject.name != "Slash Detector")
+                if (collider.gameObject != slashDetector.gameObject)
                     collider.gameObject.layer = default_layer;
-            } else if (collider.gameObject.name != "Slash Detector")
-                collider.gameObject.layer = 8;
+            } else if (collider.gameObject != slashDetector.gameObject)
+                collider.gameObject.layer = playerlayer;
         }
     }
     // Public functions
@@ -1294,9 +1304,9 @@ public class MechCombat : Combat {
     }
 
     void UpdateSMGAnimationSpeed() {
-        if(curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.APS) {//animation clip length 1.066s
+        if(curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.APS) {//APS animation clip length 1.066s
             animator.SetFloat("rateL", (((SMG)weaponScripts[weaponOffset]).Rate) *1.066f);
-        } else if(curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.LMG){//animation clip length 0.8s
+        } else if(curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.LMG){//LMG animation clip length 0.8s
             animator.SetFloat("rateL", (((SMG)weaponScripts[weaponOffset]).Rate)*0.8f);
         }
 
@@ -1306,8 +1316,6 @@ public class MechCombat : Combat {
         } else if (curSpecialWeaponTypes[weaponOffset+1] == (int)SpecialWeaponTypes.LMG) {
             animator.SetFloat("rateR", (((SMG)weaponScripts[weaponOffset+1]).Rate) * 0.8f);
         }
-
-
     }
 
     void UpdateSlashAnimationThreshold() {

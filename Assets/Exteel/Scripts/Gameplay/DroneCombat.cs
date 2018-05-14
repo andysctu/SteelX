@@ -22,7 +22,7 @@ public class DroneCombat : Combat {
         Debug.Log("currenthp : " + currentHP);
 		currentHP -= d;
 
-        if (CheckIsMeleeByStr(weapon)){
+        if (CheckIsSwordByStr(weapon)){
             EffectController.SlashOnHitEffect(false, 0);
         }
 
@@ -38,8 +38,10 @@ public class DroneCombat : Combat {
         Debug.Log("dmg on shield : " + d);
 		currentHP -= d;
 
-        if (CheckIsMeleeByStr(weapon)){
+        if (CheckIsSwordByStr(weapon)){
             EffectController.SlashOnHitEffect(true, hand);
+        }else if (CheckIsSpearByStr(weapon)) {
+            EffectController.SmashOnHitEffect(true, hand);
         }
 
         if (currentHP <= 0) {
@@ -78,7 +80,10 @@ public class DroneCombat : Combat {
 		EnableDrone ();
 	}
 
-    bool CheckIsMeleeByStr(string weapon_name) {
-        return (weapon_name.Contains("DR") || weapon_name.Contains("SHL"));
+    bool CheckIsSwordByStr(string name) {
+        return name.Contains("SHL");
+    }
+    bool CheckIsSpearByStr(string name) {
+        return name.Contains("ADR");
     }
 }

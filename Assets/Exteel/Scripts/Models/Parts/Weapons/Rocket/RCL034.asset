@@ -20,7 +20,7 @@ MonoBehaviour:
   damage: 300
   Range: 600
   Rate: 0.8
-  radius: 0
+  radius: 2
   heat_increase_amount: 20
   slowDown: 1
   twoHanded: 1
@@ -28,3 +28,5 @@ MonoBehaviour:
     type: 2}
   shoot_sound: {fileID: 8300000, guid: 0562b950c3f24cd499f3b76e97102e29, type: 3}
   reload_sound: {fileID: 0}
+  impact_radius: 6
+  bullet_speed: 200

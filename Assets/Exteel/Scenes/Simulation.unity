@@ -829,6 +829,7 @@ GameObject:
   - component: {fileID: 56435105}
   - component: {fileID: 56435104}
   - component: {fileID: 56435103}
+  - component: {fileID: 56435101}
   m_Layer: 8
   m_Name: CurrentMech
   m_TagString: Player
@@ -855,6 +856,25 @@ Transform:
   m_Father: {fileID: 999463092}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &56435101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 56435099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pv: {fileID: 0}
+  Lock: {fileID: 0}
+  OnLocked: {fileID: 0}
+  SwitchWeapon: {fileID: 0}
+  BCNload: {fileID: 0}
+  BCNPose: {fileID: 0}
+  Source: {fileID: 0}
+  MovementSource: {fileID: 0}
 --- !u!114 &56435103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -886,9 +906,6 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: Grounded
   - Type: 4
-    SynchronizeType: 2
-    Name: AlreadyFalling
-  - Type: 4
     SynchronizeType: 0
     Name: ShootL
   - Type: 4
@@ -908,19 +925,7 @@ MonoBehaviour:
     Name: SlashL
   - Type: 4
     SynchronizeType: 0
-    Name: OnSlash
-  - Type: 4
-    SynchronizeType: 0
-    Name: UsingRCL
-  - Type: 4
-    SynchronizeType: 0
-    Name: ShootRCL
-  - Type: 4
-    SynchronizeType: 0
     Name: BCNPose
-  - Type: 4
-    SynchronizeType: 0
-    Name: ShootBCN
   - Type: 4
     SynchronizeType: 0
     Name: OnBCN
@@ -930,9 +935,48 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: ENGShootR
+  - Type: 1
+    SynchronizeType: 0
+    Name: slashTime
   - Type: 4
     SynchronizeType: 0
-    Name: UsingBCN
+    Name: CanExit
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnMelee
+  - Type: 4
+    SynchronizeType: 0
+    Name: RCLShoot
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNShoot
+  - Type: 4
+    SynchronizeType: 0
+    Name: BCNLoad
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR2
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL3
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR3
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashL4
+  - Type: 4
+    SynchronizeType: 0
+    Name: SlashR4
+  - Type: 1
+    SynchronizeType: 0
+    Name: rateL
+  - Type: 1
+    SynchronizeType: 0
+    Name: rateR
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -13992,17 +14036,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RespawnPanel: {fileID: 1922466795}
   mcbt: {fileID: 0}
-  Sounds: {fileID: 0}
+  Sounds: {fileID: 56435101}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
   ShotSounds: []
+  ReloadSounds: []
   weaponScripts: []
-  weapons: []
-  bulletPrefabs: []
   curWeaponNames:
   - 
   - 
   - 
   - 
+  weapons: []
+  bulletPrefabs: []
   onPanel: 1
   Total_Mech: 4
   Mech_Num: 0

@@ -6,13 +6,14 @@ public class SlashState : MechStateMachineBehaviour {
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
-		if ( cc == null || !cc.enabled ) return;
+        animator.SetFloat("slashTime", 0);
+        animator.SetBool("CanExit", false);
+
+        if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
 
 		inAir = animator.GetBool (jump_id);
 		detectGrounded = false;
-        animator.SetBool("CanExit", false);
-
 
         animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
@@ -36,7 +37,6 @@ public class SlashState : MechStateMachineBehaviour {
 		}
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 
-		animator.SetFloat ("slashTime", 0);
 		mctrl.ResetCurBoostingSpeed ();
 	}
 
@@ -54,6 +54,9 @@ public class SlashState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		animator.SetFloat ("slashTime", stateInfo.normalizedTime);
 
+        if (stateInfo.normalizedTime > ((mcbt.isLMeleePlaying == 1) ? mcbt.slashL_threshold : mcbt.slashR_threshold) && !animator.IsInTransition(0)) {
+            animator.SetBool("CanExit", true);
+        }
         if ( cc == null || !cc.enabled) return;
 
         bool b = (inAir && mcbt.isLMeleePlaying == 0 && mcbt.isRMeleePlaying == 0);
@@ -78,10 +81,6 @@ public class SlashState : MechStateMachineBehaviour {
                 mctrl.Boost(false);
             }
 		}
-
-        if (stateInfo.normalizedTime > ((mcbt.isLMeleePlaying==0)? mcbt.slashL_threshold : mcbt.slashR_threshold) && !animator.IsInTransition(0)) {
-            animator.SetBool("CanExit", true);
-        }
     }
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){

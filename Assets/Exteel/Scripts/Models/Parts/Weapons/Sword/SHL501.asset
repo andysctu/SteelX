@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 200ed0de3fc5b6e49ae846786216beea, type: 3}
+  m_Name: SHL501
+  m_EditorClassIdentifier: 
+  weaponType: Sword
+  weaponPrefab: {fileID: 1396204061408492, guid: cb1c8072bbb2621479749a84c01b01d5,
+    type: 2}
+  Grip:
+  - {fileID: 1096434313937498, guid: e7fbca5c06a58194abc0a4f21a11ce3d, type: 2}
+  - {fileID: 1096434313937498, guid: 988de0d8939e7ef4d87b54f4b0fb2f7d, type: 2}
+  damage: 300
+  Range: 0
+  Rate: 5
+  radius: 0
+  heat_increase_amount: 10
+  slowDown: 1
+  twoHanded: 0
+  hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
+    type: 2}
+  threshold: 0.8
+  slash_sound:
+  - {fileID: 8300000, guid: 31eadda6b0a3d4786bcd8c0368a144a9, type: 3}
+  - {fileID: 8300000, guid: a9ea5c0365c7e44a7a1c35831b1cdd00, type: 3}
+  - {fileID: 8300000, guid: 31eadda6b0a3d4786bcd8c0368a144a9, type: 3}
+  - {fileID: 8300000, guid: a9ea5c0365c7e44a7a1c35831b1cdd00, type: 3}
+  slash_hit_sound: {fileID: 8300000, guid: 2e5166eea2c6f47aea10d95ed62512f6, type: 3}
