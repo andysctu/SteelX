@@ -742,7 +742,6 @@ GameObject:
   - component: {fileID: 9563454}
   - component: {fileID: 11496946}
   - component: {fileID: 11418256}
-  - component: {fileID: 11465704}
   - component: {fileID: 114000010976113334}
   - component: {fileID: 82000013355623540}
   - component: {fileID: 114895722533198232}
@@ -2942,7 +2941,6 @@ MonoBehaviour:
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 11445986}
   Sounds: {fileID: 114000010976113334}
-  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
   AnimationEventController: {fileID: 114895722533198232}
   ShotSounds: []
   ReloadSounds: []
@@ -3066,18 +3064,6 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &11465704
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 144000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ee075c276e2d41689c69ad32c268c68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 9563454}
 --- !u!114 &11493298
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -34146,7 +34132,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -34187,7 +34173,7 @@ ParticleSystem:
     startSizeZ:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 3.5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -34350,7 +34336,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     maxNumParticles: 100
-    size3D: 0
+    size3D: 1
     rotation3D: 1
     gravityModifier:
       serializedVersion: 2

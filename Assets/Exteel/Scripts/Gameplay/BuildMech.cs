@@ -8,15 +8,15 @@ using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "SHL501", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "" };
 																																								        //eng : 14
 	[SerializeField]private GameObject RespawnPanel;
 	[SerializeField]private MechCombat mcbt = null;
 	[SerializeField]private Sounds Sounds;
-    [SerializeField]private WeaponManager WeaponManager;
-    [SerializeField] private AnimationEventController AnimationEventController;
+    [SerializeField]private AnimationEventController AnimationEventController;
     private GameManager gm;
-	private Animator animator;
+    private WeaponManager WeaponManager;
+    private Animator animator;
 	private AnimatorOverrideController animatorOverrideController;
 	private AnimationClipOverrides clipOverrides;
 	private MovementClips MovementClips;
@@ -64,7 +64,9 @@ public class BuildMech : Photon.MonoBehaviour {
     public Vector3 handOffset = Vector3.zero;//every hand has dif offset
 
 	void Start () {
-		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
+        if(WeaponManager==null)WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
+
+        if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
 
 		if (SceneManagerHelper.ActiveSceneName == "Store")inStore = true;
 
@@ -142,12 +144,12 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null ( in offline )
-        parts[5] = defaultParts[13];
-        parts[6] = defaultParts[13];
+        parts[5] = defaultParts[7];
+        parts[6] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[10];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[16];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[6];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[6];
 
         // Create new array to store skinned mesh renderers 
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
@@ -294,7 +296,9 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
     private void buildWeapons (string[] weaponNames) {
-		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
+        if(WeaponManager==null) WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
+
+        if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
 		weapons = new GameObject[4];
 		weaponScripts = new Weapon[4];
 		bulletPrefabs = new GameObject[4];
@@ -310,14 +314,9 @@ public class BuildMech : Photon.MonoBehaviour {
 
             weapons[i] = Instantiate(weaponScripts[i].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
-            //TODO : remake this
-           if (onPanel) {//resize
-                weapons[i].transform.localScale *= 22f;
-            } else if (SceneManagerHelper.ActiveSceneName == "Lobby") {
-                weapons[i].transform.localScale *= 0.7f;
-            } else if (SceneManagerHelper.ActiveSceneName == "Hangar") {
-
-            }
+            //TODO : remake this (it distorts on respawn panel )
+            weapons[i].transform.localScale = new Vector3(weapons[i].transform.localScale.x * transform.root.localScale.x,
+               weapons[i].transform.localScale.y * transform.root.localScale.y, weapons[i].transform.localScale.z * transform.root.localScale.z);
 
             if (weaponScripts[i].twoHanded) {
                 weapons[i].transform.SetParent(hands[(i + 1) % 2]);
@@ -329,7 +328,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
             }
 
-            //Adjust weapon local position by arm offset
+            //Adjust weapon local position by hand offset
             weapons[i].transform.localPosition = handOffset;
 
             switch (weaponScripts[i].weaponType) {
@@ -449,7 +448,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			}
 		}
 
-		//destroy the current weapon on the hand position
+        //destroy the current weapon on the hand position
 		if (weapons [weapPos] != null) 
 			Destroy (weapons [weapPos]);
 
@@ -470,7 +469,6 @@ public class BuildMech : Photon.MonoBehaviour {
                 }
 
                 weapons[weapPos] = Instantiate(newWeapon.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-
                 weapons[weapPos].transform.SetParent(hands[(weapPos+1) % 2]);
                 weapons[weapPos].transform.localPosition = handOffset;
                 weapons[weapPos].transform.localRotation = newWeapon.Grip[(weapPos+1) % 2].transform.rotation;
@@ -479,7 +477,6 @@ public class BuildMech : Photon.MonoBehaviour {
             default:
 
             weapons[weapPos] = Instantiate(newWeapon.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-
             weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
             weapons[weapPos].transform.localPosition = handOffset;
             weapons[weapPos].transform.localRotation = newWeapon.Grip[weapPos % 2].transform.rotation;

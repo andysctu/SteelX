@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class BoosterController : MonoBehaviour {
@@ -9,6 +7,7 @@ public class BoosterController : MonoBehaviour {
 	[SerializeField]private ParticleSystem ps;
 	private AudioSource audioSource;
     private float volume = 0.3f;
+
 	void Start () {
 		Transform neck = transform.root.Find ("CurrentMech/metarig/hips/spine/chest/neck");
 		ParticleSystem g = neck.GetComponentInChildren<ParticleSystem> ();
@@ -21,7 +20,7 @@ public class BoosterController : MonoBehaviour {
 	}
 
 	public void StartBoost(){
-		AudioSource.PlayClipAtPoint(BoostStart,transform.position, 1);
+        audioSource.PlayOneShot(BoostStart);
 		audioSource.Play ();
 		ps.Play ();
 	}

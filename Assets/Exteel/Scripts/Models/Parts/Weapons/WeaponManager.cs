@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System.Collections.Generic;
 [CreateAssetMenu]
 public class WeaponManager : ScriptableObject {
 
@@ -47,6 +47,30 @@ public class WeaponManager : ScriptableObject {
         }
         Debug.LogError("Can't find prefab : " + name);
         return null;
+    }
+
+    public Weapon[] GetAllWeaponsNames() {
+        int length = Swords.Length + Spears.Length + SMGs.Length + Rifles.Length + Shotguns.Length + Rectifiers.Length + Rockets.Length + Cannons.Length;
+        Weapon[] weapons = new Weapon[length];
+
+        List<Weapon[]> weapon_list = new List<Weapon[]>();
+        weapon_list.Add(Swords);
+        weapon_list.Add(Spears);
+        weapon_list.Add(SMGs);
+        weapon_list.Add(Rifles);
+        weapon_list.Add(Shotguns);
+        weapon_list.Add(Rectifiers);
+        weapon_list.Add(Rockets);
+        weapon_list.Add(Cannons);
+
+        int i = 0;
+        foreach(Weapon[] w in weapon_list) {
+            foreach(Weapon w2 in w) {
+                weapons[i++] = w2;
+            }
+        }
+
+        return weapons;
     }
 }
 

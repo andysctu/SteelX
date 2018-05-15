@@ -12,8 +12,8 @@ public class HangarManager : MonoBehaviour {
 	[SerializeField] GameObject Mech;
 	[SerializeField] Sprite buttonTexture;
 	[SerializeField] Button displaybutton1,displaybutton2;
-	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012", "ENG041" , "ADR000"};
-
+	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000"};
+    private WeaponManager WeaponManager;
 	private Transform[] contents;
 	private int activeTab;
 	//private Dictionary<string, string> equipped;
@@ -21,7 +21,9 @@ public class HangarManager : MonoBehaviour {
 	public int Mech_Num = 0;
 	// Use this for initialization
 	void Start () {
-		Mech m = UserData.myData.Mech[0];
+        WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
+
+        Mech m = UserData.myData.Mech[0];
 
 		displaybutton1.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
 		displaybutton2.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());
@@ -58,53 +60,57 @@ public class HangarManager : MonoBehaviour {
 				parent = 1;
 				break;
 			case 'A':
-				if (part[1] == 'E')
-					parent = 2;
-				else
-					parent = 5;
+				parent = 2;
 				break;
 			case 'L':
-				if (part [1] == 'M')
-					parent = 5;
-				else
-					parent = 3;
+				parent = 3;
 				break;
 			case 'P':
 				parent = 4;
 				break;
 			default:
-				parent = 5;
+                Debug.LogError("Can not catagorize " + part);
 				break;
 			}
 			GameObject uiPart;
-			if (parent != 5) uiPart = Instantiate(UIPart, new Vector3(0,0,0), Quaternion.identity) as GameObject;
-			else uiPart = Instantiate(UIWeap, new Vector3(0,0,0), Quaternion.identity) as GameObject;
+			uiPart = Instantiate(UIPart, new Vector3(0,0,0), Quaternion.identity) as GameObject;
 			uiPart.transform.SetParent(contents[parent]);
 			uiPart.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
 			uiPart.GetComponent<RectTransform>().position = new Vector3(0,0,0);
 			Sprite s = Resources.Load<Sprite>(part);
-			uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
+            if (s == null) Debug.LogError(part + "'s sprite is missing");
+            uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
 			uiPart.GetComponentInChildren<Text>().text = part;
-			string p = part;
-			if (parent !=5) uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Equip(p,-1));
-			else {
-				Button[] btns = uiPart.GetComponentsInChildren<Button>();
-				for (int i = 0; i < btns.Length; i++) {
-
-					//if two-handed , skip 1 &3  temp.
-					if ((p == "RCL034" || p == "BCN029") && (i == 1 || i == 3)) {
-						btns [i].image.enabled = false;
-						continue;
-					}
-
-					int copy = i;
-					Button b = btns[i];
-					b.onClick.AddListener(() => Equip(p,copy));
-				}
-			}
+			uiPart.GetComponentInChildren<Button> ().onClick.AddListener (() => Equip(part, -1));
 		}
 
+        LoadWeapons();
 	}
+
+    void LoadWeapons() {
+        foreach(Weapon weapon in WeaponManager.GetAllWeaponsNames()) {
+            string weaponName = weapon.weaponPrefab.name;
+            GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            uiPart.transform.SetParent(contents[5]);
+            uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
+            Sprite s = Resources.Load<Sprite>(weaponName);
+            if(s==null)Debug.Log(weapon +"'s sprite is missing");
+            uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
+            uiPart.GetComponentInChildren<Text>().text = weaponName;
+
+            Button[] btns = uiPart.GetComponentsInChildren<Button>();
+            for (int i = 0; i < btns.Length; i++) {
+                if ((weapon.twoHanded) && (i == 1 || i == 3)) {//if two handed , turn off equip on right hand
+                    btns[i].image.enabled = false;
+                    continue;
+                }
+                int n = i;
+                btns[i].onClick.AddListener(() => Equip(weaponName, n));
+            }
+        }
+        
+    }
 
 	private void activateTab(int index) {
 		for (int i = 0; i < Tabs.Length; i++) {
@@ -220,8 +226,6 @@ public class HangarManager : MonoBehaviour {
 				}
 			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
 			}
-
-
 		}
 
 	public void ChangeDisplayMech(int Num){

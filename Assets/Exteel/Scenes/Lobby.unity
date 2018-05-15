@@ -3959,7 +3959,6 @@ GameObject:
   - component: {fileID: 428959980}
   - component: {fileID: 428959979}
   - component: {fileID: 428959978}
-  - component: {fileID: 428959977}
   - component: {fileID: 428959975}
   - component: {fileID: 428959981}
   m_Layer: 8
@@ -4024,19 +4023,6 @@ Transform:
   m_Father: {fileID: 1314102012}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 11.901001, z: 0}
---- !u!114 &428959977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11465704, guid: dace0f8d137bc4c339fcea3950b1731e,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 428959974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ee075c276e2d41689c69ad32c268c68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 428959980}
 --- !u!114 &428959978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12720,7 +12706,7 @@ MonoBehaviour:
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 0}
   Sounds: {fileID: 428959981}
-  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
+  AnimationEventController: {fileID: 0}
   ShotSounds: []
   ReloadSounds: []
   weaponScripts: []

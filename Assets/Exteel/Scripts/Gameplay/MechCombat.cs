@@ -700,9 +700,6 @@ public class MechCombat : Combat {
         crosshairImage.gameObject.SetActive(true);
         HeatBar.gameObject.SetActive(true);
 
-        //transform.Find("Camera/Canvas/CrosshairImage").gameObject.SetActive(true);
-        //transform.Find("Camera/Canvas/HeatBar").gameObject.SetActive(true);
-
         EffectController.RespawnEffect();
     }
 

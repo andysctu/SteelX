@@ -25,7 +25,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(direction_id, direction);
 
 		if(animator.GetBool(jump_id)){
-			return;
+            return;
 		}
 
 		if(!mctrl.CheckIsGrounded()){//falling
@@ -37,7 +37,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			return;
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space)) {	
+		if (Input.GetKeyDown(KeyCode.Space)) {
 			mctrl.SetCanVerticalBoost(true);
 			animator.SetBool(jump_id, true);
 		}
