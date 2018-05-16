@@ -330,12 +330,6 @@ public class BuildMech : Photon.MonoBehaviour {
             weapons[i].transform.localPosition = handOffset;
 
             switch (weaponScripts[i].weaponType) {
-                case "APS":
-                case "LMG":
-                    bulletPrefabs[i] = ((SMG)weaponScripts[i]).bulletPrefab;
-                    ShotSounds[i] = ((SMG)weaponScripts[i]).shoot_sound;
-                    ReloadSounds[i] = ((SMG)weaponScripts[i]).reload_sound;
-                break;
                 case "Sword":
                     bulletPrefabs[i] = null;
                     Sounds.LoadSlashClips(i, ((Sword)weaponScripts[i]).slash_sound);
@@ -352,36 +346,19 @@ public class BuildMech : Photon.MonoBehaviour {
                     shieldUpdater.SetDefendEfficiency(((Shield)weaponScripts[i]).defend_melee_efficiency, ((Shield)weaponScripts[i]).defend_ranged_efficiency);
                     shieldUpdater.SetHand(i % 2);
                 break;
-                case "Rifle":
-                    bulletPrefabs[i] = ((Rifle)weaponScripts[i]).bulletPrefab;
-                    ShotSounds[i] = ((Rifle)weaponScripts[i]).shoot_sound;
-                break;
                 case "Cannon":
-                    bulletPrefabs[i] = ((Cannon)weaponScripts[i]).bulletPrefab;
-                    ShotSounds[i] = ((Cannon)weaponScripts[i]).shoot_sound;
-                    ReloadSounds[i] = ((Cannon)weaponScripts[i]).reload_sound;
-                    weapons[i + 1] = null;
-                    bulletPrefabs[i + 1] = null;
-                    i++;
-                break;
-                case "Shotgun":
-                    bulletPrefabs[i] = ((Shotgun)weaponScripts[i]).bulletPrefab;
-                    ShotSounds[i] = ((Shotgun)weaponScripts[i]).shoot_sound;
-                break;
                 case "Rocket":
-                    bulletPrefabs[i] = ((Rocket)weaponScripts[i]).bulletPrefab;
-                    ShotSounds[i] = ((Rocket)weaponScripts[i]).shoot_sound;
-                    ReloadSounds[i] = ((Rocket)weaponScripts[i]).reload_sound;
+                    bulletPrefabs[i] = ((RangedWeapon)weaponScripts[i]).bulletPrefab;
+                    ShotSounds[i] = ((RangedWeapon)weaponScripts[i]).shoot_sound;
+                    ReloadSounds[i] = ((RangedWeapon)weaponScripts[i]).reload_sound;
                     weapons[i + 1] = null;
                     bulletPrefabs[i + 1] = null;
                     i++;
                 break;
-                case "Rectifier":
-                    bulletPrefabs[i] = ((Rectifier)weaponScripts[i]).bulletPrefab;
-                    ShotSounds[i] = ((Rectifier)weaponScripts[i]).shoot_sound;
-                break;
-		        default:
-                    Debug.LogError("Should not get here");
+		        default://other ranged weapon
+                    bulletPrefabs[i] = ((RangedWeapon)weaponScripts[i]).bulletPrefab;
+                    ShotSounds[i] = ((RangedWeapon)weaponScripts[i]).shoot_sound;
+                    ReloadSounds[i] = ((RangedWeapon)weaponScripts[i]).reload_sound;
                 break;
 			}
 		}

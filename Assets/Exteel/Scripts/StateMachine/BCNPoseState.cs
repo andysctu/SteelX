@@ -21,7 +21,7 @@ public class BCNPoseState : MechStateMachineBehaviour {
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (mcbt == null)return;
 		mcbt.isOnBCNPose = false;
-
+        animator.SetBool("BCNPose", false);
 		mechIK.SetIK (false, 1, 0);
 	}
 }

@@ -53,10 +53,10 @@ public class Sounds : MonoBehaviour {
 
     public void LoadSlashClips(int weap, AudioClip[] slashClips) {//weap : 0,1,2,3
         for (int i = 0; i < slashClips.Length; i++) {
-            if(weap%2==0)
-                this.slashClips[4 * (weap/2) + i] = slashClips[i];
-            else
-                this.slashClips[8 + 4 * ((weap-1)/2) + i] = slashClips[i];
+            if (weap % 2 == 0) {
+                this.slashClips[4 * (weap / 2) + i] = slashClips[i];
+            } else
+                this.slashClips[8 + 4 * ((weap - 1) / 2) + i] = slashClips[i];
         }
     }
 
