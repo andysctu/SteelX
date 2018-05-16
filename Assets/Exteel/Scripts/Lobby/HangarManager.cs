@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
 
 public class HangarManager : MonoBehaviour {
 
@@ -23,7 +21,7 @@ public class HangarManager : MonoBehaviour {
 	void Start () {
         WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
 
-        Mech m = UserData.myData.Mech[0];
+        //Mech m = UserData.myData.Mech[0];
 
 		displaybutton1.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
 		displaybutton2.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());

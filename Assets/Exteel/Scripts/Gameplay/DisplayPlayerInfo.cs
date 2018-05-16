@@ -27,6 +27,7 @@ public class DisplayPlayerInfo : MonoBehaviour {
             getCurrentHp = GetCurrentDroneHP;
             getCurrentMaxHp = GetCurrentDroneMaxHP;
         } else {//player
+            gameObject.SetActive(!pv.isMine);//do not show my name & hp bar
             getCurrentHp = GetCurrentMechHP;
             getCurrentMaxHp = GetCurrentMechMaxHP;
         }

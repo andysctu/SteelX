@@ -27,7 +27,7 @@ public class Crosshair : MonoBehaviour {
 	private float TimeOfLastSend;
 	private float CrosshairRadiusL ;
 	private float CrosshairRadiusR ;
-	private int LastLockTargetID = 0 ;//avoid sending lock message too often
+	private int LastLockTargetID = 0, weaponOffset = 0;//avoid sending lock message too often
 	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
 	private bool isOnLocked = false;
 	private bool isTeamMode;
@@ -38,28 +38,33 @@ public class Crosshair : MonoBehaviour {
 
 	private float SphereRadiusCoeff = 0.04f;
 	private float DistanceCoeff = 0.008f;
+    private float MaxDistanceL, MaxDistanceR;
 
-	public float MaxDistanceL ;
-	public float MaxDistanceR ;
+    void Awake() {
+        if(bm!=null)bm.OnWeaponBuilt += OnWeaponBuilt;
+        if(mcbt!=null)mcbt.OnWeaponSwitched += UpdateCrosshair;
+    }
 
-
-	void Start () {
+    void Start () {
 		GetGameVars ();
 		initComponent ();
 		UpdateCrosshair ();
 	}
 
-	void GetGameVars(){
+	private void GetGameVars(){
 		screenCoeff = (float)Screen.height / Screen.width;
 		isTeamMode = GameManager.isTeamMode;
 	}
 
-	void initComponent(){
-		weaponScripts = bm.weaponScripts;
+    private void initComponent(){
 		cam = GetComponent<Camera> ();
 	}
-		
-	public void NoAllCrosshairs() {//called when disabling player
+
+    private void OnWeaponBuilt() {
+        weaponScripts = bm.weaponScripts;
+    }
+
+    public void ShutDownAllCrosshairs() {//called when disabling player
 		if (crosshairImage != null) {
 			crosshairImage.CloseAllCrosshairs_L ();
 			crosshairImage.CloseAllCrosshairs_R ();
@@ -72,28 +77,29 @@ public class Crosshair : MonoBehaviour {
 			crosshairImage.EngTargetMark.enabled = false;
 		}
 	}
-	public void UpdateCrosshair(){
-		weaponScripts = bm.weaponScripts;
 
-        if (weaponScripts[mcbt.weaponOffset] == null) {
+	public void UpdateCrosshair(){
+        weaponOffset = mcbt.GetCurrentWeaponOffset();
+
+        if (weaponScripts[weaponOffset] == null) {
             CrosshairRadiusL = 0;
             MaxDistanceL = 0;
         } else {
-            CrosshairRadiusL = weaponScripts[mcbt.weaponOffset].radius;
-            MaxDistanceL = weaponScripts[mcbt.weaponOffset].Range;
+            CrosshairRadiusL = weaponScripts[weaponOffset].radius;
+            MaxDistanceL = weaponScripts[weaponOffset].Range;
         }
 
-        if (weaponScripts[mcbt.weaponOffset + 1] == null) {
+        if (weaponScripts[weaponOffset + 1] == null) {
             CrosshairRadiusR = 0;
             MaxDistanceR = 0;
         } else {
-            CrosshairRadiusR = weaponScripts[mcbt.weaponOffset + 1].radius;
-            MaxDistanceR = weaponScripts[mcbt.weaponOffset + 1].Range;
+            CrosshairRadiusR = weaponScripts[weaponOffset + 1].radius;
+            MaxDistanceR = weaponScripts[weaponOffset + 1].Range;
         }
 
-		isRectifier_L = (weaponScripts[mcbt.weaponOffset] != null && weaponScripts[mcbt.weaponOffset].weaponType == "Rectifier");
-		isRectifier_R = (weaponScripts[mcbt.weaponOffset+1] != null && weaponScripts [mcbt.weaponOffset + 1].weaponType == "Rectifier");
-		isRocket = (weaponScripts[mcbt.weaponOffset] != null && weaponScripts [mcbt.weaponOffset].weaponType == "Rocket");
+		isRectifier_L = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].weaponType == "Rectifier");
+		isRectifier_R = (weaponScripts[weaponOffset+1] != null && weaponScripts [weaponOffset + 1].weaponType == "Rectifier");
+		isRocket = (weaponScripts[weaponOffset] != null && weaponScripts [weaponOffset].weaponType == "Rocket");
 
 		isTargetAllyL = isRectifier_L;
 		isTargetAllyR = isRectifier_R;

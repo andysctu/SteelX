@@ -2925,8 +2925,6 @@ MonoBehaviour:
   Sounds: {fileID: 114000010976113334}
   mcbt: {fileID: 11445986}
   Targets: []
-  MaxDistanceL: 0
-  MaxDistanceR: 0
 --- !u!114 &11422958
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2979,7 +2977,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camTransform: {fileID: 405268}
   HeatBar: {fileID: 114328570908798246}
   displayPlayerInfo: {fileID: 114619718678987610}
   crosshairImage: {fileID: 114672547102200730}
@@ -2987,6 +2984,10 @@ MonoBehaviour:
   playerlayerMask:
     serializedVersion: 2
     m_Bits: 256
+  cam: {fileID: 2087740}
+  bm: {fileID: 11422958}
+  animator: {fileID: 9563454}
+  MovementClips: {fileID: 114365142493992942}
   jumpPower: 70
   moveSpeed: 30
   minBoostSpeed: 50
@@ -3000,7 +3001,6 @@ MonoBehaviour:
   cooldown: 16
   BCNbulletNum: 0
   isOnBCNPose: 0
-  weaponOffset: 0
   isLMeleePlaying: 0
   isRMeleePlaying: 0
   CanMeleeAttack: 1
@@ -3009,7 +3009,6 @@ MonoBehaviour:
   Hands: []
   crosshair: {fileID: 0}
   forceDead: 0
-  isInitFinished: 0
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5658,6 +5657,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MechCombat: {fileID: 0}
   pv: {fileID: 11496946}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
@@ -5850,7 +5850,6 @@ MonoBehaviour:
   Target: {fileID: 4739413548255820}
   PoleTarget: {fileID: 0}
   AimTransform: {fileID: 0}
-  weight: 1
 --- !u!114 &114123029246024616
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -12,17 +12,27 @@ public class AnimationEventController : MonoBehaviour {
     [SerializeField]private Sounds Sounds;
     private Animator[] weaponAnimators = new Animator[4];
     private PhotonView pv;
-    private int minCallMoveDistance = 10;
+    private int minCallMoveDistance = 10, weaponOffset = 0;
 
-	void Start(){
+
+    void Awake() {
+        if(MechCombat!=null)MechCombat.OnWeaponSwitched += UpdateAnimationEventController;
+        if (bm != null) bm.OnWeaponBuilt += InitWeaponAnimators;
+    }
+
+    void Start(){
         pv = GetComponent<PhotonView> ();
 	}
 
-    public void UpdateWeaponAnimators() {
+    private void InitWeaponAnimators() {
         for(int i = 0; i < 4; i++) {          
             if(bm.weapons[i]!=null)
                 weaponAnimators[i] = bm.weapons[i].GetComponent<Animator>();
         }
+    }
+
+    private void UpdateAnimationEventController() {
+        weaponOffset = MechCombat.GetCurrentWeaponOffset();
     }
 
 	public void CallLMeleePlaying(int isPlaying){//this can control the drop time when attacking in air
@@ -300,16 +310,16 @@ public class AnimationEventController : MonoBehaviour {
     //
 
     public void CallShoot(int hand) {
-        if(weaponAnimators[MechCombat.weaponOffset + hand] != null) {
-            weaponAnimators[MechCombat.weaponOffset + hand].SetTrigger("Atk");
+        if(weaponAnimators[weaponOffset + hand] != null) {
+            weaponAnimators[weaponOffset + hand].SetTrigger("Atk");
         }
 
         MechCombat.InstantiateBulletTrace(hand);
     }
 
     public void CallReload(int hand) {
-        if (weaponAnimators[MechCombat.weaponOffset + hand] != null) {
-            weaponAnimators[MechCombat.weaponOffset + hand].SetTrigger("Reload");
+        if (weaponAnimators[weaponOffset + hand] != null) {
+            weaponAnimators[weaponOffset + hand].SetTrigger("Reload");
         }
     }
 }

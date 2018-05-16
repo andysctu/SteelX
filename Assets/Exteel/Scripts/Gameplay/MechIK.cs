@@ -15,15 +15,20 @@ public class MechIK : MonoBehaviour {
     [SerializeField] private Transform Target;
     [SerializeField] private Transform PoleTarget, AimTransform;
 
-    float idealweight = 0;
+    private float idealweight = 0;
 	private Vector3 upperArmL_rot, upperArmR_rot;
 	private float ideal_roL, ideal_roR;
 
-	private int mode = 0;//mode 0 : one hand weapon ; 1 : Cannon ; 2 : Rocket
+	private int mode = 0, weaponOffset = 0;//mode 0 : one hand weapon ; 1 : Cannon ; 2 : Rocket
 	private bool LeftIK_on = false, RightIK_on = false;
-	public float weight=1;
+	private float weight=1;
 
-	void Start () {
+
+    void Awake() {
+        mechCombat.OnWeaponSwitched += UpdateMechIK;
+    }
+
+    void Start () {
 		AimIK = GetComponent<AimIK> ();
 		animator = transform.GetComponent<Animator> ();
 		InitTransforms ();
@@ -138,15 +143,17 @@ public class MechIK : MonoBehaviour {
 	}
 
 	public void UpdateMechIK(){
-        if(bm.weaponScripts[mechCombat.weaponOffset].twoHanded){
-            Knob = FindKnob(bm.weapons[mechCombat.weaponOffset].transform);
-            AimTransform = bm.weapons [mechCombat.weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
+        weaponOffset = mechCombat.GetCurrentWeaponOffset();
+
+        if (bm.weaponScripts[weaponOffset].twoHanded){
+            Knob = FindKnob(bm.weapons[weaponOffset].transform);
+            AimTransform = bm.weapons [weaponOffset].transform.Find ("AimTransform");//TODO : update when switchweapon
 			if (AimTransform == null)
 				Debug.LogError ("null aim Transform");
 			else
 				AimIK.solver.transform = AimTransform;
 
-			PoleTarget = bm.weapons [mechCombat.weaponOffset].transform.Find ("End");
+			PoleTarget = bm.weapons [weaponOffset].transform.Find ("End");
 			if (PoleTarget == null)
 				Debug.Log ("null PoleTarget");
 			else

@@ -36,7 +36,6 @@ public class GameManager : Photon.MonoBehaviour {
 	private int currentTimer = 999;
 	private bool is_Time_init = false;
 
-	private bool showboard = false;
 	private HUD hud;
 	private Camera cam;
 	private MechCombat mcbt;
@@ -44,12 +43,12 @@ public class GameManager : Photon.MonoBehaviour {
 	private bool OnSyncTimeRequest = false;
 	private bool IsMasterInitGame = false; 
 	private bool OnCheckInitGame = false;
-	private bool flag_is_sync = false;
 	private bool canStart = false; // this is true when all player finish loading
 	private int waitTimes = 0;
 	private float lastCheckCanStartTime = 0;
 
-	public  bool GameIsBegin = false; 
+    private bool flag_is_sync;
+    public  bool GameIsBegin = false; 
 	private bool callGameBegin = false;
 	private int GameBeginTime = 0; 
 

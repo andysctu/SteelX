@@ -1,9 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using System;
-using System.Collections;
-using UnityEngine.Networking;
-using System.Collections.Generic;
 using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
@@ -21,7 +16,10 @@ public class BuildMech : Photon.MonoBehaviour {
 	private AnimationClipOverrides clipOverrides;
 	private MovementClips MovementClips;
 
-	private Transform shoulderL;
+    public delegate void BuildWeaponAction();
+    public event BuildWeaponAction OnWeaponBuilt;
+
+    private Transform shoulderL;
 	private Transform shoulderR;
 	private Transform[] hands;
 
@@ -41,8 +39,8 @@ public class BuildMech : Photon.MonoBehaviour {
 	public int Mech_Num = 0;
 	private const int BLUE = 0, RED = 1;
 
-	//mech properties
-	int HP,EN,SP,MPU;
+    //mech properties
+    int HP,EN,SP,MPU;
 	int ENOutputRate;
 	int MinENRequired;
 	int Size, Weight;
@@ -103,7 +101,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void initAnimatorControllers(){
-		animatorOverrideController = new AnimatorOverrideController (animator.runtimeAnimatorController);
+        animatorOverrideController = new AnimatorOverrideController (animator.runtimeAnimatorController);
 		animator.runtimeAnimatorController = animatorOverrideController;
 
 		clipOverrides = new AnimationClipOverrides (animatorOverrideController.overridesCount);
@@ -491,7 +489,8 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		ShutDownTrail (weapons[weapPos]);
 		if(animator!=null)CheckAnimatorState ();
-	}
+        UpdateMechCombatVars();
+    }
 		
 	private void findGameManager() {
 		if (gm == null) {
@@ -600,23 +599,12 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	void UpdateMechCombatVars(){
-		if (mcbt == null || !mcbt.isInitFinished)
+		if (mcbt == null)
 			return;
-		mcbt.UpdateWeaponInfo ();
-		mcbt.initCombatVariables ();
-		mcbt.UpdateSpecialCurWeaponType ();
-		mcbt.UpdateGeneralCurWeaponType ();
-		if(mcbt.crosshair!=null)
-			mcbt.crosshair.UpdateCrosshair ();
-		mcbt.UpdateArmAnimatorState ();
-		mcbt.FindTrail();
+        if (OnWeaponBuilt != null) OnWeaponBuilt();
+        if(mcbt.OnWeaponSwitched!=null)mcbt.OnWeaponSwitched();
+
 		mcbt.EnableAllRenderers (true);
 		mcbt.EnableAllColliders (true);
-		mcbt.UpdateMuz ();
-		mcbt.FindGunEnds ();
-        AnimationEventController.UpdateWeaponAnimators();
-
-
-        mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].twoHanded) ? 1 : 0));
 	}
 }

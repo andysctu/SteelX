@@ -11,18 +11,19 @@ public class EffectController : MonoBehaviour {
 	[SerializeField]private Animator Animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
 	[SerializeField]private Transform[] Hands;
+    private MechCombat mcbt;
 	private MechController mctrl;
 	private bool isBoostingDustPlaying = false;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
 
-	void Start () {
+    void Start () {
 		initComponents ();
 		initTransforms ();
 	}
 
 	void initComponents(){
 		mctrl = transform.root.GetComponent<MechController> ();
-	}
+    }
 		
 	void initTransforms(){
 		Transform shoulderL, shoulderR;

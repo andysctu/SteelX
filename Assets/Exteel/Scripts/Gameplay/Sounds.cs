@@ -2,27 +2,28 @@
 using System.Collections;
 
 public class Sounds : MonoBehaviour {
+    [SerializeField]private MechCombat MechCombat;
+    [SerializeField]private PhotonView pv;
+    [SerializeField]private AudioClip Lock, OnLocked;
+    [SerializeField]private AudioClip SwitchWeapon;
+    [SerializeField]private AudioClip BCNload, BCNPose;
+    //[SerializeField]AudioClip WalkSound;
+    [SerializeField]private AudioSource Source;
+    [SerializeField]private AudioSource MovementSource;
 
-	private MechCombat MechCombat;
-	// Sound clip
 	private AudioClip[] shotClips = new AudioClip[4];
     private AudioClip[] reloadClips = new AudioClip[4];
     private AudioClip[] slashClips = new AudioClip[16];// L : 0~7 , R : 8~15
     private AudioClip[] smashClips = new AudioClip[4];
     private AudioClip[] SlashOnHit = new AudioClip[4];
-	private AudioClip[] SmashOnHit = new AudioClip[4];  //no files
+	private AudioClip[] SmashOnHit = new AudioClip[4];//no files
 
-	[SerializeField]PhotonView pv;
-	[SerializeField]AudioClip Lock, OnLocked;
-	[SerializeField]AudioClip SwitchWeapon;
-	[SerializeField]AudioClip BCNload,BCNPose;
-	//[SerializeField]AudioClip WalkSound;
+    private int weaponOffset = 0;
 
-	[SerializeField]private AudioSource Source;
-	[SerializeField]private AudioSource MovementSource;
-
-	// Use this for initialization
-	void Start () {
+    void Awake() {
+        if(MechCombat!=null)MechCombat.OnWeaponSwitched += UpdateSounds;
+    }
+    void Start () {
 		initComponent ();
 		SetVolume (0.3f);
 	}
@@ -38,6 +39,10 @@ public class Sounds : MonoBehaviour {
 		if(Source!=null)
 			Source.volume = v;
 	}
+
+    private void UpdateSounds() {
+        weaponOffset = MechCombat.GetCurrentWeaponOffset();
+    }
 
     public void LoadShotClips(AudioClip[] shotClips) {
         this.shotClips = shotClips;
@@ -67,25 +72,25 @@ public class Sounds : MonoBehaviour {
     }
 	
 	public void PlayShot(int hand) {  // RCL is also using this
-		if(shotClips[MechCombat.weaponOffset + hand]!=null)
-			Source.PlayOneShot(shotClips[MechCombat.weaponOffset + hand]);
+		if(shotClips[weaponOffset + hand]!=null)
+			Source.PlayOneShot(shotClips[weaponOffset + hand]);
 	}
 
 	public void PlaySlashL(int num){//num : 0,1,2,3
-		Source.PlayOneShot (slashClips[num + MechCombat.weaponOffset/2*4]);
+		Source.PlayOneShot (slashClips[num + weaponOffset/2*4]);
 	}
 	public void PlaySlashR(int num){
-		Source.PlayOneShot (slashClips[8 + num + MechCombat.weaponOffset/2*4]);
+		Source.PlayOneShot (slashClips[8 + num + weaponOffset/2*4]);
 	}
 
     public void PlayReload(int hand) {
-        if (reloadClips[MechCombat.weaponOffset + hand] != null)
-            Source.PlayOneShot(reloadClips[MechCombat.weaponOffset + hand]);
+        if (reloadClips[weaponOffset + hand] != null)
+            Source.PlayOneShot(reloadClips[weaponOffset + hand]);
     }
 
     public void PlaySmash(int hand) {
-        if(smashClips[MechCombat.weaponOffset + hand] != null)
-            Source.PlayOneShot(smashClips[MechCombat.weaponOffset + hand]);
+        if(smashClips[weaponOffset + hand] != null)
+            Source.PlayOneShot(smashClips[weaponOffset + hand]);
     }
 
 	public void PlayLock(){
