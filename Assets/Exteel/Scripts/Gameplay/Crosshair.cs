@@ -142,143 +142,102 @@ public class Crosshair : MonoBehaviour {
 		crosshairImage.EngTargetMark.enabled = false;
 	}
 
+    public Transform DectectTarget(float crosshairRadius , float range,  bool isTargetAlly) {
+        if(crosshairRadius > 0) {
+            foreach(GameObject target in Targets) {
+                if(target == null) {
+                    TargetsToRemove.Add(target);
+                    continue;
+                }
+                PhotonView targetpv = target.GetComponent<PhotonView>();
+                if (targetpv.viewID == pv.viewID)
+                    continue;
+
+                if (isTeamMode) {
+                    if (target.GetComponent<Collider>().tag == "Drone") {
+                        continue;
+                    }
+                    if (!isTargetAlly) {
+                        if (targetpv.owner.GetTeam() == pv.owner.GetTeam()) {
+                            continue;
+                        }
+                    } else {
+                        if (targetpv.owner.GetTeam() != pv.owner.GetTeam()) {
+                            continue;
+                        }
+                    }
+                } else {
+                    //if not team mode , ignore eng
+                    if (isTargetAlly)
+                        continue;
+                }
+
+                //check distance
+                if (!(Vector3.Distance(target.transform.position, transform.root.position) < range))
+                    continue;
+
+                Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
+                Vector3 rayStartPoint = transform.root.position + new Vector3(0, 10, 0); //rayStartpoint should not inside terrain => not detect
+                Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
+                if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
+                    //check if Terrain block the way
+                    RaycastHit hit;
+                    if (Physics.Raycast(rayStartPoint, (target.transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0, 5, 0)), Terrainlayer)) {
+                        if (hit.collider.gameObject.layer == 10) {
+                            continue;
+                        }
+                    }
+
+                    if (!isTargetAlly)
+                        SendLockedMessage(targetpv.viewID, target.name);
+
+                    return target.transform;
+                }
+            }
+        }
+        return null;
+    }
+
+
 	void Update () {
-		if (CrosshairRadiusL > 0) {
-			foreach(GameObject target in Targets){
-				if (target == null) {//if target is disconnected => target is null
-					TargetsToRemove.Add (target);
-					continue;
-				}
+        if (CrosshairRadiusL > 0) {// TODO : remove this
+            if ((targetL = DectectTarget(CrosshairRadiusL, MaxDistanceL, isTargetAllyL)) != null) {
+                crosshairImage.OnTargetL(true);
 
-				PhotonView targetpv = target.GetComponent<PhotonView> ();
-				if (targetpv.viewID == pv.viewID)
-					continue;
+                if (!LockL) {
+                    Sounds.PlayLock();
+                    LockL = true;
+                }
+                foundTargetL = true;
+            }
+            if (!foundTargetL) {
+                crosshairImage.OnTargetL(false);
+                targetL = null;
+                LockL = false;
+            } else {
+                foundTargetL = false;
+            }
+        }
+        if (CrosshairRadiusR > 0) {
+            if ((targetR = DectectTarget(CrosshairRadiusR, MaxDistanceR, isTargetAllyR)) != null) {
+                crosshairImage.OnTargetR(true);
 
-				if(isTeamMode){
-					if (target.GetComponent<Collider>().tag == "Drone"){
-						continue;
-					}
-					if (!isTargetAllyL) {
-						if (targetpv.owner.GetTeam () == pv.owner.GetTeam ()) {
-							continue;
-						}
-					}else{
-						if (targetpv.owner.GetTeam () != pv.owner.GetTeam ()) {
-							continue;
-						}
-					}
-				}else{
-					//if not team mode , ignore eng
-					if (isTargetAllyL)
-						continue;
-				}
-				//check distance
-				if (!(Vector3.Distance (target.transform.position, transform.root.position) < MaxDistanceL))
-					continue;
-				
-				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
-				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0); //rayStartpoint should not inside terrain => not detect
-				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
-				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusL && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusL){
-					//check if Terrain block the way
-					RaycastHit hit;
-					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
-						if(hit.collider.gameObject.layer == 10){
-							continue;
-						}
-					}
-					crosshairImage.OnTargetL(true);
-					targetL = target.transform;
+                if (!LockR) {
+                    Sounds.PlayLock();
+                    LockR = true;
+                }
+                foundTargetR = true;
+            }
+            if (!foundTargetR) {
+                crosshairImage.OnTargetR(false);
+                targetR = null;
+                LockR = false;
+            } else {
+                foundTargetR = false;
+            }
+        }
 
-					if (!LockL) {
-						Sounds.PlayLock ();
-						LockL = true;
-					}
-					foundTargetL = true;
-					if(!isTargetAllyL)
-						SendLockedMessage (targetpv.viewID, target.name);
-
-					break;
-				} 
-			}
-			if (!foundTargetL) {
-				crosshairImage.OnTargetL(false);		
-				targetL = null;
-				LockL = false;
-			}else{
-				foundTargetL = false;
-			}
-		}
-		if (CrosshairRadiusR > 0) {
-			foreach (GameObject target in Targets) {
-				if (target == null) {
-					TargetsToRemove.Add (target);
-					continue;
-				}
-					
-				PhotonView targetpv = target.transform.GetComponent<PhotonView> ();
-				if (targetpv.viewID == pv.viewID)
-					continue;
-
-				if(isTeamMode){
-					if (target.GetComponent<Collider>().tag == "Drone"){
-						continue;
-					}
-					if (!isTargetAllyR) {
-						if (targetpv.owner.GetTeam () == pv.owner.GetTeam ()) {
-							continue;
-						}
-					}else{
-						if (targetpv.owner.GetTeam () != pv.owner.GetTeam ()) {
-							continue;
-						}
-					}
-				}else{
-					//if not team mode , ignore eng
-					if (isTargetAllyR)
-						continue;
-				}
-				//check distance
-				if (!(Vector3.Distance (target.transform.position, transform.root.position) < MaxDistanceR))
-					continue;
-				
-				Vector3 targetLocInCam = cam.WorldToViewportPoint (target.transform.position + new Vector3 (0, 5, 0));
-				Vector3 rayStartPoint = transform.root.position+new Vector3(0,10,0);;
-				Vector2 targetLocOnScreen = new Vector2 (targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
-
-				if(Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * CrosshairRadiusR && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * CrosshairRadiusR){
-					RaycastHit hit;
-					if (Physics.Raycast (rayStartPoint,(target.transform.position + new Vector3(0,5,0)- rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0,5,0)), Terrainlayer)) {
-						if(hit.collider.gameObject.layer == 10){
-							continue;
-						}
-					}
-					crosshairImage.OnTargetR(true);
-					targetR = target.transform;
-
-					if (!LockR) {
-						Sounds.PlayLock ();
-						LockR = true;
-					}
-					foundTargetR = true;
-
-					if(!isTargetAllyR)
-						SendLockedMessage (targetpv.viewID, target.transform.gameObject.name);
-
-					break;
-				}
-			}
-			if (!foundTargetR) {
-				crosshairImage.OnTargetR(false);
-				targetR = null;
-				LockR = false;
-			}else{
-				foundTargetR = false;
-			}
-		}
-
-
-		foreach (GameObject g in TargetsToRemove) {//remove null target
+        foreach (GameObject g in TargetsToRemove) {//remove null target
 			Targets.Remove (g);
 		}
 		TargetsToRemove.Clear ();
@@ -310,9 +269,9 @@ public class Crosshair : MonoBehaviour {
 				}
 			}
 		}
-
 		return targetL;
 	}
+
 	public Transform getCurrentTargetR(){
 		if (isRocket)
 			return null;
@@ -334,7 +293,6 @@ public class Crosshair : MonoBehaviour {
 				}
 			}
 		}
-
 		return targetR;
 	}
 

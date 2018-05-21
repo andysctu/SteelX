@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e298283ccdd26de4f87c3c5415038740, type: 3}
+  m_Name: Skill_Gun_Sword_03
+  m_EditorClassIdentifier: 
+  weaponL: {fileID: 0}
+  weaponR: {fileID: 0}
+  EnergyCost: 0
+  damage: 0
+  crosshairRadius: 10
+  detectRange: 50
+  distance: 22
+  playerAnimation: {fileID: 7400000, guid: c997681a30be28b4bb992dbd1d6dd021, type: 3}
+  playerEffects: []
+  weaponLEffects: []
+  weaponREffects: []
+  targetAnimation: {fileID: 7400000, guid: b84c3a5e7d5ea3640a881275f748a9a3, type: 3}

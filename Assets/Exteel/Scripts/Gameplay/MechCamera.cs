@@ -6,7 +6,9 @@ public class MechCamera : MonoBehaviour
 {
 	[SerializeField]private GameObject currentMech;
 	[SerializeField]private Animator animator;
-	private Transform fakeTransform, player;
+    [SerializeField]private SkillController SkillController;
+
+    private Transform fakeTransform, player;
 	private MechController mctrl;
 	private Vector3 m_TargetAngles;
 	private Vector3 m_FollowAngles;
@@ -21,11 +23,19 @@ public class MechCamera : MonoBehaviour
 	public Vector2 rotationRange = new Vector3(70, 70);
 	public float rotationSpeed = 5;
 	public float dampingTime = 0.2f;
-	public bool lockPlayerRot = false;
+	public bool lockPlayerRot = false, lockCamRotation = false;
 	public float orbitRadius = 19, lerpFakePosSpeed = 12;
 	public float angleOffset = 33;
 
-	void Start()
+    private void Awake() {
+        RegisterOnSkill();
+    }
+
+    void RegisterOnSkill() {
+        if (SkillController != null) SkillController.OnSkill += LockCamRotation;
+    }
+
+    void Start()
 	{
 		parentCtrl = transform.parent.GetComponent<CharacterController>();
 		m_OriginalRotation = transform.localRotation;
@@ -68,6 +78,8 @@ public class MechCamera : MonoBehaviour
 			}
 		}
 
+        if (lockCamRotation)
+            return;
 		// with mouse input, we have direct control with no springback required.
 		m_TargetAngles.y += inputH * rotationSpeed;
 
@@ -117,4 +129,8 @@ public class MechCamera : MonoBehaviour
 	public void SetOrbitRadius(float r){
 		orbitRadius = r;
 	}
+
+    public void LockCamRotation(bool b) {
+        lockCamRotation = b;
+    }
 }

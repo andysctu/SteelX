@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
@@ -15,11 +16,12 @@ public class MechController : Photon.MonoBehaviour {
 	[SerializeField]private Transform camTransform;
 	[SerializeField]private CharacterController CharacterController;
 	[SerializeField]private LayerMask Terrain;
+    [SerializeField]private SkillController SkillController;
 
-	private GameManager gm;
+    private GameManager gm;
 	private BoosterController BoosterController;
 
-	private float runDir_coeff = 3,runDecel_rate = 0.5f;
+    private float runDir_coeff = 3,runDecel_rate = 0.5f;
 	private float curboostingSpeed;//global space
 	private Vector2 xzDir;
 	private Vector2 run_xzDir;
@@ -52,6 +54,10 @@ public class MechController : Photon.MonoBehaviour {
 	public bool on_BCNShoot = false;
 	public float cam_lerpSpeed = 10, LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
+    private void Awake() {
+        RegisterOnSkill();    
+    }
+
     void Start () {
 		initComponents();
 		initControllerVar ();
@@ -59,7 +65,11 @@ public class MechController : Photon.MonoBehaviour {
 		initCam (cam_orbitradius, cam_angleoffset);
 	}
 
-	public void initControllerVar(){
+    private void RegisterOnSkill() {
+        SkillController.OnSkill += InterruptCurrentMovement;
+    }
+
+    public void initControllerVar(){
 		grounded = true;
 		canVerticalBoost = false;
 		isSlowDown = false;
@@ -75,7 +85,8 @@ public class MechController : Photon.MonoBehaviour {
 	void initComponents() {
 		Transform currentMech = transform.Find("CurrentMech");
 		CharacterController = GetComponent<CharacterController> ();
-		gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        SkillController = GetComponent<SkillController>();
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 
 	void initCam(float radius, float offset){
@@ -216,6 +227,11 @@ public class MechController : Photon.MonoBehaviour {
 	public void ResetCurBoostingSpeed(){
 		curboostingSpeed = mechCombat.MoveSpeed ();	
 	}
+
+    public void ResetCurSpeed() {
+        xSpeed = 0;
+        zSpeed = 0;
+    }
 
 	public void JumpMoveInAir(){
 		if (curboostingSpeed >= mechCombat.MoveSpeed() && !Animator.GetBool (AnimatorVars.boost_id)) {//not in transition to boost
@@ -370,4 +386,10 @@ public class MechController : Photon.MonoBehaviour {
 	public void CallLockMechRot(bool b){
 		mechCamera.LockMechRotation (b);
 	}
+
+    private void InterruptCurrentMovement(bool b) {
+        ResetCurBoostingSpeed();
+        ResetCurSpeed();
+        BoostFlame(false, false);
+    }
 }

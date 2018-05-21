@@ -146,7 +146,7 @@ public class BuildMech : Photon.MonoBehaviour {
         parts[6] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[6];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[6];
 
         // Create new array to store skinned mesh renderers 

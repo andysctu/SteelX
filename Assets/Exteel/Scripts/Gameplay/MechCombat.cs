@@ -1111,7 +1111,7 @@ public class MechCombat : Combat {
         clipOverrides["Jump08"] = MovementClips.Jump08[num];
         clipOverrides["Jump08_Left"] = MovementClips.Jump08_Left[num];
         clipOverrides["Jump08_Right"] = MovementClips.Jump08_Right[num];
-
+        
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 
@@ -1303,6 +1303,10 @@ public class MechCombat : Combat {
 
     public bool IsHpFull() {
         return (currentHP >= MAX_HP);
+    }
+
+    public bool IsSwitchingWeapon() {
+        return isSwitchingWeapon;
     }
 
     void UpdateSMGAnimationSpeed() {

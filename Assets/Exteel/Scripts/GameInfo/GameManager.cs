@@ -442,7 +442,8 @@ public class GameManager : Photon.MonoBehaviour {
 		PhotonPlayer shooter_player = null,victime_player = null;
 		shooter_player = PhotonView.Find (shooter_viewID).owner;
 		victime_player = PhotonView.Find (victim_viewID).owner;
-
+        if (victime_player == null)
+            return;
 		string shooter = shooter_player.NickName, victim = victime_player.NickName;
 
 		//only master update the room properties

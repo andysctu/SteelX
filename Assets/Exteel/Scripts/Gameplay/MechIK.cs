@@ -25,7 +25,7 @@ public class MechIK : MonoBehaviour {
 
 
     void Awake() {
-        mechCombat.OnWeaponSwitched += UpdateMechIK;
+        if(mechCombat!=null)mechCombat.OnWeaponSwitched += UpdateMechIK;
     }
 
     void Start () {
