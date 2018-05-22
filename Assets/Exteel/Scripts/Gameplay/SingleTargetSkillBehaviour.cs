@@ -11,6 +11,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private PhotonView photonView;
     private SingleTargetSkillConfig config;
     private Animator skillAnimtor, mainAnimator;
+    private Transform target;
 
     private void Start() {
         InitComponent();
@@ -27,22 +28,22 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         Crosshair = cam.GetComponent<Crosshair>();
     }
 
-    public void SetConfig(SingleTargetSkillConfig config) {
-        this.config = config;
+    public void SetConfig(SkillConfig config) {
+        this.config = (SingleTargetSkillConfig)config;
     }
 
     public void Use() {
         //detect target
-        Transform target = Crosshair.DectectTarget(config.skillParams.crosshairRadius, config.skillParams.detectRange, false); //temp
+        Transform target = Crosshair.DectectTarget(config.crosshairRadius, config.detectRange, false); //temp
         PhotonView target_pv = ((target==null)? null : target.GetComponent<PhotonView>());
 
         //RPC if there is one
         if (target != null) {
             StartCoroutine(ReturnDefaultStateWhenEnd("skill_"+ config.GetSkillNum()));
-            transform.position = (transform.position - target.position).normalized * config.skillParams.distance + target.position;
+            transform.position = (transform.position - target.position).normalized * config.distance + target.position;
             transform.LookAt(target.position + new Vector3(0, 5, 0));
-            photonView.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, config.skillParams.playerAnimation.name, transform.position, transform.forward);
-            SkillController.PlayWeaponAnimation(config.skillParams.playerAnimation.name);//todo : rpc this
+            photonView.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, config.GetPlayerAniamtion().name, transform.position, transform.forward);
+            SkillController.PlayWeaponAnimation(config.GetPlayerAniamtion().name);//todo : rpc this
         } else {
             StartCoroutine(ReturnDefaultStateWhenEnd("Skill_Cancel_01"));//TODO : move to RPC
             skillAnimtor.Play("Skill_Cancel_01");
@@ -65,6 +66,9 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     void CastSkill(int targetpv_id, string skill_name, Vector3 start_pos, Vector3 direction) {
         PhotonView pv = PhotonView.Find(targetpv_id);
         SkillController target_SkillController = pv.GetComponent<SkillController>();
+
+        target = pv.transform;
+
         //MechCombat target_mcbt = 
         //play target on skill animation
         if (target_SkillController != null)
@@ -80,6 +84,10 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         //play target on skill animation
         if (target_SkillController != null)
             target_SkillController.TargetOnSkill(config.GetTargetAnimation());
+    }
+
+    public Transform GetCurrentOnSkillTarget() {
+        return target;
     }
 
     private void SwitchToSkillCam(bool b) {

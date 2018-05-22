@@ -2,10 +2,11 @@
 
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
-    [SerializeField] protected Weapon weaponL, weaponR;//if two handed , put it on L , and leave R null
-    [SerializeField] protected int EnergyCost, damage, crosshairRadius, detectRange, distance;
-    [SerializeField] protected AnimationClip playerAnimation;
+    public string weaponTypeL, weaponTypeR;//if two handed , put it on type 1
+    [Tooltip("animation 1 must match the order ; animation 2 is the different order")]
+    [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
     [SerializeField] protected GameObject[] playerEffects, weaponLEffects, weaponREffects;
+    public int EnergyCost, damage, crosshairRadius, detectRange, distance;
     protected ISkill behaviour;
     private int skill_num;
     //camera curve
@@ -13,27 +14,12 @@ public abstract class SkillConfig : ScriptableObject {
     public abstract void AddComponent(GameObject gameObjectTOattachTo);
 
     public void Use() {
+        behaviour.SetConfig(this);
         behaviour.Use();
     }
-
-    public struct SkillParams {
-        public int EnergyCost, damage, distance;
-        public int crosshairRadius;
-        public int detectRange;
-        public AnimationClip playerAnimation;
-
-        public SkillParams(int EnergyCost, int damage, int crosshairRadius, int detectRange, int distance, AnimationClip playerAnimation) {
-            this.EnergyCost = EnergyCost;
-            this.damage = damage;
-            this.crosshairRadius = crosshairRadius;
-            this.detectRange = detectRange;
-            this.distance = distance;
-            this.playerAnimation = playerAnimation;
-        }
-    }
-
+    
     public AnimationClip GetPlayerAniamtion() {
-        return playerAnimation;
+        return playerAnimation1;
     }
 
     public void AssignSkillNum(int num) {
@@ -46,5 +32,6 @@ public abstract class SkillConfig : ScriptableObject {
 }
 
 public interface ISkill {
+    void SetConfig(SkillConfig config);
     void Use();
 }

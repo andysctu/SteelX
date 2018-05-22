@@ -78,7 +78,7 @@ public class MechController : Photon.MonoBehaviour {
 		run_xzDir = Vector2.zero;
 	}
 
-	public void FindBoosterController(){//TODO : put this in respawn update delegate 
+    public void FindBoosterController(){//TODO : put this in respawn update delegate 
 		BoosterController = transform.Find("CurrentMech").GetComponentInChildren<BoosterController>();
 	}
 

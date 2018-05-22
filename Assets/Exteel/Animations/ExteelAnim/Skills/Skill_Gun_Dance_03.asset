@@ -11,15 +11,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e298283ccdd26de4f87c3c5415038740, type: 3}
   m_Name: Skill_Gun_Dance_03
   m_EditorClassIdentifier: 
-  weaponL: {fileID: 0}
-  weaponR: {fileID: 0}
+  weaponTypeL: SMG
+  weaponTypeR: SMG
+  playerAnimation1: {fileID: 7400000, guid: 38143d8515371d146a11914e0384d5a7, type: 3}
+  playerAnimation2: {fileID: 0}
+  playerEffects: []
+  weaponLEffects: []
+  weaponREffects: []
   EnergyCost: 0
   damage: 250
   crosshairRadius: 10
   detectRange: 50
   distance: 22
-  playerAnimation: {fileID: 7400000, guid: 38143d8515371d146a11914e0384d5a7, type: 3}
-  playerEffects: []
-  weaponLEffects: []
-  weaponREffects: []
   targetAnimation: {fileID: 7400000, guid: 138f744c97c669d4f891364a76b476b5, type: 3}

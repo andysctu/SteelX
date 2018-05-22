@@ -14,6 +14,9 @@ public class SkillController : MonoBehaviour {
     private AnimationClipOverrides clipOverrides;
     private Animator[] WeaponAnimators = new Animator[4];
     private int weaponOffset = 0, curSkillNum = 0;
+    private bool[] skill_usable = new bool[4];
+    private const string Target_Animation_Name = "skill_target";
+
     public delegate void OnSkillAction(bool b);
     public OnSkillAction OnSkill;
 
@@ -29,13 +32,20 @@ public class SkillController : MonoBehaviour {
     }
 
     private void RegisterOnWeaponSwitched() {
-        if (mechcombat != null)
+        if (mechcombat != null) {
             mechcombat.OnWeaponSwitched += OnWeaponSwitched;
+        }
     }
 
     private void RegisterOnWeaponBuilt() {
         if(bm!=null)
             bm.OnWeaponBuilt += UpdateWeaponAnimators;
+    }
+
+    private void OnWeaponSwitched() {
+        weaponOffset = mechcombat.GetCurrentWeaponOffset();
+
+        CheckIfSkillsUsable();
     }
 
     private void RegisterOnSkill() {
@@ -75,23 +85,24 @@ public class SkillController : MonoBehaviour {
 
     private void Update () {
         if (isDrone) return;
+
         //TODO : move this to mechCombat
         //check input
         if (Input.GetKeyDown(KeyCode.Alpha1)) { 
-            if (CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                if (skill[0] != null) skill[0].Use();
+            if (skill_usable[0] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
+                skill[0].Use();
             }
         }else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            if (CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                if (skill[1] != null) skill[1].Use();
+            if (skill_usable[1] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
+               skill[1].Use();
             }
-        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            if (CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                if (skill[2] != null) skill[2].Use();
+        }else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            if (skill_usable[2] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
+                skill[2].Use();
             }
-        } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            if (CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                if (skill[3] != null) skill[3].Use();
+        }else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            if (skill_usable[3] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
+                skill[3].Use();
             }
         }
     }
@@ -133,16 +144,36 @@ public class SkillController : MonoBehaviour {
     }
 
     public void TargetOnSkill(AnimationClip skill_target) {
-        clipOverrides["skill_target"] = skill_target;
+        //override target on skill animation
+        clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
 
         SwitchToSkillAnimator(true);
-        skillAnimtor.Play("skill_target");
+        skillAnimtor.Play(Target_Animation_Name);
     }
 
-    private void OnWeaponSwitched() {
-        weaponOffset = mechcombat.GetCurrentWeaponOffset();
+    //do the weapons match the skill requires
+    private void CheckIfSkillsUsable() {
+        for (int i = 0; i < skill.Length; i++) {
+            if (skill[i] == null) {
+                skill_usable[i] = false;
+                continue;
+            }
+            if(bm.weaponScripts[weaponOffset] == null || bm.weaponScripts[weaponOffset+1] == null) {
+                if(bm.weaponScripts[weaponOffset] == null) {
+                    bool L = (skill[i].weaponTypeL == string.Empty);
+                    bool R = (skill[i].weaponTypeR == string.Empty || skill[i].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString());
+                    skill_usable[i] = (L && R);
+                } else {
+                    bool L = (skill[i].weaponTypeL == string.Empty || skill[i].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString());
+                    bool R = (skill[i].weaponTypeR == string.Empty);
+                    skill_usable[i] = (L && R);
+                }
+            } else {
+                bool L = (skill[i].weaponTypeL == string.Empty || skill[i].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString());
+                bool R = (skill[i].weaponTypeR == string.Empty || skill[i].weaponTypeR == bm.weaponScripts[weaponOffset+1].GetType().ToString());
+                skill_usable[i] = (L && R);
+            }
+        }
     }
-
-
 }
