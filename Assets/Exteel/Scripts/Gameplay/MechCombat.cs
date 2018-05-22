@@ -16,6 +16,7 @@ public class MechCombat : Combat {
     [SerializeField]private BuildMech bm;
     [SerializeField]private Animator animator;
     [SerializeField]private MovementClips MovementClips;
+    [SerializeField]private SkillController SkillController;
     private InRoomChat InRoomChat;
 
     enum GeneralWeaponTypes { Ranged, Rectifier, Melee, Shield, Rocket, Cannon, Empty };//for efficiency
@@ -45,7 +46,7 @@ public class MechCombat : Combat {
     public int MaxHeat = 100;
     public int cooldown = 5;
     public int BCNbulletNum = 2;
-    public bool isOnBCNPose;//called by BCNPoseState to check if on the right pose 
+    public bool isOnBCNPose, onSkill = false;//called by BCNPoseState to check if on the right pose 
     private int weaponOffset = 0;
     private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
     private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
@@ -123,6 +124,7 @@ public class MechCombat : Combat {
     void Awake() {
        RegisterOnWeaponSwitched();
        RegisterOnWeaponBuilt();
+       RegisterOnSkill();
     }
 
     void Start() {
@@ -150,6 +152,10 @@ public class MechCombat : Combat {
 
     void RegisterOnWeaponBuilt() {
         bm.OnWeaponBuilt += InitWeapons;
+    }
+    
+    void RegisterOnSkill() {
+        SkillController.OnSkill += OnSkill;
     }
 
     void initMechStats() {//call also when respawn
@@ -225,7 +231,7 @@ public class MechCombat : Combat {
             isSwitchingWeapon = false;
             SwitchWeaponcoroutine = null;
         }
-
+        onSkill = false;
         setIsFiring(0, false);
         setIsFiring(1, false);
         mechController.FindBoosterController();//TODO : OnMechBuilt event
@@ -702,7 +708,7 @@ public class MechCombat : Combat {
 
     // Update is called once per frame
     void Update() {
-        if (!photonView.isMine || gm.GameOver()) return;
+        if (!photonView.isMine || gm.GameOver() || !gm.GameIsBegin || onSkill) return;
 
         // Drain HP bar gradually
         if (isDead) {
@@ -710,17 +716,16 @@ public class MechCombat : Combat {
             return;
         }
 
-        //For debug , TODO : remove this
+        //TODO : remove this
         if (forceDead) {
             forceDead = false;
             photonView.RPC("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
         }
 
-        if (!gm.GameIsBegin)
-            return;
         // Animate left and right combat
         handleCombat(LEFT_HAND);
         handleCombat(RIGHT_HAND);
+        CheckSkillInput();
 
         // Switch weapons
         if (Input.GetKeyDown(KeyCode.R) && !isSwitchingWeapon && !isDead) {
@@ -938,6 +943,18 @@ public class MechCombat : Combat {
                 animator.SetBool(animationStr, false);
             else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Cannon)
                 animator.SetBool("BCNShoot", false);
+        }
+    }
+
+    void CheckSkillInput() {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            SkillController.CallUseSkill(0);
+        } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            SkillController.CallUseSkill(1);
+        } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            SkillController.CallUseSkill(2);
+        } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            SkillController.CallUseSkill(3);
         }
     }
 
@@ -1307,6 +1324,10 @@ public class MechCombat : Combat {
 
     public bool IsSwitchingWeapon() {
         return isSwitchingWeapon;
+    }
+
+    private void OnSkill(bool b) {
+        onSkill = b;
     }
 
     void UpdateSMGAnimationSpeed() {

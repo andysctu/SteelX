@@ -32,20 +32,11 @@ public class SkillController : MonoBehaviour {
     }
 
     private void RegisterOnWeaponSwitched() {
-        if (mechcombat != null) {
-            mechcombat.OnWeaponSwitched += OnWeaponSwitched;
-        }
+        if (mechcombat != null)mechcombat.OnWeaponSwitched += OnWeaponSwitched;
     }
 
     private void RegisterOnWeaponBuilt() {
-        if(bm!=null)
-            bm.OnWeaponBuilt += UpdateWeaponAnimators;
-    }
-
-    private void OnWeaponSwitched() {
-        weaponOffset = mechcombat.GetCurrentWeaponOffset();
-
-        CheckIfSkillsUsable();
+        if(bm!=null)bm.OnWeaponBuilt += UpdateWeaponAnimators;
     }
 
     private void RegisterOnSkill() {
@@ -83,36 +74,18 @@ public class SkillController : MonoBehaviour {
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 
-    private void Update () {
-        if (isDrone) return;
-
-        //TODO : move this to mechCombat
-        //check input
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { 
-            if (skill_usable[0] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                skill[0].Use();
-            }
-        }else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            if (skill_usable[1] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-               skill[1].Use();
-            }
-        }else if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            if (skill_usable[2] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                skill[2].Use();
-            }
-        }else if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            if (skill_usable[3] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-                skill[3].Use();
-            }
-        }
-    }
-
     public void PlayWeaponAnimation(string skill_name) {        
         if (WeaponAnimators[weaponOffset] != null) {
             WeaponAnimators[weaponOffset].Play(skill_name);
         }
         if (WeaponAnimators[weaponOffset+1] != null) {
             WeaponAnimators[weaponOffset+1].Play(skill_name);
+        }
+    }
+
+    public void CallUseSkill(int num) {
+        if (skill_usable[num] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
+            skill[num].Use();
         }
     }
 
@@ -126,6 +99,11 @@ public class SkillController : MonoBehaviour {
 
     public Camera GetCamera() {
         return cam;
+    }
+
+    private void OnWeaponSwitched() {
+        weaponOffset = mechcombat.GetCurrentWeaponOffset();
+        CheckIfSkillsUsable();
     }
 
     private void SwitchToSkillAnimator(bool b) {

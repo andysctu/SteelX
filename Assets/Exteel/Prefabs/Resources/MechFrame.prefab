@@ -2794,8 +2794,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 3
+  instantiationId: 3
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -2994,6 +2994,7 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   animator: {fileID: 9563454}
   MovementClips: {fileID: 114365142493992942}
+  SkillController: {fileID: 114027273283822130}
   jumpPower: 70
   moveSpeed: 30
   minBoostSpeed: 50
@@ -3007,6 +3008,7 @@ MonoBehaviour:
   cooldown: 16
   BCNbulletNum: 0
   isOnBCNPose: 0
+  onSkill: 0
   isLMeleePlaying: 0
   isRMeleePlaying: 0
   CanMeleeAttack: 1
@@ -3108,8 +3110,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 8
+  instantiationId: 8
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
