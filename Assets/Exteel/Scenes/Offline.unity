@@ -1728,6 +1728,7 @@ MonoBehaviour:
     m_Bits: 0
   Sounds: {fileID: 0}
   mcbt: {fileID: 0}
+  SkillController: {fileID: 0}
   Targets: []
 --- !u!114 &313495736
 MonoBehaviour:
@@ -13543,25 +13544,25 @@ Prefab:
       propertyPath: m_Name
       value: MechFrame (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: viewIdField
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: instantiationId
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: viewIdField
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-      propertyPath: instantiationId
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: viewIdField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: instantiationId
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: viewIdField
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
+      propertyPath: instantiationId
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}

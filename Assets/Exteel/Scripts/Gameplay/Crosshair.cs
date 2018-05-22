@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,9 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]private LayerMask playerlayer,Terrainlayer;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private MechCombat mcbt;
-	private List<GameObject> TargetsToRemove = new List<GameObject> ();
+    [SerializeField]private SkillController SkillController;
+
+    private List<GameObject> TargetsToRemove = new List<GameObject> ();
 	public List<GameObject> Targets = new List<GameObject> ();//control by checkisrendered.cs
 
 	private Weapon[] weaponScripts;
@@ -25,13 +26,11 @@ public class Crosshair : MonoBehaviour {
 	private const float SendMsgDeltaTime = 0.3f; //If the target is the same, this is the time between two msgs.
 	private float screenCoeff;
 	private float TimeOfLastSend;
-	private float CrosshairRadiusL ;
-	private float CrosshairRadiusR ;
+	private float CrosshairRadiusL, CrosshairRadiusR ;
 	private int LastLockTargetID = 0, weaponOffset = 0;//avoid sending lock message too often
 	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
-	private bool isOnLocked = false;
-	private bool isTeamMode;
-	private bool isTargetAllyL = false, isTargetAllyR = false;
+	private bool isOnLocked = false, onSkill = false;
+	private bool isTeamMode, isTargetAllyL = false, isTargetAllyR = false;
 	private bool isRocket = false, isRectifier_L = false, isRectifier_R = false;
 	private const float LockedMsgDuration = 0.5f;//when receiving a lock message , the time it'll last
 	public const float CAM_DISTANCE_TO_MECH = 15f;
@@ -41,8 +40,21 @@ public class Crosshair : MonoBehaviour {
     private float MaxDistanceL, MaxDistanceR;
 
     void Awake() {
-        if(bm!=null)bm.OnWeaponBuilt += OnWeaponBuilt;
-        if(mcbt!=null)mcbt.OnWeaponSwitched += UpdateCrosshair;
+        RegisterOnWeaponBuilt();
+        RegisterOnWeaponSwitched();
+        RegisterOnSkill();
+    }
+
+    private void RegisterOnWeaponBuilt() {
+        if (bm != null) bm.OnWeaponBuilt += OnWeaponBuilt;
+    }
+
+    private void RegisterOnWeaponSwitched() {
+        if (mcbt != null) mcbt.OnWeaponSwitched += UpdateCrosshair;
+    }
+
+    private void RegisterOnSkill() {
+        if(SkillController!=null)SkillController.OnSkill += OnSkill;
     }
 
     void Start () {
@@ -200,6 +212,8 @@ public class Crosshair : MonoBehaviour {
 
 
 	void Update () {
+        if (onSkill) return;
+
         if (CrosshairRadiusL > 0) {// TODO : remove this
             if ((targetL = DectectTarget(CrosshairRadiusL, MaxDistanceL, isTargetAllyL)) != null) {
                 crosshairImage.OnTargetL(true);
@@ -243,10 +257,10 @@ public class Crosshair : MonoBehaviour {
 		TargetsToRemove.Clear ();
 
 		MarkTarget ();
-		//crosshairImage.targetMark.enabled = !(targetL==null&&targetR==null);
 	}
 
-	public Transform getCurrentTargetL(){
+    //TODO : improve detection & generalize the CAM_DISTANCE_TO_MECH
+    public Transform getCurrentTargetL(){
 		if (isRocket)
 			return null;
 		
@@ -350,6 +364,27 @@ public class Crosshair : MonoBehaviour {
 		}
 
 	}
+
+    private void OnSkill(bool b) {
+        onSkill = b;
+
+        //turn crosshair to green
+        if (b) {
+            if (CrosshairRadiusL > 0) {
+                crosshairImage.OnTargetL(false);
+                targetL = null;
+                LockL = false;
+            }
+            if (CrosshairRadiusR > 0) {
+                crosshairImage.OnTargetR(false);
+                targetR = null;
+                LockR = false;
+            }
+
+            //remove the target mark
+            MarkTarget();
+        }
+    }
 
 	IEnumerator HideLockedAfterTime(float time){
 		LockedImg.SetActive (true);
