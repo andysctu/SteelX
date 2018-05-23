@@ -1,39 +1,21 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
+    //this script controll all the bullets in skill , by the same method in MechCombat
+    [SerializeField] private int bullet_num = 0;
+    [SerializeField] private float interval = 1;
+    [SerializeField] private bool onTarget = false;//does bullets follow the target? //TODO : implement this
 
-    private BuildMech bm;
-    private GameObject bulletPrefab;
-    private SkillController SkillController;
-    private Camera playerCam;
-    private MechCamera mechCamera;
     private Transform target;
     private MechCombat mechCombat;
 
     private int hand = 0, weaponOffset = 0;
 
-
     // Use this for initialization
     void Start () {
-        //bm = transform.root.GetComponent<BuildMech>();
         mechCombat = transform.root.GetComponent<MechCombat>();
-        //Find the bullet prefabs
-        //bulletPrefab = ((RangedWeapon)bm.weaponScripts[weaponOffset + hand]).bulletPrefab;
-
-
-
-        //Get Camera
-
-        //
-
-        SkillController = transform.root.GetComponent<SkillController>();
-        target = transform.root.GetComponent<SingleTargetSkillBehaviour>().GetCurrentOnSkillTarget();
-        //hand = (transform.parent.parent.name[transform.parent.parent.name.Length] == 'R') ? 1 : 0;
 	}
-
-    
 
     private void OnEnable() {
         if(mechCombat==null) mechCombat = transform.root.GetComponent<MechCombat>();
@@ -43,9 +25,9 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     }
 
     IEnumerator IntantiateBullets() {
-        for(int i = 0; i < 6; i++) {
+        for(int i = 0; i < bullet_num; i++) {
             mechCombat.InstantiateBulletTrace(hand);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(interval);
         }
     }
 
@@ -57,7 +39,9 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
         this.hand = hand;
     }
 
+    //this is called when casting skill
     public void SetTarget(Transform target) {
+        Debug.Log("called set target with : "+gameObject.name);
         this.target = target;
     }
 }

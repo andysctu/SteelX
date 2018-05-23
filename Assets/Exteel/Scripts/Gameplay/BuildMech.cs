@@ -141,12 +141,12 @@ public class BuildMech : Photon.MonoBehaviour {
 			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
 		}
 
-        //set weapons if null ( in offline )
+        //set weapons if null (in offline )
         parts[5] = defaultParts[7];
-        parts[6] = defaultParts[7];
+        parts[6] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[6];
 
         // Create new array to store skinned mesh renderers 

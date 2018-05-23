@@ -37,6 +37,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
             //Adjust rotation
             transform.LookAt(target.position + new Vector3(0, 5, 0));
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
             player_pv.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, config.GetPlayerAniamtion().name, transform.position, transform.forward);
         } else {
@@ -71,22 +72,18 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             SkillController.PlayWeaponAnimation(config.GetPlayerAniamtion().name);
 
             //Play skill sound
-            PlaySkillSound();
+            SkillController.PlaySkillSound(config.GetSkillSound());
 
         } else {//target is null => cancel skill 
             SkillController.PlayCancelSkill();
         }
     }
 
-    private void PlaySkillSound() {
-        if(config.GetSkillSound()!=null)Sounds.PlayClip(config.GetSkillSound());
-    }
-
     public Transform GetCurrentOnSkillTarget() {
         return target;
     }
 
-    void SetEffectsTarget(Transform target) {
+    void SetEffectsTarget(Transform target) {        
         foreach(RequireSkillInfo g in config.weaponEffects_1) {
             g.SetTarget(target);
         }

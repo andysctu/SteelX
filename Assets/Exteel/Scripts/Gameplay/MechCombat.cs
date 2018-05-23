@@ -749,6 +749,8 @@ public class MechCombat : Combat {
     }
 
     void handleCombat(int hand) {
+        if (bm.weaponScripts[weaponOffset + hand] == null) return;
+
         switch (curGeneralWeaponTypes[weaponOffset + hand]) {
             case (int)GeneralWeaponTypes.Ranged:
             if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.LMG) {//has a delay before putting down hands

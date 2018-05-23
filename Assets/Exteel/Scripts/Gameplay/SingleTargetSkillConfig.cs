@@ -43,10 +43,11 @@ public class SingleTargetSkillConfig : SkillConfig {
                     GameObject g = Instantiate(p, bm.weapons[2].transform);
                     g.transform.localPosition = Vector3.zero;
                     g.name = p.name;
+
                     if (g.GetComponent(typeof(RequireSkillInfo)) != null) {
                         weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
-                        ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(2);
+                        ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(0);
                     }
 
                 }
@@ -73,14 +74,16 @@ public class SingleTargetSkillConfig : SkillConfig {
                     if (g.GetComponent(typeof(RequireSkillInfo)) != null) {
                         weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
-                        ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(3);
+                        ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(1);
                     }
                 }
             }
         }
 
-        for (int i = 0; i < 4; i++)
-            bm.weapons[i].GetComponent<Animator>().Rebind();
+        for (int i = 0; i < 4; i++) {
+            if(bm.weapons[i]!=null && bm.weapons[i].GetComponent<Animator>()!=null)
+                bm.weapons[i].GetComponent<Animator>().Rebind();
+        }
 
     }
 

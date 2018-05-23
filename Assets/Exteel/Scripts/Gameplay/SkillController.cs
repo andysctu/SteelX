@@ -9,6 +9,8 @@ public class SkillController : MonoBehaviour {
     [SerializeField]private Animator skillAnimtor, mainAnimator;
     [SerializeField]private Camera cam, skillcam;
     [SerializeField]private SkillConfig[] skill = new SkillConfig[4];
+    [SerializeField]private Sounds Sounds;
+    [SerializeField]private AudioClip sorry;
 
     private AnimatorOverrideController animatorOverrideController;
     private AnimationClipOverrides clipOverrides;
@@ -75,6 +77,7 @@ public class SkillController : MonoBehaviour {
 
     public void PlayWeaponAnimation(string skill_name) {        
         if (WeaponAnimators[weaponOffset] != null) {
+            Debug.Log(skill_name);
             WeaponAnimators[weaponOffset].Play(skill_name);
         }
         if (WeaponAnimators[weaponOffset+1] != null) {
@@ -136,6 +139,7 @@ public class SkillController : MonoBehaviour {
 
         SwitchToSkillAnimator(true);
         skillAnimtor.Play(Target_Animation_Name);
+        StartCoroutine(ReturnDefaultStateWhenEnd(Target_Animation_Name));
     }
 
     //do the weapons match the skill requires
@@ -163,12 +167,12 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {
+    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
 
         yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
         OnSkill(false);
-        SwitchToSkillCam(false);
+        if(!isDrone)SwitchToSkillCam(false);
     }
 
     public void PlayCancelSkill() {
@@ -178,10 +182,17 @@ public class SkillController : MonoBehaviour {
         OnSkill(true);
 
         skillAnimtor.Play("Skill_Cancel_01");
+        PlaySkillSound(sorry);
+    }
+
+    public void PlaySkillSound(AudioClip audioClip) {
+        Sounds.PlayClip(audioClip);
     }
 
     private void SwitchToSkillCam(bool b) {
         skillcam.enabled = b;
         cam.enabled = !b;
     }
+
+
 }
