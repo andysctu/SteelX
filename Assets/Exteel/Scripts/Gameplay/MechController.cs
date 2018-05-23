@@ -388,8 +388,13 @@ public class MechController : Photon.MonoBehaviour {
 	}
 
     private void InterruptCurrentMovement(bool b) {
-        ResetCurBoostingSpeed();
-        ResetCurSpeed();
-        BoostFlame(false, false);
+        if (b) {//when entering
+            ResetCurBoostingSpeed();
+            ResetCurSpeed();
+            Boost(false);
+        } else {
+            ResetCurBoostingSpeed();
+            ResetCurSpeed();
+        }
     }
 }

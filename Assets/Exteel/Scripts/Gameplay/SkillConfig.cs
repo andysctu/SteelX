@@ -6,6 +6,7 @@ public abstract class SkillConfig : ScriptableObject {
     [Tooltip("animation 1 must match the order ; animation 2 is the different order")]
     [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
     [SerializeField] protected GameObject[] playerEffects, weaponLEffects, weaponREffects;
+    [SerializeField] protected AudioClip skill_sound;
     public int EnergyCost, damage, crosshairRadius, detectRange, distance;
     protected ISkill behaviour;
     private int skill_num;
@@ -28,6 +29,10 @@ public abstract class SkillConfig : ScriptableObject {
 
     public int GetSkillNum() {
         return skill_num;
+    }
+
+    public AudioClip GetSkillSound() {
+        return skill_sound;
     }
 }
 

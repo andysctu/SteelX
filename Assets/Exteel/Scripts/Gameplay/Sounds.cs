@@ -116,6 +116,10 @@ public class Sounds : MonoBehaviour {
 		}
 	}*/
 
+    public void PlayClip(AudioClip ac) {
+        Source.PlayOneShot(ac);
+    }
+
 	public void PlaySwitchWeapon(){
 		Source.PlayOneShot (SwitchWeapon);
 	}

@@ -16,8 +16,11 @@ MonoBehaviour:
   playerAnimation1: {fileID: 7400000, guid: 38143d8515371d146a11914e0384d5a7, type: 3}
   playerAnimation2: {fileID: 0}
   playerEffects: []
-  weaponLEffects: []
-  weaponREffects: []
+  weaponLEffects:
+  - {fileID: 1900697685564746, guid: 0a7b239769ddd8f46bd91b0decb2472e, type: 2}
+  weaponREffects:
+  - {fileID: 1900697685564746, guid: 0a7b239769ddd8f46bd91b0decb2472e, type: 2}
+  skill_sound: {fileID: 8300000, guid: c8721c24d9d649f459536dcacc288d86, type: 3}
   EnergyCost: 0
   damage: 250
   crosshairRadius: 10

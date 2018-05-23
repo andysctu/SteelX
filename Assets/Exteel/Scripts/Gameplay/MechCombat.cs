@@ -458,6 +458,11 @@ public class MechCombat : Combat {
         }
     }
 
+    public void SetTargetInfo(int hand, Transform target) {//for skill
+        Targets[hand] = target.gameObject;
+        isTargetShield[hand] = false;
+    }
+
     public void InstantiateBulletTrace(int hand) {//aniamtion event driven
         if (bullets[weaponOffset + hand] == null) {
             Debug.LogError("bullet is null");
@@ -502,7 +507,7 @@ public class MechCombat : Combat {
                 }
             }
 
-            GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand]), BulletCollector.transform) as GameObject;
+            GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + hand].position, Quaternion.identity, BulletCollector.transform) as GameObject;
             BulletTrace bulletTrace = bullet.GetComponent<BulletTrace>();
             bulletTrace.SetCamera(cam);
             bulletTrace.SetShooterName(gameObject.name);
@@ -725,7 +730,7 @@ public class MechCombat : Combat {
         // Animate left and right combat
         handleCombat(LEFT_HAND);
         handleCombat(RIGHT_HAND);
-        CheckSkillInput();
+        handleSkillInput();
 
         // Switch weapons
         if (Input.GetKeyDown(KeyCode.R) && !isSwitchingWeapon && !isDead) {
@@ -946,7 +951,7 @@ public class MechCombat : Combat {
         }
     }
 
-    void CheckSkillInput() {
+    void handleSkillInput() {
         if (Input.GetKeyDown(KeyCode.Alpha1)) {
             SkillController.CallUseSkill(0);
         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {

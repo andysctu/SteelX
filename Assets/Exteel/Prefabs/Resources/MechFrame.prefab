@@ -2794,8 +2794,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 3
-  instantiationId: 3
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -3110,8 +3110,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 8
-  instantiationId: 8
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
@@ -4112,6 +4112,7 @@ GameObject:
   - component: {fileID: 4572067945337534}
   - component: {fileID: 20202144477786866}
   - component: {fileID: 124823071314001648}
+  - component: {fileID: 114765012402591752}
   m_Layer: 8
   m_Name: SkillCam
   m_TagString: MainCamera
@@ -5788,6 +5789,7 @@ MonoBehaviour:
   skillAnimtor: {fileID: 95953646033232842}
   mainAnimator: {fileID: 9563454}
   cam: {fileID: 2087740}
+  skillcam: {fileID: 20202144477786866}
   skill:
   - {fileID: 11400000, guid: c9abb889d2440bb409942939d83e26b6, type: 2}
   - {fileID: 11400000, guid: f3ef1a7e92dafd6438123fdc52b18b42, type: 2}
@@ -6922,6 +6924,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114765012402591752
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1314402786651118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5939ee7819ce6a94a9d401451824968b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114777531502691040
 MonoBehaviour:
   m_ObjectHideFlags: 1

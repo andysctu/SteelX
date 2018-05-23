@@ -7,7 +7,7 @@ public class SkillController : MonoBehaviour {
     [SerializeField]private BuildMech bm;
     [SerializeField]private MechCombat mechcombat;
     [SerializeField]private Animator skillAnimtor, mainAnimator;
-    [SerializeField]private Camera cam;
+    [SerializeField]private Camera cam, skillcam;
     [SerializeField]private SkillConfig[] skill = new SkillConfig[4];
 
     private AnimatorOverrideController animatorOverrideController;
@@ -46,7 +46,6 @@ public class SkillController : MonoBehaviour {
     private void Start () {
         //TODO : load skill in buildMech 
 
-        //implement
         initSkillAnimatorControllers();
         InitSkill();
     }
@@ -121,6 +120,15 @@ public class SkillController : MonoBehaviour {
         }
     }
 
+    public void PlaySkill(int skill_num) {//state name : skill_1 , skill_2 , ... 
+        SwitchToSkillAnimator(true);
+        StartCoroutine(ReturnDefaultStateWhenEnd("skill_" + skill_num));
+        SwitchToSkillCam(true);
+        OnSkill(true);
+
+        skillAnimtor.Play("skill_" + skill_num);
+    }
+
     public void TargetOnSkill(AnimationClip skill_target) {
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
@@ -153,5 +161,27 @@ public class SkillController : MonoBehaviour {
                 skill_usable[i] = (L && R);
             }
         }
+    }
+
+    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {
+        yield return new WaitForSeconds(0.2f);//TODO : remake this logic
+
+        yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
+        OnSkill(false);
+        SwitchToSkillCam(false);
+    }
+
+    public void PlayCancelSkill() {
+        SwitchToSkillAnimator(true);
+        StartCoroutine(ReturnDefaultStateWhenEnd("Skill_Cancel_01"));
+        SwitchToSkillCam(true);
+        OnSkill(true);
+
+        skillAnimtor.Play("Skill_Cancel_01");
+    }
+
+    private void SwitchToSkillCam(bool b) {
+        skillcam.enabled = b;
+        cam.enabled = !b;
     }
 }
