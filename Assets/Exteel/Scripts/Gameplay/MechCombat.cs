@@ -664,18 +664,36 @@ public class MechCombat : Combat {
         setIsFiring(0, false);
         setIsFiring(1, false);
 
-        displayPlayerInfo.gameObject.SetActive(false);
+        StartCoroutine(DisablePlayerWhenNotOnSkill());
 
+        //displayPlayerInfo.gameObject.SetActive(false);
+
+        /*Crosshair ch = GetComponentInChildren<Crosshair>();
+        if (ch != null) {
+            ch.ShutDownAllCrosshairs();
+            ch.enabled = false;
+        }*/
+        mechController.enabled = false;
+        //EnableAllRenderers(false);
+        EnableAllColliders(false);
+
+        GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
+
+        crosshairImage.gameObject.SetActive(false);
+        HeatBar.gameObject.SetActive(false);
+    }
+
+    IEnumerator DisablePlayerWhenNotOnSkill() {
+        yield return new WaitWhile(() => onSkill);
+
+        displayPlayerInfo.gameObject.SetActive(false);
         Crosshair ch = GetComponentInChildren<Crosshair>();
         if (ch != null) {
             ch.ShutDownAllCrosshairs();
             ch.enabled = false;
         }
-        mechController.enabled = false;
-        EnableAllRenderers(false);
-        EnableAllColliders(false);
 
-        GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
+        EnableAllRenderers(false);
 
         crosshairImage.gameObject.SetActive(false);
         HeatBar.gameObject.SetActive(false);
@@ -1374,7 +1392,7 @@ public class MechCombat : Combat {
 
     public void FindTrail() {
         if (curGeneralWeaponTypes[weaponOffset] == (int)GeneralWeaponTypes.Melee) {
-            trailL = weapons[weaponOffset].GetComponentInChildren<XWeaponTrail>(true);
+            trailL = weapons[weaponOffset].transform.Find("trail").GetComponent<XWeaponTrail>();
             if (trailL != null) {
                 trailL.Deactivate();
             }
@@ -1383,7 +1401,7 @@ public class MechCombat : Combat {
         }
 
         if (curGeneralWeaponTypes[weaponOffset + 1] == (int)GeneralWeaponTypes.Melee) {
-            trailR = weapons[weaponOffset + 1].GetComponentInChildren<XWeaponTrail>(true);
+            trailR = weapons[weaponOffset + 1].transform.Find("trail").GetComponent<XWeaponTrail>();
             if (trailR != null)
                 trailR.Deactivate();
         } else {

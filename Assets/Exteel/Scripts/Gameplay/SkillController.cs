@@ -94,7 +94,6 @@ public class SkillController : MonoBehaviour {
     }
 
     public void PlayWeaponAnimation(int skill_num) {
-        Debug.Log("play weapon animation : " + skill[skill_num].name);
         if (WeaponAnimators[weaponOffset] != null) {            
             WeaponAnimators[weaponOffset].Play(skill[skill_num].name);
         }
@@ -198,7 +197,7 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {
+    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this so not using string
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
 
         yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));

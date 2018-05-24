@@ -106,7 +106,7 @@ public class MechController : Photon.MonoBehaviour {
 		}
 
 		if(!grounded){
-			ySpeed -= (ySpeed<maxDownSpeed)? 0 : Gravity*Time.fixedDeltaTime*50 ;
+			ySpeed -= (ySpeed<maxDownSpeed || Animator.GetBool(AnimatorVars.boost_id)) ? 0 : Gravity*Time.fixedDeltaTime*50 ;
 		} else {
 			ySpeed = (-CharacterController.stepOffset / Time.fixedDeltaTime)*0.2f;
 		}
@@ -196,7 +196,7 @@ public class MechController : Photon.MonoBehaviour {
 			ySpeed = mechCombat.MaxVerticalBoostSpeed();
 		}else{
 			if(transform.position.y >= v_boost_start_yPos + mechCombat.MaxVerticalBoostSpeed()*1.25f){
-				ySpeed = Gravity;
+				ySpeed = 0;
 			}else{
 				ySpeed = mechCombat.MaxVerticalBoostSpeed();
 			}

@@ -567,9 +567,10 @@ public class BuildMech : Photon.MonoBehaviour {
         if (weapon == null)
             return;
 
-		XWeaponTrail trail = weapon.GetComponentInChildren<XWeaponTrail> ();
+        Transform trail_transform = weapon.transform.Find("trail");
+        XWeaponTrail trail = (trail_transform == null )? null : trail_transform.GetComponent<XWeaponTrail>();
 
-		if (trail == null)
+        if (trail == null)
 			return;
 
 		trail.Deactivate ();

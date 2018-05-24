@@ -3000,7 +3000,7 @@ MonoBehaviour:
   minBoostSpeed: 50
   acceleration: 2
   deceleration: 50
-  maxVerticalBoostSpeed: 45
+  maxVerticalBoostSpeed: 35
   maxHorizontalBoostSpeed: 60
   isDead: 0
   is_overheat: 00000000
@@ -5625,7 +5625,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 9000000, guid: 05023dfd598844b86bfab7f84e3539b2, type: 3}
   m_Controller: {fileID: 9100000, guid: faaa136a868701141aaad7e781f105a1, type: 2}
   m_CullingMode: 0
@@ -5797,7 +5797,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3a4819a7409e42d448e6062248e560d9, type: 2}
   Sounds: {fileID: 114000010976113334}
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
-  SP: 0
   isDrone: 0
 --- !u!114 &114051533737220576
 MonoBehaviour:

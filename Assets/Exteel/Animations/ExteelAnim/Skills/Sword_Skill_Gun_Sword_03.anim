@@ -26,13 +26,19 @@ AnimationClip:
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 0.2
+        time: 0.33333334
         value: 1
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 2
+        time: 1.4
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+      - serializedVersion: 2
+        time: 2.6
         value: 0
         inSlope: Infinity
         outSlope: Infinity
@@ -40,8 +46,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: trailOn
-    path: trail
+    attribute: m_Enabled
+    path: Skill_Gun_Sword_03_trail
     classID: 114
     script: {fileID: 11500000, guid: f6c2c9828fec98747a1b0680f47bed80, type: 3}
   - curve:
@@ -49,13 +55,19 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+      - serializedVersion: 2
+        time: 0.33333334
         value: 1
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 2
-        value: 1
+        time: 1.4
+        value: 0
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
@@ -69,7 +81,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: trail
+    path: Skill_Gun_Sword_03_trail
     classID: 1
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -81,14 +93,14 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2993194383
-      attribute: 3187362857
+      path: 39392527
+      attribute: 3305885265
       script: {fileID: 11500000, guid: f6c2c9828fec98747a1b0680f47bed80, type: 3}
       typeID: 114
-      customType: 0
+      customType: 24
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2993194383
+      path: 39392527
       attribute: 2086281974
       script: {fileID: 0}
       typeID: 1
@@ -126,13 +138,19 @@ AnimationClip:
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 0.2
+        time: 0.33333334
         value: 1
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 2
+        time: 1.4
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+      - serializedVersion: 2
+        time: 2.6
         value: 0
         inSlope: Infinity
         outSlope: Infinity
@@ -140,8 +158,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: trailOn
-    path: trail
+    attribute: m_Enabled
+    path: Skill_Gun_Sword_03_trail
     classID: 114
     script: {fileID: 11500000, guid: f6c2c9828fec98747a1b0680f47bed80, type: 3}
   - curve:
@@ -149,13 +167,19 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+      - serializedVersion: 2
+        time: 0.33333334
         value: 1
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 2
-        value: 1
+        time: 1.4
+        value: 0
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
@@ -169,7 +193,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: trail
+    path: Skill_Gun_Sword_03_trail
     classID: 1
     script: {fileID: 0}
   m_EulerEditorCurves: []
