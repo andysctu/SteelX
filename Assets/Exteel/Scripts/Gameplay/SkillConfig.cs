@@ -3,7 +3,7 @@
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
     public string weaponTypeL, weaponTypeR;//if two handed , put it on type 1
-    [Tooltip("animation 1 must match the order ; animation 2 is the different order")]
+    [Tooltip("animation 1 must match the order of the  types ; animation 2 is the different order")]
     [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
     [SerializeField] protected GameObject[] playerEffects, weaponLEffects, weaponREffects;
     [SerializeField] protected AudioClip skill_sound;
@@ -15,12 +15,12 @@ public abstract class SkillConfig : ScriptableObject {
     public abstract void AddComponent(GameObject gameObjectTOattachTo);
 
     public void Use() {
-        behaviour.SetConfig(this);
+        behaviour.SetConfig(skill_num);
         behaviour.Use();
     }
     
-    public AnimationClip GetPlayerAniamtion() {
-        return playerAnimation1;
+    public AnimationClip GetPlayerAniamtion(int num) {
+        return (num==1)? playerAnimation1 : playerAnimation2;
     }
 
     public void AssignSkillNum(int num) {
@@ -37,6 +37,6 @@ public abstract class SkillConfig : ScriptableObject {
 }
 
 public interface ISkill {
-    void SetConfig(SkillConfig config);
+    void SetConfig(int skill_num);
     void Use();
 }

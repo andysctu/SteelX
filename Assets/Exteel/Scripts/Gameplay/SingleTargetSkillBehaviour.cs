@@ -2,6 +2,7 @@
 
 public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private SkillController SkillController;
+    private MechCombat mcbt;
     private Sounds Sounds;
     private Crosshair Crosshair;
     private PhotonView player_pv;
@@ -16,13 +17,14 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         player_pv = GetComponent<PhotonView>();
         SkillController = GetComponent<SkillController>();
         Crosshair = SkillController.GetCamera().GetComponent<Crosshair>();
+        mcbt = GetComponent<MechCombat>();
 
         Transform CurrentMech = transform.Find("CurrentMech");
         Sounds = CurrentMech.GetComponent<Sounds>();        
     }
 
-    public void SetConfig(SkillConfig config) {
-        this.config = (SingleTargetSkillConfig)config;
+    public void SetConfig(int skill_num) {
+        this.config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
     }
 
     public void Use() {
@@ -39,14 +41,16 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             transform.LookAt(target.position + new Vector3(0, 5, 0));
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
-            player_pv.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, config.GetPlayerAniamtion().name, transform.position, transform.forward);
+            player_pv.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, config.GetSkillNum(), config.damage, transform.position, transform.forward);
         } else {
-            player_pv.RPC("CastSkill", PhotonTargets.All, -1, "", Vector3.zero, Vector3.zero);
+            player_pv.RPC("CastSkill", PhotonTargets.All, -1, 0, 0, Vector3.zero, Vector3.zero);
         }
     }
 
     [PunRPC]
-    void CastSkill(int targetpv_id, string skill_name, Vector3 start_pos, Vector3 direction) {
+    void CastSkill(int targetpv_id, int skill_num, int damage, Vector3 start_pos, Vector3 direction) {
+        SetConfig(skill_num);
+
         if(targetpv_id != -1) {
             Debug.Log("Called play " + "skill_" + config.GetSkillNum());
 
@@ -57,6 +61,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
             //Attach Effects on target
             if (target != null) SetEffectsTarget(target);
+            else Debug.LogError("Failed to set the effects target");
 
             //rotate target to the right direction
             target.transform.LookAt(transform.position + new Vector3(0, 5, 0));
@@ -64,15 +69,15 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play target on skill animation
             if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetAnimation());
 
-            target_pv.RPC("OnHit", PhotonTargets.All, config.damage, player_pv.viewID, config.GetTargetAnimation().name, false);
+            target_pv.RPC("OnHit", PhotonTargets.All, damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
 
             //Play skill animation
-            SkillController.PlaySkill(config.GetSkillNum());
+            SkillController.PlayPlayerAnimation(skill_num);
 
-            SkillController.PlayWeaponAnimation(config.GetPlayerAniamtion().name);
+            SkillController.PlayWeaponAnimation(skill_num);
 
             //Play skill sound
-            SkillController.PlaySkillSound(config.GetSkillSound());
+            SkillController.PlaySkillSound(skill_num);
 
         } else {//target is null => cancel skill 
             SkillController.PlayCancelSkill();
@@ -83,12 +88,14 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         return target;
     }
 
-    void SetEffectsTarget(Transform target) {        
-        foreach(RequireSkillInfo g in config.weaponEffects_1) {
-            g.SetTarget(target);
-        }
-        foreach (RequireSkillInfo g in config.weaponEffects_2) {
-            g.SetTarget(target);
-        }
+    void SetEffectsTarget(Transform target) {
+        if(mcbt.GetCurrentWeaponOffset()==0)
+            foreach (RequireSkillInfo g in config.weaponEffects_1) { 
+                g.SetTarget(target);
+            }
+        else
+            foreach (RequireSkillInfo g in config.weaponEffects_2) {
+                g.SetTarget(target);
+            }
     }
 }

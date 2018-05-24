@@ -12,7 +12,7 @@ public class SkillController : MonoBehaviour {
     [SerializeField]private Sounds Sounds;
     [SerializeField]private AudioClip sorry;
 
-    private AnimatorOverrideController animatorOverrideController;
+    private AnimatorOverrideController animatorOverrideController = null;
     private AnimationClipOverrides clipOverrides;
     private Animator[] WeaponAnimators = new Animator[4];
     private int weaponOffset = 0, curSkillNum = 0;
@@ -22,52 +22,51 @@ public class SkillController : MonoBehaviour {
     public delegate void OnSkillAction(bool b);
     public OnSkillAction OnSkill;
 
-    public int SP = 0;
+    private int SP = 0;
 
     //debug
     public bool isDrone = false;
 
     private void Awake() {
+        InitSkillAnimatorControllers();
         RegisterOnSkill();
         RegisterOnWeaponBuilt();
         RegisterOnWeaponSwitched();
     }
 
     private void RegisterOnWeaponSwitched() {
-        if (mechcombat != null)mechcombat.OnWeaponSwitched += OnWeaponSwitched;
+        if (mechcombat != null) {
+            mechcombat.OnWeaponSwitched += OnWeaponSwitched;
+            mechcombat.OnWeaponSwitched += LoadSkillAnimations;
+        }
     }
 
     private void RegisterOnWeaponBuilt() {
-        if(bm!=null)bm.OnWeaponBuilt += UpdateWeaponAnimators;
+        if (bm != null) {
+            bm.OnWeaponBuilt += UpdateWeaponAnimators;
+            bm.OnWeaponBuilt += InitSkill;
+        }
     }
 
     private void RegisterOnSkill() {
         OnSkill += SwitchToSkillAnimator;
     }
 
-    private void Start () {
-        //TODO : load skill in buildMech 
-
-        initSkillAnimatorControllers();
-        InitSkill();
-    }
-
     private void InitSkill() {
-        for(int i = 0; i < skill.Length; i++) {
+        for (int i = 0; i < skill.Length; i++) {
             if (skill[i] != null) {
                 skill[i].AssignSkillNum(i);
                 skill[i].AddComponent(gameObject);
-                LoadSkillAnimation(i, skill[i].GetPlayerAniamtion());
             }
         }
     }
 
-    private void initSkillAnimatorControllers() {
-        animatorOverrideController = new AnimatorOverrideController(skillAnimtor.runtimeAnimatorController);
-        skillAnimtor.runtimeAnimatorController = animatorOverrideController;
-
-        clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
-        animatorOverrideController.GetOverrides(clipOverrides);
+    //the skill aniamtions may need to be switched when using different weapons ( different order )
+    private void LoadSkillAnimations() {
+        for(int i = 0; i < skill.Length; i++) {
+            clipOverrides["skill_" + i] = (CheckIfWeaponOrderReverse(i)) ? skill[i].GetPlayerAniamtion(2) : skill[i].GetPlayerAniamtion(1);
+            animatorOverrideController.ApplyOverrides(clipOverrides);
+        }
     }
 
     public void LoadSkillAnimation(int num, AnimationClip animationClip) {
@@ -75,13 +74,32 @@ public class SkillController : MonoBehaviour {
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 
-    public void PlayWeaponAnimation(string skill_name) {        
-        if (WeaponAnimators[weaponOffset] != null) {
-            Debug.Log(skill_name);
-            WeaponAnimators[weaponOffset].Play(skill_name);
+    private bool CheckIfWeaponOrderReverse(int skill_num) {
+        if (((skill[skill_num].weaponTypeL == "" && bm.weaponScripts[weaponOffset] == null) || (bm.weaponScripts[0] != null && skill[skill_num].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString())) &&
+            ((skill[skill_num].weaponTypeR == "" && bm.weaponScripts[weaponOffset + 1] == null) || (bm.weaponScripts[1] != null && skill[skill_num].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString()))) {
+            return false;
+
+            //reverse order
+        } else {
+            return true;
+        }
+    }
+
+    private void InitSkillAnimatorControllers() {
+        animatorOverrideController = new AnimatorOverrideController(skillAnimtor.runtimeAnimatorController);
+        skillAnimtor.runtimeAnimatorController = animatorOverrideController;
+
+        clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(clipOverrides);
+    }
+
+    public void PlayWeaponAnimation(int skill_num) {
+        Debug.Log("play weapon animation : " + skill[skill_num].name);
+        if (WeaponAnimators[weaponOffset] != null) {            
+            WeaponAnimators[weaponOffset].Play(skill[skill_num].name);
         }
         if (WeaponAnimators[weaponOffset+1] != null) {
-            WeaponAnimators[weaponOffset+1].Play(skill_name);
+            WeaponAnimators[weaponOffset+1].Play(skill[skill_num].name);
         }
     }
 
@@ -101,6 +119,14 @@ public class SkillController : MonoBehaviour {
 
     public Camera GetCamera() {
         return cam;
+    }
+
+    public string GetSkillName(int skill_num) {
+        return skill[skill_num].name;
+    }
+
+    public SkillConfig GetSkillConfig(int skill_num) {
+        return skill[skill_num];
     }
 
     private void OnWeaponSwitched() {
@@ -123,7 +149,7 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    public void PlaySkill(int skill_num) {//state name : skill_1 , skill_2 , ... 
+    public void PlayPlayerAnimation(int skill_num) {//state name : skill_1 , skill_2 , ... 
         SwitchToSkillAnimator(true);
         StartCoroutine(ReturnDefaultStateWhenEnd("skill_" + skill_num));
         SwitchToSkillCam(true);
@@ -132,7 +158,7 @@ public class SkillController : MonoBehaviour {
         skillAnimtor.Play("skill_" + skill_num);
     }
 
-    public void TargetOnSkill(AnimationClip skill_target) {
+    public void TargetOnSkill(AnimationClip skill_target) {//TODO : generalize this
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
@@ -149,6 +175,7 @@ public class SkillController : MonoBehaviour {
                 skill_usable[i] = false;
                 continue;
             }
+
             if(bm.weaponScripts[weaponOffset] == null || bm.weaponScripts[weaponOffset+1] == null) {
                 if(bm.weaponScripts[weaponOffset] == null) {
                     bool L = (skill[i].weaponTypeL == string.Empty);
@@ -160,14 +187,18 @@ public class SkillController : MonoBehaviour {
                     skill_usable[i] = (L && R);
                 }
             } else {
-                bool L = (skill[i].weaponTypeL == string.Empty || skill[i].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString());
-                bool R = (skill[i].weaponTypeR == string.Empty || skill[i].weaponTypeR == bm.weaponScripts[weaponOffset+1].GetType().ToString());
-                skill_usable[i] = (L && R);
+                bool b = ((skill[i].weaponTypeL == "" || (bm.weaponScripts[weaponOffset] != null && skill[i].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString())) &&
+                (skill[i].weaponTypeR == "" || (bm.weaponScripts[weaponOffset + 1] != null && skill[i].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString())));
+
+                bool b2 = ((skill[i].weaponTypeL == "" || (bm.weaponScripts[weaponOffset+1] != null && skill[i].weaponTypeL == bm.weaponScripts[weaponOffset+1].GetType().ToString())) &&
+                (skill[i].weaponTypeR == "" || (bm.weaponScripts[weaponOffset] != null && skill[i].weaponTypeR == bm.weaponScripts[weaponOffset].GetType().ToString())));
+
+                skill_usable[i] = b || b2;
             }
         }
     }
 
-    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this
+    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
 
         yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
@@ -182,11 +213,11 @@ public class SkillController : MonoBehaviour {
         OnSkill(true);
 
         skillAnimtor.Play("Skill_Cancel_01");
-        PlaySkillSound(sorry);
+        Sounds.PlayClip(sorry);
     }
 
-    public void PlaySkillSound(AudioClip audioClip) {
-        Sounds.PlayClip(audioClip);
+    public void PlaySkillSound(int skill_num) {
+        Sounds.PlayClip(skill[skill_num].GetSkillSound());
     }
 
     private void SwitchToSkillCam(bool b) {
@@ -194,5 +225,5 @@ public class SkillController : MonoBehaviour {
         cam.enabled = !b;
     }
 
-
+    
 }
