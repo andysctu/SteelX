@@ -4485,6 +4485,7 @@ MonoBehaviour:
   Hands:
   - {fileID: 4421656274130566}
   - {fileID: 4018446990084242}
+  SkillController: {fileID: 114417752035072802}
 --- !u!114 &114076035277099748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4694,12 +4695,14 @@ MonoBehaviour:
   skillAnimtor: {fileID: 95043620281643646}
   mainAnimator: {fileID: 95198505659783780}
   cam: {fileID: 0}
+  skillcam: {fileID: 0}
   skill:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  SP: 0
+  Sounds: {fileID: 0}
+  sorry: {fileID: 0}
   isDrone: 1
 --- !u!114 &114501258250183374
 MonoBehaviour:

@@ -666,21 +666,10 @@ public class MechCombat : Combat {
 
         StartCoroutine(DisablePlayerWhenNotOnSkill());
 
-        //displayPlayerInfo.gameObject.SetActive(false);
-
-        /*Crosshair ch = GetComponentInChildren<Crosshair>();
-        if (ch != null) {
-            ch.ShutDownAllCrosshairs();
-            ch.enabled = false;
-        }*/
         mechController.enabled = false;
-        //EnableAllRenderers(false);
         EnableAllColliders(false);
 
         GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
-
-        crosshairImage.gameObject.SetActive(false);
-        HeatBar.gameObject.SetActive(false);
     }
 
     IEnumerator DisablePlayerWhenNotOnSkill() {

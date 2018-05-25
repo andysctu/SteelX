@@ -69,8 +69,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play target on skill animation
             if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetAnimation());
 
-            target_pv.RPC("OnHit", PhotonTargets.All, damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
-
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
 
@@ -78,6 +76,8 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
             //Play skill sound
             SkillController.PlaySkillSound(skill_num);
+
+            target_pv.RPC("OnHit", PhotonTargets.All, damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
 
         } else {//target is null => cancel skill 
             SkillController.PlayCancelSkill();

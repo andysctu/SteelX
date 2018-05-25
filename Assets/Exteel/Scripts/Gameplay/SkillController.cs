@@ -20,7 +20,7 @@ public class SkillController : MonoBehaviour {
     private const string Target_Animation_Name = "skill_target";
 
     public delegate void OnSkillAction(bool b);
-    public OnSkillAction OnSkill;
+    public event OnSkillAction OnSkill;
 
     private int SP = 0;
 
@@ -158,6 +158,7 @@ public class SkillController : MonoBehaviour {
     }
 
     public void TargetOnSkill(AnimationClip skill_target) {//TODO : generalize this
+        OnSkill(true);
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
@@ -199,10 +200,9 @@ public class SkillController : MonoBehaviour {
 
     IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this so not using string
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
-
         yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
         OnSkill(false);
-        if(!isDrone)SwitchToSkillCam(false);
+        if (!isDrone)SwitchToSkillCam(false);
     }
 
     public void PlayCancelSkill() {

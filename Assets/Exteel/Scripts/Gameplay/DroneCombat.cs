@@ -6,10 +6,15 @@ public class DroneCombat : Combat {
 
 	public Transform[] Hands;
 
-	private int default_layer = 0, player_layer = 8;
+    [SerializeField] private SkillController SkillController;
+    private int default_layer = 0, player_layer = 8;
 	private EffectController EffectController;
+    private bool onSkill = false;
 
-	void Start () {
+    private void Awake() {
+        if(SkillController!=null)SkillController.OnSkill += OnSkill;
+    }
+    void Start () {
 		currentHP = MAX_HP;
 		EffectController = GetComponent<EffectController> ();
 		findGameManager();
@@ -58,14 +63,20 @@ public class DroneCombat : Combat {
 
 	void DisableDrone() {
 		gameObject.layer = default_layer;
-		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-		foreach (Renderer renderer in renderers) {
-			renderer.enabled = false;
-		}
-		StartCoroutine(RespawnAfterTime(3));
+        StartCoroutine(DisableDroneWhenNotOnSkill());
 	}
 
-	void EnableDrone() {
+    IEnumerator DisableDroneWhenNotOnSkill() {
+        yield return new WaitWhile(() => onSkill);
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers) {
+            renderer.enabled = false;
+        }
+        StartCoroutine(RespawnAfterTime(2));
+    }
+
+
+    void EnableDrone() {
         EffectController.RespawnEffect();
         gameObject.layer = player_layer;
 		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
@@ -74,6 +85,10 @@ public class DroneCombat : Combat {
 		}
 		currentHP = MAX_HP;
 	}
+
+    void OnSkill(bool b) {
+        onSkill = b;
+    }
 
 	IEnumerator RespawnAfterTime(int time){
 		yield return new WaitForSeconds (time);

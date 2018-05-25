@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using RootMotion.FinalIK;
+using System;
 
 public class MechIK : MonoBehaviour {
 	
@@ -7,6 +8,7 @@ public class MechIK : MonoBehaviour {
 	[SerializeField]private MechCombat mechCombat;
 	[SerializeField]private BuildMech bm;
     [SerializeField]private Transform upperArmL, upperArmR;
+    [SerializeField] private SkillController SkillController;
     private Transform Knob;
     private Animator animator;
 
@@ -24,8 +26,17 @@ public class MechIK : MonoBehaviour {
 	private float weight=1;
 
 
-    void Awake() {
-        if(mechCombat!=null)mechCombat.OnWeaponSwitched += UpdateMechIK;
+    void Awake() {        
+        RegisterOnWeaponSwitched();
+        RegisterOnSkill();
+    }
+
+    private void RegisterOnSkill() {
+        if(SkillController!=null)SkillController.OnSkill += ShutDownIK;
+    }
+
+    private void RegisterOnWeaponSwitched() {
+        if (mechCombat != null) mechCombat.OnWeaponSwitched += UpdateMechIK;
     }
 
     void Start () {
@@ -141,6 +152,11 @@ public class MechIK : MonoBehaviour {
 			}
 		}
 	}
+
+    private void ShutDownIK(bool b) {//for skill use
+        LeftIK_on = false;
+        RightIK_on = false;
+    }
 
 	public void UpdateMechIK(){
         weaponOffset = mechCombat.GetCurrentWeaponOffset();
