@@ -1195,6 +1195,7 @@ public class MechCombat : Combat {
                 curSpecialWeaponTypes[i] = (int)SpecialWeaponTypes.Shield;
                 break;
                 case "Cannon":
+                curSpecialWeaponTypes[i] = (int)SpecialWeaponTypes.Cannon;
                 break;
                 default:
                 curSpecialWeaponTypes[i] = (int)SpecialWeaponTypes.EMPTY;
