@@ -182,7 +182,18 @@ public class MechController : Photon.MonoBehaviour {
 		}
 	}
 
-	public void SetCanVerticalBoost(bool canVBoost) {
+    /*
+    //TODO : test ( this works well!)
+    public Transform pelvis; //put spine here
+    public int degree = 30;
+    private void LateUpdate() {
+        if(pelvis != null) {
+            float ind_dir = Input.GetAxis("Horizontal");
+            pelvis.rotation = Quaternion.Euler(pelvis.rotation.eulerAngles.x, pelvis.rotation.eulerAngles.y + ind_dir * degree, pelvis.rotation.eulerAngles.z);
+        }    
+    }*/
+
+    public void SetCanVerticalBoost(bool canVBoost) {
 		canVerticalBoost = canVBoost;
 	}
 

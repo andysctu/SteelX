@@ -579,7 +579,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	void UpdateMechCombatVars(){
 		if (mcbt == null)
 			return;
-        if (OnWeaponBuilt != null) OnWeaponBuilt();
+        if (OnWeaponBuilt != null)OnWeaponBuilt();
         if(mcbt.OnWeaponSwitched!=null)mcbt.OnWeaponSwitched();
 
 		mcbt.EnableAllRenderers (true);

@@ -18,9 +18,21 @@ public class HeatBar : MonoBehaviour {
 	private Color32 RED = new Color32 (255, 0, 0, 200) , YELLOW = new Color32 (255, 255, 85, 200);
 
     void Awake() {
-        bm.OnWeaponBuilt += InitVars;
-        bm.OnWeaponBuilt += ResetHeatBar;
-        mcbt.OnWeaponSwitched += UpdateHeatBar;
+        RegisterOnWeaponBuilt();
+        RegisterOnWeaponSwitched();
+    }
+
+    private void RegisterOnWeaponBuilt() {
+        if (bm != null) {
+            bm.OnWeaponBuilt += InitVars;
+            bm.OnWeaponBuilt += ResetHeatBar;
+        }
+    }
+
+    private void RegisterOnWeaponSwitched() {
+        if (mcbt != null) {
+            mcbt.OnWeaponSwitched += UpdateHeatBar;
+        }
     }
 
     private void InitVars(){//called when finished buildmech
@@ -117,7 +129,7 @@ public class HeatBar : MonoBehaviour {
 		barL_fill.fillAmount = curValue[weaponOffset]/MaxHeat;
 	}
 
-	private void DrawBarR(){
+	private void DrawBarR() { 
 		barR_fill.fillAmount = curValue [weaponOffset + 1]/MaxHeat;
 	}
 }
