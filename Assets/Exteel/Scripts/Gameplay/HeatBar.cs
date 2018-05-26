@@ -132,4 +132,5 @@ public class HeatBar : MonoBehaviour {
 	private void DrawBarR() { 
 		barR_fill.fillAmount = curValue [weaponOffset + 1]/MaxHeat;
 	}
+
 }

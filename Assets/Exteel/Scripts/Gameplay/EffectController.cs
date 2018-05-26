@@ -42,7 +42,7 @@ public class EffectController : MonoBehaviour {
 		switchWeaponEffectR.transform.localPosition = Vector3.zero;
 	}
 
-	public void SwitchWeaponEffect(){
+    public void SwitchWeaponEffect(){
 		Sounds.PlaySwitchWeapon ();
 		switchWeaponEffectL.Play ();
 		switchWeaponEffectR.Play ();
@@ -66,7 +66,7 @@ public class EffectController : MonoBehaviour {
 	public void UpdateBoostingDust(){//called by horizontal boosting state
 		float direction = Animator.GetFloat ("Direction"), speed = Animator.GetFloat ("Speed");//other player also call this
 
-        if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool(AnimatorVars.boost_id)) {
+        if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool("Boost")) {
 			if(!isBoostingDustPlaying)
 				BoostingDustEffect (true);
 			boostingDust.transform.localRotation = Quaternion.Euler (-90, Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward), 90);

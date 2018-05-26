@@ -6,6 +6,7 @@ using UnityEngine;
 public class SkillController : MonoBehaviour {
     [SerializeField]private BuildMech bm;
     [SerializeField]private MechCombat mechcombat;
+    [SerializeField]private MechController mechController;
     [SerializeField]private Animator skillAnimtor, mainAnimator;
     [SerializeField]private Camera cam, skillcam;
     [SerializeField]private SkillConfig[] skill = new SkillConfig[4];
@@ -21,6 +22,8 @@ public class SkillController : MonoBehaviour {
 
     public delegate void OnSkillAction(bool b);
     public event OnSkillAction OnSkill;
+
+    public List<RequireSkillInfo> weaponEffects_1, weaponEffects_2;//weaponEffects_1 corresponds to the weapons 0 & 1
 
     private int SP = 0;
 
@@ -53,12 +56,18 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitSkill() {
+        InitEffectsList();
+
         for (int i = 0; i < skill.Length; i++) {
             if (skill[i] != null) {
-                skill[i].AssignSkillNum(i);
                 skill[i].AddComponent(gameObject);
             }
         }
+    }
+
+    private void InitEffectsList() {
+        weaponEffects_1 = new List<RequireSkillInfo>();
+        weaponEffects_2 = new List<RequireSkillInfo>();
     }
 
     //the skill aniamtions may need to be switched when using different weapons ( different order )
@@ -103,8 +112,8 @@ public class SkillController : MonoBehaviour {
     }
 
     public void CallUseSkill(int num) {
-        if (skill_usable[num] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon()) {
-            skill[num].Use();
+        if (skill_usable[num] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon() && mechController.grounded && !mainAnimator.GetBool("OnMelee")) {
+            skill[num].Use(this, num);
         }
     }
 
@@ -132,13 +141,26 @@ public class SkillController : MonoBehaviour {
         weaponOffset = mechcombat.GetCurrentWeaponOffset();
         CheckIfSkillsUsable();
     }
-
+    
     private void SwitchToSkillAnimator(bool b) {
+        ResetMainAnimatorState();
+
+        if (!b) {//only call update when the skill end , in case shoot animation event gets called
+            mainAnimator.Update(0);
+        }
+
         skillAnimtor.enabled = b;
         mainAnimator.enabled = !b;
-        if (b) {
-            mainAnimator.Rebind();
-        }
+    }
+
+    private void ResetMainAnimatorState() {
+        mainAnimator.SetBool("Boost", false);
+        mainAnimator.SetFloat("Speed", 0);
+        mainAnimator.SetFloat("Direction", 0);
+
+        mainAnimator.Play("Walk", 0);
+        mainAnimator.Play("Idle", 1);
+        mainAnimator.Play("Idle", 2);
     }
 
     private void UpdateWeaponAnimators() {
@@ -202,7 +224,8 @@ public class SkillController : MonoBehaviour {
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
         yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
         OnSkill(false);
-        if (!isDrone)SwitchToSkillCam(false);
+        if (!isDrone) SwitchToSkillCam(false);
+        Debug.Log("has returned to default state");
     }
 
     public void PlayCancelSkill() {
@@ -220,6 +243,7 @@ public class SkillController : MonoBehaviour {
     }
 
     private void SwitchToSkillCam(bool b) {
+        if (!GetComponent<PhotonView>().isMine) return;
         skillcam.enabled = b;
         cam.enabled = !b;
     }

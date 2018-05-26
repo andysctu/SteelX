@@ -2972,6 +2972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 2087740}
+  radar: {fileID: 2093468}
 --- !u!114 &11445986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5302,7 +5303,7 @@ Camera:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1314402786651118}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -5772,6 +5773,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pv: {fileID: 11416036}
   mcbt: {fileID: 11445986}
+  SkillController: {fileID: 114027273283822130}
   cam: {fileID: 2087740}
 --- !u!114 &114027273283822130
 MonoBehaviour:
@@ -5786,6 +5788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bm: {fileID: 11422958}
   mechcombat: {fileID: 11445986}
+  mechController: {fileID: 11462782}
   skillAnimtor: {fileID: 95953646033232842}
   mainAnimator: {fileID: 9563454}
   cam: {fileID: 2087740}

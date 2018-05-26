@@ -27,7 +27,12 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         this.config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
     }
 
-    public void Use() {
+    public void SetConfig(SkillConfig config) {
+        this.config = (SingleTargetSkillConfig)config;
+    }
+
+
+    public void Use(int num) {
         //Detect target
         Transform target = Crosshair.DectectTarget(config.crosshairRadius, config.detectRange, false); //temp
         
@@ -36,12 +41,8 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             PhotonView target_pv = target.GetComponent<PhotonView>();
             //Move to the right position
             transform.position = (transform.position - target.position).normalized * config.distance + target.position;
-
-            //Adjust rotation
-            transform.LookAt(target.position + new Vector3(0, 5, 0));
-            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-
-            player_pv.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, config.GetSkillNum(), config.damage, transform.position, transform.forward);
+            
+            player_pv.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, num, config.damage, transform.position, transform.forward);
         } else {
             player_pv.RPC("CastSkill", PhotonTargets.All, -1, 0, 0, Vector3.zero, Vector3.zero);
         }
@@ -52,7 +53,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         SetConfig(skill_num);
 
         if(targetpv_id != -1) {
-            Debug.Log("Called play " + "skill_" + config.GetSkillNum());
+            Debug.Log("Called play " + "skill_" + skill_num);
 
             PhotonView target_pv = PhotonView.Find(targetpv_id);
             if (target_pv == null) {Debug.Log("Can't find target photonView when casting skill");return;}
@@ -60,12 +61,12 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             target = target_pv.transform;
 
             //Attach Effects on target
-            if (target != null) SetEffectsTarget(target);
-            else Debug.LogError("Failed to set the effects target");
+            SetEffectsTarget(target);
 
             //rotate target to the right direction
             target.transform.LookAt(transform.position + new Vector3(0, 5, 0));
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
+
             //Play target on skill animation
             if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetAnimation());
 
@@ -77,7 +78,14 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play skill sound
             SkillController.PlaySkillSound(skill_num);
 
-            target_pv.RPC("OnHit", PhotonTargets.All, damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+            //Sync the start position ( this need to be called after stopping sync position
+            transform.position = start_pos;
+
+            //Sync the start rotation
+            transform.LookAt(target.position + new Vector3(0, 5, 0));
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+
+            if(target_pv.isMine)target_pv.RPC("OnHit", PhotonTargets.All, damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
 
         } else {//target is null => cancel skill 
             SkillController.PlayCancelSkill();
@@ -90,11 +98,11 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
     void SetEffectsTarget(Transform target) {
         if(mcbt.GetCurrentWeaponOffset()==0)
-            foreach (RequireSkillInfo g in config.weaponEffects_1) { 
+            foreach (RequireSkillInfo g in SkillController.weaponEffects_1) { 
                 g.SetTarget(target);
             }
         else
-            foreach (RequireSkillInfo g in config.weaponEffects_2) {
+            foreach (RequireSkillInfo g in SkillController.weaponEffects_2) {
                 g.SetTarget(target);
             }
     }

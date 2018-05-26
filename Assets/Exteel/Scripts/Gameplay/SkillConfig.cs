@@ -7,28 +7,15 @@ public abstract class SkillConfig : ScriptableObject {
     [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
     [SerializeField] protected GameObject[] playerEffects, weaponLEffects, weaponREffects;
     [SerializeField] protected AudioClip skill_sound;
-    public int EnergyCost, damage, crosshairRadius, detectRange, distance;
-    protected ISkill behaviour;
-    private int skill_num;
+    public int EnergyCost, damage, crosshairRadius, detectRange, distance;//TODO : struct
     //camera curve
 
     public abstract void AddComponent(GameObject gameObjectTOattachTo);
 
-    public void Use() {
-        behaviour.SetConfig(skill_num);
-        behaviour.Use();
-    }
+    public abstract void Use(SkillController SkillController, int skill_num);
     
     public AnimationClip GetPlayerAniamtion(int num) {
         return (num==1)? playerAnimation1 : playerAnimation2;
-    }
-
-    public void AssignSkillNum(int num) {
-        skill_num = num;
-    }
-
-    public int GetSkillNum() {
-        return skill_num;
     }
 
     public AudioClip GetSkillSound() {
@@ -38,5 +25,5 @@ public abstract class SkillConfig : ScriptableObject {
 
 public interface ISkill {
     void SetConfig(int skill_num);
-    void Use();
+    void Use(int skill_num);
 }

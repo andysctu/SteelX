@@ -2,21 +2,22 @@
 
 public class EnableLocal : MonoBehaviour {
 
-	[SerializeField] private Camera cam;
+	[SerializeField] private Camera cam, radar;
     private Canvas canvas;//setting the screen space
 
-    void Start () {
+    void Start () {//TODO : tidy up 
 
-		if (!GetComponent<PhotonView> ().isMine)
-			return;
+		if (!GetComponent<PhotonView>().isMine) {
+            cam.transform.Find("Canvas/HeatBar").gameObject.SetActive(false);
+            return;
+        }
 
 		// Enable mech controller
 		GetComponent<MechController>().enabled = true;
 
-		// Enable camera/radar
-		foreach (Camera c in GetComponentsInChildren<Camera>()){
-			c.enabled = true;
-		}
+        // Enable camera/radar
+        cam.enabled = true;
+        radar.enabled = true;
 
         GameObject PanelCanvas = GameObject.Find("PanelCanvas");
         if (PanelCanvas != null) {

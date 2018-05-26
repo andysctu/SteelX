@@ -412,7 +412,7 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    void Shoot(int hand, Vector3 direction, int playerPVid, bool isShield, int target_handOnShield) {
+    void Shoot(int hand, Vector3 direction, int playerPVid, bool isShield, int target_handOnShield) {        
         SetTargetInfo(hand, direction, playerPVid, isShield, target_handOnShield);
         string clipName = "";
 
@@ -637,6 +637,12 @@ public class MechCombat : Combat {
     [PunRPC]
     public void KnockBack(Vector3 dir, float length) {
         GetComponent<CharacterController>().Move(dir * length);
+        //transform.position += dir * length;
+    }
+
+    //direction =  back
+    public void Skill_KnockBack(float length) {
+        GetComponent<CharacterController>().Move(-transform.forward * length);
         //transform.position += dir * length;
     }
 

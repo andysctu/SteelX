@@ -1,26 +1,34 @@
 ﻿using UnityEngine;
 using Photon;
 using System.Collections;
+using System;
 
 public class Sync : Photon.MonoBehaviour {
 
-	//sync vals
-	Vector3 trueLoc;
-	Quaternion trueRot;
+	[SerializeField]PhotonView pv;
+	[SerializeField]MechCombat mcbt;
+    [SerializeField]SkillController SkillController;
+	[SerializeField]Camera cam;
 
-	[SerializeField]
-	PhotonView pv; // if use getcomponent, pv sometimes is null (don't know why , too slow? )
-	[SerializeField]
-	MechCombat mcbt;
-	[SerializeField]
-	Camera cam;
-	// Use this for initialization
-	void Start () {
-		//pv = GetComponent<PhotonView>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    //sync vals
+    private Vector3 trueLoc;
+    private Quaternion trueRot;
+
+    private bool onSkill = false;
+
+    private void Awake() {
+        RegisterOnSkill();    
+    }
+
+    private void RegisterOnSkill() {
+        if(SkillController!=null)SkillController.OnSkill += OnSkill;
+    }
+    
+    public void OnSkill(bool b) {
+        enabled = !b;
+    }
+
+    void Update () {
 		if(!pv.isMine){
 			transform.position = Vector3.Lerp(transform.position, trueLoc, Time.deltaTime * 5);
 			transform.rotation = Quaternion.Lerp(transform.rotation, trueRot, Time.deltaTime * 5);

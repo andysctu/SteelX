@@ -61,7 +61,13 @@ public class DroneCombat : Combat {
 		transform.position += dir * length;
 	}
 
-	void DisableDrone() {
+    //direction =  back
+    public void Skill_KnockBack(float length) {
+        GetComponent<CharacterController>().Move(-transform.forward * length);
+        //transform.position += dir * length;
+    }
+
+    void DisableDrone() {
 		gameObject.layer = default_layer;
         StartCoroutine(DisableDroneWhenNotOnSkill());
 	}

@@ -1162,6 +1162,7 @@ GameObject:
   - component: {fileID: 114802896146709994}
   - component: {fileID: 95043620281643646}
   - component: {fileID: 114417752035072802}
+  - component: {fileID: 143668824867936862}
   m_Layer: 8
   m_Name: Drone 2
   m_TagString: Drone
@@ -4440,7 +4441,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1328751364581036}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 05023dfd598844b86bfab7f84e3539b2, type: 3}
   m_Controller: {fileID: 9100000, guid: d5ef38c1143364a358f4df7b42b2979f, type: 2}
   m_CullingMode: 1
@@ -4589,8 +4590,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114844836033185492}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 4
+  instantiationId: 4
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114261729391238494
@@ -4648,8 +4649,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 2
+  instantiationId: 2
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114346128490661774
@@ -4692,6 +4693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bm: {fileID: 0}
   mechcombat: {fileID: 0}
+  mechController: {fileID: 0}
   skillAnimtor: {fileID: 95043620281643646}
   mainAnimator: {fileID: 95198505659783780}
   cam: {fileID: 0}
@@ -4791,6 +4793,7 @@ MonoBehaviour:
   bm: {fileID: 0}
   upperArmL: {fileID: 0}
   upperArmR: {fileID: 0}
+  SkillController: {fileID: 0}
   AimIK: {fileID: 114152351073109060}
   Target: {fileID: 0}
   PoleTarget: {fileID: 0}
@@ -5638,6 +5641,23 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0027823895, y: 7.859091, z: -0.26947504}
     m_Extent: {x: 0.44795752, y: 0.57363534, z: 0.8676967}
   m_DirtyAABB: 0
+--- !u!143 &143668824867936862
+CharacterController:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1613417622782256}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!198 &198486270969768386
 ParticleSystem:
   m_ObjectHideFlags: 1
