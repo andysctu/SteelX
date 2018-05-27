@@ -18,6 +18,7 @@ public class SkillController : MonoBehaviour {
     private Animator[] WeaponAnimators = new Animator[4];
     private int weaponOffset = 0, curSkillNum = 0;
     private bool[] skill_usable = new bool[4];
+    private float[] skill_length = new float[4];//for skill cam
     private const string Target_Animation_Name = "skill_target";
 
     public delegate void OnSkillAction(bool b);
@@ -60,6 +61,7 @@ public class SkillController : MonoBehaviour {
 
         for (int i = 0; i < skill.Length; i++) {
             if (skill[i] != null) {
+                skill_length[i] = 0;
                 skill[i].AddComponent(gameObject);
             }
         }
@@ -74,6 +76,8 @@ public class SkillController : MonoBehaviour {
     private void LoadSkillAnimations() {
         for(int i = 0; i < skill.Length; i++) {
             clipOverrides["skill_" + i] = (CheckIfWeaponOrderReverse(i)) ? skill[i].GetPlayerAniamtion(2) : skill[i].GetPlayerAniamtion(1);
+            skill_length[i] = (clipOverrides["skill_" + i] == null) ? 0 : clipOverrides["skill_" + i].length;
+            //Debug.Log(i + " length is : " + skill_length[i]);
             animatorOverrideController.ApplyOverrides(clipOverrides);
         }
     }
@@ -87,8 +91,6 @@ public class SkillController : MonoBehaviour {
         if (((skill[skill_num].weaponTypeL == "" && bm.weaponScripts[weaponOffset] == null) || (bm.weaponScripts[0] != null && skill[skill_num].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString())) &&
             ((skill[skill_num].weaponTypeR == "" && bm.weaponScripts[weaponOffset + 1] == null) || (bm.weaponScripts[1] != null && skill[skill_num].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString()))) {
             return false;
-
-            //reverse order
         } else {
             return true;
         }
@@ -184,7 +186,7 @@ public class SkillController : MonoBehaviour {
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
-
+        if(skillcam!=null)SwitchToSkillCam(true);
         SwitchToSkillAnimator(true);
         skillAnimtor.Play(Target_Animation_Name);
         StartCoroutine(ReturnDefaultStateWhenEnd(Target_Animation_Name));
@@ -244,6 +246,7 @@ public class SkillController : MonoBehaviour {
 
     private void SwitchToSkillCam(bool b) {
         if (!GetComponent<PhotonView>().isMine) return;
+        skillcam.GetComponent<SkillCam>().enabled = b;
         skillcam.enabled = b;
         cam.enabled = !b;
     }

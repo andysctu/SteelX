@@ -9,8 +9,13 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private SingleTargetSkillConfig config;
     private Transform target;
 
+    public Transform Drone; //test use
+
     private void Start() {
         InitComponent();
+
+        //test delete
+        //Drone = GameObject.Find("Drone 2").transform;
     }
 
     private void InitComponent() {
@@ -60,15 +65,27 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             SkillController target_SkillController = target_pv.GetComponent<SkillController>();
             target = target_pv.transform;
 
-            //Attach Effects on target
+            //Attach effects on target
             SetEffectsTarget(target);
 
             //rotate target to the right direction
+            //TODO : check if the target is close to front or back then rotate to it
             target.transform.LookAt(transform.position + new Vector3(0, 5, 0));
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
 
+            if (!target_pv.isMine) {
+                SkillCam skillcam = transform.Find("SkillCam").GetComponent<SkillCam>();
+                if (skillcam != null)
+                    skillcam.SetTarget(target);
+            } else {
+                SkillCam skillcam = target_pv.transform.Find("SkillCam").GetComponent<SkillCam>();
+                if (skillcam != null) skillcam.SetTarget(transform.root);
+            }
+
             //Play target on skill animation
             if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetAnimation());
+
+            
 
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
