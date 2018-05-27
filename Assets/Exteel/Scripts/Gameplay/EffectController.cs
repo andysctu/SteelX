@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class EffectController : MonoBehaviour {
 
-	[SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
-	[SerializeField]private ParticleSystem boostingDust, respawnEffect;
+    [SerializeField] SkillController SkillController;
+    [SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
+	[SerializeField]private ParticleSystem boostingDust, respawnEffect, damageless;
 	[SerializeField]private GameObject shieldOnHit, slashOnHitEffect, smashOnHitEffect;
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
@@ -15,6 +16,14 @@ public class EffectController : MonoBehaviour {
 	private MechController mctrl;
 	private bool isBoostingDustPlaying = false;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
+
+    private void Awake() {
+        RegisterOnSkill();    
+    }
+
+    private void RegisterOnSkill() {
+        if(SkillController!=null)SkillController.OnSkill += PlayOnSkillEffect;
+    }
 
     void Start () {
 		initComponents ();
@@ -105,6 +114,13 @@ public class EffectController : MonoBehaviour {
             GameObject g = Instantiate(smashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
             g.GetComponent<ParticleSystem>().Play();
         }
+    }
+
+    private void PlayOnSkillEffect(bool b) {
+        if(b)
+            damageless.Play();
+        else
+            damageless.Stop();
     }
 
     void OnEnable(){
