@@ -19,6 +19,10 @@ public class SkillCam : MonoBehaviour {
 
     // Update is called once per frame
     private void Update () {
+        if(target == null) {
+            transform.LookAt(transform.root.position + transform.root.forward * 30);
+            return;
+        }
         curTime = Time.time - startTime;
 
         //lerp pos

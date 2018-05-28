@@ -1,15 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class HUDText : MonoBehaviour {
-
     private Image img;
-	private Vector3 originalWorldPos;
-    private Vector3 currentScreenPos;
     private Camera cam;
-	private float height = 0f;
+    private float alpha_decrease_speed = 1, alpha_threshold = 0.75f, scale_decrease_speed = 1f;
+    private Vector3 Mech_Mid_Point = new Vector3(0, 5, 0);
 
     private void Start() {
         img = GetComponent<Image>();
@@ -17,26 +13,27 @@ public class HUDText : MonoBehaviour {
     
     public void Display(Camera cam) {
         this.cam = cam;
-        transform.position = cam.WorldToScreenPoint(transform.root.position + new Vector3(0, 5, 0));
-        transform.localScale = new Vector3(1,1,1);
-        img.color = new Color(img.color.r, img.color.g, img.color.b, 255);
+        transform.position = cam.WorldToScreenPoint(transform.root.position + Mech_Mid_Point);
+        transform.localScale = new Vector3(1.2f, 1.2f, 1);
+
+        img.SetNativeSize();
+
+        img.color = new Color(img.color.r, img.color.g, img.color.b, 1);
         img.enabled = true;
         enabled = true;
     }
 
-	// Update is called once per frame
 	void Update () {
 		if (cam == null) return;
 
-		//if(cam.WorldToScreenPoint (originalWorldPos).z<0)
-		//	gameObject.SetActive (false);
+        img.color = new Color(img.color.r, img.color.g, img.color.b, img.color.a - Time.deltaTime * alpha_decrease_speed);
 
-        transform.localScale *= 0.98f;
-        if(transform.localScale.x < 0.8f) { img.enabled = false; enabled = false; }
-        img.color = new Color(img.color.r, img.color.g, img.color.b, img.color.a - 2);
-        transform.position = cam.WorldToScreenPoint(transform.root.position + new Vector3(0,5,0));
+        transform.position = cam.WorldToScreenPoint(transform.root.position + Mech_Mid_Point);
+        transform.localScale -= transform.localScale * Time.deltaTime * scale_decrease_speed;
 
-		/*transform.position = cam.WorldToScreenPoint(originalWorldPos) + new Vector3(0, height, 0);
-		height += 0.25f;*/
-	}
+        if(img.color.a < alpha_threshold) {
+            img.enabled = false;
+            enabled = false;
+        }
+    }
 }

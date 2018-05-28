@@ -2795,8 +2795,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 3
+  instantiationId: 3
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -2975,6 +2975,7 @@ MonoBehaviour:
   mainCamera: {fileID: 2087740}
   radar: {fileID: 2093468}
   HeatBar: {fileID: 1003962184624644}
+  crosshairImage: {fileID: 106124}
 --- !u!114 &11445986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3114,8 +3115,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 8
+  instantiationId: 8
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242

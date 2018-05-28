@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EffectController : MonoBehaviour {
 
-    [SerializeField] SkillController SkillController;
+    [SerializeField]SkillController SkillController;
     [SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
 	[SerializeField]private ParticleSystem boostingDust, respawnEffect, damageless;
 	[SerializeField]private GameObject shieldOnHit, slashOnHitEffect, smashOnHitEffect;
