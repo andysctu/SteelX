@@ -6,20 +6,20 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : Photon.MonoBehaviour {
-	public static bool isTeamMode;
-	public float TimeLeft;
-
-	[SerializeField] GameObject PlayerPrefab;
+	[SerializeField] GameObject PlayerPrefab, PlayerStat;
 	[SerializeField] GameObject Scoreboard,RespawnPanel;
-	[SerializeField] GameObject PlayerStat;
 	[SerializeField] Text Timer;
 	[SerializeField] bool Offline;
 	[SerializeField] GameObject Panel_RedTeam, Panel_BlueTeam;
 	[SerializeField] GameObject RedScore, BlueScore;
 	[SerializeField] Text RedScoreText, BlueScoreText;
 	[SerializeField] GameObject MechFrame;
+    [SerializeField] GameMsgDisplayer GameMsgDisplayer;
 
-	public InRoomChat InRoomChat;
+    public static bool isTeamMode;
+    public float TimeLeft;
+
+    public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
 	public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 	private GameObject RedFlag, BlueFlag;
@@ -36,7 +36,6 @@ public class GameManager : Photon.MonoBehaviour {
 	private int currentTimer = 999;
 	private bool is_Time_init = false;
 
-	private HUD hud;
 	private Camera cam;
 	private MechCombat mcbt;
 	private bool gameEnding = false;
@@ -82,7 +81,7 @@ public class GameManager : Photon.MonoBehaviour {
 			GameInfo.MaxTime = 1;
             InstantiatePlayer(PlayerPrefab.name, RandomXZposition(SpawnPoints[0].position, 20), SpawnPoints[0].rotation, 0);
             GameIsBegin = true;
-            hud.ShowWaitOtherPlayer(false);
+            GameMsgDisplayer.ShowWaitOtherPlayer(false);
             return;
         }
 		//Load game info
@@ -143,7 +142,7 @@ public class GameManager : Photon.MonoBehaviour {
 		InitHealthPool ();
 		InitGreyZone ();
 
-		hud.ShowWaitOtherPlayer (true);
+        GameMsgDisplayer.ShowWaitOtherPlayer (true);
 	}
 		
 	IEnumerator LateStart(){
@@ -197,11 +196,8 @@ public class GameManager : Photon.MonoBehaviour {
 
 		if(player.GetComponent<PhotonView>().isMine){
             Transform cam_transform;
-            GameObject hud_GameObject;
             cam_transform = player.transform.Find("Camera");
-            hud_GameObject = GameObject.Find("PanelCanvas");
             cam = (cam_transform == null)? null : cam_transform.GetComponent<Camera>();
-			hud = (hud_GameObject == null) ? null : hud_GameObject.GetComponent<HUD>();
 			mcbt = player.GetComponent<MechCombat> ();
 		}
 	}
@@ -379,7 +375,7 @@ public class GameManager : Photon.MonoBehaviour {
         if (!GameIsBegin){
 			if(currentTimer <= GameBeginTime){
 				SetGameBegin ();
-				hud.ShowWaitOtherPlayer (false);
+                GameMsgDisplayer.ShowWaitOtherPlayer (false);
 				Debug.Log ("set game begin");
 			}
 
@@ -773,7 +769,7 @@ public class GameManager : Photon.MonoBehaviour {
 	void EndGame(){
 		gameEnding = true;
 		Cursor.lockState = CursorLockMode.None;
-		hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");//every player's hud on Gamemanager is his
+        GameMsgDisplayer.ShowGameOver();
 		Scoreboard.SetActive(true);
 		StartCoroutine(ExecuteAfterTime(3));
 	}

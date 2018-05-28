@@ -11,7 +11,9 @@ public class EffectController : MonoBehaviour {
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
-	[SerializeField]private Transform[] Hands;
+    [SerializeField]private HUDText Hit, Kill, Defense;
+
+    private Transform[] Hands;
     private MechCombat mcbt;
 	private MechController mctrl;
 	private bool isBoostingDustPlaying = false;
@@ -23,6 +25,10 @@ public class EffectController : MonoBehaviour {
 
     private void RegisterOnSkill() {
         if(SkillController!=null)SkillController.OnSkill += PlayOnSkillEffect;
+    }
+
+    void OnEnable() {
+        RespawnEffect();
     }
 
     void Start () {
@@ -122,8 +128,4 @@ public class EffectController : MonoBehaviour {
         else
             damageless.Stop();
     }
-
-    void OnEnable(){
-		RespawnEffect ();
-	}
 }

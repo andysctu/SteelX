@@ -73,13 +73,14 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             target.transform.LookAt(transform.position + new Vector3(0, 5, 0));
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
 
-            if (!target_pv.isMine) {
+            if (!target_pv.isMine || target.tag == "Drone") {
                 SkillCam skillcam = transform.Find("SkillCam").GetComponent<SkillCam>();
                 if (skillcam != null)
                     skillcam.SetTarget(target);
             } else {
                 SkillCam skillcam = target_pv.transform.Find("SkillCam").GetComponent<SkillCam>();
-                if (skillcam != null) skillcam.SetTarget(transform.root);
+                if (skillcam != null)
+                    skillcam.SetTarget(transform.root);
             }
 
             //Play target on skill animation

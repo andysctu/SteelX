@@ -11,7 +11,6 @@ public class RCLBulletTrace : MonoBehaviour {
 
     private ParticleSystem ps;
     private PhotonView shooter_pv, bullet_pv;
-    private HUD hud;
     private Camera cam;
     private GameObject shooter;
     private Transform target;
@@ -44,9 +43,8 @@ public class RCLBulletTrace : MonoBehaviour {
         this.impact_radius = impact_radius;
     }
 
-    public void SetShooterInfo(GameObject shooter, HUD hud, Camera cam) {
+    public void SetShooterInfo(GameObject shooter, Camera cam) {
         this.shooter = shooter;
-        this.hud = hud;
         this.cam = cam;
         shooter_pv = shooter.GetComponent<PhotonView>();
         shooter_viewID = shooter_pv.viewID;
@@ -99,9 +97,9 @@ public class RCLBulletTrace : MonoBehaviour {
             if (hitColliders [i].tag == "Shield") {//TODO : check if shield overheat
 
 				if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP () - bulletdmg / 2 <= 0) {
-					hud.ShowText (cam, hitColliders [i].transform.position, "Kill");
+                    colliderPV.GetComponent<HUD>().DisplayKill(cam);
 				} else {
-					hud.ShowText (cam, hitColliders [i].transform.position, "Defense");
+                    colliderPV.GetComponent<HUD>().DisplayDefense(cam);
 				}
                 ShieldUpdater shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldUpdater>();
                 int hand = shieldUpdater.GetHand();
@@ -110,9 +108,9 @@ public class RCLBulletTrace : MonoBehaviour {
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
 			} else {
 				if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP () - bulletdmg <= 0) {
-					hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Kill");
+                    colliderPV.GetComponent<HUD>().DisplayKill(cam);
 				} else {
-					hud.ShowText (cam, hitColliders [i].transform.position + new Vector3 (0, 5f, 0), "Hit");
+                    colliderPV.GetComponent<HUD>().DisplayHit(cam);
 				}
                 colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_viewID, "RCL", true);
                 colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);
