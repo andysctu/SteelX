@@ -4692,8 +4692,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114844836033185492}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 2
-  instantiationId: 2
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114261729391238494
@@ -4751,8 +4751,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 4
-  instantiationId: 4
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114346128490661774
@@ -4860,7 +4860,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153040ddcb4bc477cbd5ced353a4745e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alpha_decrease_speed: 5
 --- !u!114 &114672627613088596
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4873,7 +4872,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.528}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -4940,7 +4939,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153040ddcb4bc477cbd5ced353a4745e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alpha_decrease_speed: 5
 --- !u!114 &114802896146709994
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4984,7 +4982,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153040ddcb4bc477cbd5ced353a4745e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alpha_decrease_speed: 5
 --- !u!114 &114831540118652372
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5873,13 +5870,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 8
+  m_Radius: 2
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 1
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 4, z: 0}
 --- !u!198 &198047209776110828
 ParticleSystem:
   m_ObjectHideFlags: 1

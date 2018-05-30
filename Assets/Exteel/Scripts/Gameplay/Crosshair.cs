@@ -211,7 +211,63 @@ public class Crosshair : MonoBehaviour {
     }
 
 
-	void Update () {
+    public Transform[] DectectMultiTargets(float crosshairRadius, float range, bool isTargetAlly) {
+        if (crosshairRadius > 0) {
+            List<Transform> targets_in_range = new List<Transform>();
+
+            foreach (GameObject target in Targets) {
+                if (target == null) {
+                    TargetsToRemove.Add(target);
+                    continue;
+                }
+                PhotonView targetpv = target.GetComponent<PhotonView>();
+                if (targetpv.viewID == pv.viewID)
+                    continue;
+
+                if (isTeamMode) {
+                    if (target.GetComponent<Collider>().tag == "Drone") {
+                        continue;
+                    }
+                    if (!isTargetAlly) {
+                        if (targetpv.owner.GetTeam() == pv.owner.GetTeam()) {
+                            continue;
+                        }
+                    } else {
+                        if (targetpv.owner.GetTeam() != pv.owner.GetTeam()) {
+                            continue;
+                        }
+                    }
+                } else {
+                    //if not team mode , ignore eng
+                    if (isTargetAlly)
+                        continue;
+                }
+
+                //check distance
+                if (!(Vector3.Distance(target.transform.position, transform.root.position) < range))
+                    continue;
+
+                Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
+                Vector3 rayStartPoint = transform.root.position + new Vector3(0, 10, 0); //rayStartpoint should not inside terrain => not detect
+                Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
+                if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
+                    //check if Terrain block the way
+                    RaycastHit hit;
+                    if (Physics.Raycast(rayStartPoint, (target.transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0, 5, 0)), Terrainlayer)) {
+                        if (hit.collider.gameObject.layer == 10) {
+                            continue;
+                        }
+                    }
+                    Debug.Log(target.name + "is in range");
+                    targets_in_range.Add(target.transform);
+                }
+            }
+            return targets_in_range.ToArray();
+        }
+        return null;
+    }
+
+    void Update () {
         if (onSkill) return;
 
         if (CrosshairRadiusL > 0) {// TODO : remove this

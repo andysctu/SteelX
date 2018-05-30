@@ -34,7 +34,20 @@ public class EffectController : MonoBehaviour {
     void Start () {
 		initComponents ();
 		initTransforms ();
-	}
+        ImplementDamageless();
+
+    }
+
+    void ImplementDamageless() {
+        Transform hips = transform.root.Find("CurrentMech/metarig/hips");
+        if(hips == null) {
+            Debug.LogError("can't find hips");
+            return;
+        }
+
+        damageless.transform.SetParent(hips);
+        damageless.transform.localPosition = Vector3.zero;
+    }
 
 	void initComponents(){
 		mctrl = transform.root.GetComponent<MechController> ();
@@ -78,6 +91,7 @@ public class EffectController : MonoBehaviour {
 		}
 	}
 
+    //TODO : improve this
 	public void UpdateBoostingDust(){//called by horizontal boosting state
 		float direction = Animator.GetFloat ("Direction"), speed = Animator.GetFloat ("Speed");//other player also call this
 

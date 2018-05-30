@@ -732,7 +732,7 @@ public class MechCombat : Combat {
 
     // Update is called once per frame
     void Update() {
-        if (!photonView.isMine || gm.GameOver() || !gm.GameIsBegin || onSkill) return;
+        if (!photonView.isMine || gm.GameOver() || !gm.GameIsBegin) return;
 
         // Drain HP bar gradually
         if (isDead) {
@@ -746,6 +746,10 @@ public class MechCombat : Combat {
             photonView.RPC("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
         }
 
+        updateHUD(); // this is called when on skill
+
+        if (onSkill) return;
+
         // Animate left and right combat
         handleCombat(LEFT_HAND);
         handleCombat(RIGHT_HAND);
@@ -757,8 +761,6 @@ public class MechCombat : Combat {
 
             photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
         }
-
-        updateHUD();
     }
 
     // Set animations and tweaks

@@ -36,7 +36,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			mctrl.Boost (false);
 			return;
 		}
-
+        
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			mctrl.SetCanVerticalBoost(true);
 			animator.SetBool(jump_id, true);
