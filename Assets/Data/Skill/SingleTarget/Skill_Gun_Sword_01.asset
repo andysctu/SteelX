@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e298283ccdd26de4f87c3c5415038740, type: 3}
+  m_Script: {fileID: 11500000, guid: 64d4bcbb9d6ef9c4a9f5140a84623a65, type: 3}
   m_Name: Skill_Gun_Sword_01
   m_EditorClassIdentifier: 
   weaponTypeL: SMG
@@ -24,6 +24,6 @@ MonoBehaviour:
   EnergyCost: 0
   damage: 250
   crosshairRadius: 10
-  detectRange: 50
-  distance: 5
+  detectRange: 10
+  distance: 10
   targetAnimation: {fileID: 7400000, guid: ac1ca16665b950745bf7737c0ace9955, type: 2}

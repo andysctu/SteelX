@@ -1231,9 +1231,9 @@ GameObject:
   - component: {fileID: 114501258250183374}
   - component: {fileID: 114802896146709994}
   - component: {fileID: 95043620281643646}
-  - component: {fileID: 114417752035072802}
   - component: {fileID: 143668824867936862}
   - component: {fileID: 114697224155132126}
+  - component: {fileID: 114435027189249138}
   m_Layer: 8
   m_Name: Drone 2
   m_TagString: Drone
@@ -4588,7 +4588,7 @@ MonoBehaviour:
   Hands:
   - {fileID: 4421656274130566}
   - {fileID: 4018446990084242}
-  SkillController: {fileID: 114417752035072802}
+  SkillController: {fileID: 0}
 --- !u!114 &114076035277099748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4782,7 +4782,7 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114417752035072802
+--- !u!114 &114435027189249138
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -4790,7 +4790,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1613417622782256}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fb180790b40c10418da50448b69e2d4, type: 3}
+  m_Script: {fileID: 11500000, guid: b819f2c2dda201148a1f5363f8ea3e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bm: {fileID: 0}
@@ -4819,7 +4819,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b067932c445d7499bcbbac0b5047d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SkillController: {fileID: 114417752035072802}
+  SkillController: {fileID: 0}
   switchWeaponEffectL: {fileID: 0}
   switchWeaponEffectR: {fileID: 0}
   boostingDust: {fileID: 0}
@@ -4834,9 +4834,6 @@ MonoBehaviour:
   Sounds: {fileID: 0}
   Animator: {fileID: 0}
   AnimatorVars: {fileID: 0}
-  Hit: {fileID: 0}
-  Kill: {fileID: 0}
-  Defense: {fileID: 0}
 --- !u!114 &114558577616863078
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4996,13 +4993,9 @@ MonoBehaviour:
   cam: {fileID: 0}
   mechCombat: {fileID: 0}
   bm: {fileID: 0}
-  upperArmL: {fileID: 0}
-  upperArmR: {fileID: 0}
   SkillController: {fileID: 0}
   AimIK: {fileID: 114152351073109060}
   Target: {fileID: 0}
-  PoleTarget: {fileID: 0}
-  AimTransform: {fileID: 0}
 --- !u!114 &114843202046699102
 MonoBehaviour:
   m_ObjectHideFlags: 1

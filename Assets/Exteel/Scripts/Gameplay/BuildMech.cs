@@ -142,8 +142,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null (in offline )
-        parts[5] = defaultParts[13];
-        parts[6] = defaultParts[13];
+        parts[5] = defaultParts[9];
+        parts[6] = defaultParts[16];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];

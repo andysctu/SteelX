@@ -11,7 +11,6 @@ public class EffectController : MonoBehaviour {
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
-    [SerializeField]private HUDText Hit, Kill, Defense;
 
     private Transform[] Hands;
     private MechCombat mcbt;

@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4165315966763374}
-  - component: {fileID: 114616456908832696}
+  - component: {fileID: 114149427488566068}
   m_Layer: 11
   m_Name: Skill_Gun_Sword_01_bullet
   m_TagString: Untagged
@@ -40,15 +40,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114616456908832696
+--- !u!114 &114149427488566068
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130398100609976}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe93c31e2561c3a48ae548825daeebcc, type: 3}
+  m_Script: {fileID: 11500000, guid: 2aabcb87b1a2c614f92f7c219203336f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bullet_num: 7

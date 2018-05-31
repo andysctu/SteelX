@@ -65,6 +65,12 @@ public class SkillController : MonoBehaviour {
                 skill[i].AddComponent(gameObject);
             }
         }
+
+        //rebind all weapons
+        for (int i = 0; i < 4; i++) {
+            if(bm.weapons[i] != null)
+                bm.weapons[i].GetComponent<Animator>().Rebind();
+        }
     }
 
     private void InitEffectsList() {
@@ -75,9 +81,13 @@ public class SkillController : MonoBehaviour {
     //the skill aniamtions may need to be switched when using different weapons ( different order )
     private void LoadSkillAnimations() {
         for(int i = 0; i < skill.Length; i++) {
-            clipOverrides["skill_" + i] = (CheckIfWeaponOrderReverse(i)) ? skill[i].GetPlayerAniamtion(2) : skill[i].GetPlayerAniamtion(1);
+            if (skill[i] == null) {
+                clipOverrides["skill_" + i] = null;
+            } else {
+                clipOverrides["skill_" + i] = (CheckIfWeaponOrderReverse(i)) ? skill[i].GetPlayerAniamtion(2) : skill[i].GetPlayerAniamtion(1);
+            }
+
             skill_length[i] = (clipOverrides["skill_" + i] == null) ? 0 : clipOverrides["skill_" + i].length;
-            //Debug.Log(i + " length is : " + skill_length[i]);
             animatorOverrideController.ApplyOverrides(clipOverrides);
         }
     }
@@ -245,7 +255,8 @@ public class SkillController : MonoBehaviour {
     }
 
     public void PlaySkillSound(int skill_num) {
-        Sounds.PlayClip(skill[skill_num].GetSkillSound());
+        if(skill[skill_num].GetSkillSound() != null)
+            Sounds.PlayClip(skill[skill_num].GetSkillSound());
     }
 
     private void SwitchToSkillCam(bool b) {

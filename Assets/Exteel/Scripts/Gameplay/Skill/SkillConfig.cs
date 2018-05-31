@@ -2,7 +2,8 @@
 
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
-    public string weaponTypeL, weaponTypeR;//if two handed , put it on type 1
+    public string weaponTypeL;//if two handed , put it on type 1
+    public string weaponTypeR;
     [Tooltip("animation 1 must match the order of the  types ; animation 2 is the different order")]
     [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
     [SerializeField] protected GameObject[] playerEffects, targetEffects, weaponLEffects, weaponREffects;

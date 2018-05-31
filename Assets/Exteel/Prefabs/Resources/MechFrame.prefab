@@ -680,8 +680,8 @@ GameObject:
   - component: {fileID: 114718916726667884}
   - component: {fileID: 114365142493992942}
   - component: {fileID: 95953646033232842}
-  - component: {fileID: 114027273283822130}
   - component: {fileID: 114666270378404098}
+  - component: {fileID: 114715354567852064}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -2764,7 +2764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentMech: {fileID: 144000}
   animator: {fileID: 9563454}
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
@@ -2930,7 +2930,7 @@ MonoBehaviour:
     m_Bits: 1024
   Sounds: {fileID: 114000010976113334}
   mcbt: {fileID: 11445986}
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   Targets: []
 --- !u!114 &11422958
 MonoBehaviour:
@@ -2999,7 +2999,7 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   animator: {fileID: 9563454}
   MovementClips: {fileID: 114365142493992942}
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   jumpPower: 70
   moveSpeed: 30
   minBoostSpeed: 50
@@ -3045,7 +3045,7 @@ MonoBehaviour:
   Terrain:
     serializedVersion: 2
     m_Bits: 1024
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   Gravity: 4
   maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
@@ -5879,34 +5879,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pv: {fileID: 11416036}
   mcbt: {fileID: 11445986}
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   cam: {fileID: 2087740}
---- !u!114 &114027273283822130
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fb180790b40c10418da50448b69e2d4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bm: {fileID: 11422958}
-  mechcombat: {fileID: 11445986}
-  mechController: {fileID: 11462782}
-  skillAnimtor: {fileID: 95953646033232842}
-  mainAnimator: {fileID: 9563454}
-  cam: {fileID: 2087740}
-  skillcam: {fileID: 20202144477786866}
-  skill:
-  - {fileID: 11400000, guid: 2b3a3ef71f823ee4d9010ca67f0cf306, type: 2}
-  - {fileID: 11400000, guid: f3ef1a7e92dafd6438123fdc52b18b42, type: 2}
-  - {fileID: 11400000, guid: 6f22c3342e0c0654fa71dc7a1b3d6b20, type: 2}
-  - {fileID: 11400000, guid: 3a4819a7409e42d448e6062248e560d9, type: 2}
-  Sounds: {fileID: 114000010976113334}
-  sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
-  isDrone: 0
 --- !u!114 &114051533737220576
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6071,13 +6045,9 @@ MonoBehaviour:
   cam: {fileID: 2087740}
   mechCombat: {fileID: 11445986}
   bm: {fileID: 11422958}
-  upperArmL: {fileID: 0}
-  upperArmR: {fileID: 0}
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   AimIK: {fileID: 114999884067279722}
   Target: {fileID: 4739413548255820}
-  PoleTarget: {fileID: 0}
-  AimTransform: {fileID: 0}
 --- !u!114 &114123029246024616
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6744,7 +6714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b067932c445d7499bcbbac0b5047d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SkillController: {fileID: 114027273283822130}
+  SkillController: {fileID: 114715354567852064}
   switchWeaponEffectL: {fileID: 198874021016501722}
   switchWeaponEffectR: {fileID: 198771028345185282}
   boostingDust: {fileID: 198040932698162666}
@@ -6759,9 +6729,6 @@ MonoBehaviour:
   Sounds: {fileID: 114000010976113334}
   Animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
-  Hit: {fileID: 0}
-  Kill: {fileID: 0}
-  Defense: {fileID: 0}
 --- !u!114 &114521036608758766
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7035,9 +7002,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a9c41e50cc8b4727ac9ddba7e5c6d4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hit: {fileID: 0}
-  Kill: {fileID: 0}
-  Defense: {fileID: 0}
+  Hit: {fileID: 114475748412270714}
+  Kill: {fileID: 114593204314204454}
+  Defense: {fileID: 114928086865331572}
 --- !u!114 &114672547102200730
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7063,6 +7030,32 @@ MonoBehaviour:
   targetMark: {fileID: 114308529597384706}
   EngTargetMark: {fileID: 114629240755462228}
   middlecross: {fileID: 114531871786231624}
+--- !u!114 &114715354567852064
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b819f2c2dda201148a1f5363f8ea3e43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bm: {fileID: 11422958}
+  mechcombat: {fileID: 11445986}
+  mechController: {fileID: 11462782}
+  skillAnimtor: {fileID: 95953646033232842}
+  mainAnimator: {fileID: 9563454}
+  cam: {fileID: 2087740}
+  skillcam: {fileID: 20202144477786866}
+  skill:
+  - {fileID: 11400000, guid: 3d76adcfa6c4a884b9c4f92718399fb7, type: 2}
+  - {fileID: 11400000, guid: 19a63dbde5fbf2c40a5370121f68739e, type: 2}
+  - {fileID: 11400000, guid: 898680a1f19553045b3762e75d12da7b, type: 2}
+  - {fileID: 0}
+  Sounds: {fileID: 114000010976113334}
+  sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
+  isDrone: 0
 --- !u!114 &114718916726667884
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7517,7 +7510,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -889052085
+  randomSeed: 9178558
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -14283,7 +14276,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -247796083
+  randomSeed: -2127255336
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -20897,7 +20890,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1125154520
+  randomSeed: -181618261
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -24210,7 +24203,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -891526600
+  randomSeed: 683416356
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -27517,7 +27510,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -630763052
+  randomSeed: -1218428846
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -30824,7 +30817,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1107998044
+  randomSeed: -1669428681
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -37567,7 +37560,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1144756688
+  randomSeed: -2049582074
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -40928,7 +40921,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 65163977
+  randomSeed: -1101000881
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -44277,7 +44270,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 568038843
+  randomSeed: -1653884405
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -47590,7 +47583,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1983835346
+  randomSeed: 163855238
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -54387,7 +54380,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1453838739
+  randomSeed: -1205303422
   InitialModule:
     serializedVersion: 3
     enabled: 1

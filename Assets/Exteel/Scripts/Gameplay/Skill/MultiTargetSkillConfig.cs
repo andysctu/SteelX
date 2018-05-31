@@ -4,8 +4,9 @@ using System.Collections.Generic;
 [CreateAssetMenu(menuName = "Skill/MultiTarget")]
 public class MultiTargetSkillConfig : SkillConfig {
     [Header("Skill Special")]
+    [SerializeField] private string BoosterName;
+    [SerializeField] private AnimationClip BoosterAnimation;
     [SerializeField] private int max_target;
-    [SerializeField] private bool DamageLessWhenUsing = false;
 
     public override void AddComponent(GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
@@ -80,6 +81,17 @@ public class MultiTargetSkillConfig : SkillConfig {
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(R % 2);
             }
         }
+    }
+    public string GetBoosterName() {
+        return BoosterName;
+    }
+
+    public AnimationClip GetBoosterAnimation() {
+        return BoosterAnimation;
+    }
+
+    public int GetMaxTarget() {
+        return max_target;
     }
 
     public override void Use(SkillController SkillController, int skill_num) {

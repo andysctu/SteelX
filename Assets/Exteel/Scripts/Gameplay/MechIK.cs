@@ -7,15 +7,14 @@ public class MechIK : MonoBehaviour {
 	[SerializeField]private Camera cam;
 	[SerializeField]private MechCombat mechCombat;
 	[SerializeField]private BuildMech bm;
-    [SerializeField]private Transform upperArmL, upperArmR;
     [SerializeField] private SkillController SkillController;
-    private Transform Knob;
+    private Transform upperArmL, upperArmR, Knob;
     private Animator animator;
 
     //AimIK
     [SerializeField] private AimIK AimIK;
     [SerializeField] private Transform Target;
-    [SerializeField] private Transform PoleTarget, AimTransform;
+    private Transform PoleTarget, AimTransform;
 
     private float idealweight = 0;
 	private Vector3 upperArmL_rot, upperArmR_rot;
