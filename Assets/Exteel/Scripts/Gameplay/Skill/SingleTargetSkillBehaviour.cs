@@ -6,7 +6,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private Sounds Sounds;
     private Crosshair Crosshair;
     private PhotonView player_pv;
-    private SingleTargetSkillConfig config;
     private Transform target;
 
     private void Start() {
@@ -23,35 +22,29 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         Sounds = CurrentMech.GetComponent<Sounds>();        
     }
 
-    public void SetConfig(int skill_num) {
-        this.config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
-    }
+    public void Use(int skill_num) {
+        //Get the config
+        SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
-    public void SetConfig(SkillConfig config) {
-        this.config = (SingleTargetSkillConfig)config;
-    }
-
-
-    public void Use(int num) {
         //Detect target
-        Transform target = Crosshair.DectectTarget(config.crosshairRadius, config.detectRange, false); //temp
+        Transform target = Crosshair.DectectTarget(config.SingleTargetSkillParams.crosshairRadius, config.SingleTargetSkillParams.detectRange, false);
         
-        //Cast skill
+        //RPC
         if (target != null) {
             PhotonView target_pv = target.GetComponent<PhotonView>();
             //Move to the right position
-            transform.position = (transform.position - target.position).normalized * config.distance + target.position;
+            transform.position = (transform.position - target.position).normalized * config.SingleTargetSkillParams.distance + target.position;
             
-            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, num, config.damage, transform.position, transform.forward);
+            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, skill_num, transform.position, transform.forward);
         } else {
             player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, 0, Vector3.zero, Vector3.zero);
         }
     }
 
     [PunRPC]
-    void CastSingleTargetSkill(int targetpv_id, int skill_num, int damage, Vector3 start_pos, Vector3 direction) {
+    void CastSingleTargetSkill(int targetpv_id, int skill_num, Vector3 start_pos, Vector3 direction) {
         if(targetpv_id != -1) {
-            SetConfig(skill_num);
+            SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
             Debug.Log("Called play " + "skill_" + skill_num);
 
@@ -81,8 +74,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play target on skill animation
             if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetAnimation());
 
-            
-
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
 
@@ -98,7 +89,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             transform.LookAt(target.position + new Vector3(0, 5, 0));
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
-            if(target_pv.isMine)target_pv.RPC("OnHit", PhotonTargets.All, damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+            if(PhotonNetwork.isMasterClient)target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
 
         } else {//target is null => cancel skill 
             SkillController.PlayCancelSkill();

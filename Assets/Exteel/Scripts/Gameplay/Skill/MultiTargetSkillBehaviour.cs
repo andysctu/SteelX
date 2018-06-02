@@ -26,16 +26,9 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
         Sounds = CurrentMech.GetComponent<Sounds>();
     }
 
-    public void SetConfig(int skill_num) {
-        this.config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
-    }
-
-    public void SetConfig(SkillConfig config) {
-        this.config = (MultiTargetSkillConfig)config;
-    }
-
-    public void Use(int num) {
+    public void Use(int skill_num) {
         //Detect target
+        MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
         Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.crosshairRadius, config.detectRange, false); //temp
 
         if (targets_in_range != null && targets_in_range.Length > 0) {
@@ -45,7 +38,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                 PhotonView target_pv = t.GetComponent<PhotonView>();
                 target_pvIDs.Add(target_pv.viewID);
             }
-            player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), num);
+            player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), skill_num);
         }
         //if no target => do nothing
     }
@@ -53,7 +46,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     [PunRPC]
     void CastMultiTargetSkill(int[] target_pvIDs, int skill_num) {
         if (target_pvIDs != null) {
-            SetConfig(skill_num);
+            MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
             Debug.Log("Called play " + "skill_" + skill_num);
             List<Transform> targets = new List<Transform>();
@@ -64,7 +57,8 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
 
                 targets.Add(target_pv.transform);
 
-                if (config.GetPlayerAniamtion(1) == null) {//instantiate immdiately
+                //TODO : improve this check
+                if (config.GetPlayerAniamtion(true) == null) {//instantiate immdiately
                     GameObject g = Instantiate(config.GetbulletParticle(), transform.position + new Vector3(0, 5, 0), Quaternion.identity);
                     BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
                     bulletTrace.ShowHitOnBulletCollision(true);
@@ -76,7 +70,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                     //target_pv.GetComponent<HUD>().DisplayHit(cam);
                 }
 
-                if (target_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+                if (target_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
 

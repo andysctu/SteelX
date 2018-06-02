@@ -110,7 +110,6 @@ public class MechCombat : Combat {
     private AnimatorVars AnimatorVars;
     private AnimatorOverrideController animatorOverrideController = null;
     private AnimationClipOverrides clipOverrides;
-    //private MechIK MechIK;
 
     //for Debug
     public bool forceDead = false;

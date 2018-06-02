@@ -6,7 +6,7 @@ public class AOESkillConfig : SkillConfig {
     [Header("Skill Special")]
     public int radius = 20;
 
-    public override void AddComponent(SkillController SkillController, GameObject player) {
+    public override void AddComponent(GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         if (bm.GetComponent<AOESkillBehaviour>() == null) {
@@ -83,7 +83,6 @@ public class AOESkillConfig : SkillConfig {
 
     public override void Use(SkillController SkillController, int skill_num) {
         AOESkillBehaviour behaviour = SkillController.GetComponent<AOESkillBehaviour>();
-        behaviour.SetConfig(this);
         behaviour.Use(skill_num);
     }
 

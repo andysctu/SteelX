@@ -4,12 +4,9 @@
 public class SingleTargetSkillConfig : SkillConfig {
     [Header("Skill Special")]
     [SerializeField] private AnimationClip targetAnimation;
+    public SingleTargetSkillParams SingleTargetSkillParams = new SingleTargetSkillParams();//TODO : implement this
 
-    [Tooltip("The distance between player and target at the skill start")]
-    public int crosshairRadius;
-    public int detectRange, distance;
-
-    public override void AddComponent(SkillController SkillController, GameObject player) {
+    public override void AddComponent(GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         if(bm.GetComponent<SingleTargetSkillBehaviour>() == null) {
@@ -85,14 +82,18 @@ public class SingleTargetSkillConfig : SkillConfig {
     }
 
     public override void Use(SkillController SkillController, int skill_num) {
-        //Add behaviour
- 
         SingleTargetSkillBehaviour behaviour = SkillController.GetComponent<SingleTargetSkillBehaviour>();
-        behaviour.SetConfig(this);
         behaviour.Use(skill_num);
     }
 
     public AnimationClip GetTargetAnimation() {
         return targetAnimation;
     }
+}
+
+[System.Serializable]
+public struct SingleTargetSkillParams {
+    [Tooltip("The distance between player and target at the skill start")]
+    public int crosshairRadius;
+    public int detectRange, distance;
 }

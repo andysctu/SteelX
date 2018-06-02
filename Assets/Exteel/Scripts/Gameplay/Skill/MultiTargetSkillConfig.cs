@@ -10,7 +10,7 @@ public class MultiTargetSkillConfig : SkillConfig {
     [SerializeField] private int max_target;
     public int crosshairRadius, detectRange;
 
-    public override void AddComponent(SkillController SkillController, GameObject player) {
+    public override void AddComponent(GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         if (bm.GetComponent<MultiTargetSkillBehaviour>() == null) {
@@ -104,7 +104,6 @@ public class MultiTargetSkillConfig : SkillConfig {
         //Add behaviour
 
         MultiTargetSkillBehaviour behaviour = SkillController.GetComponent<MultiTargetSkillBehaviour>();
-        behaviour.SetConfig(this);
         behaviour.Use(skill_num);
     }
 }

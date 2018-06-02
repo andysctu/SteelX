@@ -2,39 +2,43 @@
 
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
-    public string weaponTypeL;//if two handed , put it on type 1
-    public string weaponTypeR;
+    public string weaponTypeL, weaponTypeR;//if two handed , put it on type L
     [Tooltip("Animation 1 must match the order of the  types ; Animation 2 is the reverse order")]
-    [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
-    [SerializeField] protected GameObject[] playerEffects, targetEffects, weaponLEffects, weaponREffects;
-    [SerializeField] protected AudioClip skill_sound;
-    public int EnergyCost, damage;
+    [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2, weaponAnimationL, weaponAnimationR;
+    [SerializeField] protected GameObject[] playerEffects, weaponLEffects, weaponREffects;
+    [SerializeField] protected AudioClip skill_sound, mech_sound;
+    public GeneralSkillParams GeneralSkillParams = new GeneralSkillParams();
 
-    public GeneralSkillParam g = new GeneralSkillParam();
-
-    public abstract void AddComponent(SkillController SkillController, GameObject gameObjectTOattachTo);
+    public abstract void AddComponent(GameObject gameObjectToAttachTo);
 
     public abstract void Use(SkillController SkillController, int skill_num);
     
-    public AnimationClip GetPlayerAniamtion(int num) {
-        return (num==1)? playerAnimation1 : playerAnimation2;
+    public AnimationClip GetPlayerAniamtion(bool isOrderReverse) {//Is left hand weapon type = weaponTypeL & right hand weapon type = weaponTypeR
+        return (isOrderReverse) ? playerAnimation2 : playerAnimation1;
+    }
+
+    public AnimationClip GetWeaponAnimationL(bool isOrderReverse) {
+        return (isOrderReverse)? weaponAnimationR : weaponAnimationL;
+    }
+
+    public AnimationClip GetWeaponAnimationR(bool isOrderReverse) {
+        return (isOrderReverse) ? weaponAnimationL : weaponAnimationR;
     }
 
     public AudioClip GetSkillSound() {
         return skill_sound;
     }
 
-    public GameObject[] GetTargetEffects() {
-        return targetEffects;
+    public AudioClip GetMechSound() {
+        return mech_sound;
     }
 }
 
 [System.Serializable]
-public struct GeneralSkillParam {
-    public int testInt;
+public struct GeneralSkillParams {
+    public int energyCost, damage;
 }
 
 public interface ISkill {
-    void SetConfig(int skill_num);
     void Use(int skill_num);
 }

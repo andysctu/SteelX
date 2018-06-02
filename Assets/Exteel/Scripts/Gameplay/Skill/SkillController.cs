@@ -64,7 +64,7 @@ public class SkillController : MonoBehaviour {
         for (int i = 0; i < skill.Length; i++) {
             if (skill[i] != null) {
                 skill_length[i] = 0;
-                skill[i].AddComponent(this, gameObject);
+                skill[i].AddComponent(gameObject);                
             }
         }
 
@@ -95,7 +95,7 @@ public class SkillController : MonoBehaviour {
             if (skill[i] == null) {
                 clipOverrides["skill_" + i] = null;
             } else {
-                clipOverrides["skill_" + i] = (CheckIfWeaponOrderReverse(i)) ? skill[i].GetPlayerAniamtion(2) : skill[i].GetPlayerAniamtion(1);
+                clipOverrides["skill_" + i] = skill[i].GetPlayerAniamtion(CheckIfWeaponOrderReverse(i));
             }
 
             skill_length[i] = (clipOverrides["skill_" + i] == null) ? 0 : clipOverrides["skill_" + i].length;
@@ -199,20 +199,6 @@ public class SkillController : MonoBehaviour {
         OnSkill(true);
 
         skillAnimtor.Play("skill_" + skill_num);
-    }
-    
-    public void AttachEffectsOnTarget(Transform target , int skill_num) {
-        if (skill[skill_num].GetTargetEffects() == null) {
-            Debug.Log("No target effects");
-            return;
-        }
-
-        foreach(GameObject effect in skill[skill_num].GetTargetEffects()) {
-            Debug.Log("Attached effect : " + effect.name);
-
-            Instantiate(effect, target.position + new Vector3(0,5,0), Quaternion.identity, target);
-            
-        }
     }
 
     public void TargetOnSkill(AnimationClip skill_target) {//TODO : generalize this

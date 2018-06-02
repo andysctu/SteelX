@@ -312,7 +312,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
             weapons[i] = Instantiate(weaponScripts[i].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
-            //TODO : remake this (it distorts on respawn panel )
+            //TODO : remake this
             weapons[i].transform.localScale = new Vector3(weapons[i].transform.localScale.x * transform.root.localScale.x,
                weapons[i].transform.localScale.y * transform.root.localScale.y, weapons[i].transform.localScale.z * transform.root.localScale.z);
 

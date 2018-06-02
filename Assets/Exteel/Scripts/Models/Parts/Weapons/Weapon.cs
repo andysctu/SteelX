@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Weapon : ScriptableObject {
+public abstract class Weapon : ScriptableObject {
     [Tooltip("Special weapon types")]
     public string weaponType;//APS , LMG , Rocket , Cannon , Shotgun , ...
     public GameObject weaponPrefab;
@@ -24,6 +24,8 @@ public class Weapon : ScriptableObject {
     [Tooltip("Does this weapon slow down targets?")]
     public bool slowDown;
     public bool twoHanded;
+
+    public abstract void SwitchAnimationClips(Animator weaponAniamtor);
 }
 
 

@@ -8,7 +8,6 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
     private SkillController SkillController;
     private Sounds Sounds;
     private PhotonView player_pv;
-    private AOESkillConfig config;
     
     private void Start() {
         InitComponent();
@@ -23,18 +22,12 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
         Sounds = CurrentMech.GetComponent<Sounds>();
     }
 
-    public void SetConfig(int skill_num) {
-        this.config = (AOESkillConfig)(SkillController.GetSkillConfig(skill_num));
-    }
+    public void Use(int skill_num) {
+        AOESkillConfig config = (AOESkillConfig)(SkillController.GetSkillConfig(skill_num));
 
-    public void SetConfig(SkillConfig config) {
-        this.config = (AOESkillConfig)config;
-    }
-
-    public void Use(int num) {
         int[] target_pvIDs = DectectTargetInSphere(transform.position, config.radius);
 
-        player_pv.RPC("CastAOESkill", PhotonTargets.All, target_pvIDs, num);
+        player_pv.RPC("CastAOESkill", PhotonTargets.All, target_pvIDs, skill_num);
     }
 
     private int[] DectectTargetInSphere(Vector3 center, int radius) {
@@ -67,8 +60,9 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
 
     [PunRPC]
     void CastAOESkill(int[] target_pvIDs, int skill_num) {
+        AOESkillConfig config = (AOESkillConfig)(SkillController.GetSkillConfig(skill_num));
+
         List<Transform> targets = new List<Transform>();
-        SetConfig(skill_num);
 
         foreach(int target_pvID in target_pvIDs) {
             PhotonView target_pv = PhotonView.Find(target_pvID);
@@ -76,7 +70,7 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
             if (target_pv == null) continue;
 
             if (player_pv.isMine) {
-                target_pv.RPC("OnHit", PhotonTargets.All, config.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+                target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
             Transform target = target_pv.transform;
@@ -103,12 +97,10 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
             }
     }
 
+    /*
     void OnDrawGizmosSelected() {
-        if(config == null)
-            return;
-
-            
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, config.radius);
+        Gizmos.DrawWireSphere(transform.position, 20);
     }
+    */
 }
