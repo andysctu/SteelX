@@ -1,24 +1,27 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 [CreateAssetMenu(menuName = "Skill/SingleTarget")]
 public class SingleTargetSkillConfig : SkillConfig {
     [Header("Skill Special")]
     [SerializeField] private AnimationClip targetAnimation;
 
-    public override void AddComponent(GameObject player) {
+    [Tooltip("The distance between player and target at the skill start")]
+    public int crosshairRadius;
+    public int detectRange, distance;
+
+    public override void AddComponent(SkillController SkillController, GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         if(bm.GetComponent<SingleTargetSkillBehaviour>() == null) {
             bm.gameObject.AddComponent<SingleTargetSkillBehaviour>();
         }
-
-        Transform currentMech = player.transform.Find("CurrentMech");
-        if(currentMech == null) {Debug.LogError("can't find currentMech");return;}
+        
+        Transform hips = player.transform.Find("CurrentMech/metarig/hips");
+        if(hips == null) {Debug.LogError("can't find hips");return;}
 
         //Attach effects on player
         foreach(GameObject p in playerEffects) {
-            GameObject g = Instantiate(p, currentMech);
+            GameObject g = Instantiate(p, hips);
             g.transform.localPosition = Vector3.zero;
         }
 
@@ -63,8 +66,8 @@ public class SingleTargetSkillConfig : SkillConfig {
                 if(L < 2) SkillController.weaponEffects_1.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
-            //set info
-            ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(L%2);
+                //set info
+                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(L % 2, (L >= 2) ? 2 : 0);
             }        
         }
         foreach (GameObject p in weaponREffects) {
@@ -76,7 +79,7 @@ public class SingleTargetSkillConfig : SkillConfig {
                 if (L < 2) SkillController.weaponEffects_1.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
-            ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(R%2);
+                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(R % 2, (L >= 2) ? 2 : 0);
             }         
         }
     }

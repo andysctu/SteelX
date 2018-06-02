@@ -7052,7 +7052,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d76adcfa6c4a884b9c4f92718399fb7, type: 2}
   - {fileID: 11400000, guid: 19a63dbde5fbf2c40a5370121f68739e, type: 2}
   - {fileID: 11400000, guid: 898680a1f19553045b3762e75d12da7b, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 493982ab7c79af343821a58e8e99c3fc, type: 2}
   Sounds: {fileID: 114000010976113334}
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
   isDrone: 0
@@ -7134,6 +7134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 400766}
+  hips: {fileID: 428374}
   Cam_Distance_To_Mech: 20
   lerpSpeed: 2.5
   height: {x: 0, y: 12, z: 0}

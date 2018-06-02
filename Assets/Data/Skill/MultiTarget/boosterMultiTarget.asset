@@ -21,9 +21,11 @@ MonoBehaviour:
   weaponREffects: []
   skill_sound: {fileID: 0}
   EnergyCost: 0
-  damage: 0
-  crosshairRadius: 0
-  detectRange: 0
-  distance: 0
-  max_target: 0
-  DamageLessWhenUsing: 0
+  damage: 150
+  BoosterName: 
+  BulletParticle: {fileID: 1311110892892868, guid: acf7347d5fbb03f4997bcffdecd24593,
+    type: 2}
+  BoosterAnimation: {fileID: 0}
+  max_target: 5
+  crosshairRadius: 30
+  detectRange: 200

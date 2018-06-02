@@ -42,14 +42,14 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Move to the right position
             transform.position = (transform.position - target.position).normalized * config.distance + target.position;
             
-            player_pv.RPC("CastSkill", PhotonTargets.All, target_pv.viewID, num, config.damage, transform.position, transform.forward);
+            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, num, config.damage, transform.position, transform.forward);
         } else {
-            player_pv.RPC("CastSkill", PhotonTargets.All, -1, 0, 0, Vector3.zero, Vector3.zero);
+            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, 0, Vector3.zero, Vector3.zero);
         }
     }
 
     [PunRPC]
-    void CastSkill(int targetpv_id, int skill_num, int damage, Vector3 start_pos, Vector3 direction) {
+    void CastSingleTargetSkill(int targetpv_id, int skill_num, int damage, Vector3 start_pos, Vector3 direction) {
         if(targetpv_id != -1) {
             SetConfig(skill_num);
 

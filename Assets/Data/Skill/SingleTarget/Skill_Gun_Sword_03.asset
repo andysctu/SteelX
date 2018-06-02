@@ -13,16 +13,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponTypeL: SMG
   weaponTypeR: Sword
-  playerAnimation1: {fileID: 7400000, guid: f9f6ade573dfe0846ae4475104ba874c, type: 2}
+  playerAnimation1: {fileID: 7400000, guid: 600bcb65566ba594388feb3ac0fe71ca, type: 2}
   playerAnimation2: {fileID: 7400000, guid: 697e7f8fc2fb6564396096418656d3cb, type: 2}
   playerEffects: []
   targetEffects: []
-  weaponLEffects: []
-  weaponREffects: []
+  weaponLEffects:
+  - {fileID: 1130398100609976, guid: bf5c847bc8d28b6409db157daf3f452b, type: 2}
+  weaponREffects:
+  - {fileID: 1858837074824632, guid: d19715694a106894ea2b3c55852b1a64, type: 2}
   skill_sound: {fileID: 0}
   EnergyCost: 0
   damage: 250
+  targetAnimation: {fileID: 7400000, guid: 3b3b6e020de85fa44a8c2da295558165, type: 3}
   crosshairRadius: 20
   detectRange: 20
-  distance: 10
-  targetAnimation: {fileID: 7400000, guid: 7937e94e93654784aab02876b9026a90, type: 2}
+  distance: 15

@@ -24,6 +24,7 @@ public class SkillController : MonoBehaviour {
     public delegate void OnSkillAction(bool b);
     public event OnSkillAction OnSkill;
 
+    public List<GameObject> EffectsToRemove;
     public List<RequireSkillInfo> weaponEffects_1, weaponEffects_2;//weaponEffects_1 corresponds to the weapons 0 & 1
 
     private int SP = 0;
@@ -57,12 +58,13 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitSkill() {
+        DestroyPreEffects();
         InitEffectsList();
 
         for (int i = 0; i < skill.Length; i++) {
             if (skill[i] != null) {
                 skill_length[i] = 0;
-                skill[i].AddComponent(gameObject);
+                skill[i].AddComponent(this, gameObject);
             }
         }
 
@@ -73,7 +75,16 @@ public class SkillController : MonoBehaviour {
         }
     }
 
+    private void DestroyPreEffects() {
+        if(EffectsToRemove != null) {
+            foreach(GameObject g in EffectsToRemove) {
+                Destroy(g);
+            }
+        }
+    }
+
     private void InitEffectsList() {
+        EffectsToRemove = new List<GameObject>();
         weaponEffects_1 = new List<RequireSkillInfo>();
         weaponEffects_2 = new List<RequireSkillInfo>();
     }
@@ -130,6 +141,14 @@ public class SkillController : MonoBehaviour {
 
     public Camera GetCamera() {
         return cam;
+    }
+
+    public void RegisterEffectsToRemove(GameObject g) {
+        if(EffectsToRemove == null) {
+            Debug.LogError("Effects to remove is not init.");
+            return;
+        }
+        EffectsToRemove.Add(g);
     }
 
     public string GetSkillName(int skill_num) {

@@ -5,10 +5,12 @@ using System.Collections.Generic;
 public class MultiTargetSkillConfig : SkillConfig {
     [Header("Skill Special")]
     [SerializeField] private string BoosterName;
+    [SerializeField] private GameObject BulletParticle;
     [SerializeField] private AnimationClip BoosterAnimation;
     [SerializeField] private int max_target;
+    public int crosshairRadius, detectRange;
 
-    public override void AddComponent(GameObject player) {
+    public override void AddComponent(SkillController SkillController, GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         if (bm.GetComponent<MultiTargetSkillBehaviour>() == null) {
@@ -66,7 +68,7 @@ public class MultiTargetSkillConfig : SkillConfig {
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
                 //set info
-                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(L % 2);
+                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(L % 2, (L >= 2) ? 2 : 0);
             }
         }
         foreach (GameObject p in weaponREffects) {
@@ -78,12 +80,16 @@ public class MultiTargetSkillConfig : SkillConfig {
                 if (L < 2) SkillController.weaponEffects_1.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
-                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(R % 2);
+                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(R % 2, (L >= 2) ? 2 : 0);
             }
         }
     }
     public string GetBoosterName() {
         return BoosterName;
+    }
+
+    public GameObject GetbulletParticle() {
+        return BulletParticle;
     }
 
     public AnimationClip GetBoosterAnimation() {

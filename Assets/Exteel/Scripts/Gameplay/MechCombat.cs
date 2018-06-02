@@ -75,8 +75,7 @@ public class MechCombat : Combat {
     private Transform shoulderR;
     private Transform head;
     private Transform camTransform;
-    private Transform[] Gun_ends = new Transform[4];
-
+    private Transform[] Effect_Ends = new Transform[4];
 
     //Targets
     private List<Transform> targets_in_collider;
@@ -217,8 +216,8 @@ public class MechCombat : Combat {
         weaponScripts = bm.weaponScripts;
 
         UpdateCurWeaponType();
+        FindEffectEnd();
         FindMuz();
-        FindGunEnds();
     }
 
     public void initCombatVariables() {// this will be called also when respawn
@@ -241,21 +240,20 @@ public class MechCombat : Combat {
         initHealthAndFuelBars();//other player should not call this ( they share hud )
     }
 
-    public void FindGunEnds() {
+    private void FindEffectEnd() {
         for (int i = 0; i < 4; i++) {
             if (weapons[i] != null) {
-                Gun_ends[i] = weapons[i].transform.Find("End");
+                Effect_Ends[i] = TransformDeepChildExtension.FindDeepChild(weapons[i].transform, "EffectEnd");
             }
         }
     }
 
     public void FindMuz() {
         for (int i = 0; i < 4; i++) {
-            if (weapons[i] != null) {
-                Transform MuzTransform = weapons[i].transform.Find("End/Muz");
+            if (Effect_Ends[i] != null) {
+                Transform MuzTransform = Effect_Ends[i].transform.Find("Muz");
                 if (MuzTransform != null) {
                     Muz[i] = MuzTransform.GetComponent<ParticleSystem>();
-                    Muz[i].Stop();
                 }
             }
         }
@@ -456,11 +454,6 @@ public class MechCombat : Combat {
         }
     }
 
-    public void SetTargetInfo(int hand, Transform target) {//for skill
-        Targets[hand] = target.gameObject;
-        isTargetShield[hand] = false;
-    }
-
     public void InstantiateBulletTrace(int hand) {//aniamtion event driven
         if (bullets[weaponOffset + hand] == null) {
             Debug.LogError("bullet is null");
@@ -473,21 +466,19 @@ public class MechCombat : Combat {
         //Play Sound
         Sounds.PlayShot(hand);
 
-        Camera cam_enabled = (cam.enabled)? cam : skillcam;
-
         if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rocket) {
             if (photonView.isMine) {
                 GameObject bullet = PhotonNetwork.Instantiate("RCL034B", transform.position + new Vector3(0,5,0) +transform.forward * 10, Quaternion.LookRotation(bullet_directions[hand]), 0);
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
-                bulletTrace.SetShooterInfo(gameObject, cam_enabled);
+                bulletTrace.SetShooterInfo(gameObject, cam);
                 bulletTrace.SetBulletPropertis(weaponScripts[weaponOffset].damage, ((Rocket)weaponScripts[weaponOffset]).bullet_speed, ((Rocket)weaponScripts[weaponOffset]).impact_radius);
             }
         } else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier) {
-            GameObject bullet = Instantiate(bullets[weaponOffset + hand], Gun_ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
+            GameObject bullet = Instantiate(bullets[weaponOffset + hand], Effect_Ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
             ElectricBolt eb = bullet.GetComponent<ElectricBolt>();
-            bullet.transform.SetParent(Gun_ends[weaponOffset + hand]);
+            bullet.transform.SetParent(Effect_Ends[weaponOffset + hand]);
             bullet.transform.localPosition = Vector3.zero;
-            eb.SetCamera(cam_enabled);
+            eb.SetCamera(cam);
             eb.SetTarget((Targets[hand]==null)? null : Targets[hand].transform);      
         } else {
             GameObject b = bullets[weaponOffset + hand];
@@ -500,23 +491,22 @@ public class MechCombat : Combat {
                     if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.LMG) {
                         if (!isTargetShield[hand]) {
                             if (mcbt != null)
-                                mcbt.GetComponent<HUD>().DisplayHit(cam_enabled);
+                                mcbt.GetComponent<HUD>().DisplayHit(cam);
                             else
-                                Targets[hand].transform.root.GetComponent<HUD>().DisplayHit(cam_enabled);
+                                Targets[hand].transform.root.GetComponent<HUD>().DisplayHit(cam);
                         } else {
                             if (mcbt != null)
-                                mcbt.GetComponent<HUD>().DisplayDefense(cam_enabled);
+                                mcbt.GetComponent<HUD>().DisplayDefense(cam);
                             else
-                                Targets[hand].transform.root.GetComponent<HUD>().DisplayDefense(cam_enabled);
+                                Targets[hand].transform.root.GetComponent<HUD>().DisplayDefense(cam);
                         }
                     }
                 }
             }
 
-            GameObject bullet = Instantiate(b, Gun_ends[weaponOffset + hand].position, Quaternion.identity, BulletCollector.transform) as GameObject;
+            GameObject bullet = Instantiate(b, Effect_Ends[weaponOffset + hand].position, Quaternion.identity, BulletCollector.transform) as GameObject;
             BulletTrace bulletTrace = bullet.GetComponent<BulletTrace>();
-            bulletTrace.SetCamera(cam_enabled);
-            bulletTrace.SetShooterName(gameObject.name);
+            bulletTrace.SetStartDirection(cam.transform.forward);
 
             if (Targets[hand] != null) {
                 if (isTargetShield[hand]) {
@@ -1315,6 +1305,10 @@ public class MechCombat : Combat {
             yield return new WaitForSeconds(0.15f);
         }
         isNotEnoughEffectPlaying = false;
+    }
+
+    public Transform GetEffectEnd(int num) {
+        return Effect_Ends[num];
     }
 
     public bool IsFuelAvailable() {

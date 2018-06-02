@@ -3,6 +3,7 @@
 public class SkillCam : MonoBehaviour {
 
     [SerializeField]private Transform player;
+    [SerializeField]private Transform hips;
     private Transform target;
     private Vector3 idealPosition;
     private float skill_length, startTime, curTime;
@@ -19,18 +20,19 @@ public class SkillCam : MonoBehaviour {
 
     // Update is called once per frame
     private void Update () {
-        if(target == null) {
-            transform.LookAt(transform.root.position + transform.root.forward * 30);
-            return;
-        }
         curTime = Time.time - startTime;
 
         //lerp pos
-        idealPosition = player.position + height + (player.position - target.position).normalized * Cam_Distance_To_Mech;
+        idealPosition = player.position + height + (player.position - ((target==null)? (player.transform.position+player.transform.forward*15): target.position)).normalized * Cam_Distance_To_Mech;
         transform.position = Vector3.Lerp(transform.position, idealPosition, Time.deltaTime * lerpSpeed);
 
-        transform.LookAt((target.position + player.position)/2 + new Vector3(0,5,0));
-        //transform.LookAt(player.position + new Vector3(0,5,0));
+        if (target != null) {
+            transform.LookAt((target.position + player.position) / 2 + new Vector3(0, 5, 0));
+        } else {
+            transform.LookAt((hips.position + player.position)/2);
+        }
+
+        
     }
 
     private void OnEnable() {

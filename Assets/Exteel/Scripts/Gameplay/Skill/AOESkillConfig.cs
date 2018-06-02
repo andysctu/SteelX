@@ -6,7 +6,7 @@ public class AOESkillConfig : SkillConfig {
     [Header("Skill Special")]
     public int radius = 20;
 
-    public override void AddComponent(GameObject player) {
+    public override void AddComponent(SkillController SkillController, GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         if (bm.GetComponent<AOESkillBehaviour>() == null) {
@@ -64,7 +64,7 @@ public class AOESkillConfig : SkillConfig {
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
                 //set info
-                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(L % 2);
+                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(L % 2, (L >= 2) ? 2 : 0);
             }
         }
         foreach (GameObject p in weaponREffects) {
@@ -76,7 +76,7 @@ public class AOESkillConfig : SkillConfig {
                 if (L < 2) SkillController.weaponEffects_1.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
-                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetHand(R % 2);
+                ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(R % 2, (L >= 2) ? 2 : 0);
             }
         }
     }

@@ -258,7 +258,6 @@ public class Crosshair : MonoBehaviour {
                             continue;
                         }
                     }
-                    Debug.Log(target.name + "is in range");
                     targets_in_range.Add(target.transform);
                 }
             }

@@ -34,7 +34,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130398100609976}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 234.27037, y: 20.604, z: -205.6}
+  m_LocalPosition: {x: 396.1708, y: 5.74, z: 328.00012}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -51,6 +51,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aabcb87b1a2c614f92f7c219203336f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet_num: 7
+  bullet_num: 6
   interval: 0.1
-  onTarget: 0
+  onTarget: 1
+  multiTarget: 0
+  playGunShotSound: 1
+  hasMuz: 1
+  onlyImpact: 0
+  autoBullet: 1
+  Bullet: {fileID: 0}

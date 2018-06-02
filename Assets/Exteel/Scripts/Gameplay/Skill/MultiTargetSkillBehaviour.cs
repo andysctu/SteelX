@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     private SkillController SkillController;
     private MechCombat mcbt;
+    private Camera cam;
     private Sounds Sounds;
     private Crosshair Crosshair;
     private PhotonView player_pv;
@@ -19,6 +20,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
         SkillController = GetComponent<SkillController>();
         Crosshair = SkillController.GetCamera().GetComponent<Crosshair>();
         mcbt = GetComponent<MechCombat>();
+        cam = SkillController.GetCamera();
 
         Transform CurrentMech = transform.Find("CurrentMech");
         Sounds = CurrentMech.GetComponent<Sounds>();
@@ -32,7 +34,6 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
         this.config = (MultiTargetSkillConfig)config;
     }
 
-
     public void Use(int num) {
         //Detect target
         Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.crosshairRadius, config.detectRange, false); //temp
@@ -44,33 +45,46 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                 PhotonView target_pv = t.GetComponent<PhotonView>();
                 target_pvIDs.Add(target_pv.viewID);
             }
-            player_pv.RPC("CastSkill", PhotonTargets.All, target_pvIDs.ToArray(), num);
+            player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), num);
         }
         //if no target => do nothing
     }
 
     [PunRPC]
-    void CastSkill(int[] target_pvIDs, int skill_num) {
+    void CastMultiTargetSkill(int[] target_pvIDs, int skill_num) {
         if (target_pvIDs != null) {
             SetConfig(skill_num);
 
             Debug.Log("Called play " + "skill_" + skill_num);
+            List<Transform> targets = new List<Transform>();
 
             foreach(int target_pvID in target_pvIDs) {
                 PhotonView target_pv = PhotonView.Find(target_pvID);
                 if (target_pv == null) { Debug.Log("Can't find target photonView"); continue; }
 
-                Transform target_transform = target_pv.transform;
+                targets.Add(target_pv.transform);
 
-                //use cam ?
-                /*
-                if (skillcam != null)
-                    skillcam.SetTarget(transform.root);    
-                */
+                if (config.GetPlayerAniamtion(1) == null) {//instantiate immdiately
+                    GameObject g = Instantiate(config.GetbulletParticle(), transform.position + new Vector3(0, 5, 0), Quaternion.identity);
+                    BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
+                    bulletTrace.ShowHitOnBulletCollision(true);
+                    bulletTrace.SetCamera(cam);
+                    bulletTrace.SetSpeed(150);
+                    bulletTrace.SetTarget(target_pv.transform, false);
+                    bulletTrace.SetStartTransform(transform);//temp
+
+                    //target_pv.GetComponent<HUD>().DisplayHit(cam);
+                }
 
                 if (target_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
+
+            //use cam ?
+            /*
+            if (skillcam != null)
+                skillcam.SetTarget(transform.root);    
+            */
 
             //play anim ?
             //Play skill animation
@@ -86,7 +100,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
         }
     }
 
-    void SetEffectsTarget(Transform target) {
+    void SetEffectsTarget(Transform target) {//TODO : improve this
         if (mcbt.GetCurrentWeaponOffset() == 0)
             foreach (RequireSkillInfo g in SkillController.weaponEffects_1) {
                 g.SetTarget(target);
