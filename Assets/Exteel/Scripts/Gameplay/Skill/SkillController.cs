@@ -48,7 +48,6 @@ public class SkillController : MonoBehaviour {
 
     private void RegisterOnWeaponBuilt() {
         if (bm != null) {
-            bm.OnWeaponBuilt += UpdateWeaponAnimators;
             bm.OnWeaponBuilt += InitSkill;
         }
     }
@@ -69,10 +68,13 @@ public class SkillController : MonoBehaviour {
         }
 
         //rebind all weapons
-        for (int i = 0; i < 4; i++) {
+        /*for (int i = 0; i < 4; i++) {
             if(bm.weapons[i] != null)
                 bm.weapons[i].GetComponent<Animator>().Rebind();
-        }
+        }*/
+
+        UpdateWeaponAnimators();
+        LoadWeaponSkillAnimations();
     }
 
     private void DestroyPreEffects() {
@@ -103,6 +105,43 @@ public class SkillController : MonoBehaviour {
         }
     }
 
+    private void LoadWeaponSkillAnimations() {
+        for(int i = 0; i < 4; i++) {
+            if (WeaponAnimators[i] == null) {
+                continue;
+            }
+
+            //make sure buildmech overrides the first time
+            AnimatorOverrideController WeaponAnimatorOverrideController = (AnimatorOverrideController)WeaponAnimators[i].runtimeAnimatorController;
+
+            AnimationClipOverrides clipOverrides = new AnimationClipOverrides(WeaponAnimatorOverrideController.overridesCount);
+            WeaponAnimatorOverrideController.GetOverrides(clipOverrides);
+
+            for(int j = 0; j < skill.Length; j++) {
+                if (!CheckIfWeaponMatch(skill[j], bm.weaponScripts[(i >= 2) ? 2 : 0].GetType().ToString(), bm.weaponScripts[(i >= 2) ? 3 : 1].GetType().ToString())) {
+                    continue;
+                }
+
+                if (skill[j] == null) {
+                    clipOverrides["skill_" + j] = null;
+                } else {
+                    AnimationClip clip = skill[j].GetWeaponAnimation(i%2, CheckIfWeaponOrderReverse(j));
+
+                    if (clip != null) {
+                        clipOverrides["skill_" + j] = clip;
+                    } else {
+                        clipOverrides["skill_" + j] = bm.weaponScripts[i].FindSkillAnimationClip(skill[j].name);
+
+                        if(bm.weaponScripts[i].FindSkillAnimationClip(skill[j].name) == null)
+                            Debug.Log("Can't find the skill animation : " + skill[j].name + " on weapon and there is no default animation. Ignore this if there is not supposed to be one.");
+                    }
+                }
+            }
+
+            WeaponAnimatorOverrideController.ApplyOverrides(clipOverrides);
+        }
+    }
+
     private bool CheckIfWeaponOrderReverse(int skill_num) {
         if (((skill[skill_num].weaponTypeL == "" && bm.weaponScripts[weaponOffset] == null) || (bm.weaponScripts[weaponOffset] != null && skill[skill_num].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString())) &&
             ((skill[skill_num].weaponTypeR == "" && bm.weaponScripts[weaponOffset + 1] == null) || (bm.weaponScripts[weaponOffset+1] != null && skill[skill_num].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString()))) {
@@ -122,10 +161,10 @@ public class SkillController : MonoBehaviour {
 
     public void PlayWeaponAnimation(int skill_num) {
         if (WeaponAnimators[weaponOffset] != null) {            
-            WeaponAnimators[weaponOffset].Play(skill[skill_num].name);
+            WeaponAnimators[weaponOffset].Play("sk"+skill_num);
         }
         if (WeaponAnimators[weaponOffset+1] != null) {
-            WeaponAnimators[weaponOffset+1].Play(skill[skill_num].name);
+            WeaponAnimators[weaponOffset+1].Play("sk" + skill_num);
         }
     }
 
@@ -219,26 +258,29 @@ public class SkillController : MonoBehaviour {
                 skill_usable[i] = false;
                 continue;
             }
+            skill_usable[i] =  CheckIfWeaponMatch(skill[i], (bm.weaponScripts[weaponOffset]==null)? "" : bm.weaponScripts[weaponOffset].GetType().ToString(), (bm.weaponScripts[weaponOffset+1] == null) ? "" : bm.weaponScripts[weaponOffset+1].GetType().ToString());
+        }
+    }
 
-            if(bm.weaponScripts[weaponOffset] == null || bm.weaponScripts[weaponOffset+1] == null) {
-                if(bm.weaponScripts[weaponOffset] == null) {
-                    bool L = (skill[i].weaponTypeL == string.Empty);
-                    bool R = (skill[i].weaponTypeR == string.Empty || skill[i].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString());
-                    skill_usable[i] = (L && R);
-                } else {
-                    bool L = (skill[i].weaponTypeL == string.Empty || skill[i].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString());
-                    bool R = (skill[i].weaponTypeR == string.Empty);
-                    skill_usable[i] = (L && R);
-                }
+    private bool CheckIfWeaponMatch(SkillConfig config, string weaponTypeL, string weaponTypeR) {
+        if (weaponTypeL == "" || weaponTypeR == "") {
+            if (weaponTypeL == "") {
+                bool L = (config.weaponTypeL == string.Empty);
+                bool R = (config.weaponTypeR == string.Empty || config.weaponTypeR == weaponTypeR);
+                return (L && R);
             } else {
-                bool b = ((skill[i].weaponTypeL == "" || (bm.weaponScripts[weaponOffset] != null && skill[i].weaponTypeL == bm.weaponScripts[weaponOffset].GetType().ToString())) &&
-                (skill[i].weaponTypeR == "" || (bm.weaponScripts[weaponOffset + 1] != null && skill[i].weaponTypeR == bm.weaponScripts[weaponOffset + 1].GetType().ToString())));
-
-                bool b2 = ((skill[i].weaponTypeL == "" || (bm.weaponScripts[weaponOffset+1] != null && skill[i].weaponTypeL == bm.weaponScripts[weaponOffset+1].GetType().ToString())) &&
-                (skill[i].weaponTypeR == "" || (bm.weaponScripts[weaponOffset] != null && skill[i].weaponTypeR == bm.weaponScripts[weaponOffset].GetType().ToString())));
-
-                skill_usable[i] = b || b2;
+                bool L = (config.weaponTypeL == string.Empty || config.weaponTypeL == weaponTypeL);
+                bool R = (config.weaponTypeR == string.Empty);
+                return (L && R);
             }
+        } else {
+            bool b = ((config.weaponTypeL == "" || (weaponTypeL != "" && config.weaponTypeL == weaponTypeL)) &&
+            (config.weaponTypeR == "" || (weaponTypeR != "" && config.weaponTypeR == weaponTypeR)));
+
+            bool b2 = ((config.weaponTypeL == "" || (weaponTypeR != "" && config.weaponTypeL == weaponTypeR)) &&
+            (config.weaponTypeR == "" || (weaponTypeL != "" && config.weaponTypeR == weaponTypeL)));
+
+            return b || b2;
         }
     }
 

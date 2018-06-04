@@ -1,8 +1,6 @@
-﻿using System;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "MovementClips", menuName = "MovementClips_2")]
+[CreateAssetMenu(fileName = "MovementClips", menuName = "MovementClips")]
 public class MovementClips : ScriptableObject {
     [HideInInspector]public string[] clipnames = {"Idle",
     "BackWalk",

@@ -1095,7 +1095,6 @@ public class MechCombat : Combat {
     public void UpdateMovementClips() {
         MovementClips movementClips = (weaponScripts[weaponOffset] == null || !weaponScripts[weaponOffset].twoHanded) ? defaultMovementClips : TwoHandedMovementClips;
         for (int i=0; i< movementClips.clips.Length;i++) {
-            Debug.Log(movementClips.clips[i].name);
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
 

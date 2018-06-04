@@ -3,8 +3,9 @@
 [CreateAssetMenu(menuName = "Skill/SingleTarget")]
 public class SingleTargetSkillConfig : SkillConfig {
     [Header("Skill Special")]
-    [SerializeField] private AnimationClip targetAnimation_front, targetAnimation_back;
-    public SingleTargetSkillParams SingleTargetSkillParams = new SingleTargetSkillParams();//TODO : implement this
+    [SerializeField] private AnimationClip targetAnimation_front;
+    [SerializeField] private AnimationClip targetAnimation_back;
+    public SingleTargetSkillParams SingleTargetSkillParams = new SingleTargetSkillParams();
 
     public override void AddComponent(GameObject player) {
         BuildMech bm = player.GetComponent<BuildMech>();

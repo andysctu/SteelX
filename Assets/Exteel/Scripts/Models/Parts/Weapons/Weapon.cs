@@ -26,6 +26,19 @@ public abstract class Weapon : ScriptableObject {
     public bool twoHanded;
 
     public abstract void SwitchAnimationClips(Animator weaponAniamtor);
+
+    public AnimationClip[] skillAnimations;
+
+    public AnimationClip FindSkillAnimationClip(string name) {
+        if(skillAnimations != null) {
+            foreach(AnimationClip clip in skillAnimations) {
+                if(clip.name == name) {
+                    return clip;
+                }
+            }
+        }
+        return null;
+    }
 }
 
 

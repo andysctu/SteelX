@@ -8,7 +8,7 @@ public class MechIK : MonoBehaviour {
 	[SerializeField]private MechCombat mechCombat;
 	[SerializeField]private BuildMech bm;
     [SerializeField] private SkillController SkillController;
-    private Transform upperArmL, upperArmR, Knob;
+    private Transform hips, upperArmL, upperArmR, Knob;
     private Animator animator;
 
     //AimIK
@@ -52,16 +52,17 @@ public class MechIK : MonoBehaviour {
 	}
 
 	void InitTransforms(){
-		upperArmL = transform.Find ("metarig/hips/spine/chest/shoulder.L/upper_arm.L");
+        hips = transform.Find("metarig/hips");
+        upperArmL = transform.Find ("metarig/hips/spine/chest/shoulder.L/upper_arm.L");
 		upperArmR = transform.Find ("metarig/hips/spine/chest/shoulder.R/upper_arm.R");
 	}
 
 	void LateUpdate(){
-
 		if (LeftIK_on) {
             if (mode == 0) {
                 ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
                 ideal_roL = Mathf.Clamp(ideal_roL, -50, 40);
+                ideal_roL += 80 - hips.localRotation.eulerAngles.x;
 
                 upperArmL_rot = upperArmL.localRotation.eulerAngles;
                 upperArmL.localRotation = Quaternion.Euler(upperArmL_rot + new Vector3(0, ideal_roL, 0));
@@ -73,8 +74,9 @@ public class MechIK : MonoBehaviour {
 		if (RightIK_on && mode==0) {
 			ideal_roR = - Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
 			ideal_roR = Mathf.Clamp (ideal_roR, -50, 40);
+            ideal_roR += - (80 - hips.localRotation.eulerAngles.x);
 
-			upperArmR_rot = upperArmR.localRotation.eulerAngles;
+            upperArmR_rot = upperArmR.localRotation.eulerAngles;
 			upperArmR.localRotation = Quaternion.Euler (upperArmR_rot + new Vector3 (0, ideal_roR, 0));
 		}
 
