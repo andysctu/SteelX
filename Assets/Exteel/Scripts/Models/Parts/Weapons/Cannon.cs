@@ -10,4 +10,8 @@ public class Cannon : RangedWeapon {
         slowDown = true;
         twoHanded = true;
     }
+
+    public override void SwitchAnimationClips(Animator weaponAniamtor) {
+        throw new System.NotImplementedException();
+    }
 }

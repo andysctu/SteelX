@@ -9,12 +9,12 @@ public class BuildMech : Photon.MonoBehaviour {
 	[SerializeField]private MechCombat mcbt = null;
 	[SerializeField]private Sounds Sounds;
     [SerializeField]private AnimationEventController AnimationEventController;
+    [SerializeField]private MovementClips defaultMovementClips, TwoHandedMovementClips;
     private GameManager gm;
     private WeaponManager WeaponManager;
     private Animator animator;
 	private AnimatorOverrideController animatorOverrideController;
 	private AnimationClipOverrides clipOverrides;
-	private MovementClips MovementClips;
 
     public delegate void BuildWeaponAction();
     public event BuildWeaponAction OnWeaponBuilt;
@@ -82,7 +82,6 @@ public class BuildMech : Photon.MonoBehaviour {
 		Data data = UserData.myData;
 		animator = transform.Find("CurrentMech").GetComponent<Animator> ();
 
-		MovementClips = GetComponent<MovementClips> ();
 		if(inHangar || inStore)//do not call this in game otherwise mechcombat gets null parameter
 			initAnimatorControllers ();
 
@@ -146,8 +145,8 @@ public class BuildMech : Photon.MonoBehaviour {
         parts[6] = defaultParts[16];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[7];
 
         // Create new array to store skinned mesh renderers 
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
@@ -314,7 +313,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
             //TODO : remake this
             weapons[i].transform.localScale = new Vector3(weapons[i].transform.localScale.x * transform.root.localScale.x,
-               weapons[i].transform.localScale.y * transform.root.localScale.y, weapons[i].transform.localScale.z * transform.root.localScale.z);
+            weapons[i].transform.localScale.y * transform.root.localScale.y, weapons[i].transform.localScale.z * transform.root.localScale.z);
 
             if (weaponScripts[i].twoHanded) {
                 weapons[i].transform.SetParent(hands[(i + 1) % 2]);
@@ -361,7 +360,11 @@ public class BuildMech : Photon.MonoBehaviour {
                     ReloadSounds[i] = ((RangedWeapon)weaponScripts[i]).reload_sound;
                 break;
 			}
-		}
+
+            //switch weapon aniamtion clips
+            //weaponScripts[i].SwitchAnimationClips(weapons[i].GetComponent<Animator>());
+
+        }
 
         Sounds.LoadReloadClips(ReloadSounds);
         Sounds.LoadShotClips(ShotSounds);
@@ -491,36 +494,12 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (animator == null)
 			return;
 
-        int num = (weaponScripts [weaponOffset].twoHanded)? 1 : 0;
+        MovementClips movementClips = (weaponScripts[weaponOffset].twoHanded) ? TwoHandedMovementClips : defaultMovementClips;
+        for (int i = 0; i < movementClips.clips.Length; i++) {
+            clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
+        }
 
-		clipOverrides ["Idle"] = MovementClips.Idle [num];
-		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
-		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
-		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
-		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
-
-		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
-		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
-		clipOverrides ["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
-
-		clipOverrides ["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
-		clipOverrides ["Hover_Left_02"] = MovementClips.Hover_Left_02[num];
-		clipOverrides ["Hover_Left_03"] = MovementClips.Hover_Left_03[num];
-		clipOverrides ["Hover_Right_01"] = MovementClips.Hover_Right_01[num];
-		clipOverrides ["Hover_Right_02"] = MovementClips.Hover_Right_02[num];
-		clipOverrides ["Hover_Right_03"] = MovementClips.Hover_Right_03[num];
-		clipOverrides ["Hover_Front_01"] = MovementClips.Hover_Front_01[num];
-		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
-		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
-
-		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
-		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
-		clipOverrides ["Jump03"] = MovementClips.Jump03[num];
-		clipOverrides ["Jump06"] = MovementClips.Jump06[num];
-		clipOverrides ["Jump07"] = MovementClips.Jump07[num];
-		clipOverrides ["Jump08"] = MovementClips.Jump08[num];
-
-		animatorOverrideController.ApplyOverrides (clipOverrides);
+        animatorOverrideController.ApplyOverrides (clipOverrides);
 	}
 
 	void SetMechDefaultIfEmpty(int mehc_num){

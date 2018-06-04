@@ -7,4 +7,8 @@ public class Rifle : RangedWeapon {
         slowDown = false;
         twoHanded = false;
     }
+
+    public override void SwitchAnimationClips(Animator weaponAniamtor) {
+        throw new System.NotImplementedException();
+    }
 }

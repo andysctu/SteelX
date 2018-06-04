@@ -14,4 +14,8 @@ public class Shield : Weapon {
         slowDown = false;
         twoHanded = false;
     }
+
+    public override void SwitchAnimationClips(Animator weaponAniamtor) {
+        throw new System.NotImplementedException();
+    }
 }

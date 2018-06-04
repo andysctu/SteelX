@@ -3,7 +3,7 @@
 [CreateAssetMenu(menuName = "Skill/SingleTarget")]
 public class SingleTargetSkillConfig : SkillConfig {
     [Header("Skill Special")]
-    [SerializeField] private AnimationClip targetAnimation;
+    [SerializeField] private AnimationClip targetAnimation_front, targetAnimation_back;
     public SingleTargetSkillParams SingleTargetSkillParams = new SingleTargetSkillParams();//TODO : implement this
 
     public override void AddComponent(GameObject player) {
@@ -51,7 +51,7 @@ public class SingleTargetSkillConfig : SkillConfig {
     private void AttachEffectsOnWeapons(GameObject player, int L, int R) {//left weapon effects are attached to "L"
         BuildMech bm = player.GetComponent<BuildMech>();
         SkillController SkillController = player.GetComponent<SkillController>();
-
+        
         foreach (GameObject p in weaponLEffects) {
             GameObject g = Instantiate(p, bm.weapons[L].transform);
             g.transform.localPosition = Vector3.zero;
@@ -66,6 +66,7 @@ public class SingleTargetSkillConfig : SkillConfig {
                 //set info
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(L % 2, (L >= 2) ? 2 : 0);
             }        
+            g.SetActive(true);
         }
         foreach (GameObject p in weaponREffects) {
             GameObject g = Instantiate(p, bm.weapons[R].transform);
@@ -77,7 +78,8 @@ public class SingleTargetSkillConfig : SkillConfig {
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(R % 2, (L >= 2) ? 2 : 0);
-            }         
+            }
+            g.SetActive(true);
         }
     }
 
@@ -86,8 +88,12 @@ public class SingleTargetSkillConfig : SkillConfig {
         behaviour.Use(skill_num);
     }
 
-    public AnimationClip GetTargetAnimation() {
-        return targetAnimation;
+    public AnimationClip GetTargetFrontAnimation() {
+        return targetAnimation_front;
+    }
+
+    public AnimationClip GetTargetBackAnimation() {
+        return targetAnimation_back;
     }
 }
 

@@ -10,5 +10,9 @@ public class Spear : MeleeWeapon {
         slowDown = true;
         twoHanded = false;
     }
+
+    public override void SwitchAnimationClips(Animator weaponAniamtor) {
+        throw new System.NotImplementedException();
+    }
 }
 

@@ -2,62 +2,110 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class MovementClips : MonoBehaviour
-{
-	public AnimationClip[] Idle;
+[CreateAssetMenu(fileName = "MovementClips", menuName = "MovementClips_2")]
+public class MovementClips : ScriptableObject {
+    [HideInInspector]public string[] clipnames = {"Idle",
+    "BackWalk",
+    "BackWalk_Left",
+    "BackWalk_Right",
+    "Run_Left",
+    "Run_Front",
+    "Run_Right",
 
-	public AnimationClip[] BackWalk;
-	public AnimationClip[] BackWalk_Left;
-	public AnimationClip[] BackWalk_Right;
-	public AnimationClip[] Run_Left;
-	public AnimationClip[] Run_Front;
-	public AnimationClip[] Run_Right;
+    "Hover_Back_01",
+    "Hover_Back_02",
+    "Hover_Back_03",
+    "Hover_Back_01_Left",
+    "Hover_Back_02_Left",
+    "Hover_Back_03_Left",
+    "Hover_Back_01_Right",
+    "Hover_Back_02_Right",
+    "Hover_Back_03_Right",
 
-	public AnimationClip[] Hover_Back_01;
-	public AnimationClip[] Hover_Back_02;
-	public AnimationClip[] Hover_Back_03;
-	public AnimationClip[] Hover_Back_01_Left;
-	public AnimationClip[] Hover_Back_02_Left;
-	public AnimationClip[] Hover_Back_03_Left;
-	public AnimationClip[] Hover_Back_01_Right;
-	public AnimationClip[] Hover_Back_02_Right;
-	public AnimationClip[] Hover_Back_03_Right;
+    "Hover_Left_01",
+    "Hover_Left_02",
+    "Hover_Left_03",
+    "Hover_Right_01",
+    "Hover_Right_02",
+    "Hover_Right_03",
+    "Hover_Front_01",
+    "Hover_Front_02",
+    "Hover_Front_03",
 
-	public AnimationClip[] Hover_Left_01;
-	public AnimationClip[] Hover_Left_02;
-	public AnimationClip[] Hover_Left_03;
-	public AnimationClip[] Hover_Right_01;
-	public AnimationClip[] Hover_Right_02;
-	public AnimationClip[] Hover_Right_03;
-	public AnimationClip[] Hover_Front_01;
-	public AnimationClip[] Hover_Front_02;
-	public AnimationClip[] Hover_Front_03;
+    "Jump01",
+    "Jump01_Left",
+    "Jump01_Right",
+    "Jump01_b",
+    "Jump01_Left_b",
+    "Jump01_Right_b",
 
-	public AnimationClip[] Jump01;
-	public AnimationClip[] Jump01_Left;
-	public AnimationClip[] Jump01_Right;
-	public AnimationClip[] Jump01_b;
-	public AnimationClip[] Jump01_Left_b;
-	public AnimationClip[] Jump01_Right_b;
+    "Jump02",
+    "Jump02_Left",
+    "Jump02_Right",
+    "Jump03",
+    "Jump03_Left",
+    "Jump03_Right",
+    "Jump06",
+    "Jump06_Left",
+    "Jump06_Right",
+    "Jump07",
+    "Jump07_Left",
+    "Jump07_Right",
+    "Jump08",
+    "Jump08_Left",
+    "Jump08_Right"
+    };
 
-	public AnimationClip[] Jump02;
-	public AnimationClip[] Jump02_Left;
-	public AnimationClip[] Jump02_Right;
-	public AnimationClip[] Jump03;
-	public AnimationClip[] Jump03_Left;
-	public AnimationClip[] Jump03_Right;
-	public AnimationClip[] Jump06;
-	public AnimationClip[] Jump06_Left;
-	public AnimationClip[] Jump06_Right;
-	public AnimationClip[] Jump07;
-	public AnimationClip[] Jump07_Left;
-	public AnimationClip[] Jump07_Right;
-	public AnimationClip[] Jump08;
-	public AnimationClip[] Jump08_Left;
-	public AnimationClip[] Jump08_Right;
+    [NamedArrayAttribute(new string[] {"Idle",
+    "BackWalk",
+    "BackWalk_Left",
+    "BackWalk_Right",
+    "Run_Left",
+    "Run_Front",
+    "Run_Right",
 
+    "Hover_Back_01",
+    "Hover_Back_02",
+    "Hover_Back_03",
+    "Hover_Back_01_Left",
+    "Hover_Back_02_Left",
+    "Hover_Back_03_Left",
+    "Hover_Back_01_Right",
+    "Hover_Back_02_Right",
+    "Hover_Back_03_Right",
 
-	public AnimationClip[] shootL;
-	public AnimationClip[] shootR;
+    "Hover_Left_01",
+    "Hover_Left_02",
+    "Hover_Left_03",
+    "Hover_Right_01",
+    "Hover_Right_02",
+    "Hover_Right_03",
+    "Hover_Front_01",
+    "Hover_Front_02",
+    "Hover_Front_03",
+
+    "Jump01",
+    "Jump01_Left",
+    "Jump01_Right",
+    "Jump01_b",
+    "Jump01_Left_b",
+    "Jump01_Right_b",
+
+    "Jump02",
+    "Jump02_Left",
+    "Jump02_Right",
+    "Jump03",
+    "Jump03_Left",
+    "Jump03_Right",
+    "Jump06",
+    "Jump06_Left",
+    "Jump06_Right",
+    "Jump07",
+    "Jump07_Left",
+    "Jump07_Right",
+    "Jump08",
+    "Jump08_Left",
+    "Jump08_Right"
+    })]
+    public AnimationClip[] clips = new AnimationClip[46];
 }
-

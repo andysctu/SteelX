@@ -10,6 +10,14 @@ public class SMG : RangedWeapon {
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        
+        AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(weaponAniamtor.runtimeAnimatorController);
+        weaponAniamtor.runtimeAnimatorController = animatorOverrideController;
+
+        AnimationClipOverrides clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(clipOverrides);
+
+        clipOverrides["Atk"] = Atk;
+        clipOverrides["Reload"] = Reload;
+        animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 }

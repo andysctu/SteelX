@@ -46,7 +46,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
         Effect_End = mechCombat.GetEffectEnd(weaponOffset + hand);
 
         if (!onlyImpact) {
-            if (!isWeapPosInit) Debug.LogError("weapPos is not Init");
+            if (!isWeapPosInit) Debug.LogError("WeapPos is not Init before Awake()");
             if(autoBullet)
                 FindBulletPrefab();
             else {

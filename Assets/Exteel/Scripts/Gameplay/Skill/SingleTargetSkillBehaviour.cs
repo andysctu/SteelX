@@ -37,7 +37,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             
             player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, skill_num, transform.position, transform.forward);
         } else {
-            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, 0, Vector3.zero, Vector3.zero);
+            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0,  Vector3.zero, Vector3.zero);
         }
     }
 
@@ -54,7 +54,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             target = target_pv.transform;
 
             //Attach effects on target
-            SetEffectsTarget(target);
+            SetEffectsInfo(target);
 
             //rotate target to the right direction
             //TODO : check if the target is close to front or back then rotate to it
@@ -72,7 +72,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             }
 
             //Play target on skill animation
-            if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetAnimation());
+            if (target_SkillController != null)target_SkillController.TargetOnSkill(config.GetTargetFrontAnimation());
 
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
@@ -100,7 +100,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         return target;
     }
 
-    void SetEffectsTarget(Transform target) {
+    void SetEffectsInfo(Transform target) {
         if(mcbt.GetCurrentWeaponOffset()==0)
             foreach (RequireSkillInfo g in SkillController.weaponEffects_1) { 
                 g.SetTarget(target);

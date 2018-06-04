@@ -15,7 +15,7 @@ public class MechCombat : Combat {
     [SerializeField]private Camera cam, skillcam;
     [SerializeField]private BuildMech bm;
     [SerializeField]private Animator animator;
-    [SerializeField]private MovementClips MovementClips;
+    [SerializeField]private MovementClips defaultMovementClips, TwoHandedMovementClips;
     [SerializeField]private SkillController SkillController;
     private InRoomChat InRoomChat;
 
@@ -194,7 +194,6 @@ public class MechCombat : Combat {
         AnimationEventController = currentMech.GetComponent<AnimationEventController>();
         animator = currentMech.GetComponent<Animator>();
         mechController = GetComponent<MechController>();
-        MovementClips = GetComponent<MovementClips>();
         crosshair = cam.GetComponent<Crosshair>();
     }
 
@@ -1094,58 +1093,12 @@ public class MechCombat : Combat {
     }
 
     public void UpdateMovementClips() {
-        int num = (weaponScripts[weaponOffset] == null || !weaponScripts[weaponOffset].twoHanded) ? 0 : 1;
+        MovementClips movementClips = (weaponScripts[weaponOffset] == null || !weaponScripts[weaponOffset].twoHanded) ? defaultMovementClips : TwoHandedMovementClips;
+        for (int i=0; i< movementClips.clips.Length;i++) {
+            Debug.Log(movementClips.clips[i].name);
+            clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
+        }
 
-        clipOverrides["Idle"] = MovementClips.Idle[num];
-        clipOverrides["Run_Left"] = MovementClips.Run_Left[num];
-        clipOverrides["Run_Front"] = MovementClips.Run_Front[num]; ;
-        clipOverrides["Run_Right"] = MovementClips.Run_Right[num];
-        clipOverrides["BackWalk"] = MovementClips.BackWalk[num];
-        clipOverrides["BackWalk_Left"] = MovementClips.BackWalk_Left[num];
-        clipOverrides["BackWalk_Right"] = MovementClips.BackWalk_Right[num];
-
-        clipOverrides["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
-        clipOverrides["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
-        clipOverrides["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
-        clipOverrides["Hover_Back_01_Left"] = MovementClips.Hover_Back_01_Left[num];
-        clipOverrides["Hover_Back_02_Left"] = MovementClips.Hover_Back_02_Left[num];
-        clipOverrides["Hover_Back_03_Left"] = MovementClips.Hover_Back_03_Left[num];
-        clipOverrides["Hover_Back_01_Right"] = MovementClips.Hover_Back_01_Right[num];
-        clipOverrides["Hover_Back_02_Right"] = MovementClips.Hover_Back_02_Right[num];
-        clipOverrides["Hover_Back_03_Right"] = MovementClips.Hover_Back_03_Right[num];
-
-        clipOverrides["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
-        clipOverrides["Hover_Left_02"] = MovementClips.Hover_Left_02[num];
-        clipOverrides["Hover_Left_03"] = MovementClips.Hover_Left_03[num];
-        clipOverrides["Hover_Right_01"] = MovementClips.Hover_Right_01[num];
-        clipOverrides["Hover_Right_02"] = MovementClips.Hover_Right_02[num];
-        clipOverrides["Hover_Right_03"] = MovementClips.Hover_Right_03[num];
-        clipOverrides["Hover_Front_01"] = MovementClips.Hover_Front_01[num];
-        clipOverrides["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
-        clipOverrides["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
-
-        clipOverrides["Jump01"] = MovementClips.Jump01[num];
-        clipOverrides["Jump01_Left"] = MovementClips.Jump01_Left[num];
-        clipOverrides["Jump01_Right"] = MovementClips.Jump01_Right[num];
-        clipOverrides["Jump01_b"] = MovementClips.Jump01_b[num];
-        clipOverrides["Jump01_Left_b"] = MovementClips.Jump01_Left_b[num];
-        clipOverrides["Jump01_Right_b"] = MovementClips.Jump01_Right_b[num];
-        clipOverrides["Jump02"] = MovementClips.Jump02[num];
-        clipOverrides["Jump02_Left"] = MovementClips.Jump02_Left[num];
-        clipOverrides["Jump02_Right"] = MovementClips.Jump02_Right[num];
-        clipOverrides["Jump03"] = MovementClips.Jump03[num];
-        clipOverrides["Jump03_Left"] = MovementClips.Jump03_Left[num];
-        clipOverrides["Jump03_Right"] = MovementClips.Jump03_Right[num];
-        clipOverrides["Jump06"] = MovementClips.Jump06[num];
-        clipOverrides["Jump06_Left"] = MovementClips.Jump06_Left[num];
-        clipOverrides["Jump06_Right"] = MovementClips.Jump06_Right[num];
-        clipOverrides["Jump07"] = MovementClips.Jump07[num];
-        clipOverrides["Jump07_Left"] = MovementClips.Jump07_Left[num];
-        clipOverrides["Jump07_Right"] = MovementClips.Jump07_Right[num];
-        clipOverrides["Jump08"] = MovementClips.Jump08[num];
-        clipOverrides["Jump08_Left"] = MovementClips.Jump08_Left[num];
-        clipOverrides["Jump08_Right"] = MovementClips.Jump08_Right[num];
-        
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 

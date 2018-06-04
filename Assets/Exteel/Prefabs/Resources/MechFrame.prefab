@@ -678,7 +678,6 @@ GameObject:
   - component: {fileID: 11445986}
   - component: {fileID: 114000012410893822}
   - component: {fileID: 114718916726667884}
-  - component: {fileID: 114365142493992942}
   - component: {fileID: 95953646033232842}
   - component: {fileID: 114666270378404098}
   - component: {fileID: 114715354567852064}
@@ -2947,6 +2946,10 @@ MonoBehaviour:
   mcbt: {fileID: 11445986}
   Sounds: {fileID: 114000010976113334}
   AnimationEventController: {fileID: 114895722533198232}
+  defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
+    type: 2}
+  TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
+    type: 2}
   ShotSounds: []
   ReloadSounds: []
   weaponScripts: []
@@ -2998,7 +3001,10 @@ MonoBehaviour:
   skillcam: {fileID: 20202144477786866}
   bm: {fileID: 11422958}
   animator: {fileID: 9563454}
-  MovementClips: {fileID: 114365142493992942}
+  defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
+    type: 2}
+  TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
+    type: 2}
   SkillController: {fileID: 114715354567852064}
   jumpPower: 70
   moveSpeed: 30
@@ -6359,161 +6365,6 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   mcbt: {fileID: 11445986}
   pv: {fileID: 11416036}
---- !u!114 &114365142493992942
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f49cbea05bcb4e4dbcad81e59ad4064, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Idle:
-  - {fileID: 7400000, guid: 2e818879a5b9a0f438e02a40ea1d0f3f, type: 2}
-  - {fileID: 7400000, guid: ba147f0a6af8b7543bc4fcba6d718f08, type: 3}
-  BackWalk:
-  - {fileID: 7400000, guid: d8d4ddcdc6c07424ba534dea9f4117ef, type: 3}
-  - {fileID: 7400000, guid: ef256990da8d84841b06aaa0f7e8ad75, type: 3}
-  BackWalk_Left:
-  - {fileID: 7400000, guid: 02f49a728c6955146811d0d9c336b743, type: 2}
-  - {fileID: 7400000, guid: 30fd80897c86d0842880281b477696f4, type: 2}
-  BackWalk_Right:
-  - {fileID: 7400000, guid: 6008c9b9d0b22f141afe963402125ed7, type: 2}
-  - {fileID: 7400000, guid: 072ff1d37df048b48b5c06061f4a0272, type: 2}
-  Run_Left:
-  - {fileID: 7400000, guid: 7bfe5577a2af740fd92baf59a22ae531, type: 3}
-  - {fileID: 7400000, guid: 09a37c859b4285d418546cd08d73f6bb, type: 2}
-  Run_Front:
-  - {fileID: 7400000, guid: 3fc5af6f8a6c24eff80e0ea74e1f62d3, type: 3}
-  - {fileID: 7400000, guid: 4ccff358a7b7d414eb895feac4f09368, type: 3}
-  Run_Right:
-  - {fileID: 7400000, guid: 831cf131298354b79bf8d4de4ec39bb9, type: 3}
-  - {fileID: 7400000, guid: b48c9c027d404be47bb2b657807a7f2a, type: 2}
-  Hover_Back_01:
-  - {fileID: 7400000, guid: 6bd5de1877cb15e4ca744307414c80e7, type: 3}
-  - {fileID: 7400000, guid: 8f48b28b888f1684885fb86352b1aefa, type: 3}
-  Hover_Back_02:
-  - {fileID: 7400000, guid: a16691d860f30d04c81e8be06caaf378, type: 3}
-  - {fileID: 7400000, guid: afc9d7d02c964f447a62d7173951c7bd, type: 3}
-  Hover_Back_03:
-  - {fileID: 7400000, guid: a4cfad349bcc94e4ab4ac967f7821953, type: 3}
-  - {fileID: 7400000, guid: dd5e81f2dbf5b7744a688247bfdb85ae, type: 3}
-  Hover_Back_01_Left:
-  - {fileID: 7400000, guid: 610c1c111db6d694bbf3d1751c899ec4, type: 2}
-  - {fileID: 7400000, guid: 32f3d726c6814df4785ae6df5444a4ea, type: 2}
-  Hover_Back_02_Left:
-  - {fileID: 7400000, guid: 55feaf61d9c77384396ac3acd35f577e, type: 2}
-  - {fileID: 7400000, guid: afe8b531bda06ac40b06a3a748f74126, type: 2}
-  Hover_Back_03_Left:
-  - {fileID: 7400000, guid: 3f78605dde4d92d48ab7305d5724949f, type: 2}
-  - {fileID: 7400000, guid: 68977baafb9f5b44cbca9e0357691b70, type: 2}
-  Hover_Back_01_Right:
-  - {fileID: 7400000, guid: 2f29759182e457a45aa7fa8af2640fab, type: 2}
-  - {fileID: 7400000, guid: cb6570fa2ed1d5c4f8c20b6c5f1a2b0d, type: 2}
-  Hover_Back_02_Right:
-  - {fileID: 7400000, guid: e5048bf7aef2f574da240bb7a0552b52, type: 2}
-  - {fileID: 7400000, guid: c0622a18184a9e8448afae07e85dd503, type: 2}
-  Hover_Back_03_Right:
-  - {fileID: 7400000, guid: 0b71e80a28dc6814e8d973ed1b83097d, type: 2}
-  - {fileID: 7400000, guid: faf2f618550ba20418c2045aa7f4aa50, type: 2}
-  Hover_Left_01:
-  - {fileID: 7400000, guid: 66ecd77e70f81ad4386980e79a859ffc, type: 3}
-  - {fileID: 7400000, guid: 263ab5102e272da4ea798eafb0071b98, type: 3}
-  Hover_Left_02:
-  - {fileID: 7400000, guid: ee105a23cf3a8734bbdeb6973334f78d, type: 3}
-  - {fileID: 7400000, guid: ba4408b0916e7b142be4ccb16dd375fe, type: 3}
-  Hover_Left_03:
-  - {fileID: 7400000, guid: f534cabdb7319cc4dbabd473aeffbd10, type: 3}
-  - {fileID: 7400000, guid: f515db88e6919ef47abeab779be7c4a4, type: 3}
-  Hover_Right_01:
-  - {fileID: 7400000, guid: da6a2ef0e51ab05439530ba4ed191908, type: 3}
-  - {fileID: 7400000, guid: e727b93601e88474eba05d07368c9c53, type: 3}
-  Hover_Right_02:
-  - {fileID: 7400000, guid: 6a644e907a7734d46a26cf46b155fb3e, type: 3}
-  - {fileID: 7400000, guid: f1f98da38a8da4f4d9fb33c304fb2699, type: 3}
-  Hover_Right_03:
-  - {fileID: 7400000, guid: d0b0d525f7d429449aad3756ff87e1a7, type: 3}
-  - {fileID: 7400000, guid: 225f7d60db03ad14fb20b594c123dca7, type: 3}
-  Hover_Front_01:
-  - {fileID: 7400000, guid: d224c92cf5d383a4197028c6b39a433e, type: 3}
-  - {fileID: 7400000, guid: 8e788d5d190935947bff88ca4029bdf9, type: 3}
-  Hover_Front_02:
-  - {fileID: 7400000, guid: a674d2c8220b3104c99aab1c392dcbf0, type: 3}
-  - {fileID: 7400000, guid: 634688e5364bf1841bd0e7949f88e808, type: 3}
-  Hover_Front_03:
-  - {fileID: 7400000, guid: 9b57314d9a810d84c80d06b193a231a2, type: 3}
-  - {fileID: 7400000, guid: 83ce9acc4b1c10c46baec3e1887598f0, type: 3}
-  Jump01:
-  - {fileID: 7400000, guid: 5a21e07fc5ca5e640990890c79c7080f, type: 2}
-  - {fileID: 7400000, guid: 53e3ddbeea42ebf4594c395e7554de32, type: 2}
-  Jump01_Left:
-  - {fileID: 7400000, guid: 8d5c7dbfd84f1d64b8d92728d369feb4, type: 2}
-  - {fileID: 7400000, guid: 5306b21ee882acd4aae4248fc121eb83, type: 2}
-  Jump01_Right:
-  - {fileID: 7400000, guid: e512b7aedff513143801e1de5828817d, type: 2}
-  - {fileID: 7400000, guid: ce6b52c77e527ee45ba4a678aeeea85e, type: 2}
-  Jump01_b:
-  - {fileID: 7400000, guid: 2753d3bf8c8f6e74fb4212b793c39d3c, type: 2}
-  - {fileID: 7400000, guid: 01c941aaa94ee1d4280093263ec618aa, type: 2}
-  Jump01_Left_b:
-  - {fileID: 7400000, guid: 0298d494f7b4e584b9f5701863f4f098, type: 2}
-  - {fileID: 7400000, guid: 1005524b38c88a14e94f747bf28e719d, type: 2}
-  Jump01_Right_b:
-  - {fileID: 7400000, guid: 87d4ddb25a2ff284c9ac93e2bf2926a5, type: 2}
-  - {fileID: 7400000, guid: 731c7c2bb91116846bba22467f3d5e23, type: 2}
-  Jump02:
-  - {fileID: 7400000, guid: 053d33eb02c17d94c9a9a15ef0e57474, type: 2}
-  - {fileID: 7400000, guid: e174a44ef2acf6949bcfc0433eec9c89, type: 2}
-  Jump02_Left:
-  - {fileID: 7400000, guid: d32f958f0a03be04e8019b2b20d2ca15, type: 2}
-  - {fileID: 7400000, guid: 578de7de954ee874a99e70f416fbb661, type: 2}
-  Jump02_Right:
-  - {fileID: 7400000, guid: a9669fb62a657ad4d9471b328fbff82b, type: 2}
-  - {fileID: 7400000, guid: 7f35e80c46dcb7542bac367a54399672, type: 2}
-  Jump03:
-  - {fileID: 7400000, guid: 368c81993a643304eb75d43e7da6c7e2, type: 3}
-  - {fileID: 7400000, guid: 5570ea7fcb9510c43ac36688def4d16f, type: 3}
-  Jump03_Left:
-  - {fileID: 7400000, guid: 20309f59034379a4e9bc5f9a12a2443f, type: 2}
-  - {fileID: 7400000, guid: 959866ba39d527741a934044f3204155, type: 2}
-  Jump03_Right:
-  - {fileID: 7400000, guid: b1f877b5cee2b654393a9688b03379d0, type: 2}
-  - {fileID: 7400000, guid: 749110821ef7522458d440f2db302c71, type: 2}
-  Jump06:
-  - {fileID: 7400000, guid: 4da1d84159c2aa44d954fba3a705192d, type: 3}
-  - {fileID: 7400000, guid: 6135274ab32f30548a5271ac82f3a6b2, type: 3}
-  Jump06_Left:
-  - {fileID: 7400000, guid: 98c37cd5ee67bb64cb0eb6755b934271, type: 2}
-  - {fileID: 7400000, guid: a92c20827b76c274bbaa1b95131a94d8, type: 2}
-  Jump06_Right:
-  - {fileID: 7400000, guid: 6a1a8d994f61ded44b410ad68cc0ad24, type: 2}
-  - {fileID: 7400000, guid: 76b20a2a75daab442b7e2dcae9f1e27c, type: 2}
-  Jump07:
-  - {fileID: 7400000, guid: 30d72e531fe14294f911d1d4554eb190, type: 3}
-  - {fileID: 7400000, guid: f8b3e9f64c704994e9ffdc7ad0a6fd9e, type: 3}
-  Jump07_Left:
-  - {fileID: 7400000, guid: 2a2f0facd200f0240943b6e0456d2838, type: 2}
-  - {fileID: 7400000, guid: 1eb79c68c3ad2e7409e3bd27be4aa41d, type: 2}
-  Jump07_Right:
-  - {fileID: 7400000, guid: 57ba76abea67119479354492096c6090, type: 2}
-  - {fileID: 7400000, guid: 658bbfc008b9f804bb5ef868d373e683, type: 2}
-  Jump08:
-  - {fileID: 7400000, guid: bcd68b7edf6493545ac3e67e789fe3d6, type: 3}
-  - {fileID: 7400000, guid: 0b4ba6b34ef7b7549b4254057d6cbbe4, type: 3}
-  Jump08_Left:
-  - {fileID: 7400000, guid: d73fc57f95ca07e41ae3a42d7692625b, type: 2}
-  - {fileID: 7400000, guid: d0531875815f93543b9553f4bbb35ca6, type: 2}
-  Jump08_Right:
-  - {fileID: 7400000, guid: 1e7bf1058eca9274eaf963140a9b4a61, type: 2}
-  - {fileID: 7400000, guid: fb677eaebbbf86047aca2faee1976e42, type: 2}
-  shootL:
-  - {fileID: 7400000, guid: 9899632ffa09db54b9551741772bf0e4, type: 3}
-  - {fileID: 7400000, guid: 364ef3a734ffb7f4e96f2c240a9bdcaa, type: 3}
-  shootR:
-  - {fileID: 7400000, guid: 2a684815cc6127841b845d279ab0dc12, type: 3}
-  - {fileID: 7400000, guid: 4022cf6226470b14da623713113b8360, type: 3}
 --- !u!114 &114366094278830814
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -7055,6 +6906,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 493982ab7c79af343821a58e8e99c3fc, type: 2}
   Sounds: {fileID: 114000010976113334}
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
+  EffectsToRemove: []
   isDrone: 0
 --- !u!114 &114718916726667884
 MonoBehaviour:
