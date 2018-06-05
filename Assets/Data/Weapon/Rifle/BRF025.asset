@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: BRF025
   m_EditorClassIdentifier: 
   weaponType: Rifle
-  weaponPrefab: {fileID: 1314195332162444, guid: 1936991c451580142b64b191d157599a,
+  weaponPrefab: {fileID: 1521235973824918, guid: 1936991c451580142b64b191d157599a,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: 706fac2882989864980a8194e0d03a6d, type: 2}
@@ -24,6 +24,7 @@ MonoBehaviour:
   heat_increase_amount: 20
   slowDown: 0
   twoHanded: 0
+  skillAnimations: []
   bulletPrefab: {fileID: 1000012364431528, guid: add2b4546a086a74884f7da8cfc2bb6c,
     type: 2}
   shoot_sound: {fileID: 8300000, guid: 7a8b6c7eb37f53945b431acd63e173ce, type: 3}

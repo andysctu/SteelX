@@ -305,20 +305,12 @@ public class AnimationEventController : MonoBehaviour {
 		MechController.Jump ();
 	}
 
-    //
-    //Ranged weapon animation events
-    //
-
     public void CallAtk(int hand) {
         if (weaponAnimators[weaponOffset + hand] != null) {
             weaponAnimators[weaponOffset + hand].SetTrigger("Atk");
         }
     }
     public void CallShoot(int hand) {
-        /*if(weaponAnimators[weaponOffset + hand] != null) {
-            weaponAnimators[weaponOffset + hand].SetTrigger("Atk");
-        }*/
-
         MechCombat.InstantiateBulletTrace(hand);
     }
 

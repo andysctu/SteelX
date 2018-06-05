@@ -77,6 +77,15 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
 
+            //SkillController.PlayPlayerEffects(skill_num);
+            foreach(GameObject g in config.GetPlayerEffects()) {
+                Instantiate(g, transform.position + new Vector3(0,5,0), transform.rotation, transform);
+                g.SetActive(true);
+            }
+
+
+
+
             SkillController.PlayWeaponAnimation(skill_num);
 
             //Play skill sound

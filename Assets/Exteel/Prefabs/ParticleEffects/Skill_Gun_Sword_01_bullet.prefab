@@ -26,7 +26,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4165315966763374
 Transform:
   m_ObjectHideFlags: 1
@@ -53,4 +53,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bullet_num: 7
   interval: 0.1
-  onTarget: 0
+  onTarget: 1
+  multiTarget: 0
+  playGunShotSound: 1
+  hasMuz: 1
+  onlyImpact: 0
+  autoBullet: 1
+  Bullet: {fileID: 0}
+  usingSkillCam: 1
+  showHit: 1
+  showHitOnBulletCollision: 0
+  displayKill: 0

@@ -16,6 +16,6 @@ public class Shield : Weapon {
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        throw new System.NotImplementedException();
+        
     }
 }

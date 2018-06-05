@@ -141,10 +141,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null (in offline )
-        parts[5] = defaultParts[7];
-        parts[6] = defaultParts[13];
+        parts[5] = defaultParts[15];
+        parts[6] = defaultParts[15];
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[7];
 
@@ -303,9 +303,12 @@ public class BuildMech : Photon.MonoBehaviour {
         ReloadSounds = new AudioClip[4];
 
         for (int i = 0; i < weaponNames.Length; i++) {
-            weaponScripts[i] = WeaponManager.FindData(weaponNames[i]);
+            weaponScripts[i] = (weaponNames[i] == "")? null : WeaponManager.FindData(weaponNames[i]);
+
             if (weaponScripts[i] == null) {
-                Debug.Log("Can't find weapon data : " + weaponNames[i]);
+                if(weaponNames[i]!="")
+                    Debug.LogError("Can't find weapon data : " + weaponNames[i]);
+
                 continue;
             }
 
@@ -352,7 +355,7 @@ public class BuildMech : Photon.MonoBehaviour {
                     ReloadSounds[i] = ((RangedWeapon)weaponScripts[i]).reload_sound;
                     weapons[i + 1] = null;
                     bulletPrefabs[i + 1] = null;
-                    i++;
+                    //i++;
                 break;
 		        default://other ranged weapon
                     bulletPrefabs[i] = ((RangedWeapon)weaponScripts[i]).bulletPrefab;
@@ -362,7 +365,12 @@ public class BuildMech : Photon.MonoBehaviour {
 			}
 
             //switch weapon aniamtion clips
-            weaponScripts[i].SwitchAnimationClips(weapons[i].GetComponent<Animator>());
+            if (weapons[i].GetComponent<Animator>() != null && weapons[i].GetComponent<Animator>().runtimeAnimatorController != null) {//TODO : improve this
+                AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(weapons[i].GetComponent<Animator>().runtimeAnimatorController);
+                weapons[i].GetComponent<Animator>().runtimeAnimatorController = animatorOverrideController;
+
+                weaponScripts[i].SwitchAnimationClips(weapons[i].GetComponent<Animator>());
+            }
 
         }
 

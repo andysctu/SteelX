@@ -2,10 +2,15 @@
 
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
-    public string weaponTypeL, weaponTypeR;//if two handed , put it on type L
+    public string weaponTypeL;
+    public string weaponTypeR;//if two handed , put it on type L    
     [Tooltip("Animation 1 must match the order of the  types ; Animation 2 is the reverse order")]
-    [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2, weaponAnimationL, weaponAnimationR;//if weapon Animation is null , then each weapon must has their own animation
-    [SerializeField] protected GameObject[] playerEffects, weaponLEffects, weaponREffects;
+    [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
+
+    public bool hasWeaponAnimations = true;
+    [SerializeField] protected AnimationClip weaponAnimationL, weaponAnimationR;//if weaponAnimationL/R are null & hasWeaponAnimation == true, then each weapon must has their own animation
+
+    [SerializeField] protected GameObject[] playerEffects, targetEffects, weaponLEffects, weaponREffects;
     [SerializeField] protected AudioClip skill_sound, mech_sound;
     public GeneralSkillParams GeneralSkillParams = new GeneralSkillParams();
 
@@ -25,6 +30,9 @@ public abstract class SkillConfig : ScriptableObject {
         }
     }
 
+    public GameObject[] GetPlayerEffects() {
+        return playerEffects;
+    }
 
     public AudioClip GetSkillSound() {
         return skill_sound;

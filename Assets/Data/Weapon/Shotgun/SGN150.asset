@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: SGN150
   m_EditorClassIdentifier: 
   weaponType: Shotgun
-  weaponPrefab: {fileID: 1498799846306878, guid: f53fb62607df01a42a0bb4bc08c98f6d,
+  weaponPrefab: {fileID: 1146680324410742, guid: 8c8a5a4a3588a874e8bb624a06cc095e,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: 6896c23376b229f4a94e67125490ec0a, type: 2}
@@ -24,7 +24,10 @@ MonoBehaviour:
   heat_increase_amount: 20
   slowDown: 1
   twoHanded: 0
+  skillAnimations: []
   bulletPrefab: {fileID: 1000012364431528, guid: ec663680a4d9f6a48a50a3a5b0ebecf0,
     type: 2}
   shoot_sound: {fileID: 8300000, guid: 6285197b29316084d9d96ccc912a3b2a, type: 3}
   reload_sound: {fileID: 0}
+  Atk: {fileID: 0}
+  Reload: {fileID: 0}

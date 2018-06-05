@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: ENG041
   m_EditorClassIdentifier: 
   weaponType: Rectifier
-  weaponPrefab: {fileID: 1008741706056464, guid: 3dacf733236a76f499e5528fe56a1b7b,
+  weaponPrefab: {fileID: 1041980411709434, guid: 3dacf733236a76f499e5528fe56a1b7b,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: 5ade168637b141e49b6c5107727dc052, type: 2}
@@ -24,6 +24,7 @@ MonoBehaviour:
   heat_increase_amount: 20
   slowDown: 0
   twoHanded: 0
+  skillAnimations: []
   bulletPrefab: {fileID: 1667889749490334, guid: a1f4322b38872b84785dd0057aedea95,
     type: 2}
   shoot_sound: {fileID: 8300000, guid: 644cc743a2c965e4daafc3783805c627, type: 3}

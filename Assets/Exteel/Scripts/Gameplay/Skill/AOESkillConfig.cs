@@ -65,6 +65,7 @@ public class AOESkillConfig : SkillConfig {
 
                 //set info
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(L % 2, (L >= 2) ? 2 : 0);
+                g.SetActive(true);//note that some skills should not be active ( trail )
             }
         }
         foreach (GameObject p in weaponREffects) {
@@ -77,6 +78,7 @@ public class AOESkillConfig : SkillConfig {
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(R % 2, (L >= 2) ? 2 : 0);
+                g.SetActive(true);
             }
         }
     }

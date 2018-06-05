@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/Rocket", order = 5)]
 public class Rocket : RangedWeapon {
+    [SerializeField] private AnimationClip Atk, Reload;
+
     [Range(0,20)]
     public int impact_radius;
 
@@ -18,6 +20,17 @@ public class Rocket : RangedWeapon {
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        throw new System.NotImplementedException();
+        AnimatorOverrideController animatorOverrideController = (AnimatorOverrideController)weaponAniamtor.runtimeAnimatorController;
+
+        AnimationClipOverrides clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(clipOverrides);
+
+        clipOverrides["Atk"] = Atk;
+        clipOverrides["Reload"] = Reload;
+        if(Atk == null || Reload == null) {
+            Debug.Log("You need to assign rocket animation clip : Atk || Reload");
+        }
+
+        animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 }

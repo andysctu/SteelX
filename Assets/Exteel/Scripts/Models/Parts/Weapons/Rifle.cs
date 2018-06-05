@@ -9,6 +9,6 @@ public class Rifle : RangedWeapon {
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        throw new System.NotImplementedException();
+        
     }
 }

@@ -24,6 +24,8 @@ public class PlayerInZone : MonoBehaviour {
 	}
 
 	void OnTriggerEnter (Collider collider) {
+        if(collider.tag == "Drone")return;
+
 		PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();
 		if(pv.viewID == player_viewID){
 			isThePlayerInside = true;
@@ -39,7 +41,9 @@ public class PlayerInZone : MonoBehaviour {
 	}
 		
 	void OnTriggerExit(Collider collider){
-		PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();
+        if (collider.tag == "Drone") return;
+
+        PhotonView pv = collider.transform.root.GetComponent<PhotonView> ();
 		if(pv.viewID == player_viewID){
 			isThePlayerInside = false;
 		}

@@ -14,14 +14,15 @@ public class SingleTargetSkillConfig : SkillConfig {
             bm.gameObject.AddComponent<SingleTargetSkillBehaviour>();
         }
         
-        Transform hips = player.transform.Find("CurrentMech/metarig/hips");
-        if(hips == null) {Debug.LogError("can't find hips");return;}
+        //Transform hips = player.transform.Find("CurrentMech/metarig/hips");//TODO : consider put effects on hips
+        //if(hips == null) {Debug.LogError("can't find hips");return;}
 
         //Attach effects on player
-        foreach(GameObject p in playerEffects) {
-            GameObject g = Instantiate(p, hips);
+        /*foreach(GameObject p in playerEffects) {
+            GameObject g = Instantiate(p, player.transform);
             g.transform.localPosition = Vector3.zero;
-        }
+            g.name = p.name;
+        }*/
 
         if ( (weaponTypeL==""||(bm.weaponScripts[0]!=null && weaponTypeL == bm.weaponScripts[0].GetType().ToString())) && 
             (weaponTypeR == "" || (bm.weaponScripts[1] != null && weaponTypeR == bm.weaponScripts[1].GetType().ToString())) ) {
@@ -42,11 +43,6 @@ public class SingleTargetSkillConfig : SkillConfig {
             (weaponTypeR == "" || (bm.weaponScripts[2] != null && weaponTypeR == bm.weaponScripts[2].GetType().ToString())) ) {
             AttachEffectsOnWeapons(player, 3, 2);
         }
-
-        for (int i = 0; i < 4; i++) {
-            if(bm.weapons[i]!=null && bm.weapons[i].GetComponent<Animator>()!=null)
-                bm.weapons[i].GetComponent<Animator>().Rebind();
-        }
     }
 
     private void AttachEffectsOnWeapons(GameObject player, int L, int R) {//left weapon effects are attached to "L"
@@ -66,8 +62,8 @@ public class SingleTargetSkillConfig : SkillConfig {
 
                 //set info
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(L % 2, (L >= 2) ? 2 : 0);
+                g.SetActive(true);//note that some skills should not be active ( trail )
             }        
-            g.SetActive(true);
         }
         foreach (GameObject p in weaponREffects) {
             GameObject g = Instantiate(p, bm.weapons[R].transform);
@@ -79,8 +75,8 @@ public class SingleTargetSkillConfig : SkillConfig {
                 else SkillController.weaponEffects_2.Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
 
                 ((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo))).SetWeapPos(R % 2, (L >= 2) ? 2 : 0);
+                g.SetActive(true);
             }
-            g.SetActive(true);
         }
     }
 

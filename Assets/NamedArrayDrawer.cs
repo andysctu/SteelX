@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
 
 [CustomPropertyDrawer(typeof(NamedArrayAttribute))]
@@ -17,3 +18,4 @@ public class NamedArrayAttribute : PropertyAttribute {
     public readonly string[] names;
     public NamedArrayAttribute(string[] names) { this.names = names; }
 }
+#endif

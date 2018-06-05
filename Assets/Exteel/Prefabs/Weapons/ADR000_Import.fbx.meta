@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 2fd7851328d12fb4f9819da4418e04e4
-timeCreated: 1520245112
+guid: 197ab111b6ad3704e993dcec748e0585
+timeCreated: 1528204542
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -8,31 +8,37 @@ ModelImporter:
     100000: //RootNode
     100002: ADR000_lft
     100004: ADR000_lft 1
-    100006: ArmObject
-    100008: EffectEnd
-    100010: EffectEnd_end
-    100012: Spear_Bone
+    100006: EffectEnd
+    100008: Spear
+    100010: Spear_Bone
     400000: //RootNode
     400002: ADR000_lft
     400004: ADR000_lft 1
-    400006: ArmObject
-    400008: EffectEnd
-    400010: EffectEnd_end
-    400012: Spear_Bone
+    400006: EffectEnd
+    400008: Spear
+    400010: Spear_Bone
+    2100000: ADR000_shd
     4300000: ADR000_lft
+    7400000: Take 001
+    7400002: Atk
     9500000: //RootNode
-    13700000: ADR000_lft
+    13700000: ADR000_lft 1
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: pskmat0.001
-    second: {fileID: 2100000, guid: daa8cd5434ae6448d8dee0251d2bd024, type: 2}
+      name: ADR000_shd
+    second: {fileID: 2100000, guid: 5add080d8da7d764795dc7ebfd4f89f3, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ADR000
+    second: {fileID: 2800000, guid: 18a27e1022b3d01429c94675acbed31b, type: 3}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -53,7 +59,63 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 192
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Atk
+      takeName: Take 001
+      firstFrame: 2
+      lastFrame: 33
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -70,6 +132,8 @@ ModelImporter:
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88

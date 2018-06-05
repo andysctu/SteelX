@@ -19,8 +19,10 @@ public class HUDText : MonoBehaviour {
         img.SetNativeSize();
 
         img.color = new Color(img.color.r, img.color.g, img.color.b, 1);
-        img.enabled = true;
-        enabled = true;
+
+
+        img.enabled = (transform.position.z > 0);
+        enabled = (transform.position.z > 0);
     }
 
 	void Update () {
@@ -31,7 +33,12 @@ public class HUDText : MonoBehaviour {
         transform.position = cam.WorldToScreenPoint(transform.root.position + Mech_Mid_Point);
         transform.localScale -= transform.localScale * Time.deltaTime * scale_decrease_speed;
 
-        if(img.color.a < alpha_threshold) {
+       if(transform.position.z < 0) {
+            img.enabled = false;
+            enabled = false;
+        }
+
+        if (img.color.a < alpha_threshold) {
             img.enabled = false;
             enabled = false;
         }

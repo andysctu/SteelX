@@ -15,8 +15,8 @@ MonoBehaviour:
   weaponTypeR: Sword
   playerAnimation1: {fileID: 7400000, guid: 600bcb65566ba594388feb3ac0fe71ca, type: 2}
   playerAnimation2: {fileID: 7400000, guid: 697e7f8fc2fb6564396096418656d3cb, type: 2}
-  weaponAnimationL: {fileID: 0}
-  weaponAnimationR: {fileID: 0}
+  weaponAnimationL: {fileID: 7400000, guid: 5275d117fe3b59f41b1d583f7dc65d1f, type: 2}
+  weaponAnimationR: {fileID: 7400000, guid: 9a95c4fa209092e46a6d49b310732d15, type: 2}
   playerEffects: []
   weaponLEffects:
   - {fileID: 1130398100609976, guid: bf5c847bc8d28b6409db157daf3f452b, type: 2}
@@ -26,10 +26,12 @@ MonoBehaviour:
   mech_sound: {fileID: 0}
   GeneralSkillParams:
     energyCost: 0
-    damage: 0
-  targetAnimation_front: {fileID: 0}
-  targetAnimation_back: {fileID: 0}
+    damage: 250
+  targetAnimation_front: {fileID: 7400000, guid: 3b3b6e020de85fa44a8c2da295558165,
+    type: 3}
+  targetAnimation_back: {fileID: 7400000, guid: b84c3a5e7d5ea3640a881275f748a9a3,
+    type: 3}
   SingleTargetSkillParams:
     crosshairRadius: 20
-    detectRange: 20
-    distance: 20
+    detectRange: 50
+    distance: 12

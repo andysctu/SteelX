@@ -85,32 +85,44 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     private void InstantiateBullet(bool is_the_first_call) {
         //debug
         if (bulletStart == null && Effect_End == null) {
-            Debug.LogError("Can't have bulletStart and gun_End both null.");
+            Debug.LogError("Can't have bulletStart and effect_End both null.");
             return;
         }
 
         if (!onlyImpact) {
             if (multiTarget) {
-                foreach(Transform t in targets) {
+
+                if (!onTarget) {
                     GameObject g = Instantiate(Bullet, (bulletStart == null) ? Effect_End.position : bulletStart.position, Quaternion.identity);
                     BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
 
-                    if(bulletTrace == null) {
+                    if (bulletTrace == null) {
                         Debug.LogError("can't find bulletTrace.");
                         return;
-                    } else {
-                        if (onTarget) {
-                            bulletTrace.SetTarget(t, false);
-                            bulletTrace.SetStartTransform((bulletStart == null) ? Effect_End : bulletStart);
+                    }
+                    Debug.DrawRay(Effect_End.position, -Effect_End.transform.right * 5, Color.red, 3);
+                    bulletTrace.SetStartDirection(-Effect_End.transform.right);
+                }
+
+                foreach(Transform t in targets) {
+                    if(onTarget){
+                        GameObject g = Instantiate(Bullet, (bulletStart == null) ? Effect_End.position : bulletStart.position, Quaternion.identity);
+                        BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
+
+                        bulletTrace.SetTarget(t, false);
+
+                        if(bulletStart == null) {                           
+                            bulletTrace.SetStartDirection(-Effect_End.transform.right);
                         } else {
-                            bulletTrace.SetStartDirection(Effect_End.forward);
+                            bulletTrace.SetStartTransform(bulletStart);
                         }
+                         if(showHit && showHitOnBulletCollision && player_pv.isMine) bulletTrace.ShowHitOnBulletCollision(displayKill);
                     }
 
                     //show hit msg
                     if (showHit && player_pv.isMine) {
                         if (!showHitOnBulletCollision) {
-                            if (displayKill) {
+                            if (displayKill) {  
                                 MechCombat target_mcbt = t.GetComponent<MechCombat>();
                                 if (target_mcbt == null) {
                                     if (t.GetComponent<DroneCombat>().CurrentHP() <= 0) {
@@ -128,8 +140,6 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                             } else {
                                 t.GetComponent<HUD>().DisplayHit(cam);                                
                             }
-                        } else {
-                            bulletTrace.ShowHitOnBulletCollision(displayKill);
                         }
                     }
                 }

@@ -16,7 +16,7 @@ public class Sword : MeleeWeapon {
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        throw new System.NotImplementedException();
+        return;
     }
 }
 

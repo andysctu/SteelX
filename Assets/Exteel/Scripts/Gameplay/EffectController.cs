@@ -116,6 +116,11 @@ public class EffectController : MonoBehaviour {
     }
 
     public void SlashOnHitEffect(bool isShield, int hand) {
+        if(Hands == null) {
+            Debug.Log("Hands is null");
+            return;
+        }
+        
         if (isShield) {
             GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
             g.GetComponent<ParticleSystem>().Play();

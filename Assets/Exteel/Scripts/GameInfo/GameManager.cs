@@ -57,7 +57,7 @@ public class GameManager : Photon.MonoBehaviour {
 	
 	public bool callEndGame = false;
 
-	private Dictionary<string, GameObject> playerScorePanels;
+	private Dictionary<string, GameObject> playerScorePanels = new Dictionary<string, GameObject>();
 	public Dictionary<string, Score> playerScores;
 
 	int storedStartTime;
@@ -93,7 +93,7 @@ public class GameManager : Photon.MonoBehaviour {
 		MaxKills = GameInfo.MaxKills;
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
 		InRoomChat.enabled = true;
-		playerScorePanels = new Dictionary<string, GameObject>();
+		//playerScorePanels = new Dictionary<string, GameObject>();
 		RedFlagHolder = null;
 		BlueFlagHolder = null;
 

@@ -53,7 +53,7 @@ public class MovementClips : ScriptableObject {
     "Jump08_Left",
     "Jump08_Right"
     };
-
+     #if UNITY_EDITOR
     [NamedArrayAttribute(new string[] {"Idle",
     "BackWalk",
     "BackWalk_Left",
@@ -105,5 +105,6 @@ public class MovementClips : ScriptableObject {
     "Jump08_Left",
     "Jump08_Right"
     })]
+    #endif
     public AnimationClip[] clips = new AnimationClip[46];
 }

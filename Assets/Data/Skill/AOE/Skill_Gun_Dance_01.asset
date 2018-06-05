@@ -15,14 +15,18 @@ MonoBehaviour:
   weaponTypeR: SMG
   playerAnimation1: {fileID: 7400000, guid: bcb945064f9612645b9145a2d895fcbe, type: 2}
   playerAnimation2: {fileID: 0}
+  hasWeaponAnimations: 1
+  weaponAnimationL: {fileID: 7400000, guid: 75f49909b0b0fe34694f5412be799a25, type: 2}
+  weaponAnimationR: {fileID: 7400000, guid: 75f49909b0b0fe34694f5412be799a25, type: 2}
   playerEffects: []
   targetEffects: []
-  weaponLEffects: []
-  weaponREffects: []
+  weaponLEffects:
+  - {fileID: 1130398100609976, guid: 5f49e5ac7fd0d7340b664de232f8c001, type: 2}
+  weaponREffects:
+  - {fileID: 1130398100609976, guid: 5f49e5ac7fd0d7340b664de232f8c001, type: 2}
   skill_sound: {fileID: 0}
-  EnergyCost: 0
-  damage: 250
-  crosshairRadius: 0
-  detectRange: 10
-  distance: 0
-  radius: 20
+  mech_sound: {fileID: 0}
+  GeneralSkillParams:
+    energyCost: 0
+    damage: 250
+  radius: 30

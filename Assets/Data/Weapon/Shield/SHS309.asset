@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: SHS309
   m_EditorClassIdentifier: 
   weaponType: Shield
-  weaponPrefab: {fileID: 1075376175430866, guid: 037ed19d13d6c475faf2a8443d14cc43,
+  weaponPrefab: {fileID: 1115578862501112, guid: 037ed19d13d6c475faf2a8443d14cc43,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: fabaae854be3ec44fbc03b02f6521703, type: 2}
@@ -24,5 +24,6 @@ MonoBehaviour:
   heat_increase_amount: 20
   slowDown: 0
   twoHanded: 0
+  skillAnimations: []
   defend_melee_efficiency: 0.5
   defend_ranged_efficiency: 0.5

@@ -1,44 +1,54 @@
 fileFormatVersion: 2
-guid: 0566c83e7bfddd7428346e8b90d46c19
-timeCreated: 1519483807
+guid: 13ba6a523560bb34586d32b4a820f434
+timeCreated: 1528200326
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: ArmObject
-    100002: EffectEnd
-    100004: EffectEnd_end
-    100006: //RootNode
-    100008: ENG041_lft
-    100010: ENG041_lft 1
-    100012: Light_Bone01
-    100014: Light_Bone01_end
-    100016: Light_Bone02
-    100018: Light_Bone02_end
-    400000: ArmObject
-    400002: EffectEnd
-    400004: EffectEnd_end
-    400006: //RootNode
-    400008: ENG041_lft
-    400010: ENG041_lft 1
-    400012: Light_Bone01
-    400014: Light_Bone01_end
-    400016: Light_Bone02
-    400018: Light_Bone02_end
+    100000: EffectEnd
+    100002: //RootNode
+    100004: ENG041_lft
+    100006: ENG041_lft 1
+    100008: Light_Bone01
+    100010: Light_Bone02
+    400000: EffectEnd
+    400002: //RootNode
+    400004: ENG041_lft
+    400006: ENG041_lft 1
+    400008: Light_Bone01
+    400010: Light_Bone02
+    2100000: ENG041_shd
+    2100002: ENG043_cmb
     4300000: ENG041_lft
+    7400000: Take 001
     9500000: //RootNode
-    13700000: ENG041_lft
+    13700000: ENG041_lft 1
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: pskmat0.004
-    second: {fileID: 2100000, guid: d232e08226c3041e4ba3a5abfb9a9e78, type: 2}
+      name: ENG041_shd
+    second: {fileID: 2100000, guid: 10b34f5aa7310864eb6c2040993cb603, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ENG043_cmb
+    second: {fileID: 2100000, guid: c8576dd4cb375634c881dbe867c3a1a4, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ENG041
+    second: {fileID: 2800000, guid: 1656fbdfaf448b34ba3c575f692006bc, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ENG043_e02
+    second: {fileID: 2800000, guid: 69d64346435e8094598758f0a7aa659c, type: 3}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -76,6 +86,8 @@ ModelImporter:
     optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88

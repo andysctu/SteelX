@@ -63,7 +63,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void RegisterOnSkill() {
-        SkillController.OnSkill += InterruptCurrentMovement;
+        if(SkillController != null)SkillController.OnSkill += InterruptCurrentMovement;
     }
 
     public void initControllerVar() {

@@ -15,13 +15,17 @@ MonoBehaviour:
   weaponTypeR: 
   playerAnimation1: {fileID: 0}
   playerAnimation2: {fileID: 0}
+  hasWeaponAnimations: 0
+  weaponAnimationL: {fileID: 0}
+  weaponAnimationR: {fileID: 0}
   playerEffects: []
-  targetEffects: []
   weaponLEffects: []
   weaponREffects: []
   skill_sound: {fileID: 0}
-  EnergyCost: 0
-  damage: 150
+  mech_sound: {fileID: 0}
+  GeneralSkillParams:
+    energyCost: 0
+    damage: 0
   BoosterName: 
   BulletParticle: {fileID: 1311110892892868, guid: acf7347d5fbb03f4997bcffdecd24593,
     type: 2}

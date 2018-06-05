@@ -15,12 +15,15 @@ MonoBehaviour:
   weaponTypeR: 
   playerAnimation1: {fileID: 7400000, guid: 9d9b614e1e9ad8747904fcaa22d5436b, type: 2}
   playerAnimation2: {fileID: 0}
+  weaponAnimationL: {fileID: 0}
+  weaponAnimationR: {fileID: 0}
   playerEffects: []
-  targetEffects: []
   weaponLEffects:
   - {fileID: 1288545304599354, guid: 81008b63090169c41ac0d46618e2116b, type: 2}
   weaponREffects: []
   skill_sound: {fileID: 0}
-  EnergyCost: 0
-  damage: 250
+  mech_sound: {fileID: 0}
+  GeneralSkillParams:
+    energyCost: 0
+    damage: 0
   radius: 30

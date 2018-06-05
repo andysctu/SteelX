@@ -87,6 +87,6 @@ public class DisplayPlayerInfo : MonoBehaviour {
     }
 
     int GetCurrentDroneMaxHP() {
-        return drone_mcbt.CurrentHP();
+        return drone_mcbt.GetMaxHp();
     }
 }

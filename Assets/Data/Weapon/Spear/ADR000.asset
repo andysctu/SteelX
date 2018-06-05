@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: ADR000
   m_EditorClassIdentifier: 
   weaponType: Spear
-  weaponPrefab: {fileID: 1497959119452962, guid: bbf69376bdcca63478e0775fba70ec88,
+  weaponPrefab: {fileID: 1134705389196492, guid: 1f16e29851900d147b2d204be13cca7f,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: 8fa33346c45fa9b4a83651136d903e0f, type: 2}
@@ -24,7 +24,9 @@ MonoBehaviour:
   heat_increase_amount: 10
   slowDown: 1
   twoHanded: 0
+  skillAnimations: []
   hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}
+  Atk: {fileID: 7400002, guid: 197ab111b6ad3704e993dcec748e0585, type: 3}
   smash_sound: {fileID: 8300000, guid: 5650034b756d1fb41b1149b0096f4f8a, type: 3}
   smash_hit_sound: {fileID: 0}
