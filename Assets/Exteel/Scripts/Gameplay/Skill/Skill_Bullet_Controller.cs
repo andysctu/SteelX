@@ -100,7 +100,6 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                         Debug.LogError("can't find bulletTrace.");
                         return;
                     }
-                    Debug.DrawRay(Effect_End.position, -Effect_End.transform.right * 5, Color.red, 3);
                     bulletTrace.SetStartDirection(-Effect_End.transform.right);
                 }
 
@@ -116,7 +115,11 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                         } else {
                             bulletTrace.SetStartTransform(bulletStart);
                         }
-                         if(showHit && showHitOnBulletCollision && player_pv.isMine) bulletTrace.ShowHitOnBulletCollision(displayKill);
+                        if (showHit && showHitOnBulletCollision && player_pv.isMine) {
+                            bulletTrace.SetShooter(player_pv);
+                            bulletTrace.ShowHitOnBulletCollision(displayKill);
+                            bulletTrace.SetCamera(cam);
+                        }
                     }
 
                     //show hit msg
@@ -180,6 +183,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                             target.GetComponent<HUD>().DisplayHit(cam);
                         }
                     } else {
+                        bulletTrace.SetShooter(player_pv);
                         bulletTrace.ShowHitOnBulletCollision(displayKill);
                         bulletTrace.SetCamera(cam);
                     }

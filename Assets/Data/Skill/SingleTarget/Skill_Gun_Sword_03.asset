@@ -15,9 +15,11 @@ MonoBehaviour:
   weaponTypeR: Sword
   playerAnimation1: {fileID: 7400000, guid: 600bcb65566ba594388feb3ac0fe71ca, type: 2}
   playerAnimation2: {fileID: 7400000, guid: 697e7f8fc2fb6564396096418656d3cb, type: 2}
+  hasWeaponAnimations: 1
   weaponAnimationL: {fileID: 7400000, guid: 5275d117fe3b59f41b1d583f7dc65d1f, type: 2}
   weaponAnimationR: {fileID: 7400000, guid: 9a95c4fa209092e46a6d49b310732d15, type: 2}
   playerEffects: []
+  targetEffects: []
   weaponLEffects:
   - {fileID: 1130398100609976, guid: bf5c847bc8d28b6409db157daf3f452b, type: 2}
   weaponREffects:
@@ -33,5 +35,5 @@ MonoBehaviour:
     type: 3}
   SingleTargetSkillParams:
     crosshairRadius: 20
-    detectRange: 50
-    distance: 12
+    detectRange: 40
+    distance: 16

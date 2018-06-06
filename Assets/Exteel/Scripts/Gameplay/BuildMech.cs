@@ -3,11 +3,12 @@ using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
 																																								        //eng : 14
 	[SerializeField]private GameObject RespawnPanel;
-	[SerializeField]private MechCombat mcbt = null;
+	[SerializeField]private MechCombat mcbt;
 	[SerializeField]private Sounds Sounds;
+    [SerializeField]private MechIK MechIK;
     [SerializeField]private AnimationEventController AnimationEventController;
     [SerializeField]private MovementClips defaultMovementClips, TwoHandedMovementClips;
     private GameManager gm;
@@ -85,9 +86,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		if(inHangar || inStore)//do not call this in game otherwise mechcombat gets null parameter
 			initAnimatorControllers ();
 
-
 		weaponOffset = 0;
-
+        
 		if (inHangar || inStore) {
 			buildMech(data.Mech[Mech_Num]);
 		} else { // Register my name on all clients
@@ -141,12 +141,11 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null (in offline )
-        parts[5] = defaultParts[11];
-        parts[6] = defaultParts[11];
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[7];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[10];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[16];
+        
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[5];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
 
         // Create new array to store skinned mesh renderers 
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
@@ -303,10 +302,10 @@ public class BuildMech : Photon.MonoBehaviour {
         ReloadSounds = new AudioClip[4];
 
         for (int i = 0; i < weaponNames.Length; i++) {
-            weaponScripts[i] = (weaponNames[i] == "")? null : WeaponManager.FindData(weaponNames[i]);
+            weaponScripts[i] = (weaponNames[i] == "Empty") ? null : WeaponManager.FindData(weaponNames[i]);
 
             if (weaponScripts[i] == null) {
-                if(weaponNames[i]!="")
+                if(weaponNames[i]!= "Empty")
                     Debug.LogError("Can't find weapon data : " + weaponNames[i]);
 
                 continue;
@@ -402,7 +401,7 @@ public class BuildMech : Photon.MonoBehaviour {
         if (weapPos==3){
 			if (weapons [2] != null) {
 				if (weaponScripts [2].twoHanded) {
-					if (!inStore)UserData.myData.Mech [Mech_Num].Weapon2L = "";
+					if (!inStore)UserData.myData.Mech [Mech_Num].Weapon2L = "Empty";
 
 					Destroy (weapons [2]);
                     weaponScripts[2] = null;
@@ -411,7 +410,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		}else if(weapPos==1){
 			if (weapons [0] != null) {
 				if (weaponScripts[0].twoHanded) {
-                    if (!inStore)UserData.myData.Mech [Mech_Num].Weapon1L = "";
+                    if (!inStore)UserData.myData.Mech [Mech_Num].Weapon1L = "Empty";
 
 					Destroy (weapons [0]);
                     weaponScripts [0] = null;
@@ -425,11 +424,12 @@ public class BuildMech : Photon.MonoBehaviour {
 				Destroy (weapons[weapPos + 1]);
 			if(weapPos==0){
 				if(!inStore)
-					UserData.myData.Mech [Mech_Num].Weapon1R = "";
+					UserData.myData.Mech [Mech_Num].Weapon1R = "Empty";
                 weaponScripts[1] = null;
 			}else if(weapPos==2){
-				if(!inStore)
-					UserData.myData.Mech [Mech_Num].Weapon2R = "";
+                if (!inStore) {
+                    UserData.myData.Mech[Mech_Num].Weapon2R = "Empty";
+                }
                 weaponScripts[3] = null;
 			}
 		}
@@ -446,11 +446,11 @@ public class BuildMech : Photon.MonoBehaviour {
                 weapons[weapPos + 1] = null;
                 if (weapPos >= 2) {
                     if (!inStore)
-                        UserData.myData.Mech[Mech_Num].Weapon2R = "";
+                        UserData.myData.Mech[Mech_Num].Weapon2R = "Empty";
                     weaponScripts[3] = null;
                 } else {
                     if (!inStore)
-                        UserData.myData.Mech[Mech_Num].Weapon1R = "";
+                        UserData.myData.Mech[Mech_Num].Weapon1R = "Empty";
                     weaponScripts[1] = null;
                 }
 
@@ -477,7 +477,13 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		ShutDownTrail (weapons[weapPos]);
 		if(animator!=null)CheckAnimatorState ();
-        UpdateMechCombatVars();
+        //UpdateMechCombatVars();
+
+        if (inHangar) {
+            MechIK.UpdateMechIK(weaponOffset);
+        } else {
+            UpdateMechCombatVars();
+        }
     }
 		
 	private void findGameManager() {

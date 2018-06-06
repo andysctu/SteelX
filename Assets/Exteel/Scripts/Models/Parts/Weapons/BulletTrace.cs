@@ -12,6 +12,7 @@ public class BulletTrace : MonoBehaviour {
     private ParticleSystem ps;
     private Camera cam;
     private Rigidbody rb;
+    private PhotonView shooter_pv;
     private Transform target, startTransform;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0), startDirection, dir, destination;
 
@@ -55,6 +56,10 @@ public class BulletTrace : MonoBehaviour {
         this.startTransform = startTransform;
     }
 
+    public void SetShooter(PhotonView shooter_pv) {
+        this.shooter_pv = shooter_pv;
+    }
+
     public void SetTarget(Transform target, bool isTargetShield) {
         this.target = target;
         this.isTargetShield = isTargetShield;
@@ -92,7 +97,7 @@ public class BulletTrace : MonoBehaviour {
                     ps.Clear();
 
                     //show hit msg
-                    if (showHitOnBulletCollision) {
+                    if (showHitOnBulletCollision && shooter_pv.isMine) {
                         MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
                         if(mcbt == null) {
                             //drone

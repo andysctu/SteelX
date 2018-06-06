@@ -186,6 +186,33 @@ public class MechIK : MonoBehaviour {
 		idealweight = 0;
 	}
 
+    public void UpdateMechIK(int weaponOffset) {//called by buildMech
+        this.weaponOffset = weaponOffset;
+
+        if (bm.weaponScripts[weaponOffset].twoHanded) {
+            Knob = FindKnob(bm.weapons[weaponOffset].transform);
+            AimTransform = bm.weapons[weaponOffset].transform.Find("AimTransform");//TODO : update when switchweapon
+            if (AimTransform == null)
+                Debug.LogError("null aim Transform");
+            else
+                AimIK.solver.transform = AimTransform;
+
+            PoleTarget = bm.weapons[weaponOffset].transform.Find("End");
+            if (PoleTarget == null)
+                Debug.Log("null PoleTarget");
+            else
+                AimIK.solver.poleTarget = PoleTarget;
+        } else {
+            Knob = null;
+            mode = 0;
+        }
+
+        AimIK.solver.IKPositionWeight = 0;
+        LeftIK_on = false;
+        RightIK_on = false;
+        idealweight = 0;
+    }
+
     Transform FindKnob(Transform weapon) {//knob must under the first child
         Transform t = weapon;
         while (t.childCount != 0) {

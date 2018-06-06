@@ -173,7 +173,9 @@ public class MechCombat : Combat {
 
     void initGameObjects() {
         BulletCollector = GameObject.Find("BulletCollector");
-        InRoomChat = GameObject.Find("InRoomChat").GetComponent<InRoomChat>();
+        GameObject g = GameObject.Find("InRoomChat");
+        if (g != null)
+            InRoomChat = g.GetComponent<InRoomChat>();
     }
 
     void initTargetProperties() {
@@ -290,7 +292,7 @@ public class MechCombat : Combat {
 
     void SyncWeaponOffset() {
         //sync other player weapon offset
-        if (!photonView.isMine) {
+        if (photonView.owner != null && !photonView.isMine) {
             if (photonView.owner.CustomProperties["weaponOffset"] != null) {
                 weaponOffset = int.Parse(photonView.owner.CustomProperties["weaponOffset"].ToString());
             } else//the player may just initialize
@@ -676,11 +678,9 @@ public class MechCombat : Combat {
         yield return new WaitWhile(() => onSkill);
 
         displayPlayerInfo.gameObject.SetActive(false);
-        Crosshair ch = GetComponentInChildren<Crosshair>();
-        if (ch != null) {
-            ch.ShutDownAllCrosshairs();
-            ch.enabled = false;
-        }
+
+        crosshair.ShutDownAllCrosshairs();
+        crosshair.enabled = false;
 
         EnableAllRenderers(false);
 
@@ -707,10 +707,8 @@ public class MechCombat : Combat {
         isDead = false;
         if (!photonView.isMine) return;
 
-        // If this is me, enable MechController and Crosshair
         mechController.enabled = true;
-        Crosshair ch = cam.GetComponent<Crosshair>();
-        ch.enabled = true;
+        crosshair.enabled = true;
 
         crosshairImage.gameObject.SetActive(true);
         HeatBar.gameObject.SetActive(true);
@@ -1087,6 +1085,7 @@ public class MechCombat : Combat {
     }
 
     public void UpdateMovementClips() {
+        if(weaponScripts == null)return;
         MovementClips movementClips = (weaponScripts[weaponOffset] == null || !weaponScripts[weaponOffset].twoHanded) ? defaultMovementClips : TwoHandedMovementClips;
         for (int i=0; i< movementClips.clips.Length;i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];

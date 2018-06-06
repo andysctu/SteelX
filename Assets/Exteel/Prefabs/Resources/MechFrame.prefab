@@ -2945,6 +2945,7 @@ MonoBehaviour:
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 11445986}
   Sounds: {fileID: 114000010976113334}
+  MechIK: {fileID: 0}
   AnimationEventController: {fileID: 114895722533198232}
   defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
     type: 2}
@@ -3019,6 +3020,7 @@ MonoBehaviour:
   cooldown: 16
   BCNbulletNum: 0
   isOnBCNPose: 0
+  on_BCNShoot: 0
   onSkill: 0
   isLMeleePlaying: 0
   isRMeleePlaying: 0
@@ -3057,7 +3059,6 @@ MonoBehaviour:
   InAirSpeedCoeff: 0.55
   lerpCam_coeff: 2
   grounded: 1
-  on_BCNShoot: 0
   cam_lerpSpeed: 13
   LocalxOffset: -4
   cam_orbitradius: 19
@@ -6906,7 +6907,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8c4e134e575b0664db12f53e2da1666b, type: 2}
   - {fileID: 11400000, guid: 493982ab7c79af343821a58e8e99c3fc, type: 2}
   - {fileID: 11400000, guid: 19a63dbde5fbf2c40a5370121f68739e, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 898680a1f19553045b3762e75d12da7b, type: 2}
   Sounds: {fileID: 114000010976113334}
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
   EffectsToRemove: []

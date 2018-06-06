@@ -82,6 +82,15 @@ public class GameManager : Photon.MonoBehaviour {
             InstantiatePlayer(PlayerPrefab.name, RandomXZposition(SpawnPoints[0].position, 20), SpawnPoints[0].rotation, 0);
             GameIsBegin = true;
             GameMsgDisplayer.ShowWaitOtherPlayer(false);
+
+            //close Panel_RedTeam on Scorepanel
+            Panel_RedTeam.SetActive(false);
+            //close teamscores
+            RedScore.SetActive(false);
+            BlueScore.SetActive(false);
+            isTeamMode = false;
+
+
             return;
         }
 		//Load game info
@@ -203,17 +212,16 @@ public class GameManager : Photon.MonoBehaviour {
 	}
 		
 	public void RegisterPlayer(int viewID, int team) {
-        if (Offline) return;//TODO : comment this
-
         PhotonView pv = PhotonView.Find (viewID);
 		string name;
-		if(viewID == 2){//Drone
-			name = "Drone";
+
+		if(pv.tag == "Drone"){
+			name = "Drone" + Random.Range(0,9999);
 		}else{
 			name = pv.owner.NickName;
 		}
 
-		//bug : ini here in case not ini. in start ( happens all the time )
+		//TODO : consider remove this
 		if(pv.isMine){
 			ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable ();
 			h2.Add ("Kills", 0);
@@ -231,7 +239,7 @@ public class GameManager : Photon.MonoBehaviour {
 		ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
 
 		Score score = new Score ();
-		if (viewID != 2) {
+		if (pv.tag != "Drone") {
 			string kills, deaths;
 			kills = pv.owner.CustomProperties ["Kills"].ToString ();
 			deaths = pv.owner.CustomProperties ["Deaths"].ToString ();

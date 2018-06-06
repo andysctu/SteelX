@@ -15,7 +15,7 @@ public class EffectController : MonoBehaviour {
 
     private MechCombat mcbt;
 	private MechController mctrl;
-	private bool isBoostingDustPlaying = false;
+	private bool isBoostingDustPlaying = false, onSkill = false;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
 
     private void Awake() {
@@ -23,7 +23,10 @@ public class EffectController : MonoBehaviour {
     }
 
     private void RegisterOnSkill() {
-        if(SkillController!=null)SkillController.OnSkill += PlayOnSkillEffect;
+        if (SkillController != null) {
+            SkillController.OnSkill += PlayOnSkillEffect;
+            SkillController.OnSkill += OnSkill;
+        }
     }
 
     void OnEnable() {
@@ -85,7 +88,7 @@ public class EffectController : MonoBehaviour {
 	public void UpdateBoostingDust(){//called by horizontal boosting state
 		float direction = Animator.GetFloat ("Direction"), speed = Animator.GetFloat ("Speed");//other player also call this
 
-        if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool("Boost")) {
+        if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool("Boost") && !onSkill) {
 			if(!isBoostingDustPlaying)
 				BoostingDustEffect (true);
 			boostingDust.transform.localRotation = Quaternion.Euler (-90, Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward), 90);
@@ -129,6 +132,10 @@ public class EffectController : MonoBehaviour {
             GameObject g = Instantiate(smashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
             g.GetComponent<ParticleSystem>().Play();
         }
+    }
+
+    private void OnSkill(bool b) {
+        onSkill = b;
     }
 
     private void PlayOnSkillEffect(bool b) {

@@ -63,11 +63,10 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                     BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
                     bulletTrace.ShowHitOnBulletCollision(true);
                     bulletTrace.SetCamera(cam);
+                    bulletTrace.SetShooter(player_pv);
                     bulletTrace.SetSpeed(150);
                     bulletTrace.SetTarget(target_pv.transform, false);
                     bulletTrace.SetStartTransform(transform);//temp
-
-                    //target_pv.GetComponent<HUD>().DisplayHit(cam);
                 }
 
                 if (target_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);

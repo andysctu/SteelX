@@ -13,7 +13,12 @@ public class Combat : Photon.MonoBehaviour {
 
 	protected void findGameManager() {
 		if (gm == null) {
-			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+            GameObject g = GameObject.Find("GameManager");
+            if(g != null)
+                gm = g.GetComponent<GameManager>();
+            else {
+                Debug.Log("Can't find GameManager. Ignore this if there isn't one");
+            }
 		}
 	}
 
