@@ -27,7 +27,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
         //Detect target
-        Transform target = Crosshair.DectectTarget(config.SingleTargetSkillParams.crosshairRadius, config.SingleTargetSkillParams.detectRange, false);
+        Transform target = Crosshair.DectectTarget(config.SingleTargetSkillParams.crosshairRadius, config.SingleTargetSkillParams.detectRange, 0,  false);
         
         //RPC
         if (target != null) {

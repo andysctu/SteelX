@@ -9,7 +9,7 @@ public abstract class Weapon : ScriptableObject {
 
     [Tooltip("The range of ranged weapons")]
     [Range(0, 1200)]
-    public int Range = 0;
+    public int Range = 0, minRange = 0;
 
     [Range(0, 5)]
     public float Rate = 0;//if it is melee weapon , then it's the time from slash start to the start of receiving the button

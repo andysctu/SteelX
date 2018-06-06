@@ -4800,13 +4800,14 @@ MonoBehaviour:
   mainAnimator: {fileID: 95198505659783780}
   cam: {fileID: 0}
   skillcam: {fileID: 0}
-  skill:
+  skills:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   Sounds: {fileID: 0}
   sorry: {fileID: 0}
+  EffectsToRemove: []
   isDrone: 1
 --- !u!114 &114501258250183374
 MonoBehaviour:
@@ -4834,6 +4835,9 @@ MonoBehaviour:
   Sounds: {fileID: 0}
   Animator: {fileID: 0}
   AnimatorVars: {fileID: 0}
+  Hands:
+  - {fileID: 4092576618438722}
+  - {fileID: 4530903207535246}
 --- !u!114 &114558577616863078
 MonoBehaviour:
   m_ObjectHideFlags: 1

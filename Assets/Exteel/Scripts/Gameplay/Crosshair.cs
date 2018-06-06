@@ -37,7 +37,7 @@ public class Crosshair : MonoBehaviour {
 
 	private float SphereRadiusCoeff = 0.04f;
 	private float DistanceCoeff = 0.008f;
-    private float MaxDistanceL, MaxDistanceR;
+    private float MaxDistanceL, MaxDistanceR, MinDistanceL, MinDistanceR;
 
     void Awake() {
         RegisterOnWeaponBuilt();
@@ -96,17 +96,21 @@ public class Crosshair : MonoBehaviour {
         if (weaponScripts[weaponOffset] == null) {
             CrosshairRadiusL = 0;
             MaxDistanceL = 0;
+            MinDistanceL = 0;
         } else {
             CrosshairRadiusL = weaponScripts[weaponOffset].radius;
             MaxDistanceL = weaponScripts[weaponOffset].Range;
+            MinDistanceL = weaponScripts[weaponOffset].minRange;
         }
 
         if (weaponScripts[weaponOffset + 1] == null) {
             CrosshairRadiusR = 0;
             MaxDistanceR = 0;
+            MinDistanceR = 0;
         } else {
             CrosshairRadiusR = weaponScripts[weaponOffset + 1].radius;
             MaxDistanceR = weaponScripts[weaponOffset + 1].Range;
+            MinDistanceR = weaponScripts[weaponOffset + 1].minRange;
         }
 
 		isRectifier_L = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].weaponType == "Rectifier");
@@ -154,7 +158,7 @@ public class Crosshair : MonoBehaviour {
 		crosshairImage.EngTargetMark.enabled = false;
 	}
 
-    public Transform DectectTarget(float crosshairRadius , float range,  bool isTargetAlly) {
+    public Transform DectectTarget(float crosshairRadius , float range, float minimunRange,  bool isTargetAlly) {
         if(crosshairRadius > 0) {
             foreach(GameObject target in Targets) {
                 if(target == null) {
@@ -185,7 +189,7 @@ public class Crosshair : MonoBehaviour {
                 }
 
                 //check distance
-                if (!(Vector3.Distance(target.transform.position, transform.root.position) < range))
+                if (Vector3.Distance(target.transform.position, transform.root.position) > range || Vector3.Distance(target.transform.position, transform.root.position) < minimunRange)
                     continue;
 
                 Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
@@ -244,7 +248,7 @@ public class Crosshair : MonoBehaviour {
                 }
 
                 //check distance
-                if (!(Vector3.Distance(target.transform.position, transform.root.position) < range))
+                if (Vector3.Distance(target.transform.position, transform.root.position) > range)
                     continue;
 
                 Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
@@ -270,7 +274,7 @@ public class Crosshair : MonoBehaviour {
         if (onSkill) return;
 
         if (CrosshairRadiusL > 0) {// TODO : remove this
-            if ((targetL = DectectTarget(CrosshairRadiusL, MaxDistanceL, isTargetAllyL)) != null) {
+            if ((targetL = DectectTarget(CrosshairRadiusL, MaxDistanceL, MinDistanceL, isTargetAllyL)) != null) {
                 crosshairImage.OnTargetL(true);
 
                 if (!LockL) {
@@ -288,7 +292,7 @@ public class Crosshair : MonoBehaviour {
             }
         }
         if (CrosshairRadiusR > 0) {
-            if ((targetR = DectectTarget(CrosshairRadiusR, MaxDistanceR, isTargetAllyR)) != null) {
+            if ((targetR = DectectTarget(CrosshairRadiusR, MaxDistanceR, MinDistanceR, isTargetAllyR)) != null) {
                 crosshairImage.OnTargetR(true);
 
                 if (!LockR) {

@@ -287,7 +287,7 @@ public class AnimationEventController : MonoBehaviour {
 		if (!pv.isMine)
 			return;
 		
-		MechController.on_BCNShoot = (b==1);
+		MechCombat.on_BCNShoot = (b==1);
 		if(b==0){
 			Animator.SetBool ("BCNPose", false);
 			Animator.SetBool ("OnBCN", false);

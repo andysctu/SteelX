@@ -11,8 +11,8 @@ public class EffectController : MonoBehaviour {
 	[SerializeField]private Sounds Sounds;
 	[SerializeField]private Animator Animator;
 	[SerializeField]private AnimatorVars AnimatorVars;
+    [SerializeField]private Transform[] Hands;
 
-    private Transform[] Hands;
     private MechCombat mcbt;
 	private MechController mctrl;
 	private bool isBoostingDustPlaying = false;
@@ -53,15 +53,6 @@ public class EffectController : MonoBehaviour {
     }
 		
 	void initTransforms(){
-		Transform shoulderL, shoulderR;
-		shoulderL = transform.root.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.root.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
-
-		Hands = new Transform[2];
-		Hands [0] = shoulderL.Find ("upper_arm.L/forearm.L/hand.L");
-		Hands [1] = shoulderR.Find ("upper_arm.R/forearm.R/hand.R");
-
-
 		switchWeaponEffectL.transform.SetParent (Hands [0]);
 		switchWeaponEffectL.transform.localPosition = Vector3.zero;
 

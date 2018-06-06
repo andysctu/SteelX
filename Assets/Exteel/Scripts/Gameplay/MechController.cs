@@ -48,7 +48,6 @@ public class MechController : Photon.MonoBehaviour {
     public float InAirSpeedCoeff = 0.7f;
     public float lerpCam_coeff = 5;
     public bool grounded = true; //changes with animator bool "grounded"
-    public bool on_BCNShoot = false;
     public float cam_lerpSpeed = 10, LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
     private void Awake() {
@@ -124,7 +123,7 @@ public class MechController : Photon.MonoBehaviour {
 
     public void UpdateSpeed() {
         // instant move
-        if (mechCombat.isLMeleePlaying == 1 || mechCombat.isRMeleePlaying == 1 || on_BCNShoot) {
+        if (mechCombat.isLMeleePlaying == 1 || mechCombat.isRMeleePlaying == 1 || mechCombat.on_BCNShoot) {
             InstantMove();
             return;
         }

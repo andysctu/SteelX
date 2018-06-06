@@ -1340,7 +1340,7 @@ public class MechCombat : Combat {
     }
 
     public void FindTrail() {
-        if (curGeneralWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.Sword) {
+        if (curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.Sword) {
             trailL = weapons[weaponOffset].transform.Find("trail").GetComponent<XWeaponTrail>();
             if (trailL != null) {
                 trailL.Deactivate();
@@ -1349,7 +1349,7 @@ public class MechCombat : Combat {
             trailL = null;
         }
 
-        if (curGeneralWeaponTypes[weaponOffset + 1] == (int)SpecialWeaponTypes.Sword) {
+        if (curSpecialWeaponTypes[weaponOffset + 1] == (int)SpecialWeaponTypes.Sword) {
             trailR = weapons[weaponOffset + 1].transform.Find("trail").GetComponent<XWeaponTrail>();
             if (trailR != null)
                 trailR.Deactivate();
