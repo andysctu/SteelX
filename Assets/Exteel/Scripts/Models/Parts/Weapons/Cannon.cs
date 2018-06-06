@@ -2,6 +2,8 @@
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/Cannon", order = 6)]
 public class Cannon : RangedWeapon {
+    [SerializeField] private AnimationClip Reload;
+
     [Tooltip("Call reload after running out of bullets")]
     public int maxBullet;
 
@@ -12,6 +14,15 @@ public class Cannon : RangedWeapon {
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        //throw new System.NotImplementedException();
+        AnimatorOverrideController animatorOverrideController = (AnimatorOverrideController)weaponAniamtor.runtimeAnimatorController;
+
+        AnimationClipOverrides clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(clipOverrides);
+
+        clipOverrides["Reload"] = Reload;
+        if (Reload == null) {
+            Debug.Log("You need to assign Cannon animation clip : Reload . Ignore this if use empty clips.");
+        }
+        animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 }

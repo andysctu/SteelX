@@ -46,7 +46,7 @@ public class MechCombat : Combat {
     public int MaxHeat = 100;
     public int cooldown = 5;
     public int BCNbulletNum = 2;
-    public bool isOnBCNPose, onSkill = false;//called by BCNPoseState to check if on the right pose 
+    public bool isOnBCNPose, on_BCNShoot = false, onSkill = false;//called by BCNPoseState to check if on the right pose 
     private int weaponOffset = 0;
     private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
     private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
@@ -808,16 +808,10 @@ public class MechCombat : Combat {
                 isBCNcanceled = true;
                 animator.SetBool(AnimatorVars.BCNPose_id, false);
                 return;
-            } else if (Input.GetKey(KeyCode.Mouse0) && !isBCNcanceled && !animator.GetBool(AnimatorVars.BCNPose_id) && mechController.grounded && !animator.GetBool("BCNLoad")) {
-                if (!is_overheat[weaponOffset]) {
-                    if (!animator.GetBool(AnimatorVars.BCNPose_id)) {
-                        AnimationEventController.BCNPose();
-                        animator.SetBool(AnimatorVars.BCNPose_id, true);
-                        timeOfLastShotL = Time.time - 1 / bm.weaponScripts[weaponOffset + hand].Rate / 2;
-                    }
-                } else {
-                    animator.SetBool(AnimatorVars.BCNPose_id, false);
-                }
+            } else if (Input.GetKey(KeyCode.Mouse0) && !isBCNcanceled && !on_BCNShoot &&!animator.GetBool(AnimatorVars.BCNPose_id) && mechController.grounded && !animator.GetBool("BCNLoad")) {
+                AnimationEventController.BCNPose();
+                animator.SetBool(AnimatorVars.BCNPose_id, true);
+                timeOfLastShotL = Time.time - 1 / bm.weaponScripts[weaponOffset + hand].Rate / 2;
             } else if (!Input.GetKey(KeyCode.Mouse0)) {
                 isBCNcanceled = false;
             }
