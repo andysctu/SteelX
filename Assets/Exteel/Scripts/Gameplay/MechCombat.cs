@@ -539,7 +539,7 @@ public class MechCombat : Combat {
     // Applies damage, and updates scoreboard + disables player on kill
     [PunRPC]
     public override void OnHit(int damage, int shooter_viewID, string weapon, bool isSlowDown = false) {
-        if (isDead) {
+        if (isDead || onSkill) {
             return;
         }
 
@@ -570,7 +570,7 @@ public class MechCombat : Combat {
 
     [PunRPC]
     void ShieldOnHit(int damage, int shooter_viewID, int shield, string weapon) {
-        if (isDead) {
+        if (isDead || onSkill) {
             return;
         }
 
@@ -1303,6 +1303,16 @@ public class MechCombat : Combat {
 
     private void OnSkill(bool b) {
         onSkill = b;
+
+        if (b) {
+            gameObject.layer = default_layer;
+            EnableAllColliders(false);
+            GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
+        } else {
+            gameObject.layer = playerlayer;
+            EnableAllColliders(true);
+            GetComponent<Collider>().enabled = false;
+        }
     }
 
     void UpdateSMGAnimationSpeed() {

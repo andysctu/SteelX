@@ -2681,8 +2681,8 @@ Camera:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0.019607844}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.8
-    y: 0
+    x: 0.75
+    y: 0.75
     width: 1
     height: 0.25
   near clip plane: 0.3
@@ -2795,8 +2795,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 3
-  instantiationId: 3
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -3029,7 +3029,6 @@ MonoBehaviour:
   slashL_threshold: 0
   slashR_threshold: 0
   Hands: []
-  crosshair: {fileID: 0}
   forceDead: 0
 --- !u!114 &11462782
 MonoBehaviour:
@@ -3123,8 +3122,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 8
-  instantiationId: 8
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
@@ -6941,7 +6940,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97063224de75cef43bb01020b1f6d1ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crosshair: {fileID: 0}
 --- !u!114 &114746188837826856
 MonoBehaviour:
   m_ObjectHideFlags: 1

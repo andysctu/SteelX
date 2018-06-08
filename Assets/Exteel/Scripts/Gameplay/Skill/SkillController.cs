@@ -46,20 +46,33 @@ public class SkillController : MonoBehaviour {
     private void RegisterOnWeaponSwitched() {
         if (mechcombat != null) {
             mechcombat.OnWeaponSwitched += OnWeaponSwitched;
-            mechcombat.OnWeaponSwitched += LoadPlayerSkillAnimations;
         }
     }
 
     private void RegisterOnWeaponBuilt() {
         if (bm != null) {
-            bm.OnWeaponBuilt += InitSkill;
-            bm.OnWeaponBuilt += InitHUD;
+            bm.OnWeaponBuilt += OnWeaponBuilt;
         }
     }
 
-    private void Start() {
-        InitComponents();
+    private void OnWeaponSwitched() {
+        weaponOffset = mechcombat.GetCurrentWeaponOffset();
+        CheckIfSkillsUsable();
+        LoadPlayerSkillAnimations();
+    }
+
+    private void OnWeaponBuilt() {
+        InitEffectsList();
+        InitSkill();
+        UpdateBoosterAnimator();
+        UpdateWeaponAnimators();
+        LoadWeaponSkillAnimations();
+        LoadBoosterSkillAnimations();
         InitHUD();
+    }
+
+    private void Start() {
+        InitComponents();        
     }
 
     private void InitComponents() {
@@ -87,20 +100,13 @@ public class SkillController : MonoBehaviour {
         OnSkill += SwitchToSkillAnimator;
     }
 
-    private void InitSkill() {
-        InitEffectsList();
-
+    private void InitSkill() {   
         for (int i = 0; i < skills.Length; i++) {
             if (skills[i] != null) {
                 skill_length[i] = 0;
                 skills[i].AddComponent(gameObject, i);
             }
         }
-
-        UpdateBoosterAnimator();
-        UpdateWeaponAnimators();
-        LoadWeaponSkillAnimations();
-        LoadBoosterSkillAnimations();
     }
 
     private void InitEffectsList() {
@@ -110,13 +116,13 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    //the skill aniamtions may need to be switched when using different weapons ( different order )
+    //the skill aniamtions may need to be switched when using different weapons ( in case of different order )
     private void LoadPlayerSkillAnimations() {
         for (int i = 0; i < skills.Length; i++) {
             if (skills[i] == null) {
-                clipOverrides["skill_" + i] = null;
+                clipOverrides["sk" + i] = null;
             } else {
-                clipOverrides["skill_" + i] = skills[i].GetPlayerAniamtion(CheckIfWeaponOrderReverse(i));
+                clipOverrides["sk" + i] = skills[i].GetPlayerAniamtion(CheckIfWeaponOrderReverse(i));
             }
 
             skill_length[i] = (clipOverrides["skill_" + i] == null) ? 0 : clipOverrides["skill_" + i].length;
@@ -147,15 +153,15 @@ public class SkillController : MonoBehaviour {
                 }
 
                 if (skills[j] == null || !skills[j].hasWeaponAnimation) {
-                    clipOverrides["skill_" + j] = null;
+                    clipOverrides["sk" + j] = null;
                 } else {
                     AnimationClip clip = skills[j].GetWeaponAnimation(i % 2, CheckIfWeaponOrderReverse(j));
 
                     if (clip != null) {
                         //Debug.Log("clip name : " + clip.name + " on weapon : " + i);
-                        clipOverrides["skill_" + j] = clip;
+                        clipOverrides["sk" + j] = clip;
                     } else {
-                        clipOverrides["skill_" + j] = bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name);
+                        clipOverrides["sk" + j] = bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name);
 
                         if (bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name) == null)
                             Debug.LogError("Can't find the skill animation : " + bm.weaponScripts[i].name + "_" + skills[j].name + " on weapon and there is no default animation.");
@@ -182,7 +188,7 @@ public class SkillController : MonoBehaviour {
                 continue;
 
             if (skills[j].hasBoosterAnimation) {
-                clipOverrides["skill_"+j] = skills[j].GetBoosterAnimation();
+                clipOverrides["sk"+j] = skills[j].GetBoosterAnimation();
             }
         }
         BoosterAnimatorOverrideController.ApplyOverrides(clipOverrides);
@@ -240,11 +246,6 @@ public class SkillController : MonoBehaviour {
         return skills[skill_num];
     }
 
-    private void OnWeaponSwitched() {
-        weaponOffset = mechcombat.GetCurrentWeaponOffset();
-        CheckIfSkillsUsable();
-    }
-
     private void SwitchToSkillAnimator(bool b) {
         ResetMainAnimatorState();
 
@@ -282,11 +283,11 @@ public class SkillController : MonoBehaviour {
 
     public void PlayPlayerAnimation(int skill_num) {//state name : skill_1 , skill_2 , ... 
         SwitchToSkillAnimator(true);
-        StartCoroutine(ReturnDefaultStateWhenEnd("skill_" + skill_num));
+        StartCoroutine(ReturnDefaultStateWhenEnd("sk" + skill_num));
         SwitchToSkillCam(true);
         OnSkill(true);
 
-        skillAnimtor.Play("skill_" + skill_num);
+        skillAnimtor.Play("sk" + skill_num);
     }
 
     public void PlayerBoosterAnimation(int skill_num) {
@@ -378,7 +379,6 @@ public class SkillController : MonoBehaviour {
 
     void updateHUD() {
         if(SPBar == null)return;//drone;
-        // Update SP bar gradually
         SPBar.value = SP / (float)maxSP;
         SPBartext.text = BarValueToString(SP, maxSP);
     }
