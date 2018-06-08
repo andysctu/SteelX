@@ -183,8 +183,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		LoadHeadInfo (parts [3]);
 		LoadBoosterInfo (parts [4]);
 
-		// Replace weapons
-		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
+        SwitchBoosterAniamtionClips();
+
+        // Replace weapons
+        buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
 
     
@@ -291,6 +293,20 @@ public class BuildMech : Photon.MonoBehaviour {
 		EnergyDrain += booster.EnergyDrain;
 	}
 
+    private void SwitchBoosterAniamtionClips() {
+        Transform CurrentMech = transform.Find("CurrentMech");
+        if(CurrentMech == null)
+            return;
+
+        GameObject booster = CurrentMech.GetComponentInChildren<BoosterController>().gameObject;
+        if (booster.GetComponent<Animator>() != null && booster.GetComponent<Animator>().runtimeAnimatorController != null) {
+            AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(booster.GetComponent<Animator>().runtimeAnimatorController);
+            booster.GetComponent<Animator>().runtimeAnimatorController = animatorOverrideController;
+
+            //TODO : switch the clips
+        }
+    }
+
     private void buildWeapons (string[] weaponNames) {
         if(WeaponManager==null) WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
 
@@ -363,7 +379,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 break;
 			}
 
-            //switch weapon aniamtion clips
+            //switch weapon animation clips
             if (weapons[i].GetComponent<Animator>() != null && weapons[i].GetComponent<Animator>().runtimeAnimatorController != null) {//TODO : improve this
                 AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(weapons[i].GetComponent<Animator>().runtimeAnimatorController);
                 weapons[i].GetComponent<Animator>().runtimeAnimatorController = animatorOverrideController;

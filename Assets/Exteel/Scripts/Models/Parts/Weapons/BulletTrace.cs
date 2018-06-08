@@ -18,7 +18,7 @@ public class BulletTrace : MonoBehaviour {
 
     private bool isTargetShield;
     private bool isfollow = false;
-    private float bulletSpeed = 350, otherDirSpeed = 80;
+    [SerializeField]private float bulletSpeed = 350, otherDirSpeed = 80;
     private bool isCollided = false;
     private bool hasSlowdown = false, showHitOnBulletCollision = false, displayKill = false;
 
@@ -43,17 +43,8 @@ public class BulletTrace : MonoBehaviour {
         }
     }
 
-    public void SetSpeed(float speed) {
-        bulletSpeed = speed;
-    }
-
     public void SetStartDirection(Vector3 startDirection) {
         this.startDirection = startDirection.normalized;
-    }
-
-    //this is for multi-target skill
-    public void SetStartTransform(Transform startTransform) {
-        this.startTransform = startTransform;
     }
 
     public void SetShooter(PhotonView shooter_pv) {
@@ -97,30 +88,36 @@ public class BulletTrace : MonoBehaviour {
                     ps.Clear();
 
                     //show hit msg
-                    if (showHitOnBulletCollision && shooter_pv.isMine) {
-                        MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
-                        if(mcbt == null) {
-                            //drone
-                            if(target.transform.root.GetComponent<DroneCombat>().CurrentHP() <= 0)
-                                target.transform.root.GetComponent<HUD>().DisplayKill(cam);
-                            else
-                                target.transform.root.GetComponent<HUD>().DisplayHit(cam);
-                        } else {
-                            if (mcbt.CurrentHP() <= 0)
-                                target.transform.root.GetComponent<HUD>().DisplayKill(cam);
-                            else
-                                target.transform.root.GetComponent<HUD>().DisplayHit(cam);
-                        }
-                    }
+                    ShowHitMsg(target);
 
                     Destroy(gameObject);
                 }
                 if (go_straight)
                     rb.velocity = bulletSpeed * dir;
                 else {
+                    //TODO : improve this
                     rb.velocity = bulletSpeed * dir + Vector3.up * otherDirSpeed;
                     otherDirSpeed -= Time.deltaTime * 100;
                 }
+            }
+        }
+    }
+
+    void ShowHitMsg(Transform target) {
+        //show hit msg
+        if (showHitOnBulletCollision && shooter_pv.isMine) {
+            MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
+            if (mcbt == null) {
+                //drone
+                if (target.transform.root.GetComponent<DroneCombat>().CurrentHP() <= 0)
+                    target.transform.root.GetComponent<HUD>().DisplayKill(cam);
+                else
+                    target.transform.root.GetComponent<HUD>().DisplayHit(cam);
+            } else {
+                if (mcbt.CurrentHP() <= 0)
+                    target.transform.root.GetComponent<HUD>().DisplayKill(cam);
+                else
+                    target.transform.root.GetComponent<HUD>().DisplayHit(cam);
             }
         }
     }

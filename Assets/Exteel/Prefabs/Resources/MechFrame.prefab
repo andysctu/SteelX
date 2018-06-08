@@ -239,6 +239,7 @@ GameObject:
   - component: {fileID: 13776396}
   - component: {fileID: 114293896211754550}
   - component: {fileID: 82249262859097064}
+  - component: {fileID: 95104063236352214}
   m_Layer: 0
   m_Name: PBS000(Clone)
   m_TagString: Untagged
@@ -5732,6 +5733,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!95 &95104063236352214
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 112828}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 66e3c604ac26d4ace8f108237115e7e5, type: 3}
+  m_Controller: {fileID: 9100000, guid: d0cb61c88eaa4684b8f53b023aaa0372, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!95 &95953646033232842
 Animator:
   serializedVersion: 3
@@ -6907,10 +6925,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8c4e134e575b0664db12f53e2da1666b, type: 2}
   - {fileID: 11400000, guid: 493982ab7c79af343821a58e8e99c3fc, type: 2}
   - {fileID: 11400000, guid: 19a63dbde5fbf2c40a5370121f68739e, type: 2}
-  - {fileID: 11400000, guid: 898680a1f19553045b3762e75d12da7b, type: 2}
+  - {fileID: 11400000, guid: 19a63dbde5fbf2c40a5370121f68739e, type: 2}
   Sounds: {fileID: 114000010976113334}
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
-  EffectsToRemove: []
   isDrone: 0
 --- !u!114 &114718916726667884
 MonoBehaviour:

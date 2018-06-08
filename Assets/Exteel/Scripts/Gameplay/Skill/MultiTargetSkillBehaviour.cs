@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     private SkillController SkillController;
@@ -29,7 +29,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     public void Use(int skill_num) {
         //Detect target
         MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
-        Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.crosshairRadius, config.detectRange, false); //temp
+        Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.MultiTargetSkillParams.crosshairRadius, config.MultiTargetSkillParams.detectRange, false); //temp
 
         if (targets_in_range != null && targets_in_range.Length > 0) {
             List<int> target_pvIDs = new List<int>();
@@ -39,67 +39,48 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                 target_pvIDs.Add(target_pv.viewID);
             }
             player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), skill_num);
+        } else {
+            //no target => do nothing
         }
-        //if no target => do nothing
     }
 
     [PunRPC]
-    void CastMultiTargetSkill(int[] target_pvIDs, int skill_num) {
+    private void CastMultiTargetSkill(int[] target_pvIDs, int skill_num) {
         if (target_pvIDs != null) {
             MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
             Debug.Log("Called play " + "skill_" + skill_num);
             List<Transform> targets = new List<Transform>();
 
-            foreach(int target_pvID in target_pvIDs) {
+            foreach (int target_pvID in target_pvIDs) {
                 PhotonView target_pv = PhotonView.Find(target_pvID);
                 if (target_pv == null) { Debug.Log("Can't find target photonView"); continue; }
 
                 targets.Add(target_pv.transform);
 
-                //TODO : improve this check
-                if (config.GetPlayerAniamtion(true) == null) {//instantiate immdiately
-                    GameObject g = Instantiate(config.GetbulletParticle(), transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-                    BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
-                    bulletTrace.ShowHitOnBulletCollision(true);
-                    bulletTrace.SetCamera(cam);
-                    bulletTrace.SetShooter(player_pv);
-                    bulletTrace.SetSpeed(150);
-                    bulletTrace.SetTarget(target_pv.transform, false);
-                    bulletTrace.SetStartTransform(transform);//temp
-                }
-
-                if (target_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+                if (PhotonNetwork.isMasterClient) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
+            SetEffectsTarget(targets.ToArray(), skill_num);
 
-            //use cam ?
-            /*
-            if (skillcam != null)
-                skillcam.SetTarget(transform.root);    
-            */
+            if (config.GeneralSkillParams.IsDamageLessWhenUsing) {
+                SkillController.PlayPlayerAnimation(skill_num);
 
-            //play anim ?
-            //Play skill animation
-            //SkillController.PlayPlayerAnimation(skill_num);
-
-            //SkillController.PlayWeaponAnimation(skill_num);
+                SkillController.PlayerBoosterAnimation(skill_num);
+            } else {//instantiate immdiately
+                //only booster animation
+                SkillController.PlayerBoosterAnimation(skill_num);
+            }
 
             //Play skill sound
             SkillController.PlaySkillSound(skill_num);
-        } else {//target is null => do nothing
-            Debug.Log("should not go here");
-            //SkillController.PlayCancelSkill();
         }
     }
 
-    void SetEffectsTarget(Transform target) {//TODO : improve this
-        if (mcbt.GetCurrentWeaponOffset() == 0)
-            foreach (RequireSkillInfo g in SkillController.weaponEffects_1) {
-                g.SetTarget(target);
-            } else
-            foreach (RequireSkillInfo g in SkillController.weaponEffects_2) {
-                g.SetTarget(target);
-            }
+    private void SetEffectsTarget(Transform[] targets, int skill_num) {//TODO : improve this
+        foreach (RequireSkillInfo g in SkillController.RequireInfoSkills[skill_num]) {
+            g.SetTargets(targets);
+            
+        }
     }
 }

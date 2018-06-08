@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
 
 public class AOESkillBehaviour : MonoBehaviour, ISkill {
     private int playerLayer = 8;
@@ -8,7 +7,7 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
     private SkillController SkillController;
     private Sounds Sounds;
     private PhotonView player_pv;
-    
+
     private void Start() {
         InitComponent();
     }
@@ -31,20 +30,20 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
     }
 
     private int[] DectectTargetInSphere(Vector3 center, int radius) {
-        Collider[] hits ;
-        hits = Physics.OverlapSphere(center, radius, 1<<playerLayer);
+        Collider[] hits;
+        hits = Physics.OverlapSphere(center, radius, 1 << playerLayer);
 
         List<int> target_pvIDs = new List<int>();
 
-        foreach(Collider hit in hits) {
+        foreach (Collider hit in hits) {
             PhotonView targetPV = hit.transform.root.GetComponent<PhotonView>();
 
             if (hit.transform.root == transform.root)
                 continue;
 
             if (GameManager.isTeamMode) {
-                if(player_pv.owner.GetTeam() != targetPV.owner.GetTeam()) {
-                    if (hit.tag != "Shield") { //shield is on player layer 
+                if (player_pv.owner.GetTeam() != targetPV.owner.GetTeam()) {
+                    if (hit.tag != "Shield") { //shield is on player layer
                         target_pvIDs.Add(targetPV.viewID);
                     }
                 }
@@ -59,14 +58,14 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
     }
 
     [PunRPC]
-    void CastAOESkill(int[] target_pvIDs, int skill_num) {
+    private void CastAOESkill(int[] target_pvIDs, int skill_num) {
         AOESkillConfig config = (AOESkillConfig)(SkillController.GetSkillConfig(skill_num));
 
         List<Transform> targets = new List<Transform>();
 
-        foreach(int target_pvID in target_pvIDs) {
+        foreach (int target_pvID in target_pvIDs) {
             PhotonView target_pv = PhotonView.Find(target_pvID);
-            
+
             if (target_pv == null) continue;
 
             if (player_pv.isMine) {
@@ -76,25 +75,21 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
             Transform target = target_pv.transform;
             targets.Add(target);
         }
-            SetEffectsTarget(targets.ToArray());
+        SetEffectsTarget(targets.ToArray(), skill_num);
 
-            //Play skill animation
-            SkillController.PlayPlayerAnimation(skill_num);
-            
-            SkillController.PlayWeaponAnimation(skill_num);
+        //Play skill animation
+        SkillController.PlayPlayerAnimation(skill_num);
 
-            //Play skill sound
-            SkillController.PlaySkillSound(skill_num);
+        SkillController.PlayWeaponAnimation(skill_num);
+
+        //Play skill sound
+        SkillController.PlaySkillSound(skill_num);
     }
 
-    void SetEffectsTarget(Transform[] targets) {//TODO : improve this
-        if (mcbt.GetCurrentWeaponOffset() == 0)
-            foreach (RequireSkillInfo g in SkillController.weaponEffects_1) {
-                g.SetTargets(targets);
-            } else
-            foreach (RequireSkillInfo g in SkillController.weaponEffects_2) {
-                g.SetTargets(targets);
-            }
+    private void SetEffectsTarget(Transform[] targets, int skill_num) {
+        foreach (RequireSkillInfo g in SkillController.RequireInfoSkills[skill_num]) {
+            g.SetTargets(targets);
+        }
     }
 
     /*
