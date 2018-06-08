@@ -25,6 +25,8 @@ public abstract class Weapon : ScriptableObject {
     public bool slowDown;
     public bool twoHanded;
 
+    public int SPincreaseAmount = 0;
+
     public abstract void SwitchAnimationClips(Animator weaponAniamtor);
 
     public AnimationClip[] skillAnimations;

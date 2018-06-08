@@ -93,7 +93,7 @@ public class MechCombat : Combat {
     private Slider healthBar;
     private Slider fuelBar;
     private Image fuelBar_fill;
-    private bool isNotEnoughEffectPlaying = false;
+    private bool fuelNotEnoughEffectIsPlaying = false;
     private bool isFuelAvailable = true;
     private Text healthtext, fueltext;
 
@@ -354,6 +354,9 @@ public class MechCombat : Combat {
 
                 targetpv.GetComponent<HUD>().DisplayHit(cam);
             }
+
+            //increase SP
+            SkillController.IncreaseSP(weaponScripts[weaponOffset + hand].SPincreaseAmount);
         } else {
             photonView.RPC("Shoot", PhotonTargets.All, hand, direction, -1, false, -1);
         }
@@ -403,6 +406,9 @@ public class MechCombat : Combat {
                     else
                         target.GetComponent<HUD>().DisplayHit(cam);
                 }
+
+                //increase SP
+                SkillController.IncreaseSP(weaponScripts[weaponOffset + hand].SPincreaseAmount);
             }
         }
     }
@@ -472,6 +478,7 @@ public class MechCombat : Combat {
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
                 bulletTrace.SetShooterInfo(gameObject, cam);
                 bulletTrace.SetBulletPropertis(weaponScripts[weaponOffset].damage, ((Rocket)weaponScripts[weaponOffset]).bullet_speed, ((Rocket)weaponScripts[weaponOffset]).impact_radius);
+                bulletTrace.SetSPIncreaseAmount(bm.weaponScripts[weaponOffset + hand].SPincreaseAmount);
             }
         } else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier) {
             GameObject bullet = Instantiate(bullets[weaponOffset + hand], Effect_Ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
@@ -732,7 +739,7 @@ public class MechCombat : Combat {
             photonView.RPC("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
         }
 
-        updateHUD(); // this is called when on skill
+        updateHUD(); // this is also called when on skill
 
         if (onSkill) return;
 
@@ -1231,7 +1238,7 @@ public class MechCombat : Combat {
             isFuelAvailable = true;
             return true;
         } else {//false -> play effect if not already playing
-            if (!isNotEnoughEffectPlaying) {
+            if (!fuelNotEnoughEffectIsPlaying) {
                 StartCoroutine(FuelNotEnoughEffect());
             }
             if (!animator.GetBool("Boost"))//can set to false in transition to grounded state but not in transition from grounded state to boost state 
@@ -1241,14 +1248,14 @@ public class MechCombat : Combat {
     }
 
     IEnumerator FuelNotEnoughEffect() {
-        isNotEnoughEffectPlaying = true;
+        fuelNotEnoughEffectIsPlaying = true;
         for (int i = 0; i < 4; i++) {
             fuelBar_fill.color = new Color32(133, 133, 133, 255);
             yield return new WaitForSeconds(0.15f);
             fuelBar_fill.color = new Color32(255, 255, 255, 255);
             yield return new WaitForSeconds(0.15f);
         }
-        isNotEnoughEffectPlaying = false;
+        fuelNotEnoughEffectIsPlaying = false;
     }
 
     public Transform GetEffectEnd(int num) {

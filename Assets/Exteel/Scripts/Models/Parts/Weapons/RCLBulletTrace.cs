@@ -14,7 +14,7 @@ public class RCLBulletTrace : MonoBehaviour {
     private Camera cam;
     private GameObject shooter;
     private Transform target;
-    private int shooter_viewID;
+    private int shooter_viewID, SPincreaseAmount=0;
 
 	private ParticleCollisionEvent[] collisionEvents = new ParticleCollisionEvent[1] ;	
 	private bool isCollided = false, hasCalledPlayImpact = false;
@@ -48,6 +48,10 @@ public class RCLBulletTrace : MonoBehaviour {
         this.cam = cam;
         shooter_pv = shooter.GetComponent<PhotonView>();
         shooter_viewID = shooter_pv.viewID;
+    }
+
+    public void SetSPIncreaseAmount(int amount) {
+        SPincreaseAmount = amount;
     }
 
 	void OnParticleCollision(GameObject other){//player do the logic ; master destroy this 
@@ -116,8 +120,11 @@ public class RCLBulletTrace : MonoBehaviour {
                 colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);
 
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position + MECH_MID_POINT, cam.transform.position, false);
-            }            
-		}
+            }
+
+            //increase SP
+            shooter.GetComponent<SkillController>().IncreaseSP(SPincreaseAmount);
+        }
 
         if (colliderViewIds.Count == 0) {//if no target is hit , then play impact on ground
             bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, impact_point, cam.transform.position, false);

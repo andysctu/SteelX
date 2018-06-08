@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillController : MonoBehaviour {
     [SerializeField] private BuildMech bm;
@@ -13,6 +14,7 @@ public class SkillController : MonoBehaviour {
     [SerializeField] private Sounds Sounds;
     [SerializeField] private AudioClip sorry;
 
+    private PhotonView player_pv;
     private AnimatorOverrideController animatorOverrideController = null;
     private AnimationClipOverrides clipOverrides;
     private Animator[] WeaponAnimators = new Animator[4];
@@ -27,7 +29,10 @@ public class SkillController : MonoBehaviour {
 
     public List<RequireSkillInfo>[] RequireInfoSkills;
 
-    private int SP = 0;
+    private int SP = 0, maxSP = 2000;
+    private Slider SPBar;
+    private Image SPBar_fill;
+    private Text SPBartext;
 
     public bool isDrone = false;
 
@@ -48,6 +53,30 @@ public class SkillController : MonoBehaviour {
     private void RegisterOnWeaponBuilt() {
         if (bm != null) {
             bm.OnWeaponBuilt += InitSkill;
+        }
+    }
+
+    private void Start() {
+        InitComponents();
+        InitHUD();
+    }
+
+    private void InitComponents() {
+        player_pv = GetComponent<PhotonView>();
+    }
+
+    private void InitHUD() {
+        if (!player_pv.isMine)
+            return;
+        InitSPBar();
+    }
+
+    private void InitSPBar() {
+        Slider[] sliders = GameObject.Find("PanelCanvas").GetComponentsInChildren<Slider>();
+        if (sliders.Length > 0) {
+            SPBar = sliders[2];
+            SPBar.value = 0;
+            SPBartext = SPBar.GetComponentInChildren<Text>();
         }
     }
 
@@ -173,6 +202,12 @@ public class SkillController : MonoBehaviour {
         animatorOverrideController.GetOverrides(clipOverrides);
     }
 
+    private void Update() {
+        if (!player_pv.isMine)return;
+
+        updateHUD();
+    }
+
     public void PlayWeaponAnimation(int skill_num) {
         if (WeaponAnimators[weaponOffset] != null) {
             WeaponAnimators[weaponOffset].Play("sk" + skill_num);
@@ -183,13 +218,17 @@ public class SkillController : MonoBehaviour {
     }
 
     public void CallUseSkill(int num) {
-        if (skill_usable[num] && CheckIfEnergyEnough() && !mechcombat.IsSwitchingWeapon() && mechController.grounded && !mainAnimator.GetBool("OnMelee")) {
+        if (skill_usable[num] && CheckIfEnergyEnough(skills[num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon() && mechController.grounded && !mainAnimator.GetBool("OnMelee")) {
             skills[num].Use(this, num);
+            IncreaseSP(-skills[num].GeneralSkillParams.energyCost);
         }
     }
 
-    private bool CheckIfEnergyEnough() {
-        return true;
+    private bool CheckIfEnergyEnough(int energyCost) {
+        if(SP<energyCost)
+            Debug.Log("Energy not enough : "+SP+"<"+energyCost);
+
+        return SP >= energyCost;
     }
 
     public Camera GetCamera() {
@@ -329,9 +368,43 @@ public class SkillController : MonoBehaviour {
     }
 
     private void SwitchToSkillCam(bool b) {
-        if (!GetComponent<PhotonView>().isMine) return;
+        if (!player_pv.isMine) return;
         skillcam.GetComponent<SkillCam>().enabled = b;
         skillcam.enabled = b;
         cam.enabled = !b;
+    }
+
+    public void IncreaseSP(int amount) {
+        SP = (SP+amount > maxSP)? maxSP : SP +amount;
+    }
+
+    void updateHUD() {
+        if(SPBar == null)return;//drone;
+        // Update SP bar gradually
+        SPBar.value = SP / (float)maxSP;
+        SPBartext.text = BarValueToString(SP, maxSP);
+    }
+
+
+    private string BarValueToString(int curvalue, int maxvalue) {
+        string curvalueStr = curvalue.ToString();
+        string maxvalueStr = maxvalue.ToString();
+
+        string finalStr = string.Empty;
+        for (int i = 0; i < 4 - curvalueStr.Length; i++) {
+            finalStr += "0 ";
+        }
+
+        for (int i = 0; i < curvalueStr.Length; i++) {
+            finalStr += (curvalueStr[i] + " ");
+
+        }
+        finalStr += "/ ";
+        for (int i = 0; i < 3; i++) {
+            finalStr += (maxvalueStr[i] + " ");
+        }
+        finalStr += maxvalueStr[3];
+
+        return finalStr;
     }
 }

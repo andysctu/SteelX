@@ -2,6 +2,7 @@
 
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
+    [SerializeField]private int ID;
     public string weaponTypeL;
     public string weaponTypeR;//If two-handed , put it on type L
     [Tooltip("Animation 1 must match the order of the  types ; Animation 2 is the reverse order")]
@@ -45,6 +46,10 @@ public abstract class SkillConfig : ScriptableObject {
 
     public AudioClip GetMechSound() {
         return mech_sound;
+    }
+
+    public int GetID() {
+        return ID;
     }
 }
 
