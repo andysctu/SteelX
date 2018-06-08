@@ -2,12 +2,14 @@
 
 public class SlashState : MechStateMachineBehaviour {
 
-	private bool inAir = false, detectGrounded, canExit = false;
+	private bool inAir = false, detectGrounded, leftHand;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
         animator.SetFloat("slashTime", 0);
         animator.SetBool("CanExit", false);
+
+        leftHand = stateInfo.IsTag("SlashL") || stateInfo.IsTag("SlashL2") || stateInfo.IsTag("SlashL3") || stateInfo.IsTag("SlashL4");
 
         if ( cc == null || !cc.enabled ) return;
 		animator.SetBool (onMelee_id, true);
@@ -18,7 +20,7 @@ public class SlashState : MechStateMachineBehaviour {
         animator.SetBool (boost_id, false);
 		mctrl.Boost (false);
 
-		if(inAir){
+        if (inAir){
 			mctrl.Boost (true);
 		}
 
@@ -54,7 +56,7 @@ public class SlashState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		animator.SetFloat ("slashTime", stateInfo.normalizedTime);
 
-        if (stateInfo.normalizedTime > ((mcbt.isLMeleePlaying == 1) ? mcbt.slashL_threshold : mcbt.slashR_threshold) && !animator.IsInTransition(0)) {
+        if (stateInfo.normalizedTime > (leftHand ? mcbt.slashL_threshold : mcbt.slashR_threshold) && !animator.IsInTransition(0)) {
             animator.SetBool("CanExit", true);
         }
         if ( cc == null || !cc.enabled) return;
@@ -84,7 +86,10 @@ public class SlashState : MechStateMachineBehaviour {
     }
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		if (cc == null || !cc.enabled)
+        animator.SetFloat("slashTime", 0);
+        animator.SetBool("CanExit", false);
+
+        if (cc == null || !cc.enabled)
 			return;
 		mctrl.SetCanVerticalBoost (false);
 
@@ -97,7 +102,7 @@ public class SlashState : MechStateMachineBehaviour {
 			mcbt.CanMeleeAttack = true;//sometimes OnstateMachineExit does not ensure canslash set to true ( called before update )
 		}
 
-            if(stateInfo.tagHash!=0)animator.SetBool(stateInfo.tagHash, false);
-            mctrl.CallLockMechRot(false);
+        if(stateInfo.tagHash!=0)animator.SetBool(stateInfo.tagHash, false);
+        mctrl.CallLockMechRot(false);
     }
 }

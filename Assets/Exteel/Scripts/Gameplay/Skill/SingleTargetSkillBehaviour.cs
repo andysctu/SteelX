@@ -46,7 +46,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         if (targetpv_id != -1) {
             SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
-            Debug.Log("Called play " + "skill_" + skill_num);
+            Debug.Log("Called play " + "sk" + skill_num);
 
             PhotonView target_pv = PhotonView.Find(targetpv_id);
             if (target_pv == null) { Debug.Log("Can't find target photonView when casting skill"); return; }

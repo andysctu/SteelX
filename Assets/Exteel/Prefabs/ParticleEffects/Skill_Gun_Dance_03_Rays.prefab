@@ -101,15 +101,15 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -246941532
+  randomSeed: -1319736536
   InitialModule:
     serializedVersion: 3
     enabled: 1
     startLifetime:
       serializedVersion: 2
-      minMaxState: 3
-      scalar: 1.1
-      minScalar: 0.9
+      minMaxState: 0
+      scalar: 0.8
+      minScalar: 1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1050,7 +1050,7 @@ ParticleSystem:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0.16078432}
         key1: {r: 1, g: 1, b: 1, a: 0.36862746}
-        key2: {r: 0, g: 0, b: 0, a: 0.14509805}
+        key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
@@ -1066,7 +1066,7 @@ ParticleSystem:
         ctime7: 0
         atime0: 386
         atime1: 34117
-        atime2: 65535
+        atime2: 64571
         atime3: 0
         atime4: 0
         atime5: 0

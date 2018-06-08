@@ -297,10 +297,10 @@ public class MechCombat : Combat {
             } else//the player may just initialize
                 weaponOffset = 0;
 
-            weapons[(weaponOffset)].SetActive(true);
-            weapons[(weaponOffset + 1)].SetActive(true);
-            weapons[(weaponOffset + 2) % 4].SetActive(false);
-            weapons[(weaponOffset + 3) % 4].SetActive(false);
+            for(int i = 0; i < 4; i++) {
+                int num = (weaponOffset + i) % 4;
+                if (weapons[num] != null) weapons[num].SetActive(num == weaponOffset || num == weaponOffset+1);
+            }
         }
     }
 
@@ -1311,7 +1311,6 @@ public class MechCombat : Combat {
         } else {
             gameObject.layer = playerlayer;
             EnableAllColliders(true);
-            GetComponent<Collider>().enabled = false;
         }
     }
 
@@ -1332,8 +1331,9 @@ public class MechCombat : Combat {
     }
 
     void UpdateSlashAnimationThreshold() {
-        if (curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.Sword)
+        if (curSpecialWeaponTypes[weaponOffset] == (int)SpecialWeaponTypes.Sword) {
             slashL_threshold = ((Sword)weaponScripts[weaponOffset]).threshold;
+        }
         if (curSpecialWeaponTypes[weaponOffset+1] == (int)SpecialWeaponTypes.Sword)
             slashR_threshold = ((Sword)weaponScripts[weaponOffset+1]).threshold;
     }

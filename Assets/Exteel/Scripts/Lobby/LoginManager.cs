@@ -18,7 +18,7 @@ public class LoginManager : MonoBehaviour {
 		{
 			// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
 			print("Connecting to server...");
-            PhotonNetwork.ConnectUsingSettings("1.1");
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.eu,"1.2");
             
             //low ping for asia
             //PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.1");

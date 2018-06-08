@@ -297,8 +297,8 @@ public class BuildMech : Photon.MonoBehaviour {
         if(CurrentMech == null)
             return;
 
-        GameObject booster = CurrentMech.GetComponentInChildren<BoosterController>().gameObject;
-        if (booster.GetComponent<Animator>() != null && booster.GetComponent<Animator>().runtimeAnimatorController != null) {
+        BoosterController booster = CurrentMech.GetComponentInChildren<BoosterController>();
+        if (booster!= null && booster.GetComponent<Animator>() != null && booster.GetComponent<Animator>().runtimeAnimatorController != null) {
             AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(booster.GetComponent<Animator>().runtimeAnimatorController);
             booster.GetComponent<Animator>().runtimeAnimatorController = animatorOverrideController;
 
