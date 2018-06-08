@@ -2795,8 +2795,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 3
+  instantiationId: 3
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -2946,7 +2946,7 @@ MonoBehaviour:
   RespawnPanel: {fileID: 0}
   mcbt: {fileID: 11445986}
   Sounds: {fileID: 114000010976113334}
-  MechIK: {fileID: 0}
+  MechIK: {fileID: 114093068494878398}
   AnimationEventController: {fileID: 114895722533198232}
   defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
     type: 2}
@@ -3123,8 +3123,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 8
+  instantiationId: 8
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
@@ -6928,6 +6928,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 19a63dbde5fbf2c40a5370121f68739e, type: 2}
   Sounds: {fileID: 114000010976113334}
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
+  photonView: {fileID: 11416036}
   isDrone: 0
 --- !u!114 &114718916726667884
 MonoBehaviour:

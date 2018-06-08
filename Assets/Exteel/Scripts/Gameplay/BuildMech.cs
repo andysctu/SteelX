@@ -24,11 +24,11 @@ public class BuildMech : Photon.MonoBehaviour {
 	private Transform shoulderR;
 	private Transform[] hands;
 
-	public AudioClip[] ShotSounds, ReloadSounds;
-	public Weapon[] weaponScripts;
-    public string[] curWeaponNames = new string[4];
-	public GameObject[] weapons;
-	public GameObject[] bulletPrefabs;
+	[HideInInspector] public AudioClip[] ShotSounds, ReloadSounds;
+    [HideInInspector] public Weapon[] weaponScripts;
+    [HideInInspector] public string[] curWeaponNames = new string[4];
+    [HideInInspector] public GameObject[] weapons;
+    [HideInInspector] public GameObject[] bulletPrefabs;
 
 	private ParticleSystem Muz;
 	private int weaponOffset = 0;
@@ -36,7 +36,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	private bool inHangar = false;
 	private bool inStore = false;
 	public bool onPanel = false;
-	public int Total_Mech = 4;
+    [HideInInspector] public int Total_Mech = 4;
 	public int Mech_Num = 0;
 	private const int BLUE = 0, RED = 1;
 
@@ -492,7 +492,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
 		ShutDownTrail (weapons[weapPos]);
 		if(animator!=null)CheckAnimatorState ();
-        //UpdateMechCombatVars();
 
         if (inHangar) {
             MechIK.UpdateMechIK(weaponOffset);
@@ -527,7 +526,6 @@ public class BuildMech : Photon.MonoBehaviour {
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
-
         animatorOverrideController.ApplyOverrides (clipOverrides);
 	}
 

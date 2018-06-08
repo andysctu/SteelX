@@ -11,13 +11,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64d4bcbb9d6ef9c4a9f5140a84623a65, type: 3}
   m_Name: Skill_Gun_Dance_03
   m_EditorClassIdentifier: 
+  ID: 0
   weaponTypeL: SMG
   weaponTypeR: SMG
   playerAnimation1: {fileID: 7400000, guid: f9f6ade573dfe0846ae4475104ba874c, type: 2}
   playerAnimation2: {fileID: 0}
-  hasWeaponAnimations: 1
+  hasWeaponAnimation: 1
+  hasBoosterAnimation: 0
   weaponAnimationL: {fileID: 7400000, guid: 0fb8f97acdc27b441977011c6d331729, type: 2}
   weaponAnimationR: {fileID: 7400000, guid: 0fb8f97acdc27b441977011c6d331729, type: 2}
+  boosterAnimation: {fileID: 0}
   playerEffects:
   - {fileID: 1776636968493172, guid: 6a5f8703c539d1f45ba79d197cab1836, type: 2}
   targetEffects: []
@@ -28,7 +31,8 @@ MonoBehaviour:
   skill_sound: {fileID: 8300000, guid: c8721c24d9d649f459536dcacc288d86, type: 3}
   mech_sound: {fileID: 0}
   GeneralSkillParams:
-    energyCost: 0
+    IsDamageLessWhenUsing: 0
+    energyCost: 200
     damage: 250
   targetAnimation_front: {fileID: 7400000, guid: 7937e94e93654784aab02876b9026a90,
     type: 2}

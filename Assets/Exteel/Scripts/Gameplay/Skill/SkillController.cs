@@ -13,8 +13,8 @@ public class SkillController : MonoBehaviour {
     [SerializeField] private SkillConfig[] skills = new SkillConfig[4];
     [SerializeField] private Sounds Sounds;
     [SerializeField] private AudioClip sorry;
+    [SerializeField] private PhotonView photonView;
 
-    private PhotonView player_pv;
     private AnimatorOverrideController animatorOverrideController = null;
     private AnimationClipOverrides clipOverrides;
     private Animator[] WeaponAnimators = new Animator[4];
@@ -53,6 +53,7 @@ public class SkillController : MonoBehaviour {
     private void RegisterOnWeaponBuilt() {
         if (bm != null) {
             bm.OnWeaponBuilt += InitSkill;
+            bm.OnWeaponBuilt += InitHUD;
         }
     }
 
@@ -62,11 +63,11 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitComponents() {
-        player_pv = GetComponent<PhotonView>();
+        photonView = GetComponent<PhotonView>();
     }
 
     private void InitHUD() {
-        if (!player_pv.isMine)
+        if (!photonView.isMine)
             return;
         InitSPBar();
     }
@@ -76,8 +77,10 @@ public class SkillController : MonoBehaviour {
         if (sliders.Length > 0) {
             SPBar = sliders[2];
             SPBar.value = 0;
+            SP = 0;
             SPBartext = SPBar.GetComponentInChildren<Text>();
         }
+        updateHUD();
     }
 
     private void RegisterOnSkill() {
@@ -200,12 +203,6 @@ public class SkillController : MonoBehaviour {
 
         clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
         animatorOverrideController.GetOverrides(clipOverrides);
-    }
-
-    private void Update() {
-        if (!player_pv.isMine)return;
-
-        updateHUD();
     }
 
     public void PlayWeaponAnimation(int skill_num) {
@@ -368,7 +365,7 @@ public class SkillController : MonoBehaviour {
     }
 
     private void SwitchToSkillCam(bool b) {
-        if (!player_pv.isMine) return;
+        if (!photonView.isMine) return;
         skillcam.GetComponent<SkillCam>().enabled = b;
         skillcam.enabled = b;
         cam.enabled = !b;
@@ -376,6 +373,7 @@ public class SkillController : MonoBehaviour {
 
     public void IncreaseSP(int amount) {
         SP = (SP+amount > maxSP)? maxSP : SP +amount;
+        updateHUD();
     }
 
     void updateHUD() {

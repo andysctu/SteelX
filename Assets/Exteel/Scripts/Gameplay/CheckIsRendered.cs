@@ -5,7 +5,7 @@ using UnityEngine;
 public class CheckIsRendered : MonoBehaviour {
 
 	SkinnedMeshRenderer theMeshRenderer;
-	public Crosshair crosshair;//set in buildmech , same player for all mechs
+	private Crosshair crosshair;//set in buildmech , same player for all mechs
 
 	private bool isVisible = false;
 	private float lastRequestTime;
@@ -28,7 +28,7 @@ public class CheckIsRendered : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(crosshair == null){
+		if(crosshair == null){//TODO : improve this
 			if (Time.time - lastRequestTime >= requestDeltaTime) {
 				lastRequestTime = Time.time;
 				GameObject theplayer = GameObject.Find ("PlayerCam");

@@ -70,7 +70,7 @@ public class MechCombat : Combat {
     private const int slashMaxDistance = 30;//the ray which checks if hitting shield max distance
     public float slashL_threshold, slashR_threshold;
 
-    public Transform[] Hands;//other player use this to locate hand position quickly
+    [HideInInspector] public Transform[] Hands;//other player use this to locate hand position quickly
     private Transform shoulderL;
     private Transform shoulderR;
     private Transform head;
@@ -98,7 +98,7 @@ public class MechCombat : Combat {
     private Text healthtext, fueltext;
 
     // Components
-    public Crosshair crosshair;
+    private Crosshair crosshair;
     private SlashDetector slashDetector;
     private MechController mechController;
     private Sounds Sounds;
@@ -119,6 +119,7 @@ public class MechCombat : Combat {
     Coroutine SwitchWeaponcoroutine;
 
     void Awake() {
+       InitAnimatorControllers();
        RegisterOnWeaponSwitched();
        RegisterOnWeaponBuilt();
        RegisterOnSkill();
@@ -128,8 +129,7 @@ public class MechCombat : Combat {
         findGameManager();
         initMechStats();
         initComponents();
-        initCombatVariables();
-        initAnimatorControllers();
+        initCombatVariables();        
         initTransforms();
         initGameObjects();
         initTargetProperties();
@@ -149,6 +149,7 @@ public class MechCombat : Combat {
 
     void RegisterOnWeaponBuilt() {
         bm.OnWeaponBuilt += InitWeapons;
+        bm.OnWeaponBuilt += UpdateMovementClips;
     }
     
     void RegisterOnSkill() {
@@ -199,14 +200,12 @@ public class MechCombat : Combat {
         crosshair = cam.GetComponent<Crosshair>();
     }
 
-    void initAnimatorControllers() {
+    void InitAnimatorControllers() {
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
 
         clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
         animatorOverrideController.GetOverrides(clipOverrides);
-
-        UpdateMovementClips();//TODO : improve this
     }
 
     private void InitWeapons() {
@@ -690,6 +689,7 @@ public class MechCombat : Combat {
         crosshair.enabled = false;
 
         EnableAllRenderers(false);
+        animator.enabled = false;
 
         crosshairImage.gameObject.SetActive(false);
         HeatBar.gameObject.SetActive(false);
@@ -699,6 +699,7 @@ public class MechCombat : Combat {
     [PunRPC]
     void EnablePlayer(int respawnPoint, int mech_num) {
         bm.SetMechNum(mech_num);
+        animator.enabled = true;
         if (photonView.isMine) { // build mech also init MechCombat
             Mech m = UserData.myData.Mech[mech_num];
             bm.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
@@ -1054,7 +1055,7 @@ public class MechCombat : Combat {
 
 
     public void UpdateArmAnimatorState() {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {         
             switch (curSpecialWeaponTypes[weaponOffset + i]) {
                 case (int)SpecialWeaponTypes.APS:
                 animator.Play("APS", 1 + i);//left hand is layer 1
@@ -1070,7 +1071,7 @@ public class MechCombat : Combat {
                 break;
                 case (int)SpecialWeaponTypes.Rocket:
                 animator.Play("RCL", 1);
-                animator.Play("RCL", 2);
+                animator.Play("RCL", 2);                
                 i++;
                 break;
                 case (int)SpecialWeaponTypes.Shotgun:

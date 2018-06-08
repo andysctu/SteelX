@@ -19,11 +19,14 @@ MonoBehaviour:
   - {fileID: 1096434313937498, guid: 988de0d8939e7ef4d87b54f4b0fb2f7d, type: 2}
   damage: 300
   Range: 0
+  minRange: 0
   Rate: 5
   radius: 0
   heat_increase_amount: 10
   slowDown: 1
   twoHanded: 0
+  SPincreaseAmount: 100
+  skillAnimations: []
   hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}
   threshold: 0.8
