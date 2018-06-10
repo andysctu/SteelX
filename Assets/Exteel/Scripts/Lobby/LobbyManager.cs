@@ -22,11 +22,7 @@ public class LobbyManager: MonoBehaviour {
 			if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
 			{
                 // Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
-                //PhotonNetwork.ConnectUsingSettings("1.1");
-                PhotonNetwork.ConnectToRegion(CloudRegionCode.eu, "1.2");
-
-                //low ping for asia
-                //PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.1");
+                PhotonNetwork.ConnectUsingSettings("1.3");
             }
 
 			// generate a name for this player, if none is assigned yet

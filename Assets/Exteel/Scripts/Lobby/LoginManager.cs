@@ -9,23 +9,27 @@ public class LoginManager : MonoBehaviour {
 
 	public InputField[] fields;
 	public GameObject error;
+    public Dropdown serverToConnect;
+    string region, gameVersion = "1.3";
 
-	private int focus = 0;
+    private int focus = 0;
 
 	void Awake() {
 		// the following line checks if this client was just created (and not yet online). if so, we connect
 		if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
 		{
 			// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
-			print("Connecting to server...");
-            PhotonNetwork.ConnectToRegion(CloudRegionCode.eu,"1.2");
-            
-            //low ping for asia
-            //PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.1");
+			//print("Connecting to server...");
+            //PhotonNetwork.ConnectUsingSettings(gameVersion);
         }
-		// if you wanted more debug out, turn this on:
-		// PhotonNetwork.logLevel = NetworkLogLevel.Full;
-	}
+        // if you wanted more debug out, turn this on:
+        // PhotonNetwork.logLevel = NetworkLogLevel.Full;
+
+       
+         Application.targetFrameRate = 60;//60:temp
+        
+    }
+
 	void OnConnectedToMaster(){
 		print ("Connected to Server successfully.");
 	}
@@ -77,11 +81,17 @@ public class LoginManager : MonoBehaviour {
 			UserData.myData.Mech [i].PopulateParts ();
 		}
 		PhotonNetwork.playerName = fields [0].text;
-		Application.LoadLevel (1);
-
-
-
+        ConnectToServerSelected();
+        StartCoroutine(LoadLobbyWhenConnected());
+        //Application.LoadLevel (1);
 	}
+
+    IEnumerator LoadLobbyWhenConnected() {
+        yield return new WaitUntil(() => !PhotonNetwork.connected);
+
+        Application.LoadLevel(1);
+    }
+
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Tab)) {
 			focus = (focus+1)%2;
@@ -93,6 +103,30 @@ public class LoginManager : MonoBehaviour {
 			Login();
 		}
 	}
+
+    public void ChangeServerToConnect() {
+        region = serverToConnect.captionText.text;
+    }
+
+    void ConnectToServerSelected() {
+        switch (region) {
+            case "US":
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.us, gameVersion);
+            break;
+            case "EU":
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.eu, gameVersion);
+            break;
+            case "KR":
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.kr, gameVersion);
+            break;
+            case "SA":
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.sa, gameVersion);
+            break;
+            case "JP":
+            PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, gameVersion);
+            break;
+        }
+    }
 
 	public void OnFailedToConnectToPhoton(object parameters)
 	{

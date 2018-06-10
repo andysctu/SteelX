@@ -11,24 +11,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64d4bcbb9d6ef9c4a9f5140a84623a65, type: 3}
   m_Name: Skill_Gun_Sword_01
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300202, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  icon_grey: {fileID: 21300228, guid: 00429edee359949d9955d2393313fad6, type: 3}
   weaponTypeL: SMG
   weaponTypeR: Sword
   playerAnimation1: {fileID: 7400000, guid: c5a42c260120998479f368ead528b832, type: 2}
   playerAnimation2: {fileID: 7400000, guid: e58a3d45252d51345ac63a9c15a46edf, type: 2}
+  hasWeaponAnimation: 1
+  hasBoosterAnimation: 0
   weaponAnimationL: {fileID: 7400000, guid: bb3b1ef7444ea6645858a81bff3a9d26, type: 2}
   weaponAnimationR: {fileID: 0}
+  boosterAnimation: {fileID: 0}
   playerEffects: []
+  targetEffects: []
   weaponLEffects:
   - {fileID: 1130398100609976, guid: 145ec356b92c379408ea16e3b4c25c37, type: 2}
   weaponREffects: []
   skill_sound: {fileID: 0}
   mech_sound: {fileID: 0}
   GeneralSkillParams:
-    energyCost: 0
+    IsDamageLessWhenUsing: 1
+    energyCost: 50
     damage: 250
   targetAnimation_front: {fileID: 7400000, guid: ac1ca16665b950745bf7737c0ace9955,
     type: 2}
-  targetAnimation_back: {fileID: 0}
+  targetAnimation_back: {fileID: 7400000, guid: f25e08ad39b6d6c488aa3112a92d0454,
+    type: 2}
   SingleTargetSkillParams:
     crosshairRadius: 20
     detectRange: 50

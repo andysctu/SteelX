@@ -47,8 +47,8 @@ public class ShieldUpdater : MonoBehaviour {
         return hand;
     }
 
-	void LateUpdate () {
-        if (Animator.GetBool((hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id)) {
+	void LateUpdate () {//TODO : get bool
+        if (Animator.GetBool((hand == 0) ? "BlockL" : "BlockR")) {
             boxcollider.transform.LookAt(transform.root.position + MECH_MID_POINT);
             boxcollider.transform.rotation = Quaternion.Euler(new Vector3(0, boxcollider.transform.rotation.eulerAngles.y + ((hand == 0) ? rotOffset : -rotOffset), 0));
         } else {

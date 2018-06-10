@@ -19,6 +19,10 @@ public class SkillController : MonoBehaviour {
     private AnimationClipOverrides clipOverrides;
     private Animator[] WeaponAnimators = new Animator[4];
     private Animator boosterAnimator;
+    private Transform SkillPanel;
+    private Image[] slots = new Image[4];
+    private Text[] energyCosts = new Text[4];
+
     private int weaponOffset = 0, curSkillNum = 0;
     private bool[] skill_usable = new bool[4];
     private float[] skill_length = new float[4];//for skill cam
@@ -72,11 +76,36 @@ public class SkillController : MonoBehaviour {
     }
 
     private void Start() {
-        InitComponents();        
+        InitComponents();
+        UpdateSkillHUD();
+    }
+
+    public void SetSkills(SkillConfig[] skills) {//this gets called in buildMech
+        this.skills = skills;
     }
 
     private void InitComponents() {
+        RespawnPanel RespawnPanel = (RespawnPanel)GameObject.FindObjectOfType<RespawnPanel>();
+        SkillPanel = RespawnPanel.transform.Find("SkillPanel");
+        for(int i = 0; i < 4; i++) {           
+            slots[i] = SkillPanel.transform.Find("SkillSlots/slot"+i).GetComponent<Image>();
+            energyCosts[i] = slots[i].GetComponentInChildren<Text>();
+        }
         photonView = GetComponent<PhotonView>();
+    }
+
+    private void UpdateSkillHUD() {
+        for (int i = 0; i < 4; i++) {
+            if (skills[i] != null) {
+                energyCosts[i].text = skills[i].GeneralSkillParams.energyCost.ToString();
+                slots[i].sprite = skills[i].icon;
+                slots[i].color = new Color(255, 255, 255, 1);
+            } else {
+                energyCosts[i].text = "0";
+                slots[i].color = new Color(255,255,255,0);
+            }
+
+        }
     }
 
     private void InitHUD() {
@@ -164,7 +193,7 @@ public class SkillController : MonoBehaviour {
                         clipOverrides["sk" + j] = bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name);
 
                         if (bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name) == null)
-                            Debug.LogError("Can't find the skill animation : " + bm.weaponScripts[i].name + "_" + skills[j].name + " on weapon and there is no default animation.");
+                            Debug.Log("Can't find the skill animation : " + bm.weaponScripts[i].name + "_" + skills[j].name + " on weapon and there is no default animation.");
                     }
                 }
             }

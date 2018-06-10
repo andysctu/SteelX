@@ -5,25 +5,27 @@ using UnityEngine.UI;
 public class HangarManager : MonoBehaviour {
 
 	[SerializeField] GameObject[] Tabs;
-	[SerializeField] GameObject UIPart;
-	[SerializeField] GameObject UIWeap;
+	[SerializeField] GameObject UIPart, UIWeap, UISkill;
 	[SerializeField] GameObject Mech;
 	[SerializeField] Sprite buttonTexture;
 	[SerializeField] Button displaybutton1,displaybutton2;
+    [SerializeField] Image[] skill_slots;
 	private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000"};
     private WeaponManager WeaponManager;
-	private Transform[] contents;
+    private SkillManager SkillManager;
+    private Transform[] contents;
 	private int activeTab;
 	//private Dictionary<string, string> equipped;
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
 	public int Mech_Num = 0;
-	// Use this for initialization
+	
 	void Start () {
         WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
+        SkillManager = Resources.Load<SkillManager>("SkillManager");
 
         //Mech m = UserData.myData.Mech[0];
 
-		displaybutton1.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
+        displaybutton1.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
 		displaybutton2.onClick.AddListener (() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
@@ -83,10 +85,11 @@ public class HangarManager : MonoBehaviour {
 		}
 
         LoadWeapons();
+        LoadSkills();
 	}
 
     void LoadWeapons() {
-        foreach(Weapon weapon in WeaponManager.GetAllWeaponsNames()) {
+        foreach(Weapon weapon in WeaponManager.GetAllWeaponss()) {
             string weaponName = weapon.weaponPrefab.name;
             GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[5]);
@@ -100,6 +103,9 @@ public class HangarManager : MonoBehaviour {
             Button[] btns = uiPart.GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {
                 if ((weapon.twoHanded) && (i == 1 || i == 3)) {//if two handed , turn off equip on right hand
+                    uiPart.transform.Find("Equip1r").gameObject.SetActive(false);
+                    uiPart.transform.Find("Equip2r").gameObject.SetActive(false);
+
                     btns[i].image.enabled = false;
                     continue;
                 }
@@ -107,10 +113,31 @@ public class HangarManager : MonoBehaviour {
                 btns[i].onClick.AddListener(() => Equip(weaponName, n));
             }
         }
-        
     }
 
-	private void activateTab(int index) {
+    void LoadSkills() {
+        foreach (SkillConfig skill in SkillManager.GetAllSkills()) {
+            string skillName = skill.name;//TODO : don't use .name
+
+            GameObject uiPart = Instantiate(UISkill, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            uiPart.transform.SetParent(contents[6]);
+            uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
+            Sprite s = skill.icon;
+            if (s == null) Debug.Log(skill.name + "'s sprite is missing");
+            uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
+            uiPart.GetComponentInChildren<Text>().text = skillName;
+
+            Button[] btns = uiPart.GetComponentsInChildren<Button>();
+            for (int i = 0; i < btns.Length; i++) {
+                int n = i;
+                btns[i].onClick.AddListener(() => EquipSkill(skill.GetID(), n));
+            }
+        }
+    }
+
+
+    private void activateTab(int index) {
 		for (int i = 0; i < Tabs.Length; i++) {
 			Transform tabTransform = Tabs [i].transform;
 			GameObject smallTab = tabTransform.Find ("Tab").gameObject;
@@ -205,26 +232,33 @@ public class HangarManager : MonoBehaviour {
 			curSMR[parent].sharedMesh = newSMR.sharedMesh;
 			curSMR [parent].material = material;
 		} else {
-				switch (weap) {
-				case 0:
-				UserData.myData.Mech[Mech_Num].Weapon1L = part;
-					break;
-				case 1: 
-				UserData.myData.Mech[Mech_Num].Weapon1R = part;
-					break;
-				case 2:
-				UserData.myData.Mech[Mech_Num].Weapon2L = part;
-					break;
-				case 3:
-				UserData.myData.Mech[Mech_Num].Weapon2R = part;
-					break;
-				default:
-					Debug.Log ("Should not get here");
-					break;
-				}
-			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
+			switch (weap) {
+			case 0:
+			UserData.myData.Mech[Mech_Num].Weapon1L = part;
+				break;
+			case 1: 
+			UserData.myData.Mech[Mech_Num].Weapon1R = part;
+				break;
+			case 2:
+			UserData.myData.Mech[Mech_Num].Weapon2L = part;
+				break;
+			case 3:
+			UserData.myData.Mech[Mech_Num].Weapon2R = part;
+				break;
+			default:
+				Debug.Log ("Should not get here");
+				break;
 			}
+			Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
 		}
+	}
+
+    public void EquipSkill(int skill_id, int skill_pos) {
+        UserData.myData.Mech[Mech_Num].skillIDs[skill_pos] = skill_id;
+        Debug.Log("equip skill : "+ skill_id + " on skill_pos :" + skill_pos);
+
+        skill_slots[skill_pos].sprite = SkillManager.GetSkillConfig(skill_id).icon;
+    }
 
 	public void ChangeDisplayMech(int Num){
 		BuildMech bm = Mech.GetComponent<BuildMech> ();
@@ -233,7 +267,7 @@ public class HangarManager : MonoBehaviour {
 		Mech_Num = Num;
 		Mech m = UserData.myData.Mech [Num];
 		bm.Mech_Num = Num;
-		bm.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		bm.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 		bm.DisplayFirstWeapons ();
 		bm.CheckAnimatorState ();
 	}

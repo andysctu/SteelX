@@ -11,13 +11,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64d4bcbb9d6ef9c4a9f5140a84623a65, type: 3}
   m_Name: Skill_Gun_Sword_03
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300130, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  icon_grey: {fileID: 21300228, guid: 00429edee359949d9955d2393313fad6, type: 3}
   weaponTypeL: SMG
   weaponTypeR: Sword
   playerAnimation1: {fileID: 7400000, guid: 600bcb65566ba594388feb3ac0fe71ca, type: 2}
   playerAnimation2: {fileID: 7400000, guid: 697e7f8fc2fb6564396096418656d3cb, type: 2}
-  hasWeaponAnimations: 1
+  hasWeaponAnimation: 1
+  hasBoosterAnimation: 0
   weaponAnimationL: {fileID: 7400000, guid: 5275d117fe3b59f41b1d583f7dc65d1f, type: 2}
   weaponAnimationR: {fileID: 7400000, guid: 9a95c4fa209092e46a6d49b310732d15, type: 2}
+  boosterAnimation: {fileID: 0}
   playerEffects: []
   targetEffects: []
   weaponLEffects:
@@ -27,7 +31,8 @@ MonoBehaviour:
   skill_sound: {fileID: 0}
   mech_sound: {fileID: 0}
   GeneralSkillParams:
-    energyCost: 0
+    IsDamageLessWhenUsing: 1
+    energyCost: 50
     damage: 250
   targetAnimation_front: {fileID: 7400000, guid: 3b3b6e020de85fa44a8c2da295558165,
     type: 3}

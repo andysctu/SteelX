@@ -11,19 +11,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e17017b1b8138468a5c0c18a2d3b42, type: 3}
   m_Name: Skill_Rocket
   m_EditorClassIdentifier: 
+  icon: {fileID: 21300048, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  icon_grey: {fileID: 21300086, guid: 00429edee359949d9955d2393313fad6, type: 3}
   weaponTypeL: Rocket
   weaponTypeR: 
   playerAnimation1: {fileID: 7400000, guid: 9d9b614e1e9ad8747904fcaa22d5436b, type: 2}
   playerAnimation2: {fileID: 0}
+  hasWeaponAnimation: 1
+  hasBoosterAnimation: 0
   weaponAnimationL: {fileID: 0}
   weaponAnimationR: {fileID: 0}
+  boosterAnimation: {fileID: 0}
   playerEffects: []
+  targetEffects: []
   weaponLEffects:
   - {fileID: 1288545304599354, guid: 81008b63090169c41ac0d46618e2116b, type: 2}
   weaponREffects: []
   skill_sound: {fileID: 0}
   mech_sound: {fileID: 0}
   GeneralSkillParams:
-    energyCost: 0
+    IsDamageLessWhenUsing: 0
+    energyCost: 50
     damage: 0
   radius: 30

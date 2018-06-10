@@ -49,13 +49,14 @@ public class WeaponManager : ScriptableObject {
         return null;
     }
 
-    public Weapon[] GetAllWeaponsNames() {
-        int length = Swords.Length + Spears.Length + SMGs.Length + Rifles.Length + Shotguns.Length + Rectifiers.Length + Rockets.Length + Cannons.Length;
+    public Weapon[] GetAllWeaponss() {
+        int length = Swords.Length + Spears.Length + Shields.Length+ SMGs.Length + Rifles.Length + Shotguns.Length + Rectifiers.Length + Rockets.Length + Cannons.Length;
         Weapon[] weapons = new Weapon[length];
 
         List<Weapon[]> weapon_list = new List<Weapon[]>();
         weapon_list.Add(Swords);
         weapon_list.Add(Spears);
+        weapon_list.Add(Shields);
         weapon_list.Add(SMGs);
         weapon_list.Add(Rifles);
         weapon_list.Add(Shotguns);

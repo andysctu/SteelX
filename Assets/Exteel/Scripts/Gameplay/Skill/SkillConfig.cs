@@ -2,7 +2,9 @@
 
 public abstract class SkillConfig : ScriptableObject {
     [Header("Skill General")]
-    [SerializeField]private int ID;
+    private int ID;//now is using the index in SkillManager
+    public Sprite icon, icon_grey;
+
     public string weaponTypeL;
     public string weaponTypeR;//If two-handed , put it on type L
     [Tooltip("Animation 1 must match the order of the  types ; Animation 2 is the reverse order")]
@@ -48,6 +50,9 @@ public abstract class SkillConfig : ScriptableObject {
         return mech_sound;
     }
 
+    public void SetID(int id) {//TODO : improve this
+        ID = id;
+    }
     public int GetID() {
         return ID;
     }

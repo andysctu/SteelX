@@ -201,7 +201,7 @@ public class GameManager : Photon.MonoBehaviour {
         }
 		player = PhotonNetwork.Instantiate (PlayerPrefab.name, StartPos, StartRot, 0);
 		mechBuilder = player.GetComponent<BuildMech>();
-		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+		mechBuilder.Build (m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
 		if(player.GetComponent<PhotonView>().isMine){
             Transform cam_transform;

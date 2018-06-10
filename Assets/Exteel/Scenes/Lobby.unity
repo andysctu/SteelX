@@ -6309,7 +6309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.000025384545}
+  m_AnchoredPosition: {x: 0, y: 0.000030517578}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &646861062
@@ -12704,14 +12704,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RespawnPanel: {fileID: 0}
   mcbt: {fileID: 0}
   Sounds: {fileID: 428959981}
-  AnimationEventController: {fileID: 0}
+  MechIK: {fileID: 0}
+  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
+  SkillManager: {fileID: 11400000, guid: 37e42b9dcbadee14d82b5f933f9cec7f, type: 2}
   defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
     type: 2}
   TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
     type: 2}
+  SkillController: {fileID: 0}
   ShotSounds: []
   ReloadSounds: []
   weaponScripts: []
@@ -12722,9 +12724,8 @@ MonoBehaviour:
   - 
   weapons: []
   bulletPrefabs: []
-  onPanel: 0
-  Total_Mech: 4
   Mech_Num: 0
+  onPanel: 0
   handOffset: {x: 0, y: 0.0005, z: 0.0005}
 --- !u!4 &1314102012
 Transform:

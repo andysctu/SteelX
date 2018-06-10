@@ -702,7 +702,7 @@ public class MechCombat : Combat {
         animator.enabled = true;
         if (photonView.isMine) { // build mech also init MechCombat
             Mech m = UserData.myData.Mech[mech_num];
-            bm.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
+            bm.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
         }
 
         initMechStats();
