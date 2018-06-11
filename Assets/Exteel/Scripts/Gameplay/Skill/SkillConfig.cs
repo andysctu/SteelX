@@ -20,7 +20,7 @@ public abstract class SkillConfig : ScriptableObject {
 
     public abstract void AddComponent(GameObject gameObjectToAttachTo, int skill_num);
 
-    public abstract void Use(SkillController SkillController, int skill_num);
+    public abstract bool Use(SkillController SkillController, int skill_num);
 
     public AnimationClip GetPlayerAniamtion(bool isOrderReverse) {//Is left hand weapon type = weaponTypeL & right hand weapon type = weaponTypeR
         return (isOrderReverse) ? playerAnimation2 : playerAnimation1;
@@ -61,9 +61,9 @@ public abstract class SkillConfig : ScriptableObject {
 [System.Serializable]
 public struct GeneralSkillParams {
     public bool IsDamageLessWhenUsing;
-    public int energyCost, damage;
+    public int energyCost, damage, cooldown;
 }
 
 public interface ISkill {
-    void Use(int skill_num);
+    bool Use(int skill_num);
 }

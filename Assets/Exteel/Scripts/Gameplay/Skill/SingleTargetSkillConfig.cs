@@ -79,9 +79,9 @@ public class SingleTargetSkillConfig : SkillConfig {
         return null;
     }
 
-    public override void Use(SkillController SkillController, int skill_num) {
+    public override bool Use(SkillController SkillController, int skill_num) {
         SingleTargetSkillBehaviour behaviour = SkillController.GetComponent<SingleTargetSkillBehaviour>();
-        behaviour.Use(skill_num);
+        return behaviour.Use(skill_num);
     }
 
     public AnimationClip GetTargetFrontAnimation() {

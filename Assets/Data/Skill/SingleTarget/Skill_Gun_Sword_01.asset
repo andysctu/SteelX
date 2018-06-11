@@ -33,6 +33,7 @@ MonoBehaviour:
     IsDamageLessWhenUsing: 1
     energyCost: 50
     damage: 250
+    cooldown: 10
   targetAnimation_front: {fileID: 7400000, guid: ac1ca16665b950745bf7737c0ace9955,
     type: 2}
   targetAnimation_back: {fileID: 7400000, guid: f25e08ad39b6d6c488aa3112a92d0454,
@@ -40,4 +41,4 @@ MonoBehaviour:
   SingleTargetSkillParams:
     crosshairRadius: 20
     detectRange: 50
-    distance: 4
+    distance: 5

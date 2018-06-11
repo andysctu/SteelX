@@ -102,9 +102,9 @@ public class MultiTargetSkillConfig : SkillConfig {
         return boosterEffects;
     }
 
-    public override void Use(SkillController SkillController, int skill_num) {
+    public override bool Use(SkillController SkillController, int skill_num) {
         MultiTargetSkillBehaviour behaviour = SkillController.GetComponent<MultiTargetSkillBehaviour>();
-        behaviour.Use(skill_num);
+        return behaviour.Use(skill_num);
     }
 
     private GameObject FindDuplicatedEffect(Transform t, string effect_name) {

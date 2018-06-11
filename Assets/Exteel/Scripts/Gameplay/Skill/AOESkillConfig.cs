@@ -79,9 +79,9 @@ public class AOESkillConfig : SkillConfig {
         }
     }
 
-    public override void Use(SkillController SkillController, int skill_num) {
+    public override bool Use(SkillController SkillController, int skill_num) {
         AOESkillBehaviour behaviour = SkillController.GetComponent<AOESkillBehaviour>();
-        behaviour.Use(skill_num);
+        return behaviour.Use(skill_num);
     }
 
     private GameObject FindDuplicatedEffect(Transform t, string effect_name) {

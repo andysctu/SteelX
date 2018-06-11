@@ -26,7 +26,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
         Sounds = CurrentMech.GetComponent<Sounds>();
     }
 
-    public void Use(int skill_num) {
+    public bool Use(int skill_num) {
         //Detect target
         MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
         Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.MultiTargetSkillParams.crosshairRadius, config.MultiTargetSkillParams.detectRange, false); //temp
@@ -39,8 +39,10 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                 target_pvIDs.Add(target_pv.viewID);
             }
             player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), skill_num);
+            return true;
         } else {
             //no target => do nothing
+            return false;
         }
     }
 

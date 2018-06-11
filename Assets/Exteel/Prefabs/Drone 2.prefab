@@ -4588,7 +4588,7 @@ MonoBehaviour:
   Hands:
   - {fileID: 4421656274130566}
   - {fileID: 4018446990084242}
-  SkillController: {fileID: 0}
+  SkillController: {fileID: 114435027189249138}
 --- !u!114 &114076035277099748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4692,8 +4692,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114844836033185492}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 4
+  instantiationId: 4
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114261729391238494
@@ -4751,8 +4751,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 2
+  instantiationId: 2
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114346128490661774
@@ -4820,7 +4820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b067932c445d7499bcbbac0b5047d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SkillController: {fileID: 0}
+  SkillController: {fileID: 114435027189249138}
   switchWeaponEffectL: {fileID: 0}
   switchWeaponEffectR: {fileID: 0}
   boostingDust: {fileID: 0}
@@ -4849,7 +4849,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97063224de75cef43bb01020b1f6d1ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crosshair: {fileID: 0}
 --- !u!114 &114589260192823108
 MonoBehaviour:
   m_ObjectHideFlags: 1

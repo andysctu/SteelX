@@ -20,13 +20,15 @@ public class SkillController : MonoBehaviour {
     private Animator[] WeaponAnimators = new Animator[4];
     private Animator boosterAnimator;
     private Transform SkillPanel;
-    private Image[] slots = new Image[4];
-    private Text[] energyCosts = new Text[4];
+    private Transform skillUser;
+    private SkillHUD SkillHUD;
 
     private int weaponOffset = 0, curSkillNum = 0;
     private bool[] skill_usable = new bool[4];
     private float[] skill_length = new float[4];//for skill cam
+    private float[] curCooldowns, MaxCooldowns; // curMaxCooldown = MIN_COOLDOWN || MaxCooldown
     private const string Target_Animation_Name = "skill_target";
+    private const float MIN_COOLDOWN = 3;
 
     public delegate void OnSkillAction(bool b);
     public event OnSkillAction OnSkill;
@@ -61,13 +63,15 @@ public class SkillController : MonoBehaviour {
 
     private void OnWeaponSwitched() {
         weaponOffset = mechcombat.GetCurrentWeaponOffset();
-        CheckIfSkillsUsable();
+        CheckIfSkillsMatchWeaponTypes();
         LoadPlayerSkillAnimations();
     }
 
     private void OnWeaponBuilt() {
         InitEffectsList();
         InitSkill();
+        InitSkillsCooldown();
+
         UpdateBoosterAnimator();
         UpdateWeaponAnimators();
         LoadWeaponSkillAnimations();
@@ -77,7 +81,20 @@ public class SkillController : MonoBehaviour {
 
     private void Start() {
         InitComponents();
-        UpdateSkillHUD();
+        InitSkillHUD();
+        
+        if(tag == "Drone")
+            enabled = false;
+    }
+
+    private void InitSkillHUD() {
+        if (!photonView.isMine || tag == "Drone")
+            return;
+        Transform PanelCanvas = FindObjectOfType<RespawnPanel>().transform;
+        SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
+
+        SkillHUD.enabled = true;
+        SkillHUD.InitSkills(skills);
     }
 
     public void SetSkills(SkillConfig[] skills) {//this gets called in buildMech
@@ -85,27 +102,7 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitComponents() {
-        RespawnPanel RespawnPanel = (RespawnPanel)GameObject.FindObjectOfType<RespawnPanel>();
-        SkillPanel = RespawnPanel.transform.Find("SkillPanel");
-        for(int i = 0; i < 4; i++) {           
-            slots[i] = SkillPanel.transform.Find("SkillSlots/slot"+i).GetComponent<Image>();
-            energyCosts[i] = slots[i].GetComponentInChildren<Text>();
-        }
         photonView = GetComponent<PhotonView>();
-    }
-
-    private void UpdateSkillHUD() {
-        for (int i = 0; i < 4; i++) {
-            if (skills[i] != null) {
-                energyCosts[i].text = skills[i].GeneralSkillParams.energyCost.ToString();
-                slots[i].sprite = skills[i].icon;
-                slots[i].color = new Color(255, 255, 255, 1);
-            } else {
-                energyCosts[i].text = "0";
-                slots[i].color = new Color(255,255,255,0);
-            }
-
-        }
     }
 
     private void InitHUD() {
@@ -129,7 +126,7 @@ public class SkillController : MonoBehaviour {
         OnSkill += SwitchToSkillAnimator;
     }
 
-    private void InitSkill() {   
+    private void InitSkill() {
         for (int i = 0; i < skills.Length; i++) {
             if (skills[i] != null) {
                 skill_length[i] = 0;
@@ -142,6 +139,18 @@ public class SkillController : MonoBehaviour {
         RequireInfoSkills = new List<RequireSkillInfo>[skills.Length];
         for (int i = 0; i < skills.Length; i++) {
             RequireInfoSkills[i] = new List<RequireSkillInfo>();
+        }
+    }
+
+    private void InitSkillsCooldown() {
+        MaxCooldowns = new float[skills.Length];
+        curCooldowns = new float[skills.Length];
+
+        for (int i = 0; i < skills.Length; i++) {
+            if (skills[i] == null)
+                continue;
+            curCooldowns[i] = 0;
+            MaxCooldowns[i] = skills[i].GeneralSkillParams.cooldown;
         }
     }
 
@@ -203,7 +212,7 @@ public class SkillController : MonoBehaviour {
     }
 
     private void LoadBoosterSkillAnimations() {
-        if(boosterAnimator == null)
+        if (boosterAnimator == null)
             return;
 
         //Make sure buildmech overrides the AnimatorController first
@@ -217,7 +226,7 @@ public class SkillController : MonoBehaviour {
                 continue;
 
             if (skills[j].hasBoosterAnimation) {
-                clipOverrides["sk"+j] = skills[j].GetBoosterAnimation();
+                clipOverrides["sk" + j] = skills[j].GetBoosterAnimation();
             }
         }
         BoosterAnimatorOverrideController.ApplyOverrides(clipOverrides);
@@ -249,16 +258,22 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    public void CallUseSkill(int num) {
-        if (skill_usable[num] && CheckIfEnergyEnough(skills[num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon() && mechController.grounded && !mainAnimator.GetBool("OnMelee")) {
-            skills[num].Use(this, num);
-            IncreaseSP(-skills[num].GeneralSkillParams.energyCost);
+    public void CallUseSkill(int skill_num) {
+        if (CheckIfSkillUsable(skill_num)) {
+            if (skills[skill_num].Use(this, skill_num)) {
+                IncreaseSP(-skills[skill_num].GeneralSkillParams.energyCost);
+                CooldownSkill(skill_num);
+            }
         }
     }
 
+    private bool CheckIfSkillUsable(int skill_num) {
+        return skill_usable[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon() && mechController.grounded && !mainAnimator.GetBool("OnMelee");
+    }
+
     private bool CheckIfEnergyEnough(int energyCost) {
-        if(SP<energyCost)
-            Debug.Log("Energy not enough : "+SP+"<"+energyCost);
+        if (SP < energyCost)
+            Debug.Log("Energy not enough : " + SP + "<" + energyCost);
 
         return SP >= energyCost;
     }
@@ -306,11 +321,11 @@ public class SkillController : MonoBehaviour {
     private void UpdateBoosterAnimator() {
         Transform CurrentMech = transform.Find("CurrentMech");
 
-        if(CurrentMech != null)
+        if (CurrentMech != null)
             boosterAnimator = CurrentMech.GetComponentInChildren<BoosterController>().GetComponent<Animator>();
     }
 
-    public void PlayPlayerAnimation(int skill_num) {//state name : skill_1 , skill_2 , ... 
+    public void PlayPlayerAnimation(int skill_num) {//state name : skill_1 , skill_2 , ...
         SwitchToSkillAnimator(true);
         StartCoroutine(ReturnDefaultStateWhenEnd("sk" + skill_num));
         SwitchToSkillCam(true);
@@ -320,8 +335,8 @@ public class SkillController : MonoBehaviour {
     }
 
     public void PlayerBoosterAnimation(int skill_num) {
-        if(boosterAnimator != null)
-            boosterAnimator.Play("sk"+skill_num);
+        if (boosterAnimator != null)
+            boosterAnimator.Play("sk" + skill_num);
     }
 
     public void PlayPlayerEffects(int skill_num) {
@@ -333,20 +348,32 @@ public class SkillController : MonoBehaviour {
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
-        if(skillcam!=null)SwitchToSkillCam(true);
+        if (skillcam != null) SwitchToSkillCam(true);
         SwitchToSkillAnimator(true);
         skillAnimtor.Play(Target_Animation_Name);
         StartCoroutine(ReturnDefaultStateWhenEnd(Target_Animation_Name));
     }
 
+    public void SetSkillUser(Transform user) {
+        skillUser = user;
+    }
+
+    public Transform GetSkillUser() {
+        return skillUser;
+    }
+
+    private bool CheckIfSkillHasCooldown(int skill_num) {
+        return curCooldowns[skill_num] <= 0;
+    }
+
     //do the weapons match the skill requires
-    private void CheckIfSkillsUsable() {
+    private void CheckIfSkillsMatchWeaponTypes() {
         for (int i = 0; i < skills.Length; i++) {
             if (skills[i] == null) {
                 skill_usable[i] = false;
                 continue;
             }
-            skill_usable[i] =  CheckIfWeaponMatch(skills[i], (bm.weaponScripts[weaponOffset]==null)? "" : bm.weaponScripts[weaponOffset].GetType().ToString(), (bm.weaponScripts[weaponOffset+1] == null) ? "" : bm.weaponScripts[weaponOffset+1].GetType().ToString());
+            skill_usable[i] = CheckIfWeaponMatch(skills[i], (bm.weaponScripts[weaponOffset] == null) ? "" : bm.weaponScripts[weaponOffset].GetType().ToString(), (bm.weaponScripts[weaponOffset + 1] == null) ? "" : bm.weaponScripts[weaponOffset + 1].GetType().ToString());
         }
     }
 
@@ -372,7 +399,7 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this so not using string
+    private IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this so not using string
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
         yield return new WaitWhile(() => skillAnimtor.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
         OnSkill(false);
@@ -390,7 +417,7 @@ public class SkillController : MonoBehaviour {
     }
 
     public void PlaySkillSound(int skill_num) {
-        if(skills[skill_num].GetSkillSound() != null)
+        if (skills[skill_num].GetSkillSound() != null)
             Sounds.PlayClip(skills[skill_num].GetSkillSound());
     }
 
@@ -402,16 +429,15 @@ public class SkillController : MonoBehaviour {
     }
 
     public void IncreaseSP(int amount) {
-        SP = (SP+amount > maxSP)? maxSP : SP +amount;
+        SP = (SP + amount > maxSP) ? maxSP : SP + amount;
         updateHUD();
     }
 
-    void updateHUD() {
-        if(SPBar == null)return;//drone;
+    private void updateHUD() {
+        if (SPBar == null) return;//drone;
         SPBar.value = SP / (float)maxSP;
         SPBartext.text = BarValueToString(SP, maxSP);
     }
-
 
     private string BarValueToString(int curvalue, int maxvalue) {
         string curvalueStr = curvalue.ToString();
@@ -424,7 +450,6 @@ public class SkillController : MonoBehaviour {
 
         for (int i = 0; i < curvalueStr.Length; i++) {
             finalStr += (curvalueStr[i] + " ");
-
         }
         finalStr += "/ ";
         for (int i = 0; i < 3; i++) {
@@ -433,5 +458,24 @@ public class SkillController : MonoBehaviour {
         finalStr += maxvalueStr[3];
 
         return finalStr;
+    }
+
+    private void CooldownSkill(int skill_num) {
+        for (int i = 0; i < skills.Length; i++) {
+            if (curCooldowns[i] <= MIN_COOLDOWN) {
+                curCooldowns[i] = MIN_COOLDOWN;
+                SkillHUD.SetSkillCooldown(i, MIN_COOLDOWN);
+            }
+        }
+        curCooldowns[skill_num] = MaxCooldowns[skill_num];
+        SkillHUD.SetSkillCooldown(skill_num, MaxCooldowns[skill_num]);
+    }
+
+    private void Update() {
+        for (int i = 0; i < skills.Length; i++) {
+            if (curCooldowns[i] > 0) {
+                curCooldowns[i] -= Time.deltaTime;
+            }
+        }
     }
 }

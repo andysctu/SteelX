@@ -21,12 +21,14 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
         Sounds = CurrentMech.GetComponent<Sounds>();
     }
 
-    public void Use(int skill_num) {
+    public bool Use(int skill_num) {
         AOESkillConfig config = (AOESkillConfig)(SkillController.GetSkillConfig(skill_num));
 
         int[] target_pvIDs = DectectTargetInSphere(transform.position, config.radius);
 
         player_pv.RPC("CastAOESkill", PhotonTargets.All, target_pvIDs, skill_num);
+
+        return true;
     }
 
     private int[] DectectTargetInSphere(Vector3 center, int radius) {

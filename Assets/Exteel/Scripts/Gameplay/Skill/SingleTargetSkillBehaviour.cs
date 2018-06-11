@@ -22,7 +22,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         Sounds = CurrentMech.GetComponent<Sounds>();
     }
 
-    public void Use(int skill_num) {
+    public bool Use(int skill_num) {
         //Get the config
         SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
@@ -39,6 +39,8 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         } else {
             player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, Vector3.zero, Vector3.zero);
         }
+
+        return true;
     }
 
     [PunRPC]
@@ -62,6 +64,8 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
             target.transform.LookAt((angle >90)? transform.position + new Vector3(0, 5, 0) : transform.position + new Vector3(0,5,0) + transform.forward*9999);
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
+
+            target_SkillController.SetSkillUser(transform);
 
             if (!target_pv.isMine || target.tag == "Drone") {
                 SkillCam skillcam = transform.Find("SkillCam").GetComponent<SkillCam>();

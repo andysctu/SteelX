@@ -61,10 +61,9 @@ public class DroneCombat : Combat {
 		transform.position += dir * length;
 	}
 
-    //direction =  back
     public void Skill_KnockBack(float length) {
-        GetComponent<CharacterController>().Move(-transform.forward * length);
-        //transform.position += dir * length;
+        Transform skillUser = SkillController.GetSkillUser();
+        GetComponent<CharacterController>().Move((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
     }
 
     void DisableDrone() {
