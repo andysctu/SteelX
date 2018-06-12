@@ -7,16 +7,16 @@ using System.Linq;
 
 public class MechCombat : Combat {
 
-    [SerializeField]private HeatBar HeatBar;
-    [SerializeField]private DisplayPlayerInfo displayPlayerInfo;
-    [SerializeField]private CrosshairImage crosshairImage;
-    [SerializeField]private EffectController EffectController;
-    [SerializeField]private LayerMask playerlayerMask;
-    [SerializeField]private Camera cam, skillcam;
-    [SerializeField]private BuildMech bm;
-    [SerializeField]private Animator animator;
-    [SerializeField]private MovementClips defaultMovementClips, TwoHandedMovementClips;
-    [SerializeField]private SkillController SkillController;
+    [SerializeField] private HeatBar HeatBar;
+    [SerializeField] private DisplayPlayerInfo displayPlayerInfo;
+    [SerializeField] private CrosshairImage crosshairImage;
+    [SerializeField] private EffectController EffectController;
+    [SerializeField] private LayerMask playerlayerMask;
+    [SerializeField] private Camera cam, skillcam;
+    [SerializeField] private BuildMech bm;
+    [SerializeField] private Animator animator;
+    [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;
+    [SerializeField] private SkillController SkillController;
     private InRoomChat InRoomChat;
 
     enum GeneralWeaponTypes { Ranged, Rectifier, Melee, Shield, Rocket, Cannon, Empty };//for efficiency
@@ -539,7 +539,7 @@ public class MechCombat : Combat {
     // Applies damage, and updates scoreboard + disables player on kill
     [PunRPC]
     public override void OnHit(int damage, int shooter_viewID, string weapon, bool isSlowDown = false) {
-        if (isDead || onSkill) {
+        if (isDead) {
             return;
         }
 
@@ -570,7 +570,7 @@ public class MechCombat : Combat {
 
     [PunRPC]
     void ShieldOnHit(int damage, int shooter_viewID, int shield, string weapon) {
-        if (isDead || onSkill) {
+        if (isDead) {
             return;
         }
 
@@ -630,7 +630,7 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    void OnLocked(string name) {
+    void OnLocked(string name) {//TODO : remake this
         if (PhotonNetwork.playerName != name)
             return;
         crosshair.ShowLocked();
@@ -1292,14 +1292,6 @@ public class MechCombat : Combat {
         return maxVerticalBoostSpeed;
     }
 
-    public bool IsHpFull() {
-        return (currentHP >= MAX_HP);
-    }
-
-    public bool IsSwitchingWeapon() {
-        return isSwitchingWeapon;
-    }
-
     private void OnSkill(bool b) {
         onSkill = b;
 
@@ -1307,10 +1299,29 @@ public class MechCombat : Combat {
             gameObject.layer = default_layer;
             EnableAllColliders(false);
             GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
+            ResetAnimatorState();
         } else {
             gameObject.layer = playerlayer;
             EnableAllColliders(true);
         }
+    }
+
+    public bool IsSwitchingWeapon() {
+        return isSwitchingWeapon;
+    }
+
+    void ResetAnimatorState() {
+        if (photonView.isMine) {
+            //TODO : improve this
+
+
+            animator.SetBool(AnimatorVars.onMelee_id, false);
+            animator.SetBool(AnimatorVars.BCNPose_id, false);
+            isLMeleePlaying = 0;
+            isRMeleePlaying = 0;
+
+
+        }        
     }
 
     void UpdateSMGAnimationSpeed() {

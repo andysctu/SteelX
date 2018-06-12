@@ -29,7 +29,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     public bool Use(int skill_num) {
         //Detect target
         MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
-        Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.MultiTargetSkillParams.crosshairRadius, config.MultiTargetSkillParams.detectRange, false); //temp
+        Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.MultiTargetSkillParams.crosshairRadius, config.MultiTargetSkillParams.detectRange, false);
 
         if (targets_in_range != null && targets_in_range.Length > 0) {
             List<int> target_pvIDs = new List<int>();
@@ -60,7 +60,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
 
                 targets.Add(target_pv.transform);
 
-                if (PhotonNetwork.isMasterClient) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+                if (player_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
             SetEffectsTarget(targets.ToArray(), skill_num);
@@ -69,7 +69,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
                 SkillController.PlayPlayerAnimation(skill_num);
 
                 SkillController.PlayerBoosterAnimation(skill_num);
-            } else {//instantiate immdiately
+            } else {//instantiate immdiately in animation
                 //only booster animation
                 SkillController.PlayerBoosterAnimation(skill_num);
             }

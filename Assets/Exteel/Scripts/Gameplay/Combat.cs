@@ -29,4 +29,8 @@ public class Combat : Photon.MonoBehaviour {
 	public int GetMaxHp(){
 		return MAX_HP;
 	}
+
+    public bool IsHpFull() {
+        return (currentHP >= MAX_HP);
+    }
 }

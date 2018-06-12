@@ -47,6 +47,7 @@ public class SkillController : MonoBehaviour {
         RegisterOnSkill();
         RegisterOnWeaponBuilt();
         RegisterOnWeaponSwitched();
+        InitSkillHUD();
     }
 
     private void RegisterOnWeaponSwitched() {
@@ -77,11 +78,11 @@ public class SkillController : MonoBehaviour {
         LoadWeaponSkillAnimations();
         LoadBoosterSkillAnimations();
         InitHUD();
+        if(photonView.isMine)SkillHUD.InitSkills(skills);
     }
 
     private void Start() {
-        InitComponents();
-        InitSkillHUD();
+        InitComponents();        
         
         if(tag == "Drone")
             enabled = false;
@@ -93,8 +94,7 @@ public class SkillController : MonoBehaviour {
         Transform PanelCanvas = FindObjectOfType<RespawnPanel>().transform;
         SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
 
-        SkillHUD.enabled = true;
-        SkillHUD.InitSkills(skills);
+        SkillHUD.enabled = true;        
     }
 
     public void SetSkills(SkillConfig[] skills) {//this gets called in buildMech

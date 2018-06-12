@@ -29,7 +29,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         //Detect target
         Transform target = Crosshair.DectectTarget(config.SingleTargetSkillParams.crosshairRadius, config.SingleTargetSkillParams.detectRange, 0, false);
 
-        //RPC
         if (target != null) {
             PhotonView target_pv = target.GetComponent<PhotonView>();
             //Move to the right position
@@ -39,7 +38,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         } else {
             player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, Vector3.zero, Vector3.zero);
         }
-
         return true;
     }
 
@@ -48,10 +46,8 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         if (targetpv_id != -1) {
             SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
-            Debug.Log("Called play " + "sk" + skill_num);
-
             PhotonView target_pv = PhotonView.Find(targetpv_id);
-            if (target_pv == null) { Debug.Log("Can't find target photonView when casting skill"); return; }
+            if (target_pv == null) { Debug.Log("Can't find target photonView when using skill"); return; }
             SkillController target_SkillController = target_pv.GetComponent<SkillController>();
             target = target_pv.transform;
 
@@ -59,35 +55,28 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             SetEffectsInfo(target, skill_num);
 
             //rotate target to the right direction
-            //TODO : check if the target is close to front or back then rotate to it
             float angle = Vector3.Angle(direction, target.transform.forward);
 
-            target.transform.LookAt((angle >90)? transform.position + new Vector3(0, 5, 0) : transform.position + new Vector3(0,5,0) + transform.forward*9999);
+            target.transform.LookAt((angle > 90) ? transform.position + new Vector3(0, 5, 0) : transform.position + new Vector3(0, 5, 0) + transform.forward * 9999);
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
 
             target_SkillController.SetSkillUser(transform);
 
-            if (!target_pv.isMine || target.tag == "Drone") {
+            if (player_pv.isMine || target.tag == "Drone") {
                 SkillCam skillcam = transform.Find("SkillCam").GetComponent<SkillCam>();
                 if (skillcam != null)
                     skillcam.SetTarget(target);
-            } else {
+            } else if (target_pv.isMine) {
                 SkillCam skillcam = target_pv.transform.Find("SkillCam").GetComponent<SkillCam>();
                 if (skillcam != null)
                     skillcam.SetTarget(transform.root);
             }
 
             //Play target on skill animation
-            if (target_SkillController != null) target_SkillController.TargetOnSkill((angle > 90) ?  config.GetTargetFrontAnimation() : config.GetTargetBackAnimation());
+            if (target_SkillController != null) target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation());
 
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
-
-            //SkillController.PlayPlayerEffects(skill_num);
-            foreach (GameObject g in config.GetPlayerEffects()) {
-                Instantiate(g, transform.position + new Vector3(0, 5, 0), transform.rotation, transform);
-                g.SetActive(true);
-            }
 
             SkillController.PlayWeaponAnimation(skill_num);
 
@@ -101,14 +90,19 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             transform.LookAt(target.position + new Vector3(0, 5, 0));
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
-            if (PhotonNetwork.isMasterClient) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+            //SkillController.PlayPlayerEffects(skill_num);
+            foreach (GameObject g in config.GetPlayerEffects()) {
+                Instantiate(g, transform.position + new Vector3(0, 5, 0), transform.rotation, transform);
+                g.SetActive(true);
+            }
+
+            //apply damage
+            if (target_pv.isMine) {
+                target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+            }
         } else {//target is null => cancel skill
             SkillController.PlayCancelSkill();
         }
-    }
-
-    public Transform GetCurrentOnSkillTarget() {
-        return target;
     }
 
     private void SetEffectsInfo(Transform target, int skill_num) {

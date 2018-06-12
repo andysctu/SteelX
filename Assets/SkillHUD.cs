@@ -28,6 +28,12 @@ public class SkillHUD : MonoBehaviour {
 
     private void AssignSkillImages() {
         for (int i = 0; i < skills.Length; i++) {
+            if(skills[i] == null) {
+                skillIcons[i].sprite = null;
+                skillIcons[i].gameObject.SetActive(false);
+                continue;
+            }
+            skillIcons[i].gameObject.SetActive(true);
             skillCooldowns[i].type = Image.Type.Filled;
             skillIcons[i].sprite = skills[i].icon;
             skillCooldowns[i].sprite = skills[i].icon_grey;

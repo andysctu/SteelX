@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using XftWeapon;
+using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
@@ -42,7 +43,16 @@ public class BuildMech : Photon.MonoBehaviour {
 
     public Vector3 handOffset = Vector3.zero;//every hand has dif offset
 
-	void Start () {
+    private void Awake() {
+        //For not starting from login
+        if(UserData.myData.Mech == null) {
+            UserData.myData.Mech0 = new Mech();
+            UserData.myData.Mech = new Mech[4];
+            UserData.data = new Dictionary<int, Data>();
+        }
+    }
+
+    void Start () {
         CheckIfBuildLocally();
         CheckIsDataGetSaved();
 		

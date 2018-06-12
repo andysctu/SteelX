@@ -32,4 +32,5 @@ public class UserData : NetworkBehaviour {
 		myData.Mech = new Mech[4];
 		data = new Dictionary<int,Data>(); 
 	}
+
 }

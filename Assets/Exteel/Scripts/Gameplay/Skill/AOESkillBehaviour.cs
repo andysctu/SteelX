@@ -70,7 +70,7 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
 
             if (target_pv == null) continue;
 
-            if (player_pv.isMine) {
+            if (target_pv.isMine) {
                 target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
