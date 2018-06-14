@@ -24,8 +24,8 @@ public class HeatBar : MonoBehaviour {
 
     private void RegisterOnWeaponBuilt() {
         if (bm != null) {
-            bm.OnWeaponBuilt += InitVars;
-            bm.OnWeaponBuilt += ResetHeatBar;
+            bm.OnMechBuilt += InitVars;
+            bm.OnMechBuilt += ResetHeatBar;
         }
     }
 

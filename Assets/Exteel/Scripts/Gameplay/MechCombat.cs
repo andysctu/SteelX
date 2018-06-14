@@ -165,8 +165,8 @@ public class MechCombat : Combat {
     }
 
     private void RegisterOnWeaponBuilt() {
-        bm.OnWeaponBuilt += InitWeapons;
-        bm.OnWeaponBuilt += UpdateMovementClips;
+        bm.OnMechBuilt += InitWeapons;
+        bm.OnMechBuilt += UpdateMovementClips;
     }
 
     private void RegisterOnSkill() {
@@ -488,7 +488,7 @@ public class MechCombat : Combat {
 
         if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rocket) {
             if (photonView.isMine) {
-                GameObject bullet = PhotonNetwork.Instantiate("RCL034B", transform.position + new Vector3(0, 5, 0) + transform.forward * 10, Quaternion.LookRotation(bullet_directions[hand]), 0);
+                GameObject bullet = PhotonNetwork.Instantiate(bm.weaponScripts[weaponOffset].weaponPrefab.name + "B", transform.position + new Vector3(0, 5, 0) + transform.forward * 10, Quaternion.LookRotation(bullet_directions[hand]), 0);
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
                 bulletTrace.SetShooterInfo(gameObject, cam);
                 bulletTrace.SetBulletPropertis(weaponScripts[weaponOffset].damage, ((Rocket)weaponScripts[weaponOffset]).bullet_speed, ((Rocket)weaponScripts[weaponOffset]).impact_radius);

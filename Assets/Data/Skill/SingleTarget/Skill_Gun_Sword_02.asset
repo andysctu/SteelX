@@ -17,6 +17,7 @@ MonoBehaviour:
   weaponTypeR: Sword
   playerAnimation: {fileID: 7400000, guid: 57e43188035b06848b59247743de8c25, type: 2}
   cameraAnimation: {fileID: 0}
+  target_CamAnimation: {fileID: 0}
   hasWeaponAnimation: 1
   hasBoosterAnimation: 0
   weaponAnimationL: {fileID: 0}
@@ -40,4 +41,4 @@ MonoBehaviour:
   SingleTargetSkillParams:
     crosshairRadius: 20
     detectRange: 50
-    distance: 12
+    distance: 8

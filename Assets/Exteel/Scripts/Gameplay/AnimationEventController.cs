@@ -17,7 +17,7 @@ public class AnimationEventController : MonoBehaviour {
 
     void Awake() {
         if(MechCombat!=null)MechCombat.OnWeaponSwitched += UpdateAnimationEventController;
-        if (bm != null) bm.OnWeaponBuilt += InitWeaponAnimators;
+        if (bm != null) bm.OnMechBuilt += InitWeaponAnimators;
     }
 
     void Start(){

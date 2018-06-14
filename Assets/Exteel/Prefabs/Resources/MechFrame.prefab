@@ -1482,7 +1482,7 @@ Transform:
   m_Children:
   - {fileID: 428374}
   m_Father: {fileID: 437684}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -89.980194, y: 0, z: 0}
 --- !u!4 &404964
 Transform:
@@ -1968,6 +1968,7 @@ Transform:
   - {fileID: 400212}
   - {fileID: 429150}
   - {fileID: 487156}
+  - {fileID: 4193626462862084}
   - {fileID: 461724}
   - {fileID: 402894}
   m_Father: {fileID: 400766}
@@ -2190,7 +2191,7 @@ Transform:
   m_Children:
   - {fileID: 4877508632026476}
   m_Father: {fileID: 437684}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &462424
 Transform:
@@ -2948,6 +2949,7 @@ MonoBehaviour:
   MechIK: {fileID: 114093068494878398}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
   SkillManager: {fileID: 11400000, guid: 37e42b9dcbadee14d82b5f933f9cec7f, type: 2}
+  MechPartManager: {fileID: 11400000, guid: 301bd37785ab46a41b20270b6977193c, type: 2}
   defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
     type: 2}
   TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
@@ -4301,6 +4303,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1426673944429626
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4193626462862084}
+  m_Layer: 8
+  m_Name: boosterBone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1431701159924780
 GameObject:
   m_ObjectHideFlags: 1
@@ -5114,6 +5131,19 @@ Transform:
   - {fileID: 224087618293295092}
   m_Father: {fileID: 400766}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4193626462862084
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1426673944429626}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.044014387, y: 6.7750006, z: -0.8459862}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 437684}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4197701646009714
 Transform:

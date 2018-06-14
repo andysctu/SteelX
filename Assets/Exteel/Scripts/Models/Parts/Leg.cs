@@ -1,11 +1,22 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Part/Leg")]
-class Leg : Part {
+public class Leg : Part {
     [Header("Part Special")]
     public int BasicSpeed;
 	public int Capacity;
-	public int Deceleration;
+	public int Deceleration;    
+    public enum LegType {
+        Light,
+        Standard,
+        Heavy
+    }
+    public LegType legType;
 
-    public AudioClip WalkSound;
+    public override void LoadPartInfo(MechProperty mechProperty) {
+        LoadPartBasicInfo(mechProperty);
+        mechProperty.BasicSpeed += BasicSpeed;
+        mechProperty.Capacity += Capacity;
+        mechProperty.Deceleration += Deceleration;
+    }
 }

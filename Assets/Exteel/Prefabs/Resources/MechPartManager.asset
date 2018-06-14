@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf03b30c96a68f409f0a9abf9fc2a40, type: 3}
+  m_Name: MechPartManager
+  m_EditorClassIdentifier: 
+  Heads:
+  - {fileID: 11400000, guid: ed3d4965a32ad8b4cbfa88a37a2896a8, type: 2}
+  Cores:
+  - {fileID: 11400000, guid: d750ff83e7a7b73438e7c95131d0c775, type: 2}
+  Arms:
+  - {fileID: 11400000, guid: 24ee31649f72af74d9d0104946769b0e, type: 2}
+  Legs:
+  - {fileID: 11400000, guid: c950118151ae5d543bb023069deb0b0f, type: 2}
+  Boosters:
+  - {fileID: 11400000, guid: 54098db328476724dba5baa74cb698d2, type: 2}

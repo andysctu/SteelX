@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(menuName = "Part/Core")]
-class Core : Part {
+public class Core : Part {
     [Header("Part Special")]
     public int EN;
 	public int ENOutputRate;
 	public int MinENRequired;
+
+    public override void LoadPartInfo(MechProperty mechProperty) {
+        LoadPartBasicInfo(mechProperty);
+        mechProperty.EN += EN;
+        mechProperty.ENOutputRate += ENOutputRate;
+        mechProperty.MinENRequired += MinENRequired;        
+    }
 }

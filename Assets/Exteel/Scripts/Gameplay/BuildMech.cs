@@ -11,6 +11,7 @@ public class BuildMech : Photon.MonoBehaviour {
     [SerializeField]private MechIK MechIK;
     [SerializeField]private WeaponManager WeaponManager;
     [SerializeField]private SkillManager SkillManager;
+    [SerializeField]private MechPartManager MechPartManager;
     [SerializeField]private MovementClips defaultMovementClips, TwoHandedMovementClips;
     [SerializeField]private SkillController SkillController;
     
@@ -29,7 +30,7 @@ public class BuildMech : Photon.MonoBehaviour {
     private Transform[] hands;
 
     private ParticleSystem Muz;
-    private MechProperty MechProperty = new MechProperty();
+    private MechProperty MechProperty;
     private int weaponOffset = 0;
 
 	private bool buildLocally = false, isDataGetSaved = true;
@@ -39,13 +40,14 @@ public class BuildMech : Photon.MonoBehaviour {
     public bool onPanel = false;
 
     public delegate void BuildWeaponAction();
-    public event BuildWeaponAction OnWeaponBuilt;
+    public event BuildWeaponAction OnMechBuilt;
 
     public Vector3 handOffset = Vector3.zero;//every hand has dif offset
 
     private void Awake() {
         //For not starting from login
         if(UserData.myData.Mech == null) {
+            Debug.Log("Not starting from login -> Init Mech data");
             UserData.myData.Mech0 = new Mech();
             UserData.myData.Mech = new Mech[4];
             UserData.data = new Dictionary<int, Data>();
@@ -140,24 +142,33 @@ public class BuildMech : Photon.MonoBehaviour {
         }
 
         // Create new array to store skinned mesh renderers 
-        SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
+        SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[4];
 
-		Material[] materials = new Material[5];
-		for (int i = 0; i < 5; i++) {
-			// Load mech part
-			GameObject part = Resources.Load (parts [i], typeof(GameObject)) as GameObject;
+        //Load parts info
+        MechProperty = new MechProperty();
+
+        Material[] materials = new Material[4];
+		for (int i = 0; i < 4; i++) {
+            // Load mech part & info
+            Part part = MechPartManager.FindData(parts[i]);
+            if (part != null) {
+                part.LoadPartInfo(MechProperty);
+            } else {
+                Debug.LogError("Can't find part in MechPartManager");
+                continue;
+            }
 
 			// Extract Skinned Mesh
-			newSMR [i] = part.GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
+			newSMR [i] = part.GetPartPrefab().GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
 
 			// Load texture
-			materials [i] = Resources.Load (parts [i] + "mat", typeof(Material)) as Material;
+			materials [i] = Resources.Load ("MechPartMaterials/" + parts [i] + "mat", typeof(Material)) as Material;
 		}
 
 		// Replace all
 		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
 
-		for (int i = 0; i < 5; i++) {//TODO : improve this so the order does not matter
+		for (int i = 0; i < 4; i++) {//TODO : improve this so the order does not matter
 			//Note the order of parts in MechFrame.prefab matters
 
 			if (newSMR[i] == null) Debug.LogError(i + " is null.");
@@ -166,12 +177,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			curSMR[i].enabled = true;
 		}
 
-		//Load parts info
-		LoadCoreInfo (parts [0]);
-		LoadHandInfo (parts [1]);
-		LoadLegInfo (parts [2]);
-		LoadHeadInfo (parts [3]);
-		LoadBoosterInfo (parts [4]);
+        LoadBooster(b);
 
         SwitchBoosterAniamtionClips();
 
@@ -181,88 +187,9 @@ public class BuildMech : Photon.MonoBehaviour {
         buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
 	}
 
-	private void LoadCoreInfo(string part){
-		switch(part){
-		case "CES301":
-			CoreProperties (new CES301 ());
-			break;
-		}
-	}
-	private void CoreProperties(Core core){
-        MechProperty.EN += core.EN;
-        MechProperty.ENOutputRate += core.ENOutputRate;
-        MechProperty.MinENRequired += core.MinENRequired;
-        MechProperty.HP += core.HP;
-        MechProperty.Size += core.Size;
-        MechProperty.Weight += core.Weight;
-        MechProperty.EnergyDrain += core.EnergyDrain;
-	}
+    private void LoadBooster(string booster_name) {
 
-	private void LoadHandInfo(string part){
-		switch(part){
-		case "AES104":
-			HandProperties (new AES104 ());
-			break;
-		}
-	}
-	private void HandProperties(Hand hand){
-        MechProperty.HP += hand.HP;
-        MechProperty.MaxHeat += hand.MaxHeat;
-        MechProperty.CooldownRate += hand.CooldownRate;
-        MechProperty.Marksmanship += hand.Marksmanship;
-        MechProperty.Size += hand.Size;
-        MechProperty.Weight += hand.Weight;
-	}
-
-	private void LoadHeadInfo(string part){
-		switch(part){
-		case "HDS003":
-			HeadProperties (new HDS003 ());
-			break;
-		}
-	}
-	private void HeadProperties(Head head){
-        MechProperty.SP += head.SP;
-        MechProperty.MPU += head.MPU;
-        MechProperty.ScanRange += head.ScanRange;
-        MechProperty.HP += head.HP;
-        MechProperty.Weight += head.Weight;
-        MechProperty.EnergyDrain += head.EnergyDrain;
-        MechProperty.Size += head.Size;
-	}
-
-	private void LoadLegInfo(string part){
-		switch(part){
-		case "LTN411":
-			LegProperties (new LTN411 ());
-			break;
-		}
-	}
-	private void LegProperties(Leg leg){
-        MechProperty.BasicSpeed += leg.BasicSpeed;
-        MechProperty.Capacity += leg.Capacity;
-        MechProperty.Deceleration += leg.Deceleration;
-        MechProperty.HP += leg.HP;
-        MechProperty.Size += leg.Size;
-        MechProperty.Weight += leg.Weight;
-	}
-
-	private void LoadBoosterInfo(string part){
-		switch(part){
-		case "PBS000":
-			BoosterProperties (new PBS000 ());
-			break;
-		}
-	}
-	private void BoosterProperties(Booster booster){
-        MechProperty.DashOutput += booster.DashOutput;
-        MechProperty.DashENDrain += booster.DashENDrain;
-        MechProperty.JumpENDrain += booster.JumpENDrain;
-        MechProperty.HP += booster.HP;
-        MechProperty.Size += booster.Size;
-        MechProperty.Weight += booster.Weight;
-        MechProperty.EnergyDrain += booster.EnergyDrain;
-	}
+    }
 
     private void SwitchBoosterAniamtionClips() {
         Transform CurrentMech = transform.Find("CurrentMech");
@@ -339,7 +266,6 @@ public class BuildMech : Photon.MonoBehaviour {
                     ReloadSounds[i] = ((RangedWeapon)weaponScripts[i]).reload_sound;
                     weapons[i + 1] = null;
                     bulletPrefabs[i + 1] = null;
-                    //i++;
                 break;
 		        default://other ranged weapon
                     bulletPrefabs[i] = ((RangedWeapon)weaponScripts[i]).bulletPrefab;
@@ -371,9 +297,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		for (int i = 0; i < 4; i++)//turn off trail
 			ShutDownTrail (weapons [i]);
 
-        //if (weapons[(weaponOffset + 2) % 4] != null)  weapons [(weaponOffset+2)%4].SetActive (false);
-        //if(weapons[(weaponOffset + 3) % 4] != null) weapons [(weaponOffset+3)%4].SetActive (false);
-
+        
+        //shut down renderers ( not using setActive because if weapons have their own animations , disabling causes weapon animators to rebind the wrong rotation & position
         if (weapons[(weaponOffset + 2) % 4] != null) {
             Renderer[] renderers = weapons[(weaponOffset + 2) % 4].GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers) {
@@ -582,7 +507,7 @@ public class BuildMech : Photon.MonoBehaviour {
     private void UpdateMechCombatVars(){
 		if (mcbt == null)return;
 
-        if (OnWeaponBuilt != null)OnWeaponBuilt();
+        if (OnMechBuilt != null)OnMechBuilt();
         if(mcbt.OnWeaponSwitched!=null)mcbt.OnWeaponSwitched();
 
 		mcbt.EnableAllRenderers (true);
@@ -598,7 +523,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 }
 
-struct MechProperty {
+public struct MechProperty {
     //mech properties
     public int HP, EN, SP, MPU;
     public int ENOutputRate;

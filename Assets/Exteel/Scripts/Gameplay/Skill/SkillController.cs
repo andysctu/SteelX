@@ -57,9 +57,9 @@ public class SkillController : MonoBehaviour {
 
     private void RegisterOnWeaponBuilt() {
         if (bm != null) {
-            bm.OnWeaponBuilt += OnWeaponBuilt;
-            bm.OnWeaponBuilt += LoadPlayerSkillAnimations;
-            bm.OnWeaponBuilt += LoadSkillCamAnimations;
+            bm.OnMechBuilt += OnWeaponBuilt;
+            bm.OnMechBuilt += LoadPlayerSkillAnimations;
+            bm.OnMechBuilt += LoadSkillCamAnimations;
         }
     }
 

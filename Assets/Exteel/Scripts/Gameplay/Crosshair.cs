@@ -46,7 +46,7 @@ public class Crosshair : MonoBehaviour {
     }
 
     private void RegisterOnWeaponBuilt() {
-        if (bm != null) bm.OnWeaponBuilt += OnWeaponBuilt;
+        if (bm != null) bm.OnMechBuilt += OnWeaponBuilt;
     }
 
     private void RegisterOnWeaponSwitched() {

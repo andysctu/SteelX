@@ -9,9 +9,9 @@ public class HangarManager : MonoBehaviour {
     [SerializeField] private Sprite buttonTexture;
     [SerializeField] private Button displaybutton1, displaybutton2;
     [SerializeField] private Image[] skill_slots;
-    private string[] testParts = { "CES301", "LTN411", "HDS003", "AES707", "AES104", "PBS000" };
     private WeaponManager WeaponManager;
     private SkillManager SkillManager;
+    private MechPartManager MechPartManager;
     private Transform[] contents;
     private int activeTab;
     //private Dictionary<string, string> equipped;
@@ -21,6 +21,7 @@ public class HangarManager : MonoBehaviour {
     private void Start() {
         WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
         SkillManager = Resources.Load<SkillManager>("SkillManager");
+        MechPartManager = Resources.Load<MechPartManager>("MechPartManager");
 
         //Mech m = UserData.myData.Mech[0];
 
@@ -48,10 +49,11 @@ public class HangarManager : MonoBehaviour {
         }
 
         // Debug, take out
-        foreach (string part in testParts) {
-            //		foreach (string part in UserData.myData.Owns) {
+        Part[] Parts = MechPartManager.GetAllParts();
+        foreach (Part part in Parts) {
+            //foreach (string part in UserData.myData.Owns) {
             int parent = -1;
-            switch (part[0]) {
+            switch (part.name[0]) {
                 case 'H':
                 parent = 0;
                 break;
@@ -76,11 +78,11 @@ public class HangarManager : MonoBehaviour {
             uiPart.transform.SetParent(contents[parent]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
-            Sprite s = Resources.Load<Sprite>(part);
+            Sprite s = Resources.Load<Sprite>(part.name);
             if (s == null) Debug.LogError(part + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
-            uiPart.GetComponentInChildren<Text>().text = part;
-            uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => Equip(part, -1));
+            uiPart.GetComponentInChildren<Text>().text = part.displayName;
+            uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => Equip(part.name, -1));
         }
 
         LoadWeapons();
@@ -98,7 +100,7 @@ public class HangarManager : MonoBehaviour {
             Sprite s = Resources.Load<Sprite>(weaponName);
             if (s == null) Debug.Log(weapon + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
-            uiPart.GetComponentInChildren<Text>().text = weaponName;
+            uiPart.GetComponentInChildren<Text>().text = weapon.displayName == "" ? weaponName : weapon.displayName;
 
             Button[] btns = uiPart.GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {
@@ -127,7 +129,7 @@ public class HangarManager : MonoBehaviour {
             if (s == null) Debug.Log(skill.name + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
             uiPart.transform.Find("skillname").GetComponent<Text>().text = skillName;
-            uiPart.transform.Find("weaponType").GetComponent<Text>().text = "L : "+skill.weaponTypeL + " / R : " + skill.weaponTypeR;
+            uiPart.transform.Find("weaponType").GetComponent<Text>().text = "L : " + skill.weaponTypeL + " / R : " + skill.weaponTypeR;
 
             Button[] btns = uiPart.GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {
