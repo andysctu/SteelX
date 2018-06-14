@@ -22,7 +22,7 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if ( (mcbt.FuelEmpty() || !Input.GetKey(KeyCode.Space))) {
+		if ( (mcbt.IsFuelEmpty() || !Input.GetKey(KeyCode.Space))) {
 			mctrl.Boost (false);
 			animator.SetFloat(speed_id, 0);
 			animator.SetBool(boost_id, false);

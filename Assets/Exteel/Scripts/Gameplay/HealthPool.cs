@@ -40,12 +40,12 @@ public class HealthPool : Photon.MonoBehaviour {
 		if(PlayerInZone.IsThePlayerInside()){
 			if(Time.time - LastCheckTime >= healDeltaTime){
 				if(!mechCombat.IsHpFull() && syncHealthPoolBar.isAvailable){
-					if(mechCombat.GetMaxHp() - mechCombat.CurrentHP() >= healAmount){
+					if(mechCombat.GetMaxHp() - mechCombat.CurrentHP >= healAmount){
 						LastCheckTime = Time.time;
 						mechCombat.photonView.RPC ("OnHeal", PhotonTargets.All, 0, healAmount);
 					}else{
 						LastCheckTime = Time.time;
-						mechCombat.photonView.RPC ("OnHeal", PhotonTargets.All, 0, (mechCombat.GetMaxHp() - mechCombat.CurrentHP()));
+						mechCombat.photonView.RPC ("OnHeal", PhotonTargets.All, 0, (mechCombat.GetMaxHp() - mechCombat.CurrentHP));
 					}
 				}else{
 					LastCheckTime = Time.time;

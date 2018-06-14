@@ -10,7 +10,7 @@ public class LoginManager : MonoBehaviour {
 	public InputField[] fields;
 	public GameObject error;
     public Dropdown serverToConnect;
-    string region, gameVersion = "1.3";
+    string region, gameVersion = "1.4";
 
     private int focus = 0;
 

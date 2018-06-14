@@ -6,7 +6,6 @@ using System;
 public class Sync : Photon.MonoBehaviour {
 
 	[SerializeField]PhotonView pv;
-	[SerializeField]MechCombat mcbt;
     [SerializeField]SkillController SkillController;
 	[SerializeField]Camera cam;
 
@@ -44,14 +43,12 @@ public class Sync : Photon.MonoBehaviour {
 				this.trueLoc = (Vector3)stream.ReceiveNext();
 				this.trueRot = (Quaternion)stream.ReceiveNext();
 				cam.transform.rotation = (Quaternion)stream.ReceiveNext ();
-				mcbt.SetCurrentHp((int)stream.ReceiveNext());
 			}
 		}else{
 			if(pv.isMine){
 				stream.SendNext(transform.position);
 				stream.SendNext(transform.rotation);
 				stream.SendNext (cam.transform.rotation);
-				stream.SendNext (mcbt.CurrentHP ());
 			}
 		}
 	}

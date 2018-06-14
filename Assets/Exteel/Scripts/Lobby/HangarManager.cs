@@ -126,7 +126,8 @@ public class HangarManager : MonoBehaviour {
             Sprite s = skill.icon;
             if (s == null) Debug.Log(skill.name + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
-            uiPart.GetComponentInChildren<Text>().text = skillName;
+            uiPart.transform.Find("skillname").GetComponent<Text>().text = skillName;
+            uiPart.transform.Find("weaponType").GetComponent<Text>().text = "L : "+skill.weaponTypeL + " / R : " + skill.weaponTypeR;
 
             Button[] btns = uiPart.GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {

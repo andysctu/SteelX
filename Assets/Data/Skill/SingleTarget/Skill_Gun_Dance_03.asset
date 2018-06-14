@@ -15,8 +15,8 @@ MonoBehaviour:
   icon_grey: {fileID: 21300216, guid: 00429edee359949d9955d2393313fad6, type: 3}
   weaponTypeL: SMG
   weaponTypeR: SMG
-  playerAnimation1: {fileID: 7400000, guid: f9f6ade573dfe0846ae4475104ba874c, type: 2}
-  playerAnimation2: {fileID: 0}
+  playerAnimation: {fileID: 7400000, guid: f9f6ade573dfe0846ae4475104ba874c, type: 2}
+  cameraAnimation: {fileID: 7400000, guid: 604ca372d3d38a348aa1aec933567f5d, type: 2}
   hasWeaponAnimation: 1
   hasBoosterAnimation: 0
   weaponAnimationL: {fileID: 7400000, guid: 0fb8f97acdc27b441977011c6d331729, type: 2}
@@ -38,8 +38,8 @@ MonoBehaviour:
     cooldown: 5
   targetAnimation_front: {fileID: 7400000, guid: 7937e94e93654784aab02876b9026a90,
     type: 2}
-  targetAnimation_back: {fileID: 7400000, guid: 138f744c97c669d4f891364a76b476b5,
-    type: 3}
+  targetAnimation_back: {fileID: 7400000, guid: 57862f68c4a34994c966d4db4c87f91d,
+    type: 2}
   SingleTargetSkillParams:
     crosshairRadius: 20
     detectRange: 50

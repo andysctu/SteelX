@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
 public class Combat : Photon.MonoBehaviour {
-	public const int MAX_HP = 2000;
-	public const float MAX_FUEL = 2000.0f;
+    private int max_hp = 2000;
+	public int MAX_HP { get { return max_hp ;} protected set { max_hp = value ;} }
+    public const float MAX_FUEL = 2000;
+    public int CurrentHP { get; protected set; }
 
-	protected int currentHP;
-
-	protected GameManager gm;
+    protected GameManager gm;
 
 	[PunRPC]
 	public virtual void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown) {}
@@ -22,15 +22,11 @@ public class Combat : Photon.MonoBehaviour {
 		}
 	}
 
-	public int CurrentHP() {
-		return currentHP;
-	}
-
 	public int GetMaxHp(){
 		return MAX_HP;
 	}
 
     public bool IsHpFull() {
-        return (currentHP >= MAX_HP);
+        return (CurrentHP >= MAX_HP);
     }
 }

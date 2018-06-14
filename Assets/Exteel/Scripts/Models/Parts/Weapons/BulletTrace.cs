@@ -22,6 +22,8 @@ public class BulletTrace : MonoBehaviour {
     private bool isCollided = false;
     private bool hasSlowdown = false, showHitOnBulletCollision = false, displayKill = false;
 
+    [HideInInspector]public bool interactWithTerrainWhenOnTarget = true;
+
     void Start() {
         initComponents();
         initVelocity();
@@ -109,12 +111,12 @@ public class BulletTrace : MonoBehaviour {
             MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
             if (mcbt == null) {
                 //drone
-                if (target.transform.root.GetComponent<DroneCombat>().CurrentHP() <= 0)
+                if (target.transform.root.GetComponent<DroneCombat>().CurrentHP <= 0)
                     target.transform.root.GetComponent<HUD>().DisplayKill(cam);
                 else
                     target.transform.root.GetComponent<HUD>().DisplayHit(cam);
             } else {
-                if (mcbt.CurrentHP() <= 0)
+                if (mcbt.CurrentHP <= 0)
                     target.transform.root.GetComponent<HUD>().DisplayKill(cam);
                 else
                     target.transform.root.GetComponent<HUD>().DisplayHit(cam);
@@ -123,7 +125,7 @@ public class BulletTrace : MonoBehaviour {
     }
 
     void OnParticleCollision(GameObject other) {
-        if (isCollided)
+        if (isCollided || !interactWithTerrainWhenOnTarget)
             return;
 
         isCollided = true;

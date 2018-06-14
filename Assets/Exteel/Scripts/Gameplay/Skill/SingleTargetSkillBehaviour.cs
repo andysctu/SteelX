@@ -60,20 +60,11 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             target.transform.LookAt((angle > 90) ? transform.position + new Vector3(0, 5, 0) : transform.position + new Vector3(0, 5, 0) + transform.forward * 9999);
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
 
-            target_SkillController.SetSkillUser(transform);
-
-            if (player_pv.isMine || target.tag == "Drone") {
-                SkillCam skillcam = transform.Find("SkillCam").GetComponent<SkillCam>();
-                if (skillcam != null)
-                    skillcam.SetTarget(target);
-            } else if (target_pv.isMine) {
-                SkillCam skillcam = target_pv.transform.Find("SkillCam").GetComponent<SkillCam>();
-                if (skillcam != null)
-                    skillcam.SetTarget(transform.root);
-            }
-
             //Play target on skill animation
-            if (target_SkillController != null) target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation());
+            if (target_SkillController != null) {
+                target_SkillController.SetSkillUser(transform);
+                target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation(), config.GetTargetCamAnimation());
+            }
 
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);

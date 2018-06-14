@@ -20,8 +20,8 @@ public class AnimatorVars : MonoBehaviour {
 	[HideInInspector]public int direction_id;
 	[HideInInspector]public int onMelee_id;
 
-    [HideInInspector] public int blockL_id;
-    [HideInInspector] public int blockR_id;
+    [HideInInspector]public int blockL_id;
+    [HideInInspector]public int blockR_id;
 
     [HideInInspector]public int slashL_id;
 	[HideInInspector]public int slashL2_id;
@@ -35,8 +35,9 @@ public class AnimatorVars : MonoBehaviour {
     
 	[HideInInspector]public int BCNPose_id;
 	[HideInInspector]public int OnBCN_id;
+    [HideInInspector]public int BCNShoot_id;
 
-	public bool inHangar = false;//in Store also manually set this to TRUE
+    public bool inHangar = false;//in Store also manually set this to TRUE
 
 	void Start () {
 		FindComponents ();
@@ -81,5 +82,7 @@ public class AnimatorVars : MonoBehaviour {
 
 		BCNPose_id = Animator.StringToHash ("BCNPose");
 		OnBCN_id = Animator.StringToHash ("OnBCN");
-	}
+        BCNShoot_id = Animator.StringToHash("BCNShoot");
+
+    }
 }

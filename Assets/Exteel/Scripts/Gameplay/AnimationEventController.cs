@@ -36,19 +36,19 @@ public class AnimationEventController : MonoBehaviour {
     }
 
 	public void CallLMeleePlaying(int isPlaying){//this can control the drop time when attacking in air
-		MechCombat.SetLMeleePlaying(isPlaying);
+		MechCombat.SetMeleePlaying(0, isPlaying==1);
 	}
 
 	public void CallRMeleePlaying(int isPlaying){
-		MechCombat.SetRMeleePlaying(isPlaying);
+		MechCombat.SetMeleePlaying(1, isPlaying==1);
 	}
 
 	public void CallShowTrailL(int show){
-		MechCombat.ShowTrailL (show==1);
+		MechCombat.ShowTrail (0, show==1);
 	}
 
 	public void CallShowTrailR(int show){
-		MechCombat.ShowTrailR (show==1);
+		MechCombat.ShowTrail (1, show==1);
 	}
 		
 	public void CallSlashLToFalse(int num){
@@ -149,9 +149,9 @@ public class AnimationEventController : MonoBehaviour {
 
 	public void Smash(int hand){
 		if (hand == 0)
-			MechCombat.isLMeleePlaying = 1;
+			MechCombat.IsLMeleePlaying = true;
 		else
-			MechCombat.isRMeleePlaying = 1;
+			MechCombat.IsRMeleePlaying = true;
 
 
 		if (Animator.GetBool (AnimatorVars.grounded_id)) {
@@ -287,7 +287,7 @@ public class AnimationEventController : MonoBehaviour {
 		if (!pv.isMine)
 			return;
 		
-		MechCombat.on_BCNShoot = (b==1);
+		MechCombat.On_BCNShoot = (b==1);
 		if(b==0){
 			Animator.SetBool ("BCNPose", false);
 			Animator.SetBool ("OnBCN", false);

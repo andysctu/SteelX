@@ -42,7 +42,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
 
     private void InitComponent() {
         bm = transform.root.GetComponent<BuildMech>();
-        cam = (usingSkillCam) ? transform.root.GetComponentInChildren<SkillCam>().GetComponent<Camera>() : transform.root.GetComponent<SkillController>().GetCamera();
+        cam = (usingSkillCam) ? transform.root.GetComponent<SkillController>().GetSkillCamera() : transform.root.GetComponent<SkillController>().GetCamera();
         player_pv = transform.root.GetComponent<PhotonView>();
         mechCombat = transform.root.GetComponent<MechCombat>();
         Transform CurrentMech = transform.root.Find("CurrentMech");
@@ -124,7 +124,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                         BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
 
                         bulletTrace.SetTarget(t, false);
-
+                        bulletTrace.interactWithTerrainWhenOnTarget = false;
                         if (showHit)
                             ShowHitMsg(t, bulletTrace);
                     } else {
@@ -136,7 +136,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 //not multi-Target
                 GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
                 BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
-
+                bulletTrace.interactWithTerrainWhenOnTarget = false;
                 if (onTarget) {
                     bulletTrace.SetTarget(target, false);
                 } else {
@@ -200,13 +200,13 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
             if (displayKill) {
                 MechCombat target_mcbt = target.GetComponent<MechCombat>();
                 if (target_mcbt == null) {//Drone
-                    if (target.GetComponent<DroneCombat>().CurrentHP() <= 0) {
+                    if (target.GetComponent<DroneCombat>().CurrentHP <= 0) {
                         target.GetComponent<HUD>().DisplayKill(cam);
                     } else {
                         target.GetComponent<HUD>().DisplayHit(cam);
                     }
                 } else {
-                    if (target_mcbt.CurrentHP() <= 0) {
+                    if (target_mcbt.CurrentHP <= 0) {
                         target.GetComponent<HUD>().DisplayKill(cam);
                     } else {
                         target.GetComponent<HUD>().DisplayHit(cam);

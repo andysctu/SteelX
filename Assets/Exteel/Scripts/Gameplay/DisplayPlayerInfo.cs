@@ -75,7 +75,7 @@ public class DisplayPlayerInfo : MonoBehaviour {
 	}
 
     int GetCurrentMechHP() {
-        return mcbt.CurrentHP();
+        return mcbt.CurrentHP;
     }
 
     int GetCurrentMechMaxHP() {
@@ -83,7 +83,7 @@ public class DisplayPlayerInfo : MonoBehaviour {
     }
 
     int GetCurrentDroneHP() {
-        return drone_mcbt.CurrentHP();
+        return drone_mcbt.CurrentHP;
     }
 
     int GetCurrentDroneMaxHP() {

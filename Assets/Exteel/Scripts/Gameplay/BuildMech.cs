@@ -128,10 +128,10 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null (in offline )        
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[6];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[6];
 
         if(skill_IDs == null) {//TODO : remake this
             Debug.Log("skill_ids is null. Set defualt skills");
@@ -366,13 +366,27 @@ public class BuildMech : Photon.MonoBehaviour {
         animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
 		if (animator != null && buildLocally)CheckAnimatorState ();
 
-        if (weapons[(weaponOffset + 2) % 4] != null) weapons [(weaponOffset+2)%4].SetActive (false);
-		if(weapons[(weaponOffset + 3) % 4] != null) weapons [(weaponOffset+3)%4].SetActive (false);
-
-		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
+        
+        if (mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
 		for (int i = 0; i < 4; i++)//turn off trail
 			ShutDownTrail (weapons [i]);
-	}
+
+        //if (weapons[(weaponOffset + 2) % 4] != null)  weapons [(weaponOffset+2)%4].SetActive (false);
+        //if(weapons[(weaponOffset + 3) % 4] != null) weapons [(weaponOffset+3)%4].SetActive (false);
+
+        if (weapons[(weaponOffset + 2) % 4] != null) {
+            Renderer[] renderers = weapons[(weaponOffset + 2) % 4].GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers) {
+                renderer.enabled = false;
+            }
+        }
+        if (weapons[(weaponOffset + 3) % 4] != null) {
+            Renderer[] renderers = weapons[(weaponOffset + 3) % 4].GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers) {
+                renderer.enabled = false;
+            }
+        }
+    }
 
     private void buildSkills(int[] skill_IDs) {
         if(skill_IDs == null) {
@@ -557,21 +571,17 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
     private void ShutDownTrail(GameObject weapon){
-        if (weapon == null)
-            return;
+        if (weapon == null)return;
 
         Transform trail_transform = weapon.transform.Find("trail");
         XWeaponTrail trail = (trail_transform == null )? null : trail_transform.GetComponent<XWeaponTrail>();
 
-        if (trail == null)
-			return;
-
-		trail.Deactivate ();
+        if (trail != null) trail.Deactivate();
 	}
 
     private void UpdateMechCombatVars(){
-		if (mcbt == null)
-			return;
+		if (mcbt == null)return;
+
         if (OnWeaponBuilt != null)OnWeaponBuilt();
         if(mcbt.OnWeaponSwitched!=null)mcbt.OnWeaponSwitched();
 

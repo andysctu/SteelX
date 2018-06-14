@@ -1414,8 +1414,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 254.2, y: 15.35, z: -62.2}
+  m_LocalRotation: {x: -0, y: -0.7149843, z: -0, w: 0.69914055}
+  m_LocalPosition: {x: 349.6825, y: 7.13, z: 385.74258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 405268}
@@ -1425,7 +1425,7 @@ Transform:
   - {fileID: 4555769217303906}
   - {fileID: 4905570990770024}
   - {fileID: 4157103976803312}
-  - {fileID: 4572067945337534}
+  - {fileID: 4009211287631082}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -91.284004, z: 0}
@@ -3000,7 +3000,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   cam: {fileID: 2087740}
-  skillcam: {fileID: 20202144477786866}
   bm: {fileID: 11422958}
   animator: {fileID: 9563454}
   defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
@@ -3008,23 +3007,17 @@ MonoBehaviour:
   TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
     type: 2}
   SkillController: {fileID: 114715354567852064}
-  jumpPower: 70
-  moveSpeed: 30
-  minBoostSpeed: 50
-  acceleration: 2
-  deceleration: 50
-  maxVerticalBoostSpeed: 35
-  maxHorizontalBoostSpeed: 60
+  fuelProperties:
+    fuelDrain: 250
+    fuelGain: 1000
+    minFuelRequired: 450
   isDead: 0
   is_overheat: 00000000
   MaxHeat: 100
   cooldown: 16
-  BCNbulletNum: 0
+  BCNbulletNum: 2
   isOnBCNPose: 0
-  on_BCNShoot: 0
   onSkill: 0
-  isLMeleePlaying: 0
-  isRMeleePlaying: 0
   CanMeleeAttack: 1
   slashL_threshold: 0
   slashR_threshold: 0
@@ -3054,6 +3047,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   SkillController: {fileID: 114715354567852064}
+  movementVariables:
+    maxVerticalBoostSpeed: 35
+    maxHorizontalBoostSpeed: 60
+    jumpPower: 70
+    moveSpeed: 30
+    minBoostSpeed: 50
+    acceleration: 2
+    deceleration: 50
   Gravity: 4
   maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
@@ -3063,6 +3064,8 @@ MonoBehaviour:
   LocalxOffset: -4
   cam_orbitradius: 19
   cam_angleoffset: 33
+  onSkillMoving: 0
+  onInstantMoving: 0
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3176,7 +3179,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4300000, guid: 55568ccef25dd4c84a9db7386042f519, type: 3}
   m_Bones:
@@ -3285,7 +3288,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4300000, guid: 43383782c493f43ffbc849eb4d64cb0c, type: 3}
   m_Bones:
@@ -3394,7 +3397,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4300000, guid: 05023dfd598844b86bfab7f84e3539b2, type: 3}
   m_Bones:
@@ -3503,7 +3506,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4300000, guid: 66e3c604ac26d4ace8f108237115e7e5, type: 3}
   m_Bones:
@@ -3612,7 +3615,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 4300000, guid: 53ca3c7e7c1c84f198a63f0b3f9e0c29, type: 3}
   m_Bones:
@@ -4167,7 +4170,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1314402786651118
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -4175,9 +4178,8 @@ GameObject:
   - component: {fileID: 4572067945337534}
   - component: {fileID: 20202144477786866}
   - component: {fileID: 124823071314001648}
-  - component: {fileID: 114765012402591752}
   m_Layer: 8
-  m_Name: SkillCam
+  m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4229,6 +4231,22 @@ GameObject:
   - component: {fileID: 114431761862414590}
   m_Layer: 5
   m_Name: Image0 (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1373651145851612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4009211287631082}
+  - component: {fileID: 95367388477678554}
+  m_Layer: 8
+  m_Name: PlayerSkillCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5036,6 +5054,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4009211287631082
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1373651145851612}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4572067945337534}
+  m_Father: {fileID: 400766}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4040618706781064
 Transform:
   m_ObjectHideFlags: 1
@@ -5254,12 +5286,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1314402786651118}
-  m_LocalRotation: {x: 0.031076547, y: -0, z: -0, w: 0.999517}
-  m_LocalPosition: {x: 0, y: 12.63, z: -23.18}
+  m_LocalRotation: {x: 0.031076549, y: 0.000000029802322, z: -9.313226e-10, w: 0.9995171}
+  m_LocalPosition: {x: -0, y: 12.629999, z: -23.180014}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 400766}
-  m_RootOrder: 7
+  m_Father: {fileID: 4009211287631082}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 3.5620003, y: 0, z: 0}
 --- !u!4 &4630037369940086
 Transform:
@@ -5749,6 +5781,23 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &95367388477678554
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1373651145851612}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7ef6b00267c1b9c49b9ae8beb6e12999, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!95 &95953646033232842
 Animator:
   serializedVersion: 3
@@ -5902,7 +5951,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pv: {fileID: 11416036}
-  mcbt: {fileID: 11445986}
   SkillController: {fileID: 114715354567852064}
   cam: {fileID: 2087740}
 --- !u!114 &114051533737220576
@@ -6161,6 +6209,7 @@ MonoBehaviour:
   slashR4_id: 0
   BCNPose_id: 0
   OnBCN_id: 0
+  BCNShoot_id: 0
   inHangar: 0
 --- !u!114 &114189640356066892
 MonoBehaviour:
@@ -6916,8 +6965,9 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   mechcombat: {fileID: 11445986}
   mechController: {fileID: 11462782}
-  skillAnimtor: {fileID: 95953646033232842}
+  skillAnimator: {fileID: 95953646033232842}
   mainAnimator: {fileID: 9563454}
+  skillcamAnimator: {fileID: 95367388477678554}
   cam: {fileID: 2087740}
   skillcam: {fileID: 20202144477786866}
   skills:
@@ -6994,22 +7044,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114765012402591752
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1314402786651118}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5939ee7819ce6a94a9d401451824968b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 400766}
-  hips: {fileID: 428374}
-  Cam_Distance_To_Mech: 20
-  lerpSpeed: 2.5
-  height: {x: 0, y: 12, z: 0}
 --- !u!114 &114777531502691040
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -7,7 +7,7 @@ public class SkillHUD : MonoBehaviour {
     [SerializeField] private Text[] energyCosts;
     private SkillConfig[] skills;
     private float[] curCooldowns, curMaxCooldowns;
-
+    private int weaponOffset = 0;
     private const float MARGIN_OF_ERROR = 0.05f;
 
     public void InitSkills(SkillConfig[] skills) {//this is called in skill controller
@@ -61,7 +61,9 @@ public class SkillHUD : MonoBehaviour {
                     curCooldowns[i] = 0;
                 } else {
                     curCooldowns[i] -= Time.deltaTime;
-                }
+                }                
+
+                if(skillIcons[i].gameObject.activeSelf)
                 skillCooldowns[i].fillAmount = curCooldowns[i] / curMaxCooldowns[i];
             }
         }
@@ -71,4 +73,5 @@ public class SkillHUD : MonoBehaviour {
         curCooldowns[skill_num] = MaxCooldown;
         curMaxCooldowns[skill_num] = MaxCooldown;
     }
+
 }

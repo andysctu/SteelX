@@ -7,31 +7,38 @@ public class DroneCombat : Combat {
 	public Transform[] Hands;
 
     [SerializeField] private SkillController SkillController;
+    [SerializeField] private LayerMask Terrain;
     private int default_layer = 0, player_layer = 8;
 	private EffectController EffectController;
-    private bool onSkill = false;
+    private bool onSkill = false, onSkillMoving = false;
+    private float instantMoveSpeed, curInstantMoveSpeed;
+    private Vector3 instantMoveDir;
+    private CharacterController CharacterController;
+    private float TeleportMinDistance = 3f;
 
     private void Awake() {
         if(SkillController!=null)SkillController.OnSkill += OnSkill;
     }
     void Start () {
-		currentHP = MAX_HP;
+		CurrentHP = MAX_HP;
 		EffectController = GetComponent<EffectController> ();
 		findGameManager();
         EffectController.RespawnEffect();
-		gm.RegisterPlayer(photonView.viewID, 0);
+        CharacterController = GetComponent< CharacterController >();
+
+        gm.RegisterPlayer(photonView.viewID, 0);
 	}
 
 	[PunRPC]
 	public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
-        Debug.Log("currenthp : " + currentHP);
-		currentHP -= d;
+        Debug.Log("currenthp : " + CurrentHP);
+		CurrentHP -= d;
 
         if (CheckIsSwordByStr(weapon)){
             EffectController.SlashOnHitEffect(false, 0);
         }
 
-		if (currentHP <= 0) {
+		if (CurrentHP <= 0) {
 //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
 			//gm.RegisterKill(shooter_viewID, photonView.viewID);
@@ -41,7 +48,7 @@ public class DroneCombat : Combat {
 	[PunRPC]
 	public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
         Debug.Log("dmg on shield : " + d);
-		currentHP -= d;
+		CurrentHP -= d;
 
         if (CheckIsSwordByStr(weapon)){
             EffectController.SlashOnHitEffect(true, hand);
@@ -49,21 +56,51 @@ public class DroneCombat : Combat {
             EffectController.SmashOnHitEffect(true, hand);
         }
 
-        if (currentHP <= 0) {
-			//			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
+        if (CurrentHP <= 0) {
+			//if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
 			DisableDrone ();
 			gm.RegisterKill(shooter_viewID, photonView.viewID);
 		}
 	}
 
-	[PunRPC]
+    private void Update() {
+        if (onSkillMoving) {
+            InstantMove();
+        }
+    }
+
+    public void SkillSetMoving(Vector3 v) {
+        onSkillMoving = true;
+        instantMoveSpeed = v.magnitude;
+        instantMoveDir = v;
+        curInstantMoveSpeed = instantMoveSpeed;
+    }
+
+    private void InstantMove() {
+        instantMoveSpeed /= 1.6f;//1.6 : decrease coeff.
+
+        CharacterController.Move(instantMoveDir * instantMoveSpeed);
+
+        //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, -Vector3.up, out hit, Terrain)) {
+            if (Vector3.Distance(hit.point, transform.position) >= TeleportMinDistance && !Physics.CheckSphere(hit.point + new Vector3(0, 2.1f, 0), CharacterController.radius, Terrain)) {
+                transform.position = hit.point;
+            }
+        }
+    }
+    [PunRPC]
 	void KnockBack(Vector3 dir, float length){
 		transform.position += dir * length;
 	}
 
     public void Skill_KnockBack(float length) {
+        Debug.Log("this gets called");
         Transform skillUser = SkillController.GetSkillUser();
-        GetComponent<CharacterController>().Move((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
+
+        onSkillMoving = true;
+        SkillSetMoving((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
+        //GetComponent<CharacterController>().Move((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
     }
 
     void DisableDrone() {
@@ -88,7 +125,7 @@ public class DroneCombat : Combat {
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = true;
 		}
-		currentHP = MAX_HP;
+		CurrentHP = MAX_HP;
 	}
 
     void OnSkill(bool b) {

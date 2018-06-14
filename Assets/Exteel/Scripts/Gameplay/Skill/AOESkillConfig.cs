@@ -24,23 +24,15 @@ public class AOESkillConfig : SkillConfig {
         if ((weaponTypeL == "" || (bm.weaponScripts[0] != null && weaponTypeL == bm.weaponScripts[0].GetType().ToString())) &&
             (weaponTypeR == "" || (bm.weaponScripts[1] != null && weaponTypeR == bm.weaponScripts[1].GetType().ToString()))) {
             AttachEffectsOnWeapons(player, 0, 1, skill_num);
-            //reverse order
-        } else if ((weaponTypeL == "" || (bm.weaponScripts[1] != null && weaponTypeL == bm.weaponScripts[1].GetType().ToString())) &&
-            (weaponTypeR == "" || (bm.weaponScripts[0] != null && weaponTypeR == bm.weaponScripts[0].GetType().ToString()))) {
-            AttachEffectsOnWeapons(player, 1, 0, skill_num);
         }
 
         if ((weaponTypeL == "" || (bm.weaponScripts[2] != null && weaponTypeL == bm.weaponScripts[2].GetType().ToString())) &&
             (weaponTypeR == "" || (bm.weaponScripts[3] != null && weaponTypeR == bm.weaponScripts[3].GetType().ToString()))) {
             AttachEffectsOnWeapons(player, 2, 3, skill_num);
-            //reverse order
-        } else if ((weaponTypeL == "" || (bm.weaponScripts[3] != null && weaponTypeL == bm.weaponScripts[3].GetType().ToString())) &&
-            (weaponTypeR == "" || (bm.weaponScripts[2] != null && weaponTypeR == bm.weaponScripts[2].GetType().ToString()))) {
-            AttachEffectsOnWeapons(player, 3, 2, skill_num);
         }
     }
 
-    private void AttachEffectsOnWeapons(GameObject player, int L, int R, int skill_num) {//left weapon effects are attached to "L"
+    private void AttachEffectsOnWeapons(GameObject player, int L, int R, int skill_num) {
         BuildMech bm = player.GetComponent<BuildMech>();
         SkillController SkillController = player.GetComponent<SkillController>();
 

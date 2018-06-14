@@ -400,13 +400,16 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	void SendLockedMessage(int id, string Name){
+        PhotonView target_pv = PhotonView.Find(id);
+        if(target_pv == null || target_pv.tag == "Drone") return;
+
 		if (id == LastLockTargetID) {
 			if (Time.time - TimeOfLastSend >= SendMsgDeltaTime) {
-				pv.RPC ("OnLocked", PhotonTargets.All, Name);
+                target_pv.RPC ("OnLocked", PhotonTargets.All, Name);
 				TimeOfLastSend = Time.time;
 			}
 		} else {
-			pv.RPC ("OnLocked", PhotonTargets.All, Name);
+            target_pv.RPC ("OnLocked", PhotonTargets.All, Name);
 			TimeOfLastSend = Time.time;
 			LastLockTargetID = id;
 		}

@@ -100,7 +100,7 @@ public class RCLBulletTrace : MonoBehaviour {
 
             if (hitColliders [i].tag == "Shield") {//TODO : check if shield overheat
 
-				if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP () - bulletdmg / 2 <= 0) {
+				if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP - bulletdmg / 2 <= 0) {
                     colliderPV.GetComponent<HUD>().DisplayKill(cam);
 				} else {
                     colliderPV.GetComponent<HUD>().DisplayDefense(cam);
@@ -111,7 +111,7 @@ public class RCLBulletTrace : MonoBehaviour {
 
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
 			} else {
-				if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP () - bulletdmg <= 0) {
+				if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP - bulletdmg <= 0) {
                     colliderPV.GetComponent<HUD>().DisplayKill(cam);
 				} else {
                     colliderPV.GetComponent<HUD>().DisplayHit(cam);

@@ -2959,7 +2959,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1613417622782256}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.7102623, z: -0, w: 0.7039372}
   m_LocalPosition: {x: 367.28, y: 0.1, z: 386.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2972,7 +2972,7 @@ Transform:
   - {fileID: 224711585304872402}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90.513, z: 0}
 --- !u!4 &4451744667281234
 Transform:
   m_ObjectHideFlags: 1
@@ -3418,7 +3418,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1264292157911724}
-  m_LocalRotation: {x: -0.038065266, y: -0.01915414, z: 0.008565395, w: 0.99905497}
+  m_LocalRotation: {x: -0.038065262, y: -0.019154139, z: 0.008565394, w: 0.9990549}
   m_LocalPosition: {x: 0.000010508672, y: 0.0005273358, z: -0.00014903198}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -3432,7 +3432,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1994556415941060}
-  m_LocalRotation: {x: -0.038065236, y: 0.01915412, z: -0.008565452, w: 0.99905497}
+  m_LocalRotation: {x: -0.038065232, y: 0.019154118, z: -0.008565451, w: 0.9990549}
   m_LocalPosition: {x: -0.000010509257, y: 0.00052733603, z: -0.00014903113}
   m_LocalScale: {x: 1.0000001, y: 1, z: 1.0000001}
   m_Children:
@@ -3761,7 +3761,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1593936921948064}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.70710677}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 455.04498, y: 455.045, z: 455.045}
   m_Children:
@@ -4589,6 +4589,9 @@ MonoBehaviour:
   - {fileID: 4421656274130566}
   - {fileID: 4018446990084242}
   SkillController: {fileID: 114435027189249138}
+  Terrain:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &114076035277099748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4796,8 +4799,9 @@ MonoBehaviour:
   bm: {fileID: 0}
   mechcombat: {fileID: 0}
   mechController: {fileID: 0}
-  skillAnimtor: {fileID: 95043620281643646}
+  skillAnimator: {fileID: 95043620281643646}
   mainAnimator: {fileID: 95198505659783780}
+  skillcamAnimator: {fileID: 0}
   cam: {fileID: 0}
   skillcam: {fileID: 0}
   skills:
@@ -5180,6 +5184,7 @@ MonoBehaviour:
   slashR4_id: 0
   BCNPose_id: 0
   OnBCN_id: 0
+  BCNShoot_id: 0
   inHangar: 0
 --- !u!114 &114930514929124886
 MonoBehaviour:

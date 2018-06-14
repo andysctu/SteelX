@@ -7,8 +7,9 @@ public abstract class SkillConfig : ScriptableObject {
 
     public string weaponTypeL;
     public string weaponTypeR;//If two-handed , put it on type L
-    [Tooltip("Animation 1 must match the order of the  types ; Animation 2 is the reverse order")]
-    [SerializeField] protected AnimationClip playerAnimation1, playerAnimation2;
+
+    [SerializeField] protected AnimationClip playerAnimation;
+    [SerializeField] protected AnimationClip cameraAnimation, target_CamAnimation;
 
     public bool hasWeaponAnimation = true, hasBoosterAnimation = false;
     //if weaponAnimation L or R is null & hasWeaponAnimation == true, then it is supposed to have their own animation
@@ -22,20 +23,24 @@ public abstract class SkillConfig : ScriptableObject {
 
     public abstract bool Use(SkillController SkillController, int skill_num);
 
-    public AnimationClip GetPlayerAniamtion(bool isOrderReverse) {//Is left hand weapon type = weaponTypeL & right hand weapon type = weaponTypeR
-        return (isOrderReverse) ? playerAnimation2 : playerAnimation1;
+    public AnimationClip GetPlayerAniamtion() {
+        return playerAnimation;
     }
 
-    public AnimationClip GetWeaponAnimation(int hand, bool isOrderReverse) {
+    public AnimationClip GetWeaponAnimation(int hand) {
         if (hand == 0) {
-            return (isOrderReverse) ? weaponAnimationR : weaponAnimationL;
+            return weaponAnimationL;
         } else {
-            return (isOrderReverse) ? weaponAnimationL : weaponAnimationR;
+            return weaponAnimationR;
         }
     }
 
     public AnimationClip GetBoosterAnimation() {
         return boosterAnimation;
+    }
+
+    public AnimationClip GetCamAnimation() {
+        return cameraAnimation;
     }
 
     public GameObject[] GetPlayerEffects() {
