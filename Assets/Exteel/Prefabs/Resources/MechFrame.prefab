@@ -2910,7 +2910,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mcbt: {fileID: 11445986}
+  MechCombat: {fileID: 11445986}
+  MechController: {fileID: 11462782}
   Sounds: {fileID: 114000010976113334}
   MechIK: {fileID: 114093068494878398}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
@@ -2960,6 +2961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MechController: {fileID: 11462782}
   HeatBar: {fileID: 114328570908798246}
   displayPlayerInfo: {fileID: 114619718678987610}
   crosshairImage: {fileID: 114672547102200730}
@@ -2975,10 +2977,10 @@ MonoBehaviour:
   TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
     type: 2}
   SkillController: {fileID: 114715354567852064}
-  fuelProperties:
-    fuelDrain: 250
-    fuelGain: 1000
-    minFuelRequired: 450
+  energyProperties:
+    energyDrain: 250
+    energyOutput: 1000
+    minENRequired: 450
   isDead: 0
   is_overheat: 00000000
   MaxHeat: 100

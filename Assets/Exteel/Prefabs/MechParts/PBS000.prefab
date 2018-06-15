@@ -362,9 +362,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48bc375cd36775e4ab9648e5a1219e95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoostStart: {fileID: 8300000, guid: 60a235079ffef40f8bffab0438095fc7, type: 3}
+  BoostOpen: {fileID: 8300000, guid: 85694ab5f1a2240bfa16915335ffdacf, type: 3}
   BoostLoop: {fileID: 8300000, guid: e529fb7ecf34944479ec3cb577df8643, type: 3}
-  ps: {fileID: 198682705277167366}
+  BoostClose: {fileID: 0}
+  PSs:
+  - {fileID: 198682705277167366}
+  animator: {fileID: 0}
 --- !u!137 &137416573210893396
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

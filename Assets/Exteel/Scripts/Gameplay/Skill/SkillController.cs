@@ -33,8 +33,9 @@ public class SkillController : MonoBehaviour {
     public event OnSkillAction OnSkill;
 
     public List<RequireSkillInfo>[] RequireInfoSkills;
-
-    private int SP = 0, maxSP = 2000;
+    
+    private int MPU = 4;//TODO : implement this
+    private int SP = 0, MAX_SP = 2000;
     private Slider SPBar;
     private Image SPBar_fill;
     private Text SPBartext;
@@ -79,6 +80,11 @@ public class SkillController : MonoBehaviour {
         LoadBoosterSkillAnimations();
         InitHUD();
         if(photonView.isMine)SkillHUD.InitSkills(skills);
+    }
+
+    public void LoadMechProperties(MechProperty mechProperty) {
+        MAX_SP = mechProperty.SP;
+        MPU = mechProperty.MPU;
     }
 
     private void Start() {
@@ -450,14 +456,14 @@ public class SkillController : MonoBehaviour {
     }
 
     public void IncreaseSP(int amount) {
-        SP = (SP + amount > maxSP) ? maxSP : SP + amount;
+        SP = (SP + amount > MAX_SP) ? MAX_SP : SP + amount;
         updateHUD();
     }
 
     private void updateHUD() {
         if (SPBar == null) return;//drone;
-        SPBar.value = SP / (float)maxSP;
-        SPBartext.text = UIExtensionMethods.BarValueToString(SP, maxSP);
+        SPBar.value = SP / (float)MAX_SP;
+        SPBartext.text = UIExtensionMethods.BarValueToString(SP, MAX_SP);
     }
 
     private void CooldownSkill(int skill_num) {

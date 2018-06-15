@@ -14233,6 +14233,7 @@ MonoBehaviour:
   MechIK: {fileID: 0}
   WeaponManager: {fileID: 0}
   SkillManager: {fileID: 0}
+  MechPartManager: {fileID: 0}
   defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
     type: 2}
   TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
@@ -15538,6 +15539,58 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!1001 &1101254565
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -90.77
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -92.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_RootOrder
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 114194581625014606, guid: db76baff42fe4a54c9d07c657343e5fd,
+        type: 2}
+      propertyPath: viewIdField
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 114194581625014606, guid: db76baff42fe4a54c9d07c657343e5fd,
+        type: 2}
+      propertyPath: instantiationId
+      value: 14
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1103488748
 GameObject:
   m_ObjectHideFlags: 0

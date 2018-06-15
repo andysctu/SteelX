@@ -148,11 +148,7 @@ public class AnimationEventController : MonoBehaviour {
 	}
 
 	public void Smash(int hand){
-		if (hand == 0)
-			MechCombat.IsLMeleePlaying = true;
-		else
-			MechCombat.IsRMeleePlaying = true;
-
+		MechCombat.SetMeleePlaying(hand, true);
 
 		if (Animator.GetBool (AnimatorVars.grounded_id)) {
 			pv.RPC ("SmashRPC", PhotonTargets.All, hand, 0);

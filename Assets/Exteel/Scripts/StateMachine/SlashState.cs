@@ -27,12 +27,12 @@ public class SlashState : MechStateMachineBehaviour {
 		if (!animator.GetBool (slashL4_id) && !animator.GetBool (slashR4_id)) {
 			mcbt.SetReceiveNextSlash (1);
 			if (animator.GetBool (slashL_id) || animator.GetBool (slashL2_id) || animator.GetBool (slashL3_id))
-				mcbt.IsLMeleePlaying = true;
+				mcbt.SetMeleePlaying(0,true);
 			else
-				mcbt.IsRMeleePlaying = true;
-		}
+				mcbt.SetMeleePlaying(1, true);
+        }
 
-		if(mcbt.IsLMeleePlaying){
+		if(mcbt.isLMeleePlaying){
 			mcbt.SlashDetect (0);
 		}else{
 			mcbt.SlashDetect (1);
@@ -47,9 +47,9 @@ public class SlashState : MechStateMachineBehaviour {
 		if ( cc == null || !cc.enabled) return;
 
 		animator.SetBool (onMelee_id, false);
-		mcbt.IsRMeleePlaying = false;
-		mcbt.IsLMeleePlaying = false;
-		mcbt.CanMeleeAttack = true;
+		mcbt.SetMeleePlaying(1, false);
+		mcbt.SetMeleePlaying(0, false);
+        mcbt.CanMeleeAttack = true;
 		mcbt.SetReceiveNextSlash (1);
 	}
 
@@ -61,7 +61,7 @@ public class SlashState : MechStateMachineBehaviour {
         }
         if ( cc == null || !cc.enabled) return;
 
-        bool b = (inAir && !mcbt.IsLMeleePlaying && !mcbt.IsRMeleePlaying);
+        bool b = (inAir && !mcbt.isLMeleePlaying && !mcbt.isRMeleePlaying);
 		if (b) {
 			mctrl.JumpMoveInAir ();
 		}
@@ -95,9 +95,9 @@ public class SlashState : MechStateMachineBehaviour {
 
 		if (inAir) {//exiting from jump melee attack
 			animator.SetBool (onMelee_id, false);
-			mcbt.IsRMeleePlaying = false;
-			mcbt.IsLMeleePlaying = false;
-			mcbt.SetReceiveNextSlash (1);
+            mcbt.SetMeleePlaying(1, false);
+            mcbt.SetMeleePlaying(0, false);
+            mcbt.SetReceiveNextSlash (1);
 		}else{
 			mcbt.CanMeleeAttack = true;//sometimes OnstateMachineExit does not ensure canslash set to true ( called before update )
 		}

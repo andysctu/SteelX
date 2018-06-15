@@ -31,7 +31,6 @@ public class DroneCombat : Combat {
 
 	[PunRPC]
 	public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
-        Debug.Log("currenthp : " + CurrentHP);
 		CurrentHP -= d;
 
         if (CheckIsSwordByStr(weapon)){
@@ -47,7 +46,6 @@ public class DroneCombat : Combat {
 
 	[PunRPC]
 	public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
-        Debug.Log("dmg on shield : " + d);
 		CurrentHP -= d;
 
         if (CheckIsSwordByStr(weapon)){

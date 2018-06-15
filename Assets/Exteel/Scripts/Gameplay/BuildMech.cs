@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS016", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
 																																								        //eng : 14
-	[SerializeField]private MechCombat mcbt;
-	[SerializeField]private Sounds Sounds;
+	[SerializeField]private MechCombat MechCombat;
+    [SerializeField]private MechController MechController;
+    [SerializeField]private Sounds Sounds;
     [SerializeField]private MechIK MechIK;
     [SerializeField]private WeaponManager WeaponManager;
     [SerializeField]private SkillManager SkillManager;
@@ -55,14 +56,14 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     void Start () {
+        InitComponents();
         CheckIfBuildLocally();
         CheckIsDataGetSaved();
 		
 		// If this is not me, don't build this mech. Someone else will RPC build it
 		if (!photonView.isMine && !buildLocally) return;
 
-        InitMechData();
-        InitComponents();
+        InitMechData();        
         InitAnimatorControllers();
 
         if (buildLocally) {
@@ -93,13 +94,13 @@ public class BuildMech : Photon.MonoBehaviour {
 		animator.runtimeAnimatorController = animatorOverrideController;
 
 		clipOverrides = new AnimationClipOverrides (animatorOverrideController.overridesCount);
-		animatorOverrideController.GetOverrides (clipOverrides);
+		animatorOverrideController.GetOverrides (clipOverrides);//write clips into clipOverrides
 	}
 
 	[PunRPC]
     private void SetName(string name) {
 		gameObject.name = name;
-		findGameManager();
+		FindGameManager();
 		gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam()==PunTeams.Team.red)? RED : BLUE);// blue & none team => set to blue
 	}
 		
@@ -179,8 +180,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
         LoadBooster(parts[4]);
 
-        SwitchBoosterAniamtionClips();
-
         buildSkills(skill_IDs);
 
         // Replace weapons
@@ -189,30 +188,34 @@ public class BuildMech : Photon.MonoBehaviour {
 
     private void LoadBooster(string booster_name) {
         Transform boosterbone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
-        if(boosterbone != null) {
-            GameObject booster = (boosterbone.childCount==0)? null : boosterbone.GetChild(0).gameObject;
-            if(booster != null) {
-                DestroyImmediate(booster);                
-            }
-            GameObject newBooster_prefab = MechPartManager.FindData(booster_name).GetPartPrefab();
+        if(boosterbone==null)return;
 
-            GameObject newBooster = Instantiate(newBooster_prefab, boosterbone);
-            newBooster.transform.localPosition = Vector3.zero;
-            newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        GameObject booster = (boosterbone.childCount==0)? null : boosterbone.GetChild(0).gameObject;
+        if(booster != null) {
+            DestroyImmediate(booster);                
         }
-    }
+        Part booster_part = MechPartManager.FindData(booster_name);
+        if(booster_part == null) { Debug.Log("Can't find booster");return;};
 
-    private void SwitchBoosterAniamtionClips() {
-        Transform boosterbone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
-        if(boosterbone == null)
-            return;
+        GameObject newBooster_prefab = booster_part.GetPartPrefab();
 
-        BoosterController booster = boosterbone.GetComponentInChildren<BoosterController>();
-        if (booster!= null && booster.GetComponent<Animator>() != null && booster.GetComponent<Animator>().runtimeAnimatorController != null) {
-            AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(booster.GetComponent<Animator>().runtimeAnimatorController);
-            booster.GetComponent<Animator>().runtimeAnimatorController = animatorOverrideController;
+        GameObject newBooster = Instantiate(newBooster_prefab, boosterbone);
+        newBooster.transform.localPosition = Vector3.zero;
+        newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
 
-            //TODO : switch the clips
+
+        //switch booster aniamtion clips
+        if (newBooster != null && newBooster.GetComponent<Animator>() != null && newBooster.GetComponent<Animator>().runtimeAnimatorController != null) {
+            AnimatorOverrideController boosterAnimtor_OC = new AnimatorOverrideController(newBooster.GetComponent<Animator>().runtimeAnimatorController);
+            newBooster.GetComponent<Animator>().runtimeAnimatorController = boosterAnimtor_OC;
+
+            AnimationClipOverrides boosterClipOverrides = new AnimationClipOverrides(boosterAnimtor_OC.overridesCount);
+            boosterAnimtor_OC.GetOverrides(boosterClipOverrides);
+
+            boosterClipOverrides["open"] = ((Booster)booster_part).GetOpenAnimation();
+            boosterClipOverrides["close"] = ((Booster)booster_part).GetCloseAnimation();
+
+            boosterAnimtor_OC.ApplyOverrides(boosterClipOverrides);
         }
     }
 
@@ -300,11 +303,10 @@ public class BuildMech : Photon.MonoBehaviour {
 
         UpdateCurWeaponNames();
 
-        animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
-		if (animator != null && buildLocally)CheckAnimatorState ();
+		if (buildLocally)CheckAnimatorState ();
 
         
-        if (mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
+        if (MechCombat!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
 		for (int i = 0; i < 4; i++)//turn off trail
 			ShutDownTrail (weapons [i]);
 
@@ -425,16 +427,17 @@ public class BuildMech : Photon.MonoBehaviour {
         weapons[weapPos].SetActive (weapPos == weaponOffset || weapPos == weaponOffset+1);
 
 		ShutDownTrail (weapons[weapPos]);
-		if(animator!=null)CheckAnimatorState ();
+		CheckAnimatorState ();
 
         if (buildLocally) {
             MechIK.UpdateMechIK(weaponOffset);
-        } else {            
+        } else {
+            LoadMechProperties();
             UpdateMechCombatVars();
         }
     }
 		
-	private void findGameManager() {
+	private void FindGameManager() {
 		if (gm == null) {
 			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
 		}
@@ -453,8 +456,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
 	public void CheckAnimatorState(){
-		if (animator == null)
-			return;
+		if (animator == null) { Debug.LogError("Animator is null"); return;};
 
         MovementClips movementClips = (weaponScripts[weaponOffset].twoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
@@ -502,6 +504,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 curWeaponNames[i] = weaponScripts[i].weaponPrefab.name;
         }
     }
+
 	public void SetMechNum(int num){
 		Mech_Num = num;
 	}
@@ -516,14 +519,20 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
     private void UpdateMechCombatVars(){
-		if (mcbt == null)return;
+		if (MechCombat == null)return;
 
         if (OnMechBuilt != null)OnMechBuilt();
-        if(mcbt.OnWeaponSwitched!=null)mcbt.OnWeaponSwitched();
+        if(MechCombat.OnWeaponSwitched!=null)MechCombat.OnWeaponSwitched();
 
-		mcbt.EnableAllRenderers (true);
-		mcbt.EnableAllColliders (true);
+		MechCombat.EnableAllRenderers (true);
+		MechCombat.EnableAllColliders (true);
 	}
+
+    void LoadMechProperties() {
+        MechCombat.LoadMechProperties(MechProperty);
+        MechController.LoadMechProperties(MechProperty);
+        SkillController.LoadMechProperties(MechProperty);
+    }
 
     private void CheckIfBuildLocally() {
         buildLocally =  (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || SceneManagerHelper.ActiveSceneName == "Store" || onPanel );
@@ -535,7 +544,6 @@ public class BuildMech : Photon.MonoBehaviour {
 }
 
 public struct MechProperty {
-    //mech properties
     public int HP, EN, SP, MPU;
     public int ENOutputRate;
     public int MinENRequired;
@@ -553,4 +561,14 @@ public struct MechProperty {
 
     public int DashOutput;
     public int DashENDrain, JumpENDrain;
+
+    private float DashAcceleration, DashDecelleration;
+    
+    public float GetDashAcceleration() {
+        return 0;
+    }
+
+    public float GetDashDecelleration() {
+        return 0;
+    }
 }

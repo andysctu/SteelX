@@ -14,29 +14,26 @@ public class MechController : Photon.MonoBehaviour {
     [SerializeField] private CharacterController CharacterController;
     [SerializeField] private LayerMask Terrain;
     [SerializeField] private SkillController SkillController;
+    [SerializeField] private MovementVariables movementVariables = new MovementVariables();
     private BuildMech bm;
     private GameManager gm;
     private BoosterController BoosterController;
-    [SerializeField]private MovementVariables movementVariables = new MovementVariables();
-
+    
     private float runDir_coeff = 3, runDecel_rate = 0.5f;
     private float curboostingSpeed;//global space
-    private Vector2 xzDir;
-    private Vector2 run_xzDir;
+    private Vector2 xzDir, run_xzDir;
     private float marginOfError = 0.1f;
     private Vector3 move = Vector3.zero;
 
     private bool isBoostFlameOn = false;
     private bool isSlowDown = false;
-    private const float slowDownDuration = 0.3f;
-    private Coroutine coroutine = null;
+    private const float slowDownDuration = 0.3f, slowDownCoeff = 0.2f;
+    private Coroutine slowDownCoroutine = null;
 
     private float instantMoveSpeed, curInstantMoveSpeed;
     private Vector3 instantMoveDir;
     private bool canVerticalBoost = false, getJumpWhenSlash;
     private float v_boost_start_yPos;
-    private float v_boost_upperbound;
-    private float boostStartTime = 0;//this is for jump delay
     private float slashTeleportMinDistance = 3f;
 
     // Animation
@@ -88,6 +85,10 @@ public class MechController : Photon.MonoBehaviour {
             BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
     }
 
+    public void LoadMechProperties(MechProperty mechProperty) {
+        
+    }
+
     private void initComponents() {
         Transform currentMech = transform.Find("CurrentMech");
         CharacterController = GetComponent<CharacterController>();
@@ -107,17 +108,10 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if (CharacterController == null || !CharacterController.enabled) {
-            return;
-        }
-
         if (!grounded) {
-            ySpeed -= (ySpeed < maxDownSpeed || Animator.GetBool(AnimatorVars.boost_id)) ? 0 : Gravity * Time.fixedDeltaTime * 50;
+            ySpeed -= (ySpeed < maxDownSpeed || Animator.GetBool(AnimatorVars.boost_id)) ? 0 : Gravity;
         } else {
-            ySpeed = (-CharacterController.stepOffset / Time.fixedDeltaTime) * 0.2f;
-        }
-        if (Animator == null) {
-            return;
+            ySpeed = -CharacterController.stepOffset;
         }
 
         if (Animator.GetBool(AnimatorVars.boost_id)) {
@@ -142,8 +136,8 @@ public class MechController : Photon.MonoBehaviour {
         move.y += ySpeed * Time.fixedDeltaTime;
 
         if (isSlowDown) {
-            move.x = move.x * 0.2f;
-            move.z = move.z * 0.2f;
+            move.x = move.x * slowDownCoeff;
+            move.z = move.z * slowDownCoeff;
         }
 
         if (!gm.GameIsBegin) {//player can't move but can rotate
@@ -157,6 +151,7 @@ public class MechController : Photon.MonoBehaviour {
     public void SetMoving(float speed) {//called by animation
         instantMoveSpeed = speed;
         instantMoveDir = cam.transform.forward;
+        if(grounded) instantMoveDir = new Vector3(instantMoveDir.x, 0, instantMoveDir.z);// make sure not slashing to the sky
         curInstantMoveSpeed = instantMoveSpeed;
     }
 
@@ -168,9 +163,6 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void InstantMove() {
-        if (grounded) {
-            instantMoveDir = new Vector3(instantMoveDir.x, 0, instantMoveDir.z);    // make sure not slashing to the sky
-        }
         if (curInstantMoveSpeed == instantMoveSpeed)//the first time inside this function
             getJumpWhenSlash = false;
 
@@ -334,12 +326,12 @@ public class MechController : Photon.MonoBehaviour {
 
     public void SlowDown() {
         if (isSlowDown) {
-            if (coroutine != null)
-                StopCoroutine(coroutine);
+            if (slowDownCoroutine != null)
+                StopCoroutine(slowDownCoroutine);
 
-            coroutine = StartCoroutine("SlowDownCoroutine");
+            slowDownCoroutine = StartCoroutine("SlowDownCoroutine");
         } else {
-            coroutine = StartCoroutine("SlowDownCoroutine");
+            slowDownCoroutine = StartCoroutine("SlowDownCoroutine");
             isSlowDown = true;
         }
     }
@@ -353,7 +345,7 @@ public class MechController : Photon.MonoBehaviour {
 
         yield return new WaitForSeconds(slowDownDuration);
         isSlowDown = false;
-        coroutine = null;
+        slowDownCoroutine = null;
     }
 
     public void ResetCam() {

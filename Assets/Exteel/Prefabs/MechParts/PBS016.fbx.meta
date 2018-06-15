@@ -1,116 +1,83 @@
 fileFormatVersion: 2
-guid: 33758fbf9303151499050142f171cd79
-timeCreated: 1528600241
+guid: de0a42e36d1d3ed4fb8f530e5963df27
+timeCreated: 1529029374
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Armature
-    100002: backpack
-    100004: backpack_booster01
-    100006: backpack_booster01_end
-    100008: backpack_booster02
-    100010: backpack_booster02_end
-    100012: backpack_booster03
-    100014: backpack_booster03_end
-    100016: mesh0
-    100018: Muz_EffectEnd01_lft
-    100020: Muz_EffectEnd01_lft_end
-    100022: Muz_EffectEnd01_rt
-    100024: Muz_EffectEnd01_rt_end
-    100026: Muz_EffectEnd02_lft
-    100028: Muz_EffectEnd02_lft_end
-    100030: Muz_EffectEnd02_rt
-    100032: Muz_EffectEnd02_rt_end
-    100034: Muz_EffectEnd03_lft
-    100036: Muz_EffectEnd03_lft_end
-    100038: Muz_EffectEnd03_rt
-    100040: Muz_EffectEnd03_rt_end
-    100042: Object08
-    100044: Object27
-    100046: Object29
-    100048: Object33
-    100050: Object33_end
-    100052: Object34
-    100054: Object58
-    100056: Object59
-    100058: Object60
-    100060: Object60_end
-    100062: Object61
-    100064: Object61_end
-    100066: Object62
-    100068: Object62_end
-    100070: Object63
-    100072: Object63_end
-    100074: Object64
-    100076: Object65
-    100078: Object66
-    100080: Object66_end
-    100082: Object67
-    100084: Object67_end
-    100086: Object68
-    100088: Object68_end
-    100090: Object69
-    100092: Object69_end
-    100094: //RootNode
-    400000: Armature
-    400002: backpack
-    400004: backpack_booster01
-    400006: backpack_booster01_end
-    400008: backpack_booster02
-    400010: backpack_booster02_end
-    400012: backpack_booster03
-    400014: backpack_booster03_end
-    400016: mesh0
-    400018: Muz_EffectEnd01_lft
-    400020: Muz_EffectEnd01_lft_end
-    400022: Muz_EffectEnd01_rt
-    400024: Muz_EffectEnd01_rt_end
-    400026: Muz_EffectEnd02_lft
-    400028: Muz_EffectEnd02_lft_end
-    400030: Muz_EffectEnd02_rt
-    400032: Muz_EffectEnd02_rt_end
-    400034: Muz_EffectEnd03_lft
-    400036: Muz_EffectEnd03_lft_end
-    400038: Muz_EffectEnd03_rt
-    400040: Muz_EffectEnd03_rt_end
-    400042: Object08
-    400044: Object27
-    400046: Object29
-    400048: Object33
-    400050: Object33_end
-    400052: Object34
-    400054: Object58
-    400056: Object59
-    400058: Object60
-    400060: Object60_end
-    400062: Object61
-    400064: Object61_end
-    400066: Object62
-    400068: Object62_end
-    400070: Object63
-    400072: Object63_end
-    400074: Object64
-    400076: Object65
-    400078: Object66
-    400080: Object66_end
-    400082: Object67
-    400084: Object67_end
-    400086: Object68
-    400088: Object68_end
-    400090: Object69
-    400092: Object69_end
-    400094: //RootNode
+    100000: backpack
+    100002: backpack_booster01
+    100004: backpack_booster02
+    100006: backpack_booster03
+    100008: Muz_EffectEnd01_lft
+    100010: Muz_EffectEnd01_rt
+    100012: Muz_EffectEnd02_lft
+    100014: Muz_EffectEnd02_rt
+    100016: Muz_EffectEnd03_lft
+    100018: Muz_EffectEnd03_rt
+    100020: Object08
+    100022: Object27
+    100024: Object29
+    100026: Object33
+    100028: Object34
+    100030: Object58
+    100032: Object59
+    100034: Object60
+    100036: Object61
+    100038: Object62
+    100040: Object63
+    100042: Object64
+    100044: Object65
+    100046: Object66
+    100048: Object67
+    100050: Object68
+    100052: Object69
+    100054: //RootNode
+    100056: PBS016
+    400000: backpack
+    400002: backpack_booster01
+    400004: backpack_booster02
+    400006: backpack_booster03
+    400008: Muz_EffectEnd01_lft
+    400010: Muz_EffectEnd01_rt
+    400012: Muz_EffectEnd02_lft
+    400014: Muz_EffectEnd02_rt
+    400016: Muz_EffectEnd03_lft
+    400018: Muz_EffectEnd03_rt
+    400020: Object08
+    400022: Object27
+    400024: Object29
+    400026: Object33
+    400028: Object34
+    400030: Object58
+    400032: Object59
+    400034: Object60
+    400036: Object61
+    400038: Object62
+    400040: Object63
+    400042: Object64
+    400044: Object65
+    400046: Object66
+    400048: Object67
+    400050: Object68
+    400052: Object69
+    400054: PBS016
+    400056: //RootNode
     2100000: material_0
-    4300000: mesh0
+    4300000: PBS016
+    7400000: Take 001
+    7400002: aa
+    7400004: Atk
+    7400006: close
+    7400008: open
     9500000: //RootNode
-    13700000: mesh0
+    13700000: PBS016
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: material_0
-    second: {fileID: 2100000, guid: bb00ea98f364e7247975bed9878da3d8, type: 2}
+    second: {fileID: 2100000, guid: 03efc551ca285854bad97549f9671c7e, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
@@ -136,7 +103,147 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 59
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: aa
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 2
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Atk
+      takeName: Take 001
+      firstFrame: 2
+      lastFrame: 38
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: close
+      takeName: Take 001
+      firstFrame: 38
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: open
+      takeName: Take 001
+      firstFrame: 49
+      lastFrame: 59
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []

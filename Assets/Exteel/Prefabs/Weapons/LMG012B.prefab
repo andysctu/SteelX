@@ -107,6 +107,10 @@ MonoBehaviour:
   Terrain:
     serializedVersion: 2
     m_Bits: 1024
+  go_straight: 1
+  bulletSpeed: 350
+  otherDirSpeed: 80
+  interactWithTerrainWhenOnTarget: 1
 --- !u!198 &198000011201848454
 ParticleSystem:
   m_ObjectHideFlags: 1

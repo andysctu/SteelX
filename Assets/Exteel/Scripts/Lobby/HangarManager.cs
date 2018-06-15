@@ -79,7 +79,7 @@ public class HangarManager : MonoBehaviour {
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
             Sprite s = Resources.Load<Sprite>(part.name);
-            if (s == null) Debug.LogError(part + "'s sprite is missing");
+            if (s == null) Debug.Log(part + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
             uiPart.GetComponentInChildren<Text>().text = part.displayName;
             uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => EquipMechPart(part.name));
@@ -216,7 +216,7 @@ public class HangarManager : MonoBehaviour {
             if (part_name[0] != 'P') {
                 SkinnedMeshRenderer newSMR = (partPrefab == null) ? null : partPrefab.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
                 SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer>();
-                Material material = Resources.Load(part_name + "mat", typeof(Material)) as Material;
+                Material material = Resources.Load("MechPartMaterials/"+part_name + "mat", typeof(Material)) as Material;
 
                 
                 switch (part_name[0]) {

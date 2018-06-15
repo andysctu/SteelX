@@ -2,10 +2,11 @@
 
 public class Combat : Photon.MonoBehaviour {
     private int max_hp = 2000;
-	public int MAX_HP { get { return max_hp ;} protected set { max_hp = value ;} }
-    public const float MAX_FUEL = 2000;
-    public int CurrentHP { get; protected set; }
+    public int MAX_HP { get { return max_hp; } protected set { max_hp = value; } }
+    private float max_fuel = 2000;
+    public float MAX_FUEL { get { return max_fuel ; } protected set { max_fuel = value ;} }
 
+    public int CurrentHP { get; protected set; }
     protected GameManager gm;
 
 	[PunRPC]

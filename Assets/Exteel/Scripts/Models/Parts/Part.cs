@@ -11,6 +11,7 @@ public abstract class Part : ScriptableObject {
 	public int EnergyDrain = 0;
 	public int Size = 0;
 
+
     public void LoadPartBasicInfo(MechProperty mechProperty) {
         mechProperty.HP += HP;
         mechProperty.Size += Size;

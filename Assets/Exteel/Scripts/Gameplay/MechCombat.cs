@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using XftWeapon;
 
 public class MechCombat : Combat {
+    [SerializeField] private MechController MechController;
     [SerializeField] private HeatBar HeatBar;
     [SerializeField] private DisplayPlayerInfo displayPlayerInfo;
     [SerializeField] private CrosshairImage crosshairImage;
@@ -23,7 +24,7 @@ public class MechCombat : Combat {
     private enum SpecialWeaponTypes { APS, LMG, Rifle, Shotgun, Rectifier, Sword, Spear, Shield, Rocket, Cannon, EMPTY };//These types all use different animations
 
     // Fuel
-    [SerializeField] private FuelProperties fuelProperties = new FuelProperties();
+    [SerializeField] private EnergyProperties energyProperties = new EnergyProperties();
     private float currentFuel;
 
     // Game variables
@@ -42,10 +43,9 @@ public class MechCombat : Combat {
         get { return on_BCNShoot;}
         set {
             on_BCNShoot = value;
-            if (mechController != null) mechController.onInstantMoving = value;
+            MechController.onInstantMoving = value;
         }
     }
-
 
     private int weaponOffset = 0;
     private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
@@ -56,28 +56,13 @@ public class MechCombat : Combat {
     private const int LEFT_HAND = 0;
     private float timeOfLastShotL;
     private bool fireL = false;
-
-    private bool isLMeleePlaying = false;
-    public bool IsLMeleePlaying {
-        get {return isLMeleePlaying;}
-        set {
-            isLMeleePlaying = value;
-            if(mechController != null)mechController.onInstantMoving = value ;
-        }
-    }
+    public bool isLMeleePlaying { get; private set;}
 
     // Right
     private const int RIGHT_HAND = 1;
     private float timeOfLastShotR;
     private bool fireR = false;
-    private bool isRMeleePlaying = false;
-    public bool IsRMeleePlaying {
-        get {return isRMeleePlaying;}
-        set {
-            isRMeleePlaying = value;
-            if (mechController != null)mechController.onInstantMoving = value;
-        }
-    }
+    public bool isRMeleePlaying { get;private set;}
 
     public bool CanMeleeAttack = true;
 
@@ -116,8 +101,7 @@ public class MechCombat : Combat {
 
     // Components
     private Crosshair crosshair;
-    private SlashDetector slashDetector;
-    private MechController mechController;
+    private SlashDetector slashDetector;    
     private Sounds Sounds;
     private AnimationEventController AnimationEventController;
     private ParticleSystem[] Muz = new ParticleSystem[4];
@@ -173,6 +157,12 @@ public class MechCombat : Combat {
         if (SkillController != null) SkillController.OnSkill += OnSkill;
     }
 
+    public void LoadMechProperties(MechProperty mechProperty) {
+        MAX_HP = mechProperty.HP;
+        MAX_FUEL = mechProperty.EN;
+        energyProperties.Init(mechProperty.EnergyDrain, mechProperty.ENOutputRate, mechProperty.MinENRequired);
+    }
+
     private void initMechStats() {//call also when respawn
         CurrentHP = MAX_HP;
         currentFuel = MAX_FUEL;
@@ -213,7 +203,6 @@ public class MechCombat : Combat {
         AnimatorVars = currentMech.GetComponent<AnimatorVars>();
         AnimationEventController = currentMech.GetComponent<AnimationEventController>();
         animator = currentMech.GetComponent<Animator>();
-        mechController = GetComponent<MechController>();
         crosshair = cam.GetComponent<Crosshair>();
     }
 
@@ -245,6 +234,8 @@ public class MechCombat : Combat {
             SwitchWeaponcoroutine = null;
         }
         onSkill = false;
+        isRMeleePlaying = false;
+        isLMeleePlaying = false;
         setIsFiring(0, false);
         setIsFiring(1, false);
     }
@@ -568,7 +559,7 @@ public class MechCombat : Combat {
 
         if (photonView.isMine) {
             if (isSlowDown)
-                mechController.SlowDown();
+                MechController.SlowDown();
 
             SkillController.IncreaseSP((int)damage / 2);
         }
@@ -661,7 +652,7 @@ public class MechCombat : Combat {
     public void Skill_KnockBack(float length) {
         Transform skillUser = SkillController.GetSkillUser();
 
-        mechController.SkillSetMoving((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
+        MechController.SkillSetMoving((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
     }
 
     [PunRPC]
@@ -688,7 +679,7 @@ public class MechCombat : Combat {
 
         StartCoroutine(DisablePlayerWhenNotOnSkill());
 
-        mechController.enabled = false;
+        MechController.enabled = false;
         EnableAllColliders(false);
         GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
     }
@@ -719,7 +710,7 @@ public class MechCombat : Combat {
 
         initMechStats();
 
-        mechController.initControllerVar();
+        MechController.initControllerVar();
         displayPlayerInfo.gameObject.SetActive(!photonView.isMine);
 
         transform.position = gm.SpawnPoints[respawnPoint].position;
@@ -729,7 +720,7 @@ public class MechCombat : Combat {
 
         if (!photonView.isMine) return;
 
-        mechController.enabled = true;
+        MechController.enabled = true;
         crosshair.enabled = true;
 
         crosshairImage.gameObject.SetActive(true);
@@ -826,7 +817,7 @@ public class MechCombat : Combat {
                 isBCNcanceled = true;
                 animator.SetBool(AnimatorVars.BCNPose_id, false);
                 return;
-            } else if (Input.GetKey(KeyCode.Mouse0) && !isBCNcanceled && !On_BCNShoot && !animator.GetBool(AnimatorVars.BCNPose_id) && mechController.grounded && !animator.GetBool("BCNLoad")) {
+            } else if (Input.GetKey(KeyCode.Mouse0) && !isBCNcanceled && !On_BCNShoot && !animator.GetBool(AnimatorVars.BCNPose_id) && MechController.grounded && !animator.GetBool("BCNLoad")) {
                 AnimationEventController.BCNPose();
                 animator.SetBool(AnimatorVars.BCNPose_id, true);
                 timeOfLastShotL = Time.time - 1 / bm.weaponScripts[weaponOffset + hand].Rate / 2;
@@ -880,7 +871,7 @@ public class MechCombat : Combat {
                 if ((animator.GetBool(AnimatorVars.slashL3_id) || animator.GetBool(AnimatorVars.slashR3_id)) && curSpecialWeaponTypes[(hand + 1) % 2 + weaponOffset] != (int)SpecialWeaponTypes.Sword)//if not both sword
                     return;
 
-                if ((hand == 0 && IsRMeleePlaying) || (hand == 1 && IsLMeleePlaying))
+                if ((hand == 0 && isRMeleePlaying) || (hand == 1 && isLMeleePlaying))
                     return;
 
                 CanMeleeAttack = false;
@@ -914,7 +905,7 @@ public class MechCombat : Combat {
             break;
             case (int)GeneralWeaponTypes.Cannon:
             if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + hand].Rate && isOnBCNPose) {
-                if (Input.GetKey(KeyCode.Mouse0) || !animator.GetBool(AnimatorVars.BCNPose_id) || !mechController.grounded)
+                if (Input.GetKey(KeyCode.Mouse0) || !animator.GetBool(AnimatorVars.BCNPose_id) || !MechController.grounded)
                     return;
 
                 BCNbulletNum--;
@@ -1153,18 +1144,18 @@ public class MechCombat : Combat {
     }
 
     public void IncrementFuel() {
-        currentFuel += fuelProperties.fuelGain * Time.fixedDeltaTime;
+        currentFuel += energyProperties.energyOutput * Time.fixedDeltaTime;
         if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
     }
 
     public void DecrementFuel() {
-        currentFuel -= fuelProperties.fuelDrain * Time.fixedDeltaTime;
+        currentFuel -= energyProperties.energyDrain * Time.fixedDeltaTime;
         if (currentFuel < 0)
             currentFuel = 0;
     }
 
     public bool EnoughFuelToBoost() {
-        if (currentFuel >= fuelProperties.minFuelRequired) {
+        if (currentFuel >= energyProperties.minENRequired) {
             isFuelAvailable = true;
             return true;
         } else {//false -> play effect if not already playing
@@ -1219,8 +1210,8 @@ public class MechCombat : Combat {
             setIsFiring(0, false);
             setIsFiring(1, false);
 
-            IsLMeleePlaying = false;
-            IsRMeleePlaying = false;
+            isLMeleePlaying = false;
+            isRMeleePlaying = false;
             ShowTrail(0, false);
             ShowTrail(1, false);
 
@@ -1257,8 +1248,10 @@ public class MechCombat : Combat {
     }
 
     public void SetMeleePlaying(int hand, bool isPlaying) { 
-        if (hand == 0) IsLMeleePlaying = isPlaying;
-        else IsRMeleePlaying = isPlaying;
+        if (hand == 0) isLMeleePlaying = isPlaying;
+        else isRMeleePlaying = isPlaying;
+
+        MechController.onInstantMoving = isPlaying;
     }
 
     public void SetReceiveNextSlash(int receive) { // this is called in the animation clip
@@ -1299,9 +1292,15 @@ public class MechCombat : Combat {
     }
 
     [System.Serializable]
-    private struct FuelProperties {
-        public float fuelDrain;
-        public float fuelGain;
-        public float minFuelRequired;
+    private struct EnergyProperties {
+        public float energyDrain;
+        public float energyOutput;
+        public float minENRequired;
+        
+        public void Init(float energyDrain, float energyOutput, float minENRequired) {
+            this.energyDrain = energyDrain;
+            this.energyOutput = energyOutput;
+            this.minENRequired = minENRequired;
+        }
     }
 }
