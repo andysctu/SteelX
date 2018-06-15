@@ -4713,6 +4713,7 @@ MonoBehaviour:
   BoostStart: {fileID: 8300000, guid: 60a235079ffef40f8bffab0438095fc7, type: 3}
   BoostLoop: {fileID: 8300000, guid: e529fb7ecf34944479ec3cb577df8643, type: 3}
   ps: {fileID: 198997292714214246}
+  audioSource: {fileID: 82429694959159424}
 --- !u!114 &114271684801052568
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5697,7 +5698,7 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 7a8b7ed3ea49745e685c4c4c25a7537c, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

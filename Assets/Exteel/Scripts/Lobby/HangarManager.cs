@@ -82,7 +82,7 @@ public class HangarManager : MonoBehaviour {
             if (s == null) Debug.LogError(part + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
             uiPart.GetComponentInChildren<Text>().text = part.displayName;
-            uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => Equip(part.name, -1));
+            uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => EquipMechPart(part.name));
         }
 
         LoadWeapons();
@@ -112,7 +112,7 @@ public class HangarManager : MonoBehaviour {
                     continue;
                 }
                 int n = i;
-                btns[i].onClick.AddListener(() => Equip(weaponName, n));
+                btns[i].onClick.AddListener(() => EquipWeapon(weaponName, n));
             }
         }
     }
@@ -201,69 +201,86 @@ public class HangarManager : MonoBehaviour {
         SceneManager.LoadScene("Lobby");
     }
 
-    public void Equip(string part, int weap) {
-        Debug.Log("Equipping weap: " + weap);
-        GameObject partGO = Resources.Load(part, typeof(GameObject)) as GameObject;//no need to load the weapon , just call equip
-        SkinnedMeshRenderer newSMR = (partGO == null) ? null : partGO.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
-        SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer>();
-        Material material = Resources.Load(part + "mat", typeof(Material)) as Material;
+    public void EquipMechPart(string part_name) {
+        Part part = MechPartManager.FindData(part_name);
 
-        int parent = -1;
-        switch (part[0]) {
-            case 'C':
-            parent = 0;
-            UserData.myData.Mech[Mech_Num].Core = part;
-            break;
-            case 'A':
-            if (part[1] == 'E') {
-                parent = 1;
-                UserData.myData.Mech[Mech_Num].Arms = part;
-            } else {
-                parent = 5;
+        if (part != null) {
+            GameObject partPrefab = part.GetPartPrefab();
+
+            if (partPrefab == null) {
+                Debug.Log("Null part prefab");
+                return;
             }
+
+            int parent = -1;
+            if (part_name[0] != 'P') {
+                SkinnedMeshRenderer newSMR = (partPrefab == null) ? null : partPrefab.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+                SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer>();
+                Material material = Resources.Load(part_name + "mat", typeof(Material)) as Material;
+
+                
+                switch (part_name[0]) {
+                    case 'C':
+                    parent = 0;
+                    UserData.myData.Mech[Mech_Num].Core = part_name;
+                    break;
+                    case 'A':
+                    parent = 1;
+                    UserData.myData.Mech[Mech_Num].Arms = part_name;
+                    break;
+                    case 'L':
+                    parent = 2;
+                    UserData.myData.Mech[Mech_Num].Legs = part_name;                       
+                    break;
+                    case 'H':
+                    parent = 3;
+                    UserData.myData.Mech[Mech_Num].Head = part_name;
+                    break;
+                    default:
+                        Debug.Log("Can't catorize this : "+ part_name);
+                    break;
+                }
+                curSMR[parent].sharedMesh = newSMR.sharedMesh;
+                curSMR[parent].material = material;
+
+            } else {//Booster
+                parent = 4;
+                UserData.myData.Mech[Mech_Num].Booster = part_name;
+
+                Transform boosterbone = Mech.transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
+                if (boosterbone != null) {
+                    GameObject booster = (boosterbone.childCount == 0) ? null : boosterbone.GetChild(0).gameObject;
+                    if (booster != null) {//destroy previous 
+                        DestroyImmediate(booster);
+                    }                   
+
+                    GameObject newBooster = Instantiate(partPrefab, boosterbone);
+                    newBooster.transform.localPosition = Vector3.zero;
+                    newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
+                }
+            }
+        }
+    }
+
+    public void EquipWeapon(string weapon_name, int weap) {
+        switch (weap) {
+            case 0:
+            UserData.myData.Mech[Mech_Num].Weapon1L = weapon_name;
             break;
-            case 'L':
-            if (part[1] != 'M') {
-                parent = 2;
-                UserData.myData.Mech[Mech_Num].Legs = part;
-            } else
-                parent = 5;
+            case 1:
+            UserData.myData.Mech[Mech_Num].Weapon1R = weapon_name;
             break;
-            case 'H':
-            parent = 3;
-            UserData.myData.Mech[Mech_Num].Head = part;
+            case 2:
+            UserData.myData.Mech[Mech_Num].Weapon2L = weapon_name;
             break;
-            case 'P':
-            parent = 4;
-            UserData.myData.Mech[Mech_Num].Booster = part;
+            case 3:
+            UserData.myData.Mech[Mech_Num].Weapon2R = weapon_name;
             break;
             default:
-            parent = 5;
+            Debug.Log("Should not get here");
             break;
         }
-        if (parent != 5) {
-            curSMR[parent].sharedMesh = newSMR.sharedMesh;
-            curSMR[parent].material = material;
-        } else {
-            switch (weap) {
-                case 0:
-                UserData.myData.Mech[Mech_Num].Weapon1L = part;
-                break;
-                case 1:
-                UserData.myData.Mech[Mech_Num].Weapon1R = part;
-                break;
-                case 2:
-                UserData.myData.Mech[Mech_Num].Weapon2L = part;
-                break;
-                case 3:
-                UserData.myData.Mech[Mech_Num].Weapon2R = part;
-                break;
-                default:
-                Debug.Log("Should not get here");
-                break;
-            }
-            Mech.GetComponent<BuildMech>().EquipWeapon(part, weap);
-        }
+        Mech.GetComponent<BuildMech>().EquipWeapon(weapon_name, weap);
     }
 
     public void EquipSkill(int skill_id, int skill_pos) {

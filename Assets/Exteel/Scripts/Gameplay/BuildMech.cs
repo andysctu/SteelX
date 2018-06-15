@@ -104,7 +104,7 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 		
 	public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
-		photonView.RPC("buildMech", PhotonTargets.AllBuffered, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
+        photonView.RPC("buildMech", PhotonTargets.AllBuffered, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
 	}
 				
 	private void findHands() {
@@ -116,7 +116,7 @@ public class BuildMech : Photon.MonoBehaviour {
 		hands [1] = shoulderR.Find("upper_arm.R/forearm.R/hand.R");
 	}
 
-	private void buildMech(Mech m) {
+	private void buildMech(Mech m) {        
 		buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 	}
 
@@ -177,7 +177,7 @@ public class BuildMech : Photon.MonoBehaviour {
 			curSMR[i].enabled = true;
 		}
 
-        LoadBooster(b);
+        LoadBooster(parts[4]);
 
         SwitchBoosterAniamtionClips();
 
@@ -188,15 +188,26 @@ public class BuildMech : Photon.MonoBehaviour {
 	}
 
     private void LoadBooster(string booster_name) {
+        Transform boosterbone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
+        if(boosterbone != null) {
+            GameObject booster = (boosterbone.childCount==0)? null : boosterbone.GetChild(0).gameObject;
+            if(booster != null) {
+                DestroyImmediate(booster);                
+            }
+            GameObject newBooster_prefab = MechPartManager.FindData(booster_name).GetPartPrefab();
 
+            GameObject newBooster = Instantiate(newBooster_prefab, boosterbone);
+            newBooster.transform.localPosition = Vector3.zero;
+            newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
+        }
     }
 
     private void SwitchBoosterAniamtionClips() {
-        Transform CurrentMech = transform.Find("CurrentMech");
-        if(CurrentMech == null)
+        Transform boosterbone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
+        if(boosterbone == null)
             return;
 
-        BoosterController booster = CurrentMech.GetComponentInChildren<BoosterController>();
+        BoosterController booster = boosterbone.GetComponentInChildren<BoosterController>();
         if (booster!= null && booster.GetComponent<Animator>() != null && booster.GetComponent<Animator>().runtimeAnimatorController != null) {
             AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(booster.GetComponent<Animator>().runtimeAnimatorController);
             booster.GetComponent<Animator>().runtimeAnimatorController = animatorOverrideController;
@@ -418,7 +429,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         if (buildLocally) {
             MechIK.UpdateMechIK(weaponOffset);
-        } else {
+        } else {            
             UpdateMechCombatVars();
         }
     }

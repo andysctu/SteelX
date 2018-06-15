@@ -247,7 +247,6 @@ public class MechCombat : Combat {
         onSkill = false;
         setIsFiring(0, false);
         setIsFiring(1, false);
-        mechController.FindBoosterController();//TODO : OnMechBuilt event
     }
 
     private void initHUD() {

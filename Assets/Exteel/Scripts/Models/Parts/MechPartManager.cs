@@ -11,7 +11,11 @@ public class MechPartManager : ScriptableObject {
     public Booster[] Boosters;
 
     public Part FindData(string name) {
-
+        if(name == null) {
+            Debug.LogError("empty name");
+            return null;
+        }
+            
         switch (name[0]) {
             case 'H':
             return SearchInArray(Heads, name);

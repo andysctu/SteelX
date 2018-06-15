@@ -14,7 +14,7 @@ public class MechController : Photon.MonoBehaviour {
     [SerializeField] private CharacterController CharacterController;
     [SerializeField] private LayerMask Terrain;
     [SerializeField] private SkillController SkillController;
-
+    private BuildMech bm;
     private GameManager gm;
     private BoosterController BoosterController;
     [SerializeField]private MovementVariables movementVariables = new MovementVariables();
@@ -51,17 +51,22 @@ public class MechController : Photon.MonoBehaviour {
     public bool grounded = true; //changes with animator bool "grounded"
     public float cam_lerpSpeed = 10, LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
-    public bool onSkillMoving = false, onInstantMoving = false;
+    [HideInInspector]public bool onSkillMoving = false, onInstantMoving = false;
 
     private void Awake() {
+        bm = GetComponent<BuildMech>();
+        RegisterOnMechBuilt();
         RegisterOnSkill();
     }
 
     private void Start() {
         initComponents();
         initControllerVar();
-        FindBoosterController();
         initCam(cam_orbitradius, cam_angleoffset);
+    }
+
+    private void RegisterOnMechBuilt() {
+        bm.OnMechBuilt += FindBoosterController;
     }
 
     private void RegisterOnSkill() {
@@ -77,8 +82,10 @@ public class MechController : Photon.MonoBehaviour {
         run_xzDir = Vector2.zero;
     }
 
-    public void FindBoosterController() {//TODO : put this in respawn update delegate
-        BoosterController = transform.Find("CurrentMech").GetComponentInChildren<BoosterController>();
+    private void FindBoosterController() {
+        Transform boosterBone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
+        if(boosterBone != null)
+            BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
     }
 
     private void initComponents() {
@@ -372,7 +379,8 @@ public class MechController : Photon.MonoBehaviour {
 
     [PunRPC]
     private void BoostFlame(bool boost, bool boostdust) {
-        if (boost) {
+        
+        if (boost) {            
             BoosterController.StartBoost();
             if (boostdust)
                 EffectController.BoostingDustEffect(true);
