@@ -7,8 +7,8 @@ public class Core : Part {
 	public int ENOutputRate;
 	public int MinENRequired;
 
-    public override void LoadPartInfo(MechProperty mechProperty) {
-        LoadPartBasicInfo(mechProperty);
+    public override void LoadPartInfo(ref MechProperty mechProperty) {
+        LoadPartBasicInfo(ref mechProperty);
         mechProperty.EN += EN;
         mechProperty.ENOutputRate += ENOutputRate;
         mechProperty.MinENRequired += MinENRequired;        

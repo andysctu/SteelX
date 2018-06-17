@@ -6,7 +6,7 @@ public abstract class Weapon : ScriptableObject {
     public string displayName;//this will be displayed in hangar
     public GameObject weaponPrefab;
     public GameObject[] Grip = new GameObject[2];//L&R , only set the rotation , the position is adjusted by hand offset
-    public int damage = 0;
+    public int damage = 0, weight = 0, ENdrain;
 
     [Tooltip("The range of ranged weapons")]
     [Range(0, 1200)]

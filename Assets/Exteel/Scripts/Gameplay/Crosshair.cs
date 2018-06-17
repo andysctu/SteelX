@@ -10,7 +10,7 @@ public class Crosshair : MonoBehaviour {
 	[SerializeField]private CrosshairImage crosshairImage;
 	[SerializeField]private LayerMask playerlayer,Terrainlayer;
 	[SerializeField]private Sounds Sounds;
-	[SerializeField]private MechCombat mcbt;
+	[SerializeField]private MechCombat MechCombat;
     [SerializeField]private SkillController SkillController;
 
     private List<GameObject> TargetsToRemove = new List<GameObject> ();
@@ -27,7 +27,7 @@ public class Crosshair : MonoBehaviour {
 	private float screenCoeff;
 	private float TimeOfLastSend;
 	private float CrosshairRadiusL, CrosshairRadiusR ;
-	private int LastLockTargetID = 0, weaponOffset = 0;//avoid sending lock message too often
+	private int LastLockTargetID = 0, weaponOffset = 0, Marksmanship = 0;//avoid sending lock message too often
 	private bool LockL = false, LockR = false , foundTargetL=false, foundTargetR=false;
 	private bool isOnLocked = false, onSkill = false;
 	private bool isTeamMode, isTargetAllyL = false, isTargetAllyR = false;
@@ -46,11 +46,11 @@ public class Crosshair : MonoBehaviour {
     }
 
     private void RegisterOnWeaponBuilt() {
-        if (bm != null) bm.OnMechBuilt += OnWeaponBuilt;
+        if (bm != null) bm.OnMechBuilt += OnMechBuilt;
     }
 
     private void RegisterOnWeaponSwitched() {
-        if (mcbt != null) mcbt.OnWeaponSwitched += UpdateCrosshair;
+        if (MechCombat != null) MechCombat.OnWeaponSwitched += UpdateCrosshair;
     }
 
     private void RegisterOnSkill() {
@@ -72,8 +72,9 @@ public class Crosshair : MonoBehaviour {
 		cam = GetComponent<Camera> ();
 	}
 
-    private void OnWeaponBuilt() {
+    private void OnMechBuilt() {
         weaponScripts = bm.weaponScripts;
+        Marksmanship = bm.MechProperty.Marksmanship;
     }
 
     public void ShutDownAllCrosshairs() {//called when disabling player
@@ -91,14 +92,14 @@ public class Crosshair : MonoBehaviour {
 	}
 
 	public void UpdateCrosshair(){
-        weaponOffset = mcbt.GetCurrentWeaponOffset();
+        weaponOffset = MechCombat.GetCurrentWeaponOffset();
 
         if (weaponScripts[weaponOffset] == null) {
             CrosshairRadiusL = 0;
             MaxDistanceL = 0;
             MinDistanceL = 0;
         } else {
-            CrosshairRadiusL = weaponScripts[weaponOffset].radius;
+            CrosshairRadiusL = weaponScripts[weaponOffset].radius * (1 + Marksmanship/100.0f);
             MaxDistanceL = weaponScripts[weaponOffset].Range;
             MinDistanceL = weaponScripts[weaponOffset].minRange;
         }
@@ -108,7 +109,7 @@ public class Crosshair : MonoBehaviour {
             MaxDistanceR = 0;
             MinDistanceR = 0;
         } else {
-            CrosshairRadiusR = weaponScripts[weaponOffset + 1].radius;
+            CrosshairRadiusR = weaponScripts[weaponOffset + 1].radius * (1 + Marksmanship / 100.0f);
             MaxDistanceR = weaponScripts[weaponOffset + 1].Range;
             MinDistanceR = weaponScripts[weaponOffset + 1].minRange;
         }

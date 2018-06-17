@@ -39,7 +39,7 @@ public class AnimationEventController : MonoBehaviour {
 		MechCombat.SetMeleePlaying(0, isPlaying==1);
 	}
 
-	public void CallRMeleePlaying(int isPlaying){
+	public void CallRMeleePlaying(int isPlaying){        
 		MechCombat.SetMeleePlaying(1, isPlaying==1);
 	}
 

@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Name: BRF025
   m_EditorClassIdentifier: 
   weaponType: Rifle
+  displayName: 
   weaponPrefab: {fileID: 1521235973824918, guid: 1936991c451580142b64b191d157599a,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: 706fac2882989864980a8194e0d03a6d, type: 2}
   - {fileID: 1096434313937498, guid: 0aa71d80a0e12094f9b049caefae86cd, type: 2}
   damage: 200
+  weight: 10000
   Range: 200
   minRange: 20
   Rate: 1

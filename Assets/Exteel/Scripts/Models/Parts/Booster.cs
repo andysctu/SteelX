@@ -6,14 +6,16 @@ public class Booster : Part {
     public int DashOutput;
 	public int DashENDrain;
 	public int JumpENDrain;
+    public int VerticalBoostSpeed = 35;
 
     [SerializeField]private AnimationClip open, close;
 
-    public override void LoadPartInfo(MechProperty mechProperty) {
-        LoadPartBasicInfo(mechProperty);
-        mechProperty.DashOutput += DashOutput;
+    public override void LoadPartInfo(ref MechProperty mechProperty) {
+        LoadPartBasicInfo(ref mechProperty);
+        mechProperty.DashOutput = DashOutput;
         mechProperty.DashENDrain += DashENDrain;
-        mechProperty.JumpENDrain += JumpENDrain;
+        mechProperty.JumpENDrain = JumpENDrain;
+        mechProperty.VerticalBoostSpeed = VerticalBoostSpeed;
     }
 
     public AnimationClip GetOpenAnimation() {

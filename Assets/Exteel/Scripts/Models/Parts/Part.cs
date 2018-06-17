@@ -12,14 +12,14 @@ public abstract class Part : ScriptableObject {
 	public int Size = 0;
 
 
-    public void LoadPartBasicInfo(MechProperty mechProperty) {
+    public void LoadPartBasicInfo(ref MechProperty mechProperty) {
         mechProperty.HP += HP;
         mechProperty.Size += Size;
         mechProperty.Weight += Weight;
         mechProperty.EnergyDrain += EnergyDrain;
     }
 
-    public abstract void LoadPartInfo(MechProperty mechProperty);
+    public abstract void LoadPartInfo(ref MechProperty mechProperty);
 
     public GameObject GetPartPrefab() {
         return part;

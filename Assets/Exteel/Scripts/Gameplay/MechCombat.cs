@@ -23,9 +23,9 @@ public class MechCombat : Combat {
     private enum GeneralWeaponTypes { Ranged, Rectifier, Melee, Shield, Rocket, Cannon, Empty };//for efficiency
     private enum SpecialWeaponTypes { APS, LMG, Rifle, Shotgun, Rectifier, Sword, Spear, Shield, Rocket, Cannon, EMPTY };//These types all use different animations
 
-    // Fuel
+    // EN
     [SerializeField] private EnergyProperties energyProperties = new EnergyProperties();
-    private float currentFuel;
+    private float currentEN;
 
     // Game variables
     public Score score;
@@ -34,8 +34,7 @@ public class MechCombat : Combat {
     // Combat variables
     public bool isDead;
     public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it (shield)
-    public int MaxHeat = 100;
-    public int cooldown = 5;
+    public int scanRange, MechSize, TotalWeight;//TODO : implement scanRange & MechSize
     public int BCNbulletNum = 2;
     public bool isOnBCNPose, onSkill = false;//called by BCNPoseState to check if on the right pose
     private bool on_BCNShoot = false;
@@ -93,11 +92,11 @@ public class MechCombat : Combat {
 
     // HUD
     private Slider healthBar;
-    private Slider fuelBar;
-    private Image fuelBar_fill;
-    private bool fuelNotEnoughEffectIsPlaying = false;
-    private bool isFuelAvailable = true;
-    private Text healthtext, fueltext;
+    private Slider ENBar;
+    private Image ENBar_fill;
+    private bool ENNotEnoughEffectIsPlaying = false;
+    private bool isENAvailable = true;
+    private Text healthtext, ENtext;
 
     // Components
     private Crosshair crosshair;
@@ -146,26 +145,45 @@ public class MechCombat : Combat {
         OnWeaponSwitched += ResetArmAnimatorState;
         OnWeaponSwitched += FindTrail;
         OnWeaponSwitched += UpdateSlashDetector;
+        OnWeaponSwitched += UpdateWeightRelatedVars;
+
+        OnWeaponSwitched += UpdateMovementClips;
     }
 
     private void RegisterOnWeaponBuilt() {
         bm.OnMechBuilt += InitWeapons;
-        bm.OnMechBuilt += UpdateMovementClips;
+        //bm.OnMechBuilt += UpdateMovementClips;
     }
 
     private void RegisterOnSkill() {
         if (SkillController != null) SkillController.OnSkill += OnSkill;
     }
 
-    public void LoadMechProperties(MechProperty mechProperty) {
-        MAX_HP = mechProperty.HP;
-        MAX_FUEL = mechProperty.EN;
-        energyProperties.Init(mechProperty.EnergyDrain, mechProperty.ENOutputRate, mechProperty.MinENRequired);
+    public void LoadMechProperties() {
+        MAX_HP = bm.MechProperty.HP;
+        MAX_EN = bm.MechProperty.EN;
+        MechSize = bm.MechProperty.Size;
+        TotalWeight = bm.MechProperty.Weight;
+        energyProperties.minENRequired = bm.MechProperty.MinENRequired;
+        energyProperties.energyOutput = bm.MechProperty.ENOutputRate - bm.MechProperty.EnergyDrain;
+
+        scanRange = bm.MechProperty.ScanRange;
+        
+        
+    }
+
+    private void UpdateWeightRelatedVars() {
+        TotalWeight = bm.MechProperty.Weight + ((weaponScripts[weaponOffset]==null)?0 : weaponScripts[weaponOffset].weight) + ((weaponScripts[weaponOffset+1] == null) ? 0 : weaponScripts[weaponOffset+1].weight);
+
+        energyProperties.jumpENDrain = bm.MechProperty.GetJumpENDrain(TotalWeight);
+        energyProperties.dashENDrain = bm.MechProperty.DashENDrain;
+
+        MechController.UpdateWeightRelatedVars(TotalWeight);
     }
 
     private void initMechStats() {//call also when respawn
         CurrentHP = MAX_HP;
-        currentFuel = MAX_FUEL;
+        currentEN = MAX_EN;
     }
 
     private void initTransforms() {
@@ -243,7 +261,7 @@ public class MechCombat : Combat {
     private void initHUD() {
         if (!photonView.isMine)
             return;
-        initHealthAndFuelBars();//other player should not call this ( they share hud )
+        initHealthAndENBars();//other player should not call this ( they share hud )
     }
 
     private void FindEffectEnd() {
@@ -269,17 +287,17 @@ public class MechCombat : Combat {
         return hand == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
     }
 
-    private void initHealthAndFuelBars() {
+    private void initHealthAndENBars() {
         Slider[] sliders = GameObject.Find("PanelCanvas").GetComponentsInChildren<Slider>();
         if (sliders.Length > 0) {
             healthBar = sliders[0];
             healthBar.value = 1;
             healthtext = healthBar.GetComponentInChildren<Text>();
             if (sliders.Length > 1) {
-                fuelBar = sliders[1];
-                fuelBar_fill = fuelBar.transform.Find("Fill Area/Fill").GetComponent<Image>();
-                fuelBar.value = 1;
-                fueltext = fuelBar.GetComponentInChildren<Text>();
+                ENBar = sliders[1];
+                ENBar_fill = ENBar.transform.Find("Fill Area/Fill").GetComponent<Image>();
+                ENBar.value = 1;
+                ENtext = ENBar.GetComponentInChildren<Text>();
             }
         }
     }
@@ -754,7 +772,7 @@ public class MechCombat : Combat {
 
         // Switch weapons
         if (Input.GetKeyDown(KeyCode.R) && !IsSwitchingWeapon && !isDead) {
-            currentFuel -= (currentFuel >= MAX_FUEL / 3) ? MAX_FUEL / 3 : currentFuel;
+            currentEN -= (currentEN >= MAX_EN / 3) ? MAX_EN / 3 : currentEN;
 
             photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
         }
@@ -909,8 +927,11 @@ public class MechCombat : Combat {
                     return;
 
                 BCNbulletNum--;
-                if (BCNbulletNum <= 0)
+                if (BCNbulletNum <= 0) {//TODO : remake this
+                    animator.Play("BCN",1);
+                    animator.Play("BCN", 2);
                     animator.SetBool("BCNLoad", true);
+                }
 
                 setIsFiring(hand, true);
                 HeatBar.IncreaseHeatBarL(45);
@@ -975,16 +996,16 @@ public class MechCombat : Combat {
         // Update Health bar gradually
         healthBar.value = calculateSliderPercent(healthBar.value, CurrentHP / (float)MAX_HP);
         healthtext.text = UIExtensionMethods.BarValueToString((int)(MAX_HP * healthBar.value), MAX_HP);
-        // Update Fuel bar gradually
-        fuelBar.value = calculateSliderPercent(fuelBar.value, currentFuel / (float)MAX_FUEL);
-        fueltext.text = UIExtensionMethods.BarValueToString((int)(MAX_FUEL* fuelBar.value), (int)MAX_FUEL);
+        // Update EN bar gradually
+        ENBar.value = calculateSliderPercent(ENBar.value, currentEN / (float)MAX_EN);
+        ENtext.text = UIExtensionMethods.BarValueToString((int)(MAX_EN* ENBar.value), (int)MAX_EN);
     }
 
     // Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
     private float calculateSliderPercent(float currentPercent, float targetPercent) {
-        float err = 0.005f;
+        float err = 0.015f;
         if (Mathf.Abs(currentPercent - targetPercent) > err) {
-            currentPercent = currentPercent + (currentPercent > targetPercent ? -0.005f : 0.005f);
+            currentPercent = currentPercent + (currentPercent > targetPercent ? -err : err);
         } else {
             currentPercent = targetPercent;
         }
@@ -1033,7 +1054,6 @@ public class MechCombat : Combat {
     }
 
     private void ActivateWeapons() {//Not using SetActive because it causes weapon Animator to bind the wrong rotation if the weapon animation is not finish (SMG reload)
-        //TODO : improve efficiency ( register the renderers when built )
         for (int i = 0; i < weapons.Length; i++) {
             if (weapons[i] != null) {
                 Renderer[] renderers = weapons[i].GetComponentsInChildren<Renderer>();
@@ -1046,13 +1066,12 @@ public class MechCombat : Combat {
 
     public void UpdateMovementClips() {
         if (weaponScripts == null) return;
-
         bool isPreviousWeaponTwoHanded = (weaponScripts[(weaponOffset+2)%4] != null && weaponScripts[(weaponOffset + 2) % 4].twoHanded) ;
         bool isCurrentWeaponTwoHanded = (weaponScripts[(weaponOffset) % 4] != null && weaponScripts[(weaponOffset) % 4].twoHanded);
 
         if(isPreviousWeaponTwoHanded == isCurrentWeaponTwoHanded)return;
-
-        MovementClips movementClips = (isCurrentWeaponTwoHanded) ? defaultMovementClips : TwoHandedMovementClips;
+        
+        MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
@@ -1126,6 +1145,8 @@ public class MechCombat : Combat {
         foreach (Renderer renderer in renderers) {
             renderer.enabled = b;
         }
+
+        ActivateWeapons();
     }
 
     public void EnableAllColliders(bool b) {
@@ -1143,51 +1164,55 @@ public class MechCombat : Combat {
         return Effect_Ends[num];
     }
 
-    public void IncrementFuel() {
-        currentFuel += energyProperties.energyOutput * Time.fixedDeltaTime;
-        if (currentFuel > MAX_FUEL) currentFuel = MAX_FUEL;
+    public void IncrementEN() {
+        currentEN += energyProperties.energyOutput * Time.fixedDeltaTime;
+        if (currentEN > MAX_EN) currentEN = MAX_EN;
     }
 
-    public void DecrementFuel() {
-        currentFuel -= energyProperties.energyDrain * Time.fixedDeltaTime;
-        if (currentFuel < 0)
-            currentFuel = 0;
+    public void DecrementEN() {
+        if(MechController.grounded)
+            currentEN -= energyProperties.dashENDrain * Time.fixedDeltaTime;
+        else
+            currentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime ;       
+
+        if (currentEN < 0)
+            currentEN = 0;
     }
 
-    public bool EnoughFuelToBoost() {
-        if (currentFuel >= energyProperties.minENRequired) {
-            isFuelAvailable = true;
+    public bool EnoughENToBoost() {
+        if (currentEN >= energyProperties.minENRequired) {
+            isENAvailable = true;
             return true;
         } else {//false -> play effect if not already playing
-            if (!fuelNotEnoughEffectIsPlaying) {
-                StartCoroutine(FuelNotEnoughEffect());
+            if (!ENNotEnoughEffectIsPlaying) {
+                StartCoroutine(ENNotEnoughEffect());
             }
             if (!animator.GetBool("Boost"))//can set to false in transition to grounded state but not in transition from grounded state to boost state
-                isFuelAvailable = false;
+                isENAvailable = false;
             return false;
         }
     }
 
-    private IEnumerator FuelNotEnoughEffect() {
-        fuelNotEnoughEffectIsPlaying = true;
+    private IEnumerator ENNotEnoughEffect() {
+        ENNotEnoughEffectIsPlaying = true;
         for (int i = 0; i < 4; i++) {
-            fuelBar_fill.color = new Color32(133, 133, 133, 255);
+            ENBar_fill.color = new Color32(133, 133, 133, 255);
             yield return new WaitForSeconds(0.15f);
-            fuelBar_fill.color = new Color32(255, 255, 255, 255);
+            ENBar_fill.color = new Color32(255, 255, 255, 255);
             yield return new WaitForSeconds(0.15f);
         }
-        fuelNotEnoughEffectIsPlaying = false;
+        ENNotEnoughEffectIsPlaying = false;
     }
 
-    public bool IsFuelAvailable() {
-        if (IsFuelEmpty()) {
-            isFuelAvailable = false;
+    public bool IsENAvailable() {
+        if (IsENEmpty()) {
+            isENAvailable = false;
         }
-        return isFuelAvailable;
+        return isENAvailable;
     }
 
-    public bool IsFuelEmpty() {
-        return currentFuel <= 0;
+    public bool IsENEmpty() {
+        return currentEN <= 0;
     }
 
     private void OnSkill(bool b) {
@@ -1293,14 +1318,8 @@ public class MechCombat : Combat {
 
     [System.Serializable]
     private struct EnergyProperties {
-        public float energyDrain;
+        public float jumpENDrain, dashENDrain;
         public float energyOutput;
-        public float minENRequired;
-        
-        public void Init(float energyDrain, float energyOutput, float minENRequired) {
-            this.energyDrain = energyDrain;
-            this.energyOutput = energyOutput;
-            this.minENRequired = minENRequired;
-        }
+        public float minENRequired;       
     }
 }

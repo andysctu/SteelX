@@ -7,8 +7,8 @@ public class Head : Part {
 	public int MPU;
 	public int ScanRange;
 
-    public override void LoadPartInfo(MechProperty mechProperty) {
-        LoadPartBasicInfo(mechProperty);
+    public override void LoadPartInfo(ref MechProperty mechProperty) {
+        LoadPartBasicInfo(ref mechProperty);
         mechProperty.SP += SP;
         mechProperty.MPU += MPU;
         mechProperty.ScanRange += ScanRange;

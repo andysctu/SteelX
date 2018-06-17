@@ -13,16 +13,17 @@ public class HeatBar : MonoBehaviour {
 
 	private Weapon[] weaponScripts;
 	private float[] curValue = new float[4];
-	private int cooldown, weaponOffset;
+    private const float CooldownCoeffWhenNotOverHeat = 0.2f;
+	private int cooldownRate, weaponOffset;
 	private int MaxHeat;
 	private Color32 RED = new Color32 (255, 0, 0, 200) , YELLOW = new Color32 (255, 255, 85, 200);
 
     void Awake() {
-        RegisterOnWeaponBuilt();
+        RegisterOnMechBuilt();
         RegisterOnWeaponSwitched();
     }
 
-    private void RegisterOnWeaponBuilt() {
+    private void RegisterOnMechBuilt() {
         if (bm != null) {
             bm.OnMechBuilt += InitVars;
             bm.OnMechBuilt += ResetHeatBar;
@@ -37,14 +38,14 @@ public class HeatBar : MonoBehaviour {
 
     private void InitVars(){//called when finished buildmech
 		weaponScripts = bm.weaponScripts;
-		cooldown = mcbt.cooldown;
-		MaxHeat = mcbt.MaxHeat;
+		cooldownRate = bm.MechProperty.CooldownRate;
+		MaxHeat = bm.MechProperty.MaxHeat;
 	}
 
 	void FixedUpdate(){
 		
 		for(int i=0;i<4;i++){
-			curValue[i] -= ((mcbt.is_overheat[i])? cooldown : cooldown/2) *Time.fixedDeltaTime;// cooldown faster when overheat
+			curValue[i] -= ((mcbt.is_overheat[i])? cooldownRate : cooldownRate * CooldownCoeffWhenNotOverHeat) *Time.fixedDeltaTime;// cooldown faster when overheat
 
 			if (curValue [i] <= 0){
 				if(mcbt.is_overheat[i]){ // if previous is overheated => change color

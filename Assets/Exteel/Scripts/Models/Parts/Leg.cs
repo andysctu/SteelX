@@ -13,9 +13,9 @@ public class Leg : Part {
     }
     public LegType legType;
 
-    public override void LoadPartInfo(MechProperty mechProperty) {
-        LoadPartBasicInfo(mechProperty);
-        mechProperty.BasicSpeed += BasicSpeed;
+    public override void LoadPartInfo(ref MechProperty mechProperty) {
+        LoadPartBasicInfo(ref mechProperty);
+        mechProperty.BasicSpeed = BasicSpeed;
         mechProperty.Capacity += Capacity;
         mechProperty.Deceleration += Deceleration;
     }

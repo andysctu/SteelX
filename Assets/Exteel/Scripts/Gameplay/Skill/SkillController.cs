@@ -82,9 +82,9 @@ public class SkillController : MonoBehaviour {
         if(photonView.isMine)SkillHUD.InitSkills(skills);
     }
 
-    public void LoadMechProperties(MechProperty mechProperty) {
-        MAX_SP = mechProperty.SP;
-        MPU = mechProperty.MPU;
+    public void LoadMechProperties() {
+        MAX_SP = bm.MechProperty.SP;
+        MPU = bm.MechProperty.MPU;
     }
 
     private void Start() {

@@ -68,7 +68,7 @@ public class SlashState : MechStateMachineBehaviour {
 
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
 
-		if(!detectGrounded){
+		if(stateInfo.normalizedTime>0.5f && !detectGrounded){
             if (b) {
                 mctrl.Boost(false);
             }

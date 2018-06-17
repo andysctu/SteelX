@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SmashState : MechStateMachineBehaviour {
 
-	private bool inAir = false;
+	private bool inAir = false, detectGrounded;
 
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
@@ -19,8 +19,9 @@ public class SmashState : MechStateMachineBehaviour {
 		if(inAir){
 			mctrl.Boost (true);
 		}
+        detectGrounded = false;
 
-		if(mcbt.isLMeleePlaying){
+        if (mcbt.isLMeleePlaying){
 			mcbt.SlashDetect (0);
 		}else{
 			mcbt.SlashDetect (1);
@@ -44,13 +45,30 @@ public class SmashState : MechStateMachineBehaviour {
 		if ( cc == null || !cc.enabled) return;
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 
-		if(inAir && !mcbt.isLMeleePlaying && !mcbt.isRMeleePlaying){
-			mctrl.Boost (false);
+        bool b = (inAir && !mcbt.isLMeleePlaying && !mcbt.isRMeleePlaying);
+
+        if (b){
 			mctrl.JumpMoveInAir ();
 		}
 
 		mctrl.CallLockMechRot (!animator.IsInTransition (0));
-	}
+
+        if (stateInfo.normalizedTime > 0.5f && !detectGrounded) {
+            if (b) {
+                mctrl.Boost(false);
+            }
+
+            mcbt.CanMeleeAttack = !animator.GetBool(jump_id);
+            if (mctrl.CheckIsGrounded()) {
+                detectGrounded = true;
+                mctrl.grounded = true;
+                mctrl.SetCanVerticalBoost(false);
+                animator.SetBool(jump_id, false);
+                animator.SetBool(grounded_id, true);
+                mctrl.Boost(false);
+            }
+        }
+    }
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (cc == null || !cc.enabled)

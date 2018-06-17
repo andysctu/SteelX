@@ -18,7 +18,7 @@ public class MechController : Photon.MonoBehaviour {
     private BuildMech bm;
     private GameManager gm;
     private BoosterController BoosterController;
-    
+
     private float runDir_coeff = 3, runDecel_rate = 0.5f;
     private float curboostingSpeed;//global space
     private Vector2 xzDir, run_xzDir;
@@ -41,17 +41,16 @@ public class MechController : Photon.MonoBehaviour {
     private float direction;
 
     private float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
-    public float Gravity = 4.5f;
+    public float Gravity = 4;
     public float maxDownSpeed = -140f;
     public float InAirSpeedCoeff = 0.7f;
     public float lerpCam_coeff = 5;
     public bool grounded = true; //changes with animator bool "grounded"
-    public float cam_lerpSpeed = 10, LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
+    public float LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
-    [HideInInspector]public bool onSkillMoving = false, onInstantMoving = false;
+    [HideInInspector] public bool onSkillMoving = false, onInstantMoving = false;
 
     private void Awake() {
-        bm = GetComponent<BuildMech>();
         RegisterOnMechBuilt();
         RegisterOnSkill();
     }
@@ -63,11 +62,13 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void RegisterOnMechBuilt() {
-        bm.OnMechBuilt += FindBoosterController;
+        if ((bm = GetComponent<BuildMech>()) != null) {
+            bm.OnMechBuilt += FindBoosterController;
+        }
     }
 
     private void RegisterOnSkill() {
-        if(SkillController != null)SkillController.OnSkill += InterruptCurrentMovement;
+        if (SkillController != null) SkillController.OnSkill += InterruptCurrentMovement;
     }
 
     public void initControllerVar() {
@@ -81,12 +82,21 @@ public class MechController : Photon.MonoBehaviour {
 
     private void FindBoosterController() {
         Transform boosterBone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
-        if(boosterBone != null)
+        if (boosterBone != null)
             BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
     }
 
-    public void LoadMechProperties(MechProperty mechProperty) {
-        
+    public void UpdateWeightRelatedVars(int totalWeight) {
+        movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(totalWeight) * 0.1f;
+        movementVariables.maxHorizontalBoostSpeed = bm.MechProperty.GetDashSpeed(totalWeight) * 0.1f;
+        movementVariables.minBoostSpeed = (movementVariables.moveSpeed + movementVariables.maxHorizontalBoostSpeed) / 2f;
+
+        movementVariables.acceleration = bm.MechProperty.GetDashAcceleration(totalWeight);
+        movementVariables.deceleration = bm.MechProperty.GetDashDecelleration(totalWeight);
+
+        movementVariables.verticalBoostSpeed = bm.MechProperty.VerticalBoostSpeed;
+        //jump boost speed
+        //jump speed
     }
 
     private void initComponents() {
@@ -98,7 +108,6 @@ public class MechController : Photon.MonoBehaviour {
 
     private void initCam(float radius, float offset) {
         mechCamera.LockMechRotation(false);
-        mechCamera.SetLerpFakePosSpeed(cam_lerpSpeed);
         mechCamera.orbitRadius = radius;
         mechCamera.angleOffset = offset;
     }
@@ -113,13 +122,13 @@ public class MechController : Photon.MonoBehaviour {
         } else {
             ySpeed = -CharacterController.stepOffset;
         }
-
+        
         if (Animator.GetBool(AnimatorVars.boost_id)) {
             DynamicCam();
-            mechCombat.DecrementFuel();
+            mechCombat.DecrementEN();
         } else {
             ResetCam();
-            mechCombat.IncrementFuel();
+            mechCombat.IncrementEN();
         }
 
         UpdateSpeed();
@@ -134,7 +143,7 @@ public class MechController : Photon.MonoBehaviour {
         move = Vector3.right * xSpeed * Time.fixedDeltaTime;
         move += Vector3.forward * zSpeed * Time.fixedDeltaTime;
         move.y += ySpeed * Time.fixedDeltaTime;
-
+        
         if (isSlowDown) {
             move.x = move.x * slowDownCoeff;
             move.z = move.z * slowDownCoeff;
@@ -151,7 +160,7 @@ public class MechController : Photon.MonoBehaviour {
     public void SetMoving(float speed) {//called by animation
         instantMoveSpeed = speed;
         instantMoveDir = cam.transform.forward;
-        if(grounded) instantMoveDir = new Vector3(instantMoveDir.x, 0, instantMoveDir.z);// make sure not slashing to the sky
+        if (grounded) instantMoveDir = new Vector3(instantMoveDir.x, 0, instantMoveDir.z);// make sure not slashing to the sky
         curInstantMoveSpeed = instantMoveSpeed;
     }
 
@@ -190,7 +199,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     /*
-    //TODO : test ( this works well!)
+    //TODO : test
     public Transform pelvis; //put spine here
     public int degree = 30;
     private void LateUpdate() {
@@ -211,12 +220,12 @@ public class MechController : Photon.MonoBehaviour {
     public void VerticalBoost() {
         if (v_boost_start_yPos == 0) {
             v_boost_start_yPos = transform.position.y;
-            ySpeed = movementVariables.maxVerticalBoostSpeed;
+            ySpeed = movementVariables.verticalBoostSpeed;
         } else {
-            if (transform.position.y >= v_boost_start_yPos + movementVariables.maxVerticalBoostSpeed * 1.25f) {
+            if (transform.position.y >= v_boost_start_yPos + movementVariables.verticalBoostSpeed * 1.25f) {//max height
                 ySpeed = 0;
             } else {
-                ySpeed = movementVariables.maxVerticalBoostSpeed;
+                ySpeed = movementVariables.verticalBoostSpeed;
             }
         }
         float inAirSpeed = movementVariables.maxHorizontalBoostSpeed * InAirSpeedCoeff;
@@ -236,7 +245,7 @@ public class MechController : Photon.MonoBehaviour {
         if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.boost_id)) {//not in transition to boost
             xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x + (run_xzDir.y * curboostingSpeed * transform.forward).x;
             zSpeed = (run_xzDir.x * curboostingSpeed * transform.right).z + (run_xzDir.y * curboostingSpeed * transform.forward).z;
-            curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * runDecel_rate;
+            curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 5;
         } else {
             xSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.x + movementVariables.moveSpeed * ((xzDir.y < 0) ? xzDir.y / 2 : xzDir.y) * transform.forward.x;
             zSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.z + movementVariables.moveSpeed * ((xzDir.y < 0) ? xzDir.y / 2 : xzDir.y) * transform.forward.z;
@@ -254,7 +263,7 @@ public class MechController : Photon.MonoBehaviour {
 
     public void JumpMoveInAir() {
         if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.boost_id)) {//not in transition to boost
-            curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * runDecel_rate * 2;
+            curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 10;
 
             xSpeed = (xzDir.x * curboostingSpeed * transform.right).x + (xzDir.y * curboostingSpeed * transform.forward).x;
             zSpeed = (xzDir.x * curboostingSpeed * transform.right).z + (xzDir.y * curboostingSpeed * transform.forward).z;
@@ -281,12 +290,12 @@ public class MechController : Photon.MonoBehaviour {
         }
         if (b) {
             if (grounded) {
-                if (Mathf.Abs(speed) < 0.1f && Mathf.Abs(direction) < 0.1f) {//boosting but not moving => lower current boosting speed
+                if (Mathf.Abs(speed) < 0.1f && Mathf.Abs(direction) < 0.1f) {//boosting but not moving => decrease current boosting speed
                     if (curboostingSpeed >= movementVariables.minBoostSpeed)
                         curboostingSpeed -= movementVariables.acceleration * Time.deltaTime * 10;
-                } else {
+                } else {//increase magnitude if < max
                     if (curboostingSpeed <= movementVariables.maxHorizontalBoostSpeed)
-                        curboostingSpeed += movementVariables.acceleration * Time.deltaTime * 5;
+                        curboostingSpeed += movementVariables.acceleration * Time.deltaTime * 10;
                 }
 
                 //ideal speed
@@ -299,16 +308,20 @@ public class MechController : Photon.MonoBehaviour {
                 Vector2 decreaseDir = new Vector2(Mathf.Abs(xSpeed), Mathf.Abs(zSpeed)).normalized;
 
                 if (Mathf.Abs(dir.x) < 0.1f && xSpeed != 0) {
-                    xSpeed += Mathf.Sign(0 - xSpeed) * movementVariables.acceleration * decreaseDir.x * Time.deltaTime * 40;
+                    xSpeed += Mathf.Sign(0 - xSpeed) * movementVariables.acceleration * decreaseDir.x * Time.deltaTime * 10;
                 } else {
+                    if (Mathf.Abs(idealSpeed_x - xSpeed) < movementVariables.acceleration) acc_x = 0;
+
                     xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime * 100;
                 }
+
                 if (Mathf.Abs(dir.y) < 0.1f && zSpeed != 0) {
-                    zSpeed += Mathf.Sign(0 - zSpeed) * movementVariables.acceleration * decreaseDir.y * Time.deltaTime * 40;
+                    zSpeed += Mathf.Sign(0 - zSpeed) * movementVariables.acceleration * decreaseDir.y * Time.deltaTime * 10;
                 } else {
+                    if (Mathf.Abs(idealSpeed_z - zSpeed) < movementVariables.acceleration) acc_z = 0;
+
                     zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime * 100;
                 }
-
                 run_xzDir.x = xzDir.x;
                 run_xzDir.y = xzDir.y;
             } else {//boost in air
@@ -371,8 +384,7 @@ public class MechController : Photon.MonoBehaviour {
 
     [PunRPC]
     private void BoostFlame(bool boost, bool boostdust) {
-        
-        if (boost) {            
+        if (boost) {
             BoosterController.StartBoost();
             if (boostdust)
                 EffectController.BoostingDustEffect(true);
@@ -421,13 +433,13 @@ public class MechController : Photon.MonoBehaviour {
 
     [System.Serializable]
     private struct MovementVariables {
-        public float maxVerticalBoostSpeed;
+        public float verticalBoostSpeed;
         public float maxHorizontalBoostSpeed;
         public float jumpPower;
         public float moveSpeed;
         public float minBoostSpeed;
+
         public float acceleration;
         public float deceleration;
     }
 }
-

@@ -1,6 +1,8 @@
-﻿public static class UIExtensionMethods{
-    public static string BarValueToString(int curvalue, int maxvalue) {
-        string curvalueStr = curvalue.ToString();
+﻿using UnityEngine;
+
+public static class UIExtensionMethods{
+    public static string BarValueToString(int curvalue, int maxvalue) {        
+        string curvalueStr = (curvalue<0)? "0" : curvalue.ToString();
         string maxvalueStr = maxvalue.ToString();
 
         string finalStr = string.Empty;

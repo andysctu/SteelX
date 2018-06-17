@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Name: APS043
   m_EditorClassIdentifier: 
   weaponType: APS
+  displayName: 
   weaponPrefab: {fileID: 1897089457237074, guid: 04cda4f3c04101948bc96fab9c03c76c,
     type: 2}
   Grip:
   - {fileID: 1096434313937498, guid: 49a879610535bdc48b7f8346d7636325, type: 2}
   - {fileID: 1096434313937498, guid: 57c368d780206b94c8000f1af845fa5f, type: 2}
   damage: 135
+  weight: 6500
   Range: 100
   minRange: 10
   Rate: 1.2

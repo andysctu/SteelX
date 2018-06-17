@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS016", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS008", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
 																																								        //eng : 14
 	[SerializeField]private MechCombat MechCombat;
     [SerializeField]private MechController MechController;
@@ -31,12 +31,12 @@ public class BuildMech : Photon.MonoBehaviour {
     private Transform[] hands;
 
     private ParticleSystem Muz;
-    private MechProperty MechProperty;
     private int weaponOffset = 0;
 
 	private bool buildLocally = false, isDataGetSaved = true;
     private int Total_Mech = 4;    
 	private const int BLUE = 0, RED = 1;
+    public MechProperty MechProperty;
     public int Mech_Num = 0;
     public bool onPanel = false;
 
@@ -131,8 +131,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		}
 
         //set weapons if null (in offline )        
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[13];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[10];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[6];
 
@@ -153,7 +153,7 @@ public class BuildMech : Photon.MonoBehaviour {
             // Load mech part & info
             Part part = MechPartManager.FindData(parts[i]);
             if (part != null) {
-                part.LoadPartInfo(MechProperty);
+                part.LoadPartInfo(ref MechProperty);
             } else {
                 Debug.LogError("Can't find part in MechPartManager");
                 continue;
@@ -184,7 +184,15 @@ public class BuildMech : Photon.MonoBehaviour {
 
         // Replace weapons
         buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
-	}
+
+        LoadMechProperties();
+
+        if (!buildLocally) {
+            UpdateMechCombatVars();//this will turn trail on ( enable all renderer)
+            for (int i = 0; i < 4; i++)//turn off trail
+                ShutDownTrail(weapons[i]);
+        }
+    }
 
     private void LoadBooster(string booster_name) {
         Transform boosterbone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
@@ -202,6 +210,9 @@ public class BuildMech : Photon.MonoBehaviour {
         GameObject newBooster = Instantiate(newBooster_prefab, boosterbone);
         newBooster.transform.localPosition = Vector3.zero;
         newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
+
+        //Load info 
+        booster_part.LoadPartInfo(ref MechProperty);
 
 
         //switch booster aniamtion clips
@@ -303,14 +314,8 @@ public class BuildMech : Photon.MonoBehaviour {
 
         UpdateCurWeaponNames();
 
-		if (buildLocally)CheckAnimatorState ();
+		if(buildLocally)CheckAnimatorState ();        
 
-        
-        if (MechCombat!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
-		for (int i = 0; i < 4; i++)//turn off trail
-			ShutDownTrail (weapons [i]);
-
-        
         //shut down renderers ( not using setActive because if weapons have their own animations , disabling causes weapon animators to rebind the wrong rotation & position
         if (weapons[(weaponOffset + 2) % 4] != null) {
             Renderer[] renderers = weapons[(weaponOffset + 2) % 4].GetComponentsInChildren<Renderer>();
@@ -432,7 +437,7 @@ public class BuildMech : Photon.MonoBehaviour {
         if (buildLocally) {
             MechIK.UpdateMechIK(weaponOffset);
         } else {
-            LoadMechProperties();
+            //LoadMechProperties();
             UpdateMechCombatVars();
         }
     }
@@ -524,14 +529,13 @@ public class BuildMech : Photon.MonoBehaviour {
         if (OnMechBuilt != null)OnMechBuilt();
         if(MechCombat.OnWeaponSwitched!=null)MechCombat.OnWeaponSwitched();
 
-		MechCombat.EnableAllRenderers (true);
-		MechCombat.EnableAllColliders (true);
-	}
+        MechCombat.EnableAllRenderers(true);
+        MechCombat.EnableAllColliders(true);
+    }
 
-    void LoadMechProperties() {
-        MechCombat.LoadMechProperties(MechProperty);
-        MechController.LoadMechProperties(MechProperty);
-        SkillController.LoadMechProperties(MechProperty);
+    void LoadMechProperties() {//TODO : improve this
+        MechCombat.LoadMechProperties();
+        SkillController.LoadMechProperties();
     }
 
     private void CheckIfBuildLocally() {
@@ -555,20 +559,39 @@ public struct MechProperty {
 
     public int ScanRange;
 
-    public int BasicSpeed;
+    public int VerticalBoostSpeed;
+    public int BasicSpeed{ set; private get; }
     public int Capacity;
     public int Deceleration;
 
-    public int DashOutput;
-    public int DashENDrain, JumpENDrain;
+    public int DashOutput { private get; set; }
+    public int DashENDrain;
+    public int JumpENDrain { private get;set; }
 
     private float DashAcceleration, DashDecelleration;
     
-    public float GetDashAcceleration() {
-        return 0;
+
+    public float GetJumpENDrain(int totalWeight) {
+        return JumpENDrain + totalWeight / 62f;
     }
 
-    public float GetDashDecelleration() {
-        return 0;
+    public float GetDashSpeed(int totalWeight) {
+        return  DashOutput * 1.7f - totalWeight * 0.004f; //DashOutput * 1.7f : max speed  ;  0.004 weight coefficient
+    }
+
+    public float GetMoveSpeed(int totalWeight) {
+        if(totalWeight > Capacity) {
+            return BasicSpeed - Capacity / 400f - (totalWeight - Capacity)/200f;
+        } else {
+            return BasicSpeed - totalWeight / 400f;
+        }
+    }
+
+    public float GetDashAcceleration(int totalWeight) {
+        return GetDashSpeed(totalWeight) / 100f - 1 ;
+    }
+
+    public float GetDashDecelleration(int totalWeight) {
+        return Deceleration/10000f - (totalWeight - Deceleration) /20000f ;
     }
 }
