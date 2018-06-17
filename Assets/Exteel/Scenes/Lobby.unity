@@ -4636,7 +4636,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   Sounds: {fileID: 0}
-  mcbt: {fileID: 0}
+  MechCombat: {fileID: 0}
   SkillController: {fileID: 0}
   Targets: []
 --- !u!114 &475772438
@@ -6309,7 +6309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0.00003496004}
+  m_AnchoredPosition: {x: 0, y: -0.000015258789}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &646861062
@@ -12735,7 +12735,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mcbt: {fileID: 0}
+  MechCombat: {fileID: 0}
+  MechController: {fileID: 0}
   Sounds: {fileID: 428959981}
   MechIK: {fileID: 0}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}

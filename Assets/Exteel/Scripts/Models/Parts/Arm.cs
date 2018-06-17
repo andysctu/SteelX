@@ -6,12 +6,13 @@ public class Arm : Part {
     public int MaxHeat;
 	public int CooldownRate;
 	public int Marksmanship;//set how well mech uses weapons
-    public Vector3 attachWeaponOffset;
+    public Vector3 handOffset;
 
     public override void LoadPartInfo(ref MechProperty mechProperty) {
         LoadPartBasicInfo(ref mechProperty);
         mechProperty.MaxHeat += MaxHeat;
         mechProperty.CooldownRate += CooldownRate;
         mechProperty.Marksmanship += Marksmanship;
+        mechProperty.handOffset = handOffset;
     }
 }

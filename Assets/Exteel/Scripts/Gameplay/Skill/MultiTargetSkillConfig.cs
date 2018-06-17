@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(menuName = "Skill/MultiTarget")]
 public class MultiTargetSkillConfig : SkillConfig {
-    [Header("Skill Special")]    
+    [Header("Skill Special")]
     [SerializeField] private GameObject[] boosterEffects;
     public MultiTargetSkillParams MultiTargetSkillParams = new MultiTargetSkillParams();
 
@@ -10,11 +10,11 @@ public class MultiTargetSkillConfig : SkillConfig {
         BuildMech bm = player.GetComponent<BuildMech>();
 
         GameObject player_booster = player.GetComponentInChildren<BoosterController>().gameObject;
-        
+
         //Check if booster match
-        if(BoosterName != "" && !   player_booster.name.Contains(BoosterName))
+        if (BoosterName != "" && !player_booster.name.Contains(BoosterName))
             return;
-        
+
         if (bm.GetComponent<MultiTargetSkillBehaviour>() == null) {
             bm.gameObject.AddComponent<MultiTargetSkillBehaviour>();
         }
@@ -34,7 +34,7 @@ public class MultiTargetSkillConfig : SkillConfig {
     }
 
     private void AttachEffectsOnBooster(GameObject booster, int skill_num) {
-        SkillController SkillController = booster.transform.root.GetComponent< SkillController >();
+        SkillController SkillController = booster.transform.root.GetComponent<SkillController>();
 
         foreach (GameObject effect in boosterEffects) {
             GameObject g;

@@ -19,12 +19,11 @@ public class SkillController : MonoBehaviour {
     private AnimationClipOverrides clipOverrides, skillcam_clipOverrides;
     private Animator[] WeaponAnimators = new Animator[4];
     private Animator boosterAnimator;
-    private Transform SkillPanel;
     private Transform skillUser;
     private SkillHUD SkillHUD;
 
     private string boosterName;
-    private int weaponOffset = 0, curSkillNum = 0;
+    private int weaponOffset = 0;
     private bool[] skill_isMatchRequirements = new bool[4];
     private float[] curCooldowns, MaxCooldowns; // curMaxCooldown = MIN_COOLDOWN || MaxCooldown
     private const string Target_Animation_Name = "skill_target";
@@ -34,11 +33,10 @@ public class SkillController : MonoBehaviour {
     public event OnSkillAction OnSkill;
 
     public List<RequireSkillInfo>[] RequireInfoSkills;
-    
+
     private int MPU = 4;//TODO : implement this
     private int SP = 0, MAX_SP = 2000;
     private Slider SPBar;
-    private Image SPBar_fill;
     private Text SPBartext;
 
     public bool isDrone = false;
@@ -67,7 +65,7 @@ public class SkillController : MonoBehaviour {
 
     private void OnWeaponSwitched() {
         weaponOffset = mechcombat.GetCurrentWeaponOffset();
-        CheckIfSkillsMatchRequirements();        
+        CheckIfSkillsMatchRequirements();
     }
 
     private void OnWeaponBuilt() {
@@ -80,7 +78,7 @@ public class SkillController : MonoBehaviour {
         LoadWeaponSkillAnimations();
         LoadBoosterSkillAnimations();
         InitHUD();
-        if(photonView.isMine)SkillHUD.InitSkills(skills);
+        if (photonView.isMine) SkillHUD.InitSkills(skills);
     }
 
     public void LoadMechProperties() {
@@ -89,9 +87,9 @@ public class SkillController : MonoBehaviour {
     }
 
     private void Start() {
-        InitComponents();        
-        
-        if(tag == "Drone")
+        InitComponents();
+
+        if (tag == "Drone")
             enabled = false;
     }
 
@@ -101,7 +99,7 @@ public class SkillController : MonoBehaviour {
         Transform PanelCanvas = FindObjectOfType<RespawnPanel>().transform;
         SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
 
-        SkillHUD.enabled = true;        
+        SkillHUD.enabled = true;
     }
 
     public void SetSkills(SkillConfig[] skills) {//this gets called in buildMech
@@ -255,9 +253,9 @@ public class SkillController : MonoBehaviour {
         animatorOverrideController.GetOverrides(clipOverrides);
 
         //override skill cam animator
-        if(skillcamAnimator == null)
+        if (skillcamAnimator == null)
             return;
-        skillcamAnimator_OC= new AnimatorOverrideController(skillcamAnimator.runtimeAnimatorController);
+        skillcamAnimator_OC = new AnimatorOverrideController(skillcamAnimator.runtimeAnimatorController);
         skillcamAnimator.runtimeAnimatorController = skillcamAnimator_OC;
 
         skillcam_clipOverrides = new AnimationClipOverrides(skillcamAnimator_OC.overridesCount);
@@ -378,17 +376,20 @@ public class SkillController : MonoBehaviour {
         throw new NotImplementedException();
     }
 
-    public void TargetOnSkill(AnimationClip skill_target, AnimationClip skillcam_target) {//TODO : generalize this
-        OnSkill(true);
+    public void TargetOnSkill(AnimationClip skill_target, AnimationClip skillcam_target, Transform skill_user) {//TODO : generalize this
+        if (OnSkill != null) OnSkill(true);
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
         if (skillcam != null) {
+            //rotate skill cam to face the target so the skill_cam animation is correct
+            skillcamAnimator.transform.LookAt(transform.position + (transform.position - skill_user.position) * 9999);
+
             skillcam_clipOverrides[Target_Animation_Name] = skillcam_target;
             skillcamAnimator_OC.ApplyOverrides(skillcam_clipOverrides);
 
             SwitchToSkillCam(true);
-            PlaySkillCamAnimation(-1);
+            PlaySkillCamAnimation(-1);//-1 : target animation
         }
         SwitchToSkillAnimator(true);
         skillAnimator.Play(Target_Animation_Name);
@@ -418,11 +419,11 @@ public class SkillController : MonoBehaviour {
                 req_2 = CheckIfBoosterMatch(skills[i], boosterName);
 
             skill_isMatchRequirements[i] = req_1 && req_2;
-            Debug.Log("skill : "+i + " is usable ? "+ skill_isMatchRequirements[i]);
+            Debug.Log("skill : " + i + " is usable ? " + skill_isMatchRequirements[i]);
         }
     }
 
-    private bool CheckIfWeaponMatch(SkillConfig skill, string weaponTypeL, string weaponTypeR) {        
+    private bool CheckIfWeaponMatch(SkillConfig skill, string weaponTypeL, string weaponTypeR) {
         if (weaponTypeL == "" || weaponTypeR == "") {
             if (weaponTypeL == "") {
                 bool L = (skill.weaponTypeL == string.Empty);
@@ -474,13 +475,15 @@ public class SkillController : MonoBehaviour {
         cam.enabled = !b;
     }
 
-    private void PlaySkillCamAnimation(int skill_num) {
+    private void PlaySkillCamAnimation(int skill_num) {//-1 : target animation
         if (!photonView.isMine) return;
 
         if (skill_num != -1)
-            skillcamAnimator.Play("sk"+skill_num);
-        else
+            skillcamAnimator.Play("sk" + skill_num);
+        else {
+            Debug.Log("call : " + Target_Animation_Name);
             skillcamAnimator.Play(Target_Animation_Name);
+        }
     }
 
     public void IncreaseSP(int amount) {

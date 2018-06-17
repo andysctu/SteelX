@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class GameMsgDisplayer : MonoBehaviour {
-
-    [SerializeField] GameObject WaitOtherPlayer;
-    [SerializeField] GameObject GameStart;
-    [SerializeField] Text Ping;
+    [SerializeField] private GameObject WaitOtherPlayer;
+    [SerializeField] private GameObject GameStart;
+    [SerializeField] private Text Ping;
 
     private int ping;
 
@@ -15,9 +12,9 @@ public class GameMsgDisplayer : MonoBehaviour {
         ping = PhotonNetwork.GetPing();
         Ping.text = "Ping : " + ping;
 
-        if(ping < 100) {
+        if (ping < 100) {
             Ping.color = Color.green;
-        }else if(ping < 200) {
+        } else if (ping < 200) {
             Ping.color = Color.yellow;
         } else {
             Ping.color = Color.red;
@@ -33,6 +30,5 @@ public class GameMsgDisplayer : MonoBehaviour {
     }
 
     public void ShowGameOver() {
-
     }
 }

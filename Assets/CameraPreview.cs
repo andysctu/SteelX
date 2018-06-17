@@ -18,7 +18,7 @@ class CameraPreview : EditorWindow {
     }
 
     void Update() {
-        if (camera != null) {
+        if (camera != null && camera.gameObject.activeSelf) {
             EnsureRenderTexture();
 
             camera.renderingPath = RenderingPath.UsePlayerSettings;

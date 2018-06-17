@@ -212,28 +212,32 @@ public class HangarManager : MonoBehaviour {
                 return;
             }
 
+            string mechPartToReplace = "";
             int parent = -1;
             if (part_name[0] != 'P') {
                 SkinnedMeshRenderer newSMR = (partPrefab == null) ? null : partPrefab.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
                 SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer>();
                 Material material = Resources.Load("MechPartMaterials/"+part_name + "mat", typeof(Material)) as Material;
 
-                
                 switch (part_name[0]) {
                     case 'C':
                     parent = 0;
+                    mechPartToReplace = UserData.myData.Mech[Mech_Num].Core;
                     UserData.myData.Mech[Mech_Num].Core = part_name;
                     break;
                     case 'A':
                     parent = 1;
+                    mechPartToReplace = UserData.myData.Mech[Mech_Num].Arms;
                     UserData.myData.Mech[Mech_Num].Arms = part_name;
                     break;
                     case 'L':
                     parent = 2;
+                    mechPartToReplace = UserData.myData.Mech[Mech_Num].Legs;
                     UserData.myData.Mech[Mech_Num].Legs = part_name;                       
                     break;
                     case 'H':
                     parent = 3;
+                    mechPartToReplace = UserData.myData.Mech[Mech_Num].Head;
                     UserData.myData.Mech[Mech_Num].Head = part_name;
                     break;
                     default:
@@ -245,6 +249,7 @@ public class HangarManager : MonoBehaviour {
 
             } else {//Booster
                 parent = 4;
+                mechPartToReplace = UserData.myData.Mech[Mech_Num].Booster;
                 UserData.myData.Mech[Mech_Num].Booster = part_name;
 
                 Transform boosterbone = Mech.transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
@@ -259,6 +264,8 @@ public class HangarManager : MonoBehaviour {
                     newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
                 }
             }
+            Mech.GetComponent<BuildMech>().ReplaceMechPart(mechPartToReplace, part_name);
+
         }
     }
 

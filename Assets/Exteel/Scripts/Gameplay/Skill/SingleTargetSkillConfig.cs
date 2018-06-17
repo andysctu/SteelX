@@ -36,7 +36,7 @@ public class SingleTargetSkillConfig : SkillConfig {
                 g = Instantiate(effect, bm.weapons[L].transform);
                 g.transform.localPosition = Vector3.zero;
                 g.name = effect.name;//name must match when playing animation
-            }            
+            }
 
             if (g.GetComponent(typeof(RequireSkillInfo)) != null) {
                 SkillController.RequireInfoSkills[skill_num].Add((RequireSkillInfo)g.GetComponent(typeof(RequireSkillInfo)));
@@ -65,9 +65,9 @@ public class SingleTargetSkillConfig : SkillConfig {
     }
 
     private GameObject FindDuplicatedEffect(Transform t, string effect_name) {
-        Transform[] childs = t.GetComponentsInChildren <Transform>();
+        Transform[] childs = t.GetComponentsInChildren<Transform>();
         foreach (Transform child in childs) {
-            if(child.name == effect_name)
+            if (child.name == effect_name)
                 return child.gameObject;
         }
         return null;

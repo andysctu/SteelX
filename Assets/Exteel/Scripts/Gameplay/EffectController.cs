@@ -1,25 +1,23 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EffectController : MonoBehaviour {
-
-    [SerializeField]SkillController SkillController;
-    [SerializeField]private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
-	[SerializeField]private ParticleSystem boostingDust, respawnEffect, damageless;
-	[SerializeField]private GameObject shieldOnHit, slashOnHitEffect, smashOnHitEffect;
-	[SerializeField]private Sounds Sounds;
-	[SerializeField]private Animator Animator;
-	[SerializeField]private AnimatorVars AnimatorVars;
-    [SerializeField]private Transform[] Hands;
+    [SerializeField] private SkillController SkillController;
+    [SerializeField] private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
+    [SerializeField] private ParticleSystem boostingDust, respawnEffect, damageless;
+    [SerializeField] private GameObject shieldOnHit, slashOnHitEffect, smashOnHitEffect;
+    [SerializeField] private Sounds Sounds;
+    [SerializeField] private Animator Animator;
+    [SerializeField] private AnimatorVars AnimatorVars;
+    [SerializeField] private Transform[] Hands;
 
     private MechCombat mcbt;
-	private MechController mctrl;
-	private bool isBoostingDustPlaying = false, onSkill = false;
+    private MechController mctrl;
+    private bool isBoostingDustPlaying = false, onSkill = false;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
 
     private void Awake() {
-        RegisterOnSkill();    
+        RegisterOnSkill();
     }
 
     private void RegisterOnSkill() {
@@ -29,20 +27,19 @@ public class EffectController : MonoBehaviour {
         }
     }
 
-    void OnEnable() {
+    private void OnEnable() {
         RespawnEffect();
     }
 
-    void Start () {
-		initComponents ();
-		initTransforms ();
+    private void Start() {
+        initComponents();
+        initTransforms();
         ImplementDamageless();
-
     }
 
-    void ImplementDamageless() {
+    private void ImplementDamageless() {
         Transform hips = transform.root.Find("CurrentMech/metarig/hips");
-        if(hips == null) {
+        if (hips == null) {
             Debug.LogError("can't find hips");
             return;
         }
@@ -51,58 +48,58 @@ public class EffectController : MonoBehaviour {
         damageless.transform.localPosition = Vector3.zero;
     }
 
-	void initComponents(){
-		mctrl = transform.root.GetComponent<MechController> ();
+    private void initComponents() {
+        mctrl = transform.root.GetComponent<MechController>();
     }
-		
-	void initTransforms(){
-		switchWeaponEffectL.transform.SetParent (Hands [0]);
-		switchWeaponEffectL.transform.localPosition = Vector3.zero;
 
-		switchWeaponEffectR.transform.SetParent (Hands [1]);
-		switchWeaponEffectR.transform.localPosition = Vector3.zero;
-	}
+    private void initTransforms() {
+        switchWeaponEffectL.transform.SetParent(Hands[0]);
+        switchWeaponEffectL.transform.localPosition = Vector3.zero;
 
-    public void SwitchWeaponEffect(){
-		Sounds.PlaySwitchWeapon ();
-		switchWeaponEffectL.Play ();
-		switchWeaponEffectR.Play ();
-	}
+        switchWeaponEffectR.transform.SetParent(Hands[1]);
+        switchWeaponEffectR.transform.localPosition = Vector3.zero;
+    }
 
-	public void BoostingDustEffect(bool b){//controlled by horizontal boosting state
-		if (b) {
-			if (!isBoostingDustPlaying) {
-				boostingDust.Play ();
-				isBoostingDustPlaying = true;
-			}
-			UpdateBoostingDust ();
-		} else {
-			if (isBoostingDustPlaying) {
-				isBoostingDustPlaying = false;
-				boostingDust.Stop ();
-			}
-		}
-	}
+    public void SwitchWeaponEffect() {
+        Sounds.PlaySwitchWeapon();
+        switchWeaponEffectL.Play();
+        switchWeaponEffectR.Play();
+    }
+
+    public void BoostingDustEffect(bool b) {//controlled by horizontal boosting state
+        if (b) {
+            if (!isBoostingDustPlaying) {
+                boostingDust.Play();
+                isBoostingDustPlaying = true;
+            }
+            UpdateBoostingDust();
+        } else {
+            if (isBoostingDustPlaying) {
+                isBoostingDustPlaying = false;
+                boostingDust.Stop();
+            }
+        }
+    }
 
     //TODO : improve this
-	public void UpdateBoostingDust(){//called by horizontal boosting state
-		float direction = Animator.GetFloat ("Direction"), speed = Animator.GetFloat ("Speed");//other player also call this
+    public void UpdateBoostingDust() {//called by horizontal boosting state
+        float direction = Animator.GetFloat("Direction"), speed = Animator.GetFloat("Speed");//other player also call this
 
         if ((direction > 0 || direction < 0 || speed > 0 || speed < 0) && Animator.GetBool("Boost") && !onSkill) {
-			if(!isBoostingDustPlaying)
-				BoostingDustEffect (true);
-			boostingDust.transform.localRotation = Quaternion.Euler (-90, Vector3.SignedAngle (Vector3.up, new Vector3 (-direction, speed, 0), Vector3.forward), 90);
-		}else{
-			if(isBoostingDustPlaying)
-				BoostingDustEffect (false);
-		}
-	}
+            if (!isBoostingDustPlaying)
+                BoostingDustEffect(true);
+            boostingDust.transform.localRotation = Quaternion.Euler(-90, Vector3.SignedAngle(Vector3.up, new Vector3(-direction, speed, 0), Vector3.forward), 90);
+        } else {
+            if (isBoostingDustPlaying)
+                BoostingDustEffect(false);
+        }
+    }
 
-	public void RespawnEffect(){
-        StartCoroutine(PlayRespawnEffect());		
-	}
+    public void RespawnEffect() {
+        StartCoroutine(PlayRespawnEffect());
+    }
 
-    IEnumerator PlayRespawnEffect() {
+    private IEnumerator PlayRespawnEffect() {
         respawnEffect.Play();
         yield return new WaitForSeconds(2);
         respawnEffect.Clear();
@@ -110,11 +107,11 @@ public class EffectController : MonoBehaviour {
     }
 
     public void SlashOnHitEffect(bool isShield, int hand) {
-        if(Hands == null) {
+        if (Hands == null) {
             Debug.Log("Hands is null");
             return;
         }
-        
+
         if (isShield) {
             GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
             g.GetComponent<ParticleSystem>().Play();
@@ -139,7 +136,7 @@ public class EffectController : MonoBehaviour {
     }
 
     private void PlayOnSkillEffect(bool b) {
-        if(b)
+        if (b)
             damageless.Play();
         else
             damageless.Stop();

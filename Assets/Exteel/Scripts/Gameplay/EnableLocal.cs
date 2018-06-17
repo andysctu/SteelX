@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 
 public class EnableLocal : MonoBehaviour {
+    [SerializeField] private Camera mainCamera, radar;
+    [SerializeField] private GameObject HeatBar, crosshairImage;
 
-	[SerializeField]private Camera mainCamera, radar;
-    [SerializeField]private GameObject HeatBar, crosshairImage;
-
-    void Start () {
+    private void Start() {
         EnableComponents(GetComponent<PhotonView>().isMine);
-	}
+    }
 
     private void EnableComponents(bool b) {
         HeatBar.SetActive(b);
@@ -18,6 +17,6 @@ public class EnableLocal : MonoBehaviour {
         mainCamera.enabled = b;
         mainCamera.GetComponent<MechCamera>().enabled = b;
         mainCamera.GetComponent<Crosshair>().enabled = b;
-        GetComponentInChildren<AudioListener>().enabled = b;   
+        GetComponentInChildren<AudioListener>().enabled = b;
     }
 }

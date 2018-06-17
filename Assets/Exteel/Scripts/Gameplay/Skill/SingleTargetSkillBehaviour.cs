@@ -63,7 +63,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play target on skill animation
             if (target_SkillController != null) {
                 target_SkillController.SetSkillUser(transform);
-                target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation(), config.GetTargetCamAnimation());
+                target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation(), config.GetTargetCamAnimation(), transform);
             }
 
             //Play skill animation

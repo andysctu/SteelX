@@ -39,11 +39,11 @@ public class MechCombat : Combat {
     public bool isOnBCNPose, onSkill = false;//called by BCNPoseState to check if on the right pose
     private bool on_BCNShoot = false;
     public bool On_BCNShoot {
-        get { return on_BCNShoot;}
+        get { return on_BCNShoot; }
         set {
             on_BCNShoot = value;
             MechController.onInstantMoving = value;
-            if(value)BCNbulletNum--;
+            if (value) BCNbulletNum--;
             if (BCNbulletNum <= 0) {
                 animator.Play("BCN", 1);
                 animator.Play("BCN", 2);
@@ -61,17 +61,17 @@ public class MechCombat : Combat {
     private const int LEFT_HAND = 0;
     private float timeOfLastShotL;
     private bool fireL = false;
-    public bool isLMeleePlaying { get; private set;}
+    public bool isLMeleePlaying { get; private set; }
 
     // Right
     private const int RIGHT_HAND = 1;
     private float timeOfLastShotR;
     private bool fireR = false;
-    public bool isRMeleePlaying { get;private set;}
+    public bool isRMeleePlaying { get; private set; }
 
     public bool CanMeleeAttack = true;
 
-    public bool IsSwitchingWeapon { get ; private set; }
+    public bool IsSwitchingWeapon { get; private set; }
 
     private bool receiveNextSlash = true;
     private const int slashMaxDistance = 30;//the ray which checks if hitting shield max distance
@@ -106,7 +106,7 @@ public class MechCombat : Combat {
 
     // Components
     private Crosshair crosshair;
-    private SlashDetector slashDetector;    
+    private SlashDetector slashDetector;
     private Sounds Sounds;
     private AnimationEventController AnimationEventController;
     private ParticleSystem[] Muz = new ParticleSystem[4];
@@ -174,12 +174,10 @@ public class MechCombat : Combat {
         energyProperties.energyOutput = bm.MechProperty.ENOutputRate - bm.MechProperty.EnergyDrain;
 
         scanRange = bm.MechProperty.ScanRange;
-        
-        
     }
 
     private void UpdateWeightRelatedVars() {
-        TotalWeight = bm.MechProperty.Weight + ((weaponScripts[weaponOffset]==null)?0 : weaponScripts[weaponOffset].weight) + ((weaponScripts[weaponOffset+1] == null) ? 0 : weaponScripts[weaponOffset+1].weight);
+        TotalWeight = bm.MechProperty.Weight + ((weaponScripts[weaponOffset] == null) ? 0 : weaponScripts[weaponOffset].weight) + ((weaponScripts[weaponOffset + 1] == null) ? 0 : weaponScripts[weaponOffset + 1].weight);
 
         energyProperties.jumpENDrain = bm.MechProperty.GetJumpENDrain(TotalWeight);
         energyProperties.dashENDrain = bm.MechProperty.DashENDrain;
@@ -968,14 +966,14 @@ public class MechCombat : Combat {
                     AnimationEventController.Smash(hand);
                 break;
                 case (int)GeneralWeaponTypes.Shield:
-                animator.SetBool((hand==0)? AnimatorVars.blockL_id : AnimatorVars.blockR_id, true);
+                animator.SetBool((hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id, true);
                 break;
                 case (int)GeneralWeaponTypes.Cannon:
                 animator.SetBool(AnimatorVars.BCNShoot_id, true);
                 break;
             }
         } else {// melee is set to false by animation
-            if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield) 
+            if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield)
                 animator.SetBool((hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id, false);
             else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Cannon)
                 animator.SetBool(AnimatorVars.BCNShoot_id, false);
@@ -1000,7 +998,7 @@ public class MechCombat : Combat {
         healthtext.text = UIExtensionMethods.BarValueToString((int)(MAX_HP * healthBar.value), MAX_HP);
         // Update EN bar gradually
         ENBar.value = calculateSliderPercent(ENBar.value, currentEN / (float)MAX_EN);
-        ENtext.text = UIExtensionMethods.BarValueToString((int)(MAX_EN* ENBar.value), (int)MAX_EN);
+        ENtext.text = UIExtensionMethods.BarValueToString((int)(MAX_EN * ENBar.value), (int)MAX_EN);
     }
 
     // Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
@@ -1051,8 +1049,8 @@ public class MechCombat : Combat {
     }
 
     private void ResetArmAnimatorState() {
-       animator.Play("Idle",1);
-       animator.Play("Idle",2);
+        animator.Play("Idle", 1);
+        animator.Play("Idle", 2);
     }
 
     private void ActivateWeapons() {//Not using SetActive because it causes weapon Animator to bind the wrong rotation if the weapon animation is not finish (SMG reload)
@@ -1060,19 +1058,19 @@ public class MechCombat : Combat {
             if (weapons[i] != null) {
                 Renderer[] renderers = weapons[i].GetComponentsInChildren<Renderer>();
                 foreach (Renderer renderer in renderers) {
-                    renderer.enabled = (i==weaponOffset || i==weaponOffset+1) ;
+                    renderer.enabled = (i == weaponOffset || i == weaponOffset + 1);
                 }
             }
-        }        
+        }
     }
 
     public void UpdateMovementClips() {
         if (weaponScripts == null) return;
-        bool isPreviousWeaponTwoHanded = (weaponScripts[(weaponOffset+2)%4] != null && weaponScripts[(weaponOffset + 2) % 4].twoHanded) ;
+        bool isPreviousWeaponTwoHanded = (weaponScripts[(weaponOffset + 2) % 4] != null && weaponScripts[(weaponOffset + 2) % 4].twoHanded);
         bool isCurrentWeaponTwoHanded = (weaponScripts[(weaponOffset) % 4] != null && weaponScripts[(weaponOffset) % 4].twoHanded);
 
-        if(isPreviousWeaponTwoHanded == isCurrentWeaponTwoHanded)return;
-        
+        if (isPreviousWeaponTwoHanded == isCurrentWeaponTwoHanded) return;
+
         MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
@@ -1100,9 +1098,9 @@ public class MechCombat : Combat {
     private void UpdateSpecialCurWeaponType() {
         for (int i = 0; i < 4; i++) {
             if (weaponScripts[i] == null) continue;
-            
-            for(int j=0;j< SpecialWeaponTypeStrs.Length; j++) {
-                if(weaponScripts[i].weaponType == SpecialWeaponTypeStrs[j]) {
+
+            for (int j = 0; j < SpecialWeaponTypeStrs.Length; j++) {
+                if (weaponScripts[i].weaponType == SpecialWeaponTypeStrs[j]) {
                     curSpecialWeaponTypes[i] = j;
                     break;
                 }
@@ -1172,10 +1170,10 @@ public class MechCombat : Combat {
     }
 
     public void DecrementEN() {
-        if(MechController.grounded)
+        if (MechController.grounded)
             currentEN -= energyProperties.dashENDrain * Time.fixedDeltaTime;
         else
-            currentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime ;       
+            currentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime;
 
         if (currentEN < 0)
             currentEN = 0;
@@ -1233,20 +1231,20 @@ public class MechCombat : Combat {
         }
     }
 
-    private void ResetWeaponAnimationVariables() {//TODO : improve this        
-            setIsFiring(0, false);
-            setIsFiring(1, false);
+    private void ResetWeaponAnimationVariables() {//TODO : improve this
+        setIsFiring(0, false);
+        setIsFiring(1, false);
 
-            isLMeleePlaying = false;
-            isRMeleePlaying = false;
-            ShowTrail(0, false);
-            ShowTrail(1, false);
+        isLMeleePlaying = false;
+        isRMeleePlaying = false;
+        ShowTrail(0, false);
+        ShowTrail(1, false);
 
         if (photonView.isMine) {
             animator.SetBool(AnimatorVars.onMelee_id, false);
             animator.SetBool(AnimatorVars.BCNPose_id, false);
             animator.SetBool(AnimatorVars.blockL_id, false);
-            animator.SetBool(AnimatorVars.blockR_id, false);            
+            animator.SetBool(AnimatorVars.blockR_id, false);
         }
     }
 
@@ -1274,7 +1272,7 @@ public class MechCombat : Combat {
             slashR_threshold = ((Sword)weaponScripts[weaponOffset + 1]).threshold;
     }
 
-    public void SetMeleePlaying(int hand, bool isPlaying) { 
+    public void SetMeleePlaying(int hand, bool isPlaying) {
         if (hand == 0) isLMeleePlaying = isPlaying;
         else isRMeleePlaying = isPlaying;
 
@@ -1322,6 +1320,6 @@ public class MechCombat : Combat {
     private struct EnergyProperties {
         public float jumpENDrain, dashENDrain;
         public float energyOutput;
-        public float minENRequired;       
+        public float minENRequired;
     }
 }

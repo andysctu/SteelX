@@ -1,15 +1,13 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DroneCombat : Combat {
-
-	public Transform[] Hands;
+    public Transform[] Hands;
 
     [SerializeField] private SkillController SkillController;
     [SerializeField] private LayerMask Terrain;
     private int default_layer = 0, player_layer = 8;
-	private EffectController EffectController;
+    private EffectController EffectController;
     private bool onSkill = false, onSkillMoving = false;
     private float instantMoveSpeed, curInstantMoveSpeed;
     private Vector3 instantMoveDir;
@@ -17,49 +15,49 @@ public class DroneCombat : Combat {
     private float TeleportMinDistance = 3f;
 
     private void Awake() {
-        if(SkillController!=null)SkillController.OnSkill += OnSkill;
+        if (SkillController != null) SkillController.OnSkill += OnSkill;
     }
-    void Start () {
-		CurrentHP = MAX_HP;
-		EffectController = GetComponent<EffectController> ();
-		findGameManager();
+    private void Start() {
+        CurrentHP = MAX_HP;
+        EffectController = GetComponent<EffectController>();
+        findGameManager();
         EffectController.RespawnEffect();
-        CharacterController = GetComponent< CharacterController >();
+        CharacterController = GetComponent<CharacterController>();
 
         gm.RegisterPlayer(photonView.viewID, 0);
-	}
+    }
 
-	[PunRPC]
-	public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
-		CurrentHP -= d;
+    [PunRPC]
+    public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
+        CurrentHP -= d;
 
-        if (CheckIsSwordByStr(weapon)){
+        if (CheckIsSwordByStr(weapon)) {
             EffectController.SlashOnHitEffect(false, 0);
         }
 
-		if (CurrentHP <= 0) {
-//			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
-			DisableDrone ();
-			//gm.RegisterKill(shooter_viewID, photonView.viewID);
-		}
-	}
+        if (CurrentHP <= 0) {
+            //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
+            DisableDrone();
+            //gm.RegisterKill(shooter_viewID, photonView.viewID);
+        }
+    }
 
-	[PunRPC]
-	public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
-		CurrentHP -= d;
+    [PunRPC]
+    public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
+        CurrentHP -= d;
 
-        if (CheckIsSwordByStr(weapon)){
+        if (CheckIsSwordByStr(weapon)) {
             EffectController.SlashOnHitEffect(true, hand);
-        }else if (CheckIsSpearByStr(weapon)) {
+        } else if (CheckIsSpearByStr(weapon)) {
             EffectController.SmashOnHitEffect(true, hand);
         }
 
         if (CurrentHP <= 0) {
-			//if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
-			DisableDrone ();
-			gm.RegisterKill(shooter_viewID, photonView.viewID);
-		}
-	}
+            //if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
+            DisableDrone();
+            gm.RegisterKill(shooter_viewID, photonView.viewID);
+        }
+    }
 
     private void Update() {
         if (onSkillMoving) {
@@ -88,9 +86,9 @@ public class DroneCombat : Combat {
         }
     }
     [PunRPC]
-	void KnockBack(Vector3 dir, float length){
-		transform.position += dir * length;
-	}
+    private void KnockBack(Vector3 dir, float length) {
+        transform.position += dir * length;
+    }
 
     public void Skill_KnockBack(float length) {
         Transform skillUser = SkillController.GetSkillUser();
@@ -99,12 +97,12 @@ public class DroneCombat : Combat {
         SkillSetMoving((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
     }
 
-    void DisableDrone() {
-		gameObject.layer = default_layer;
+    private void DisableDrone() {
+        gameObject.layer = default_layer;
         StartCoroutine(DisableDroneWhenNotOnSkill());
-	}
+    }
 
-    IEnumerator DisableDroneWhenNotOnSkill() {
+    private IEnumerator DisableDroneWhenNotOnSkill() {
         yield return new WaitWhile(() => onSkill);
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
         foreach (Renderer renderer in renderers) {
@@ -113,30 +111,29 @@ public class DroneCombat : Combat {
         StartCoroutine(RespawnAfterTime(2));
     }
 
-
-    void EnableDrone() {
+    private void EnableDrone() {
         EffectController.RespawnEffect();
         gameObject.layer = player_layer;
-		Renderer[] renderers = GetComponentsInChildren<Renderer> ();
-		foreach (Renderer renderer in renderers) {
-			renderer.enabled = true;
-		}
-		CurrentHP = MAX_HP;
-	}
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers) {
+            renderer.enabled = true;
+        }
+        CurrentHP = MAX_HP;
+    }
 
-    void OnSkill(bool b) {
+    private void OnSkill(bool b) {
         onSkill = b;
     }
 
-	IEnumerator RespawnAfterTime(int time){
-		yield return new WaitForSeconds (time);
-		EnableDrone ();
-	}
+    private IEnumerator RespawnAfterTime(int time) {
+        yield return new WaitForSeconds(time);
+        EnableDrone();
+    }
 
-    bool CheckIsSwordByStr(string name) {
+    private bool CheckIsSwordByStr(string name) {
         return name.Contains("SHL");
     }
-    bool CheckIsSpearByStr(string name) {
+    private bool CheckIsSpearByStr(string name) {
         return name.Contains("ADR");
     }
 }

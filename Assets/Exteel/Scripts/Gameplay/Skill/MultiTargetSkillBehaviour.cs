@@ -82,7 +82,6 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     private void SetEffectsTarget(Transform[] targets, int skill_num) {//TODO : improve this
         foreach (RequireSkillInfo g in SkillController.RequireInfoSkills[skill_num]) {
             g.SetTargets(targets);
-            
         }
     }
 }

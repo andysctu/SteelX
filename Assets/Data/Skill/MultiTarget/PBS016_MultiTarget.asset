@@ -15,6 +15,7 @@ MonoBehaviour:
   icon_grey: {fileID: 21300112, guid: 00429edee359949d9955d2393313fad6, type: 3}
   weaponTypeL: 
   weaponTypeR: 
+  BoosterName: PBS016
   playerAnimation: {fileID: 0}
   cameraAnimation: {fileID: 0}
   target_CamAnimation: {fileID: 0}
@@ -31,10 +32,9 @@ MonoBehaviour:
   mech_sound: {fileID: 0}
   GeneralSkillParams:
     IsDamageLessWhenUsing: 0
-    energyCost: 0
-    damage: 0
+    energyCost: 100
+    damage: 250
     cooldown: 2
-  BoosterName: 
   boosterEffects:
   - {fileID: 1130398100609976, guid: 81a19723f4647114a8fee35e991ae7dd, type: 2}
   MultiTargetSkillParams:

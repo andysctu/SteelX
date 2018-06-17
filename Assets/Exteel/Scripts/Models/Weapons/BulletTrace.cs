@@ -13,14 +13,14 @@ public class BulletTrace : MonoBehaviour {
     private Camera cam;
     private Rigidbody rb;
     private PhotonView shooter_pv;
-    private Transform target, startTransform;
+    private Transform target;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0), startDirection, dir, destination;
 
     private bool isTargetShield;
     private bool isfollow = false;
     [SerializeField]private float bulletSpeed = 350, otherDirSpeed = 80;
     private bool isCollided = false;
-    private bool hasSlowdown = false, showHitOnBulletCollision = false, displayKill = false;
+    private bool showHitOnBulletCollision = false, displayKill = false;
 
     [HideInInspector]public bool interactWithTerrainWhenOnTarget = true;
 

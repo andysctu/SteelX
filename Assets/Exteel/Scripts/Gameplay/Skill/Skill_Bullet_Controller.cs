@@ -21,9 +21,9 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     [SerializeField] private GameObject Bullet;
 
     [Tooltip("Choose false if no player animation")]
-    [SerializeField]private bool usingSkillCam = true;
+    [SerializeField] private bool usingSkillCam = true;
 
-    [SerializeField]private bool showHit = true, showHitOnBulletCollision = false, displayKill = false;//displayKill : if the target hp <= 0 , show "kill"  not "hit"
+    [SerializeField] private bool showHit = true, showHitOnBulletCollision = false, displayKill = false;//displayKill : if the target hp <= 0 , show "kill"  not "hit"
 
     private Transform target, Effect_End;
     private Transform[] targets;
@@ -36,7 +36,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     private int hand = 0, weaponOffset = 0;
     private bool isWeapPosInit = false;//debug use
 
-    void Awake() {
+    private void Awake() {
         InitComponent();
     }
 
@@ -55,7 +55,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
 
             Transform[] booster_childs = booster_transform.GetComponentsInChildren<Transform>();
             foreach (Transform g in booster_childs) {
-                if(g.name.Contains("Muz_EffectEnd"))
+                if (g.name.Contains("Muz_EffectEnd"))
                     booster_bulletStartTranforms.Add(g.transform);
             }
         }
@@ -91,8 +91,8 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
         StartCoroutine(InstantiateBullets());
     }
 
-    IEnumerator InstantiateBullets() {
-        for(int i = 0; i < bullet_num; i++) {
+    private IEnumerator InstantiateBullets() {
+        for (int i = 0; i < bullet_num; i++) {
             InstantiateBullet();
             PlayMuz();
             CallPlayShotSound();
@@ -101,7 +101,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     }
 
     private void InstantiateBullet() {
-        if (!onlyImpact) { 
+        if (!onlyImpact) {
             if (multiTarget) {
                 if (!onTarget) {
                     GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
@@ -111,8 +111,8 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
 
                 int i = 0;
 
-                foreach(Transform t in targets) {
-                    if(onTarget){
+                foreach (Transform t in targets) {
+                    if (onTarget) {
                         GameObject g;
                         if (onBooster && booster_bulletStartTranforms.Count > 0) {
                             g = Instantiate(Bullet, booster_bulletStartTranforms.ToArray()[i % booster_bulletStartTranforms.Count].position, Quaternion.identity);
@@ -142,15 +142,14 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 } else {
                     bulletTrace.SetStartDirection(Effect_End.forward);
                 }
-                
+
                 ShowHitMsg(target, bulletTrace);
             }
-
         } else {
             //only impact
             if (multiTarget) {
-                foreach(Transform t in targets) {
-                    GameObject g = Instantiate(Bullet, t.position + new Vector3(0,5,0), Quaternion.identity, t);
+                foreach (Transform t in targets) {
+                    GameObject g = Instantiate(Bullet, t.position + new Vector3(0, 5, 0), Quaternion.identity, t);
 
                     ShowHitMsg(t);
                 }
@@ -193,7 +192,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     }
 
     private void ShowHitMsg(Transform target, BulletTrace bulletTrace = null) {
-        if (!player_pv.isMine) 
+        if (!player_pv.isMine)
             return;
 
         if (!showHitOnBulletCollision) {

@@ -122,7 +122,7 @@ public class MechController : Photon.MonoBehaviour {
         } else {
             ySpeed = -CharacterController.stepOffset;
         }
-        
+
         if (Animator.GetBool(AnimatorVars.boost_id)) {
             DynamicCam();
             mechCombat.DecrementEN();
@@ -143,7 +143,7 @@ public class MechController : Photon.MonoBehaviour {
         move = Vector3.right * xSpeed * Time.fixedDeltaTime;
         move += Vector3.forward * zSpeed * Time.fixedDeltaTime;
         move.y += ySpeed * Time.fixedDeltaTime;
-        
+
         if (isSlowDown) {
             move.x = move.x * slowDownCoeff;
             move.z = move.z * slowDownCoeff;
@@ -295,7 +295,7 @@ public class MechController : Photon.MonoBehaviour {
                         curboostingSpeed -= movementVariables.acceleration * Time.deltaTime * 10;
                 } else {//increase magnitude if < max
                     if (curboostingSpeed <= movementVariables.maxHorizontalBoostSpeed)
-                        curboostingSpeed += movementVariables.acceleration * Time.deltaTime * 10;
+                        curboostingSpeed += movementVariables.acceleration * Time.deltaTime * 5;
                 }
 
                 //ideal speed
@@ -312,7 +312,7 @@ public class MechController : Photon.MonoBehaviour {
                 } else {
                     if (Mathf.Abs(idealSpeed_x - xSpeed) < movementVariables.acceleration) acc_x = 0;
 
-                    xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime * 100;
+                    xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime * 50;
                 }
 
                 if (Mathf.Abs(dir.y) < 0.1f && zSpeed != 0) {
@@ -320,7 +320,7 @@ public class MechController : Photon.MonoBehaviour {
                 } else {
                     if (Mathf.Abs(idealSpeed_z - zSpeed) < movementVariables.acceleration) acc_z = 0;
 
-                    zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime * 100;
+                    zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime * 50;
                 }
                 run_xzDir.x = xzDir.x;
                 run_xzDir.y = xzDir.y;

@@ -2,7 +2,8 @@
 
 [CreateAssetMenu(fileName = "MovementClips", menuName = "MovementClips")]
 public class MovementClips : ScriptableObject {
-    [HideInInspector]public string[] clipnames = {"Idle",
+    [HideInInspector]
+    public string[] clipnames = {"Idle",
     "BackWalk",
     "BackWalk_Left",
     "BackWalk_Right",
@@ -53,7 +54,7 @@ public class MovementClips : ScriptableObject {
     "Jump08_Left",
     "Jump08_Right"
     };
-     #if UNITY_EDITOR
+#if UNITY_EDITOR
     [NamedArrayAttribute(new string[] {"Idle",
     "BackWalk",
     "BackWalk_Left",
@@ -105,6 +106,6 @@ public class MovementClips : ScriptableObject {
     "Jump08_Left",
     "Jump08_Right"
     })]
-    #endif
+#endif
     public AnimationClip[] clips = new AnimationClip[46];
 }
