@@ -26,7 +26,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4165315966763374
 Transform:
   m_ObjectHideFlags: 1
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aabcb87b1a2c614f92f7c219203336f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet_num: 3
+  bullet_num: 1
   interval: 0.1
   onTarget: 1
   multiTarget: 1

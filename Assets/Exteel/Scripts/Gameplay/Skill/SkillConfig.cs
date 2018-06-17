@@ -7,6 +7,7 @@ public abstract class SkillConfig : ScriptableObject {
 
     public string weaponTypeL;
     public string weaponTypeR;//If two-handed , put it on type L
+    public string BoosterName;
 
     [SerializeField] protected AnimationClip playerAnimation;
     [SerializeField] protected AnimationClip cameraAnimation, target_CamAnimation;

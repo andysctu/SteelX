@@ -262,6 +262,9 @@ public class MechCombat : Combat {
         isLMeleePlaying = false;
         setIsFiring(0, false);
         setIsFiring(1, false);
+
+        animator.SetBool("BCNLoad", false);
+        BCNbulletNum = 2;
     }
 
     private void initHUD() {

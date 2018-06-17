@@ -9,24 +9,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca0008a717bb31b4b9c1182a64095063, type: 3}
-  m_Name: boosterMultiTarget_test
+  m_Name: PBS016_MultiTarget
   m_EditorClassIdentifier: 
   icon: {fileID: 21300108, guid: 00429edee359949d9955d2393313fad6, type: 3}
   icon_grey: {fileID: 21300112, guid: 00429edee359949d9955d2393313fad6, type: 3}
   weaponTypeL: 
   weaponTypeR: 
-  playerAnimation1: {fileID: 0}
-  playerAnimation2: {fileID: 0}
+  playerAnimation: {fileID: 0}
+  cameraAnimation: {fileID: 0}
+  target_CamAnimation: {fileID: 0}
   hasWeaponAnimation: 0
   hasBoosterAnimation: 1
   weaponAnimationL: {fileID: 0}
   weaponAnimationR: {fileID: 0}
-  boosterAnimation: {fileID: 7400000, guid: 89c90cef1d252434cbc1be787157839e, type: 2}
+  boosterAnimation: {fileID: 7400000, guid: 49d8a323c5137714587d17303c420c9a, type: 2}
   playerEffects: []
   targetEffects: []
   weaponLEffects: []
   weaponREffects: []
-  skill_sound: {fileID: 0}
+  skill_sound: {fileID: 8300000, guid: b2b3e3f125ec37140b683d84f2076ca7, type: 3}
   mech_sound: {fileID: 0}
   GeneralSkillParams:
     IsDamageLessWhenUsing: 0

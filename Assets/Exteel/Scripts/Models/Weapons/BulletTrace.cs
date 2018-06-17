@@ -27,7 +27,7 @@ public class BulletTrace : MonoBehaviour {
     void Start() {
         initComponents();
         initVelocity();
-        ps.Play();
+        if(ps!=null)ps.Play();
         Destroy(gameObject, 2f);
     }
 
@@ -83,17 +83,6 @@ public class BulletTrace : MonoBehaviour {
                     destination = target.position + MECH_MID_POINT;
                 }
 
-                if (Vector3.Distance(transform.position, destination) < bulletSpeed * Time.deltaTime) {
-                    isCollided = true;
-                    PlayImpact(transform.position);
-                    ps.Stop();
-                    ps.Clear();
-
-                    //show hit msg
-                    ShowHitMsg(target);
-
-                    Destroy(gameObject);
-                }
                 if (go_straight)
                     rb.velocity = bulletSpeed * dir;
                 else {
@@ -101,6 +90,21 @@ public class BulletTrace : MonoBehaviour {
                     rb.velocity = bulletSpeed * dir + Vector3.up * otherDirSpeed;
                     otherDirSpeed -= Time.deltaTime * 100;
                 }
+
+                if (Vector3.Distance(transform.position, destination) < bulletSpeed * Time.deltaTime) {
+                    isCollided = true;
+                    PlayImpact(transform.position);
+                    if (ps != null) {
+                        ps.Stop();
+                        ps.Clear();
+                    }
+                    rb.velocity = Vector3.zero;
+                    //show hit msg
+                    ShowHitMsg(target);
+
+                    //Destroy(gameObject);
+                }
+                
             }
         }
     }

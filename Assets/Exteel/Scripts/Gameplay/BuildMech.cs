@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class BuildMech : Photon.MonoBehaviour {
 
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS008", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
+	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS016", "SHL009", "SHL501", "APS043", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000", "Empty" };
 																																								        //eng : 14
 	[SerializeField]private MechCombat MechCombat;
     [SerializeField]private MechController MechController;
@@ -139,7 +139,7 @@ public class BuildMech : Photon.MonoBehaviour {
         if(skill_IDs == null) {//TODO : remake this
             Debug.Log("skill_ids is null. Set defualt skills");
             SkillManager.GetAllSkills();
-            skill_IDs = new int[4] {0,1,2,3};
+            skill_IDs = new int[4] {0,1,2,4};
         }
 
         // Create new array to store skinned mesh renderers 

@@ -23,8 +23,9 @@ public class SkillController : MonoBehaviour {
     private Transform skillUser;
     private SkillHUD SkillHUD;
 
+    private string boosterName;
     private int weaponOffset = 0, curSkillNum = 0;
-    private bool[] skill_usable = new bool[4];
+    private bool[] skill_isMatchRequirements = new bool[4];
     private float[] curCooldowns, MaxCooldowns; // curMaxCooldown = MIN_COOLDOWN || MaxCooldown
     private const string Target_Animation_Name = "skill_target";
     private const float MIN_COOLDOWN = 3;
@@ -66,7 +67,7 @@ public class SkillController : MonoBehaviour {
 
     private void OnWeaponSwitched() {
         weaponOffset = mechcombat.GetCurrentWeaponOffset();
-        CheckIfSkillsMatchWeaponTypes();        
+        CheckIfSkillsMatchRequirements();        
     }
 
     private void OnWeaponBuilt() {
@@ -263,6 +264,14 @@ public class SkillController : MonoBehaviour {
         skillcamAnimator_OC.GetOverrides(skillcam_clipOverrides);
     }
 
+    private void Update() {
+        for (int i = 0; i < skills.Length; i++) {
+            if (curCooldowns[i] > 0) {
+                curCooldowns[i] -= Time.deltaTime;
+            }
+        }
+    }
+
     public void PlayWeaponAnimation(int skill_num) {
         if (WeaponAnimators[weaponOffset] != null) {
             WeaponAnimators[weaponOffset].Play("sk" + skill_num);
@@ -282,7 +291,9 @@ public class SkillController : MonoBehaviour {
     }
 
     private bool CheckIfSkillUsable(int skill_num) {
-        return skill_usable[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && mechController.grounded && !mainAnimator.GetBool("OnMelee");
+        bool requiredGrounded = (skills[skill_num].GetPlayerAniamtion() != null);
+
+        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!requiredGrounded || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
     }
 
     private bool CheckIfEnergyEnough(int energyCost) {
@@ -339,8 +350,13 @@ public class SkillController : MonoBehaviour {
     private void UpdateBoosterAnimator() {
         Transform CurrentMech = transform.Find("CurrentMech");
 
-        if (CurrentMech != null)
+        if (CurrentMech != null) {
             boosterAnimator = CurrentMech.GetComponentInChildren<BoosterController>().GetComponent<Animator>();
+            boosterName = boosterAnimator.name;
+        } else {
+            boosterName = "";
+            boosterAnimator = null;
+        }
     }
 
     public void PlayPlayerAnimation(int skill_num) {//state name : skill_1 , skill_2 , ...
@@ -392,17 +408,21 @@ public class SkillController : MonoBehaviour {
     }
 
     //do the weapons match the skill requires
-    private void CheckIfSkillsMatchWeaponTypes() {
+    private void CheckIfSkillsMatchRequirements() {
         for (int i = 0; i < skills.Length; i++) {
             if (skills[i] == null) {
-                skill_usable[i] = false;
+                skill_isMatchRequirements[i] = false;
                 continue;
             }
-            skill_usable[i] = CheckIfWeaponMatch(skills[i], (bm.weaponScripts[weaponOffset] == null) ? "" : bm.weaponScripts[weaponOffset].GetType().ToString(), (bm.weaponScripts[weaponOffset + 1] == null) ? "" : bm.weaponScripts[weaponOffset + 1].GetType().ToString());
+            bool req_1 = CheckIfWeaponMatch(skills[i], (bm.weaponScripts[weaponOffset] == null) ? "" : bm.weaponScripts[weaponOffset].GetType().ToString(), (bm.weaponScripts[weaponOffset + 1] == null) ? "" : bm.weaponScripts[weaponOffset + 1].GetType().ToString()),
+                req_2 = CheckIfBoosterMatch(skills[i], boosterName);
+
+            skill_isMatchRequirements[i] = req_1 && req_2;
+            Debug.Log("skill : "+i + " is usable ? "+ skill_isMatchRequirements[i]);
         }
     }
 
-    private bool CheckIfWeaponMatch(SkillConfig skill, string weaponTypeL, string weaponTypeR) {
+    private bool CheckIfWeaponMatch(SkillConfig skill, string weaponTypeL, string weaponTypeR) {        
         if (weaponTypeL == "" || weaponTypeR == "") {
             if (weaponTypeL == "") {
                 bool L = (skill.weaponTypeL == string.Empty);
@@ -414,7 +434,15 @@ public class SkillController : MonoBehaviour {
                 return (L && R);
             }
         } else {
-            return (skill.weaponTypeL == weaponTypeL) && (skill.weaponTypeR == weaponTypeR);
+            return (skill.weaponTypeL == string.Empty || skill.weaponTypeL == weaponTypeL) && (skill.weaponTypeR == string.Empty || skill.weaponTypeR == weaponTypeR);
+        }
+    }
+
+    private bool CheckIfBoosterMatch(SkillConfig skill, string boosterName) {
+        if (skill.hasBoosterAnimation) {
+            return skill.BoosterName == "" || boosterName.Contains(skill.BoosterName);
+        } else {
+            return true;
         }
     }
 
@@ -475,13 +503,5 @@ public class SkillController : MonoBehaviour {
         }
         curCooldowns[skill_num] = MaxCooldowns[skill_num];
         SkillHUD.SetSkillCooldown(skill_num, MaxCooldowns[skill_num]);
-    }
-
-    private void Update() {
-        for (int i = 0; i < skills.Length; i++) {
-            if (curCooldowns[i] > 0) {
-                curCooldowns[i] -= Time.deltaTime;
-            }
-        }
     }
 }

@@ -2,8 +2,7 @@
 
 [CreateAssetMenu(menuName = "Skill/MultiTarget")]
 public class MultiTargetSkillConfig : SkillConfig {
-    [Header("Skill Special")]
-    [SerializeField] private string BoosterName;
+    [Header("Skill Special")]    
     [SerializeField] private GameObject[] boosterEffects;
     public MultiTargetSkillParams MultiTargetSkillParams = new MultiTargetSkillParams();
 
@@ -13,7 +12,7 @@ public class MultiTargetSkillConfig : SkillConfig {
         GameObject player_booster = player.GetComponentInChildren<BoosterController>().gameObject;
         
         //Check if booster match
-        if(BoosterName != "" && BoosterName != player_booster.name)
+        if(BoosterName != "" && !   player_booster.name.Contains(BoosterName))
             return;
         
         if (bm.GetComponent<MultiTargetSkillBehaviour>() == null) {
