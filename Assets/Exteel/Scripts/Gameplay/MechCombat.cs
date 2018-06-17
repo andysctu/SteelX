@@ -43,6 +43,12 @@ public class MechCombat : Combat {
         set {
             on_BCNShoot = value;
             MechController.onInstantMoving = value;
+            if(value)BCNbulletNum--;
+            if (BCNbulletNum <= 0) {
+                animator.Play("BCN", 1);
+                animator.Play("BCN", 2);
+                animator.SetBool("BCNLoad", true);
+            }
         }
     }
 
@@ -925,13 +931,6 @@ public class MechCombat : Combat {
             if (Time.time - timeOfLastShotL >= 1 / bm.weaponScripts[weaponOffset + hand].Rate && isOnBCNPose) {
                 if (Input.GetKey(KeyCode.Mouse0) || !animator.GetBool(AnimatorVars.BCNPose_id) || !MechController.grounded)
                     return;
-
-                BCNbulletNum--;
-                if (BCNbulletNum <= 0) {//TODO : remake this
-                    animator.Play("BCN",1);
-                    animator.Play("BCN", 2);
-                    animator.SetBool("BCNLoad", true);
-                }
 
                 setIsFiring(hand, true);
                 HeatBar.IncreaseHeatBarL(45);
