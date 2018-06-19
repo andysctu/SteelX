@@ -1,30 +1,31 @@
 ﻿using UnityEngine;
 
 public class Flag : MonoBehaviour {
+    [SerializeField] private ParticleSystem ps;
+    [SerializeField] private GameObject flag_base;
     private LayerMask Terrain = 10;
     private GameManager gm;
     private PhotonView gmpv;
     public PunTeams.Team team = PunTeams.Team.none;
-    [SerializeField]
-    private ParticleSystem ps;
     private bool isOnPlay = true;
-    public bool isGrounded = true;
-    public bool isOnBase = true;
+    public bool isGrounded = true, isOnBase = true;
 
     private void Start() {
         ps.Play();
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         gmpv = gm.GetComponent<PhotonView>();
     }
-    // Update is called once per frame
+
     private void Update() {
         if (!isGrounded) {
             if (isOnPlay) {
                 ps.Stop();
+                flag_base.SetActive(false);
                 isOnPlay = false;
             }
         } else {
             if (!isOnPlay) {
+                flag_base.SetActive(true);
                 ps.Play();
                 isOnPlay = true;
             }

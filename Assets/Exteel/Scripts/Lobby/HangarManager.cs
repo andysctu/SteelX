@@ -9,9 +9,9 @@ public class HangarManager : MonoBehaviour {
     [SerializeField] private Sprite buttonTexture;
     [SerializeField] private Button displaybutton1, displaybutton2;
     [SerializeField] private Image[] skill_slots;
-    private WeaponManager WeaponManager;
-    private SkillManager SkillManager;
-    private MechPartManager MechPartManager;
+    [SerializeField] private WeaponManager WeaponManager;
+    [SerializeField] private SkillManager SkillManager;
+    [SerializeField] private MechPartManager MechPartManager;
     private Transform[] contents;
     private int activeTab;
     //private Dictionary<string, string> equipped;
@@ -19,10 +19,6 @@ public class HangarManager : MonoBehaviour {
     public int Mech_Num = 0;
 
     private void Start() {
-        WeaponManager = Resources.Load<WeaponManager>("WeaponManager");
-        SkillManager = Resources.Load<SkillManager>("SkillManager");
-        MechPartManager = Resources.Load<MechPartManager>("MechPartManager");
-
         //Mech m = UserData.myData.Mech[0];
 
         displaybutton1.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());

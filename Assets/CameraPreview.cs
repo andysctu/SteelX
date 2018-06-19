@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+#if UNITY_EDITOR
 using UnityEditor;
 
 class CameraPreview : EditorWindow {
@@ -53,3 +55,4 @@ class CameraPreview : EditorWindow {
             GUI.DrawTexture(new Rect(0.0f, 0.0f, position.width, position.height), renderTexture);
     }
 }
+#endif

@@ -4814,6 +4814,9 @@ MonoBehaviour:
   - {fileID: 1296927584}
   - {fileID: 477515304}
   - {fileID: 172974090}
+  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
+  SkillManager: {fileID: 11400000, guid: 37e42b9dcbadee14d82b5f933f9cec7f, type: 2}
+  MechPartManager: {fileID: 11400000, guid: 301bd37785ab46a41b20270b6977193c, type: 2}
   Mech_Num: 0
 --- !u!114 &999806606
 MonoBehaviour:
@@ -6555,6 +6558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MechController: {fileID: 0}
   HeatBar: {fileID: 1200673649}
   displayPlayerInfo: {fileID: 0}
   crosshairImage: {fileID: 1348311264}
@@ -6570,14 +6574,16 @@ MonoBehaviour:
   TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
     type: 2}
   SkillController: {fileID: 0}
-  fuelProperties:
-    fuelDrain: 0
-    fuelGain: 0
-    minFuelRequired: 0
+  energyProperties:
+    jumpENDrain: 0
+    dashENDrain: 0
+    energyOutput: 0
+    minENRequired: 0
   isDead: 0
   is_overheat: 00000000
-  MaxHeat: 100
-  cooldown: 16
+  scanRange: 0
+  MechSize: 0
+  TotalWeight: 0
   BCNbulletNum: 0
   isOnBCNPose: 0
   onSkill: 0
@@ -6598,7 +6604,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mcbt: {fileID: 1323358512}
+  MechCombat: {fileID: 0}
+  MechController: {fileID: 0}
   Sounds: {fileID: 930437540}
   MechIK: {fileID: 930437546}
   WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
@@ -6619,9 +6626,27 @@ MonoBehaviour:
   - 
   weapons: []
   bulletPrefabs: []
+  MechProperty:
+    HP: 0
+    EN: 0
+    SP: 0
+    MPU: 0
+    ENOutputRate: 0
+    MinENRequired: 0
+    Size: 0
+    Weight: 0
+    EnergyDrain: 0
+    MaxHeat: 0
+    CooldownRate: 0
+    Marksmanship: 0
+    ScanRange: 0
+    VerticalBoostSpeed: 0
+    Capacity: 0
+    Deceleration: 0
+    DashENDrain: 0
+    handOffset: {x: 0, y: 0, z: 0}
   Mech_Num: 0
   onPanel: 0
-  handOffset: {x: 0, y: 0.0005, z: 0.0005}
 --- !u!114 &1323358514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6691,7 +6716,7 @@ MonoBehaviour:
     m_Bits: 1024
   SkillController: {fileID: 0}
   movementVariables:
-    maxVerticalBoostSpeed: 0
+    verticalBoostSpeed: 0
     maxHorizontalBoostSpeed: 0
     jumpPower: 0
     moveSpeed: 0
@@ -6703,7 +6728,6 @@ MonoBehaviour:
   InAirSpeedCoeff: 0.55
   lerpCam_coeff: 5
   grounded: 1
-  cam_lerpSpeed: 10
   LocalxOffset: -4
   cam_orbitradius: 19
   cam_angleoffset: 33
@@ -10056,7 +10080,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   Sounds: {fileID: 930437540}
-  mcbt: {fileID: 0}
+  MechCombat: {fileID: 0}
   SkillController: {fileID: 0}
   Targets: []
 --- !u!114 &2072853776
@@ -10074,7 +10098,6 @@ MonoBehaviour:
   currentMech: {fileID: 930437539}
   animator: {fileID: 0}
   SkillController: {fileID: 0}
-  rotationRange: {x: 70, y: 70}
   rotationSpeed: 5
   dampingTime: 0.2
   lockPlayerRot: 0
