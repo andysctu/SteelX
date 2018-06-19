@@ -245,6 +245,7 @@ public class MechController : Photon.MonoBehaviour {
         if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.boost_id)) {//not in transition to boost
             xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x + (run_xzDir.y * curboostingSpeed * transform.forward).x;
             zSpeed = (run_xzDir.x * curboostingSpeed * transform.right).z + (run_xzDir.y * curboostingSpeed * transform.forward).z;
+
             curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 5;
         } else {
             xSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.x + movementVariables.moveSpeed * ((xzDir.y < 0) ? xzDir.y / 2 : xzDir.y) * transform.forward.x;

@@ -40,7 +40,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			jumpReleased = true;
 		}
 
-		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(boost_id)) {
+		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(boost_id)) {//the first jump is on ground
 			mctrl.grounded = true;
 			animator.SetBool(grounded_id, true);
 			animator.SetBool (jump_id, false);
