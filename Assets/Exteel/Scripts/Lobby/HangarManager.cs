@@ -248,7 +248,7 @@ public class HangarManager : MonoBehaviour {
                 mechPartToReplace = UserData.myData.Mech[Mech_Num].Booster;
                 UserData.myData.Mech[Mech_Num].Booster = part_name;
 
-                Transform boosterbone = Mech.transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
+                Transform boosterbone = Mech.transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone");
                 if (boosterbone != null) {
                     GameObject booster = (boosterbone.childCount == 0) ? null : boosterbone.GetChild(0).gameObject;
                     if (booster != null) {//destroy previous 

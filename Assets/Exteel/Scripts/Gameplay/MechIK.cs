@@ -6,7 +6,7 @@ public class MechIK : MonoBehaviour {
     [SerializeField] private MechCombat mechCombat;
     [SerializeField] private BuildMech bm;
     [SerializeField] private SkillController SkillController;
-    private Transform hips, upperArmL, upperArmR, Knob;
+    private Transform hips, clavicle_L, clavicle_R, Knob;
     private Animator animator;
 
     //AimIK
@@ -49,9 +49,9 @@ public class MechIK : MonoBehaviour {
     }
 
     private void InitTransforms() {
-        hips = transform.Find("metarig/hips");
-        upperArmL = transform.Find("metarig/hips/spine/chest/shoulder.L/upper_arm.L");
-        upperArmR = transform.Find("metarig/hips/spine/chest/shoulder.R/upper_arm.R");
+        hips = transform.Find("Bip01/Bip01_Pelvis");
+        clavicle_L = transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle");
+        clavicle_R = transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
     }
 
     private void LateUpdate() {
@@ -59,10 +59,10 @@ public class MechIK : MonoBehaviour {
             if (mode == 0) {
                 ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
                 ideal_roL = Mathf.Clamp(ideal_roL, -50, 40);
-                ideal_roL += 80 - hips.localRotation.eulerAngles.x;
+                ideal_roL += 180 - hips.localRotation.eulerAngles.z;
 
-                upperArmL_rot = upperArmL.localRotation.eulerAngles;
-                upperArmL.localRotation = Quaternion.Euler(upperArmL_rot + new Vector3(0, ideal_roL, 0));
+                upperArmL_rot = clavicle_L.localRotation.eulerAngles;
+                clavicle_L.localRotation = Quaternion.Euler(upperArmL_rot + new Vector3(ideal_roL, 0, 0));
             } else {
             }
         }
@@ -70,10 +70,10 @@ public class MechIK : MonoBehaviour {
         if (RightIK_on && mode == 0) {
             ideal_roR = -Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
             ideal_roR = Mathf.Clamp(ideal_roR, -50, 40);
-            ideal_roR += -(80 - hips.localRotation.eulerAngles.x);
+            ideal_roR += -(180 - hips.localRotation.eulerAngles.z);
 
-            upperArmR_rot = upperArmR.localRotation.eulerAngles;
-            upperArmR.localRotation = Quaternion.Euler(upperArmR_rot + new Vector3(0, ideal_roR, 0));
+            upperArmR_rot = clavicle_R.localRotation.eulerAngles;
+            clavicle_R.localRotation = Quaternion.Euler(upperArmR_rot + new Vector3(ideal_roR, 0, 0));
         }
     }
 

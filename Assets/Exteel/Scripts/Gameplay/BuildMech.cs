@@ -5,6 +5,7 @@ using XftWeapon;
 public class BuildMech : Photon.MonoBehaviour {
     private string[] defaultParts = { "CES301", "AES104", "LTN411", "HDS003", "PBS016", "SHL009", "SHL501", "APS043", "SHS309", "RCL034", "BCN029", "BRF025", "SGN150", "LMG012", "ENG041", "ADR000", "Empty" };
     //eng : 14
+    [SerializeField] private Transform RootBone;
     [SerializeField] private MechCombat MechCombat;
     [SerializeField] private MechController MechController;
     [SerializeField] private Sounds Sounds;
@@ -21,7 +22,7 @@ public class BuildMech : Photon.MonoBehaviour {
     [HideInInspector] public GameObject[] weapons;
     [HideInInspector] public GameObject[] bulletPrefabs;
 
-    private GameManager gm;
+    private GameManager gm;    
     private Animator animator;
     private AnimatorOverrideController animatorOverrideController;
     private AnimationClipOverrides clipOverrides;
@@ -31,12 +32,11 @@ public class BuildMech : Photon.MonoBehaviour {
     private Part[] curMechParts = new Part[5];
     private int weaponOffset = 0;
 
-    private bool buildLocally = false, isDataGetSaved = true;
+    private bool buildLocally = false, isDataGetSaved = true, onPanel = false;
     private int Total_Mech = 4;
     private const int BLUE = 0, RED = 1;
     public MechProperty MechProperty;
     public int Mech_Num = 0;
-    public bool onPanel = false;
 
     public delegate void BuildWeaponAction();
     public event BuildWeaponAction OnMechBuilt;
@@ -105,12 +105,12 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void findHands() {
-        shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-        shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+        shoulderL = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle");
+        shoulderR = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
 
         hands = new Transform[2];
-        hands[0] = shoulderL.Find("upper_arm.L/forearm.L/hand.L");
-        hands[1] = shoulderR.Find("upper_arm.R/forearm.R/hand.R");
+        hands[0] = shoulderL.Find("Bip01_L_UpperArm/Bip01_L_ForeArm/Bip01_L_Hand/Weapon_lft_Bone");
+        hands[1] = shoulderR.Find("Bip01_R_UpperArm/Bip01_R_ForeArm/Bip01_R_Hand/Weapon_rt_Bone");
     }
 
     private void buildMech(Mech m) {
@@ -168,6 +168,12 @@ public class BuildMech : Photon.MonoBehaviour {
                                      //Note the order of parts in MechFrame.prefab matters
 
             if (newSMR[i] == null) Debug.LogError(i + " is null.");
+
+
+            ProcessBonedObject(newSMR[i], curSMR[i]);
+
+
+            //test
             curSMR[i].sharedMesh = newSMR[i].sharedMesh;
             curSMR[i].material = materials[i];
             curSMR[i].enabled = true;
@@ -190,6 +196,55 @@ public class BuildMech : Photon.MonoBehaviour {
                 ShutDownTrail(weapons[i]);
         }
     }
+
+    private void ProcessBonedObject(SkinnedMeshRenderer newPart , SkinnedMeshRenderer partToSwitch) {
+        Transform[] MyBones = new Transform[newPart.bones.Length];
+
+        for (var i = 0; i < newPart.bones.Length; i++) {
+            Debug.Log(newPart.gameObject.name + "'s " + i + " : " + newPart.bones[i].name);
+
+            if (newPart.bones[i].name.Length >= 6) {
+                string boneName = newPart.bones[i].name.Remove(0, 6);
+                string boneToFind = "Bip01" + boneName;
+                MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone, boneToFind);
+            }
+
+            if(MyBones[i] == null)
+                MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name);
+            
+
+            //if (MyBones[i] != null && MyBones[i].parent.name != newPart.bones[i].parent.name)//the parent does not match
+                //MyBones[i] = null;
+
+            if (MyBones[i] == null) {
+                Debug.Log("Adding bone : " + newPart.bones[i].name + " on  : " + newPart.bones[i].parent.name);
+
+                Transform parent;
+                if (newPart.bones[i].parent.name == "Bip01") {//the root bone may not been checked
+                    parent = RootBone.transform;
+                } else
+                    parent = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
+
+                //GameObject newbone = new GameObject(ThisRenderer.bones[i].name);
+                //newbone.transform.parent = parent;ww
+                //newbone.transform.localPosition = ThisRenderer.bones[i].localPosition;
+                //newbone.transform.localRotation = ThisRenderer.bones[i].localRotation;
+
+                //test
+                MyBones[i] = parent;
+
+                if (parent == null) {
+                    Debug.LogError("Can't locate the bone : "+ newPart.bones[i].name);
+                }
+            } else {
+                //MyBones[i].localPosition = newPart.bones[i].localPosition;
+                //MyBones[i].localRotation = newPart.bones[i].localRotation;
+            }
+        }
+
+        partToSwitch.bones = MyBones;
+    }
+
 
     public void ReplaceMechPart(string toReplace , string newPart) {
         Part p = MechPartManager.FindData(newPart);
@@ -222,7 +277,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void LoadBooster(string booster_name) {
-        Transform boosterbone = transform.Find("CurrentMech/metarig/hips/spine/chest/neck/boosterBone");
+        Transform boosterbone = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone");
         if (boosterbone == null) return;
 
         GameObject booster = (boosterbone.childCount == 0) ? null : boosterbone.GetChild(0).gameObject;
@@ -283,12 +338,18 @@ public class BuildMech : Photon.MonoBehaviour {
 
             if (weaponScripts[i].twoHanded) {
                 weapons[i].transform.SetParent(hands[(i + 1) % 2]);
-                if (weaponScripts[i].Grip[(i + 1) % 2] == null) { Debug.LogError("The right hand grip is null, two handed weapons must have right hand grip"); continue; }
-                weapons[i].transform.localRotation = weaponScripts[i].Grip[(i + 1) % 2].transform.rotation;
+                //if (weaponScripts[i].Grip[(i + 1) % 2] == null) { Debug.LogError("The right hand grip is null, two handed weapons must have right hand grip"); continue; }
+                //weapons[i].transform.localRotation = weaponScripts[i].Grip[(i + 1) % 2].transform.rotation;
+
+                //test
+                weapons[i].transform.localRotation = Quaternion.Euler(90,0,0);
             } else {
                 weapons[i].transform.SetParent(hands[i % 2]);
-                if (weaponScripts[i].Grip[i % 2] == null) { Debug.LogError(i + " weapon grip is null"); continue; }
-                weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
+                //if (weaponScripts[i].Grip[i % 2] == null) { Debug.LogError(i + " weapon grip is null"); continue; }
+                //weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
+
+                //test
+                weapons[i].transform.localRotation = Quaternion.Euler(90, 0, 0);
             }
 
             //Adjust weapon local position by hand offset
@@ -439,7 +500,9 @@ public class BuildMech : Photon.MonoBehaviour {
             weapons[weapPos] = Instantiate(newWeapon.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
             weapons[weapPos].transform.SetParent(hands[(weapPos + 1) % 2]);
             weapons[weapPos].transform.localPosition = MechProperty.handOffset;
-            weapons[weapPos].transform.localRotation = newWeapon.Grip[(weapPos + 1) % 2].transform.rotation;
+            //weapons[weapPos].transform.localRotation = newWeapon.Grip[(weapPos + 1) % 2].transform.rotation;
+
+            weapons[weapPos].transform.localRotation = Quaternion.Euler(90,0,0);
 
             break;
             default:
@@ -447,8 +510,8 @@ public class BuildMech : Photon.MonoBehaviour {
             weapons[weapPos] = Instantiate(newWeapon.weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
             weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
             weapons[weapPos].transform.localPosition = MechProperty.handOffset;
-            weapons[weapPos].transform.localRotation = newWeapon.Grip[weapPos % 2].transform.rotation;
-
+            //weapons[weapPos].transform.localRotation = newWeapon.Grip[weapPos % 2].transform.rotation;
+            weapons[weapPos].transform.localRotation = Quaternion.Euler(90, 0, 0);
             break;
         }
 

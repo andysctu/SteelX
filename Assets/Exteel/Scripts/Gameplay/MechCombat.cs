@@ -192,13 +192,13 @@ public class MechCombat : Combat {
 
     private void initTransforms() {
         camTransform = cam.transform;
-        head = transform.Find("CurrentMech/metarig/hips/spine/chest/fakeNeck/head");
-        shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-        shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
+        head = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_Head");
+        shoulderL = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle");
+        shoulderR = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
 
         Hands = new Transform[2];
-        Hands[0] = shoulderL.Find("upper_arm.L/forearm.L/hand.L");
-        Hands[1] = shoulderR.Find("upper_arm.R/forearm.R/hand.R");
+        Hands[0] = shoulderL.Find("Bip01_L_UpperArm/Bip01_L_ForeArm/Bip01_L_Hand");
+        Hands[1] = shoulderR.Find("Bip01_R_UpperArm/Bip01_R_ForeArm/Bip01_R_Hand");
     }
 
     private void initGameObjects() {

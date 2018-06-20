@@ -38,7 +38,7 @@ public class EffectController : MonoBehaviour {
     }
 
     private void ImplementDamageless() {
-        Transform hips = transform.root.Find("CurrentMech/metarig/hips");
+        Transform hips = transform.root.Find("CurrentMech/Bip01/Bip01_Pelvis");
         if (hips == null) {
             Debug.LogError("can't find hips");
             return;
