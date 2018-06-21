@@ -240,6 +240,9 @@ public class HangarManager : MonoBehaviour {
                         Debug.Log("Can't catorize this : "+ part_name);
                     break;
                 }
+
+                Mech.GetComponent<BuildMech>().ProcessBonedObject(newSMR, curSMR[parent]);
+
                 curSMR[parent].sharedMesh = newSMR.sharedMesh;
                 curSMR[parent].material = material;
 

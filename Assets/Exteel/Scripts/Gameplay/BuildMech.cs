@@ -197,20 +197,27 @@ public class BuildMech : Photon.MonoBehaviour {
         }
     }
 
-    private void ProcessBonedObject(SkinnedMeshRenderer newPart , SkinnedMeshRenderer partToSwitch) {
+    public void ProcessBonedObject(SkinnedMeshRenderer newPart , SkinnedMeshRenderer partToSwitch) {
         Transform[] MyBones = new Transform[newPart.bones.Length];
 
         for (var i = 0; i < newPart.bones.Length; i++) {
-            Debug.Log(newPart.gameObject.name + "'s " + i + " : " + newPart.bones[i].name);
+            //Debug.Log(newPart.gameObject.name + "'s " + i + " : " + newPart.bones[i].name);
 
-            if (newPart.bones[i].name.Length >= 6) {
+            if (newPart.bones[i].name.Contains(newPart.name)) {
                 string boneName = newPart.bones[i].name.Remove(0, 6);
                 string boneToFind = "Bip01" + boneName;
                 MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone, boneToFind);
+
+                //if(MyBones[i] != null)
+                    //Debug.Log("Found : " + boneToFind + "  parent : " + newPart.bones[i].parent.name);
             }
 
-            if(MyBones[i] == null)
-                MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name);
+            if (MyBones[i] == null) {
+                MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name, newPart.bones[i].parent.name);
+
+                if(MyBones[i] != null)
+                    Debug.Log("Found : " + newPart.bones[i].name + "  parent : " + newPart.bones[i].parent.name);
+            }
             
 
             //if (MyBones[i] != null && MyBones[i].parent.name != newPart.bones[i].parent.name)//the parent does not match
@@ -222,16 +229,23 @@ public class BuildMech : Photon.MonoBehaviour {
                 Transform parent;
                 if (newPart.bones[i].parent.name == "Bip01") {//the root bone may not been checked
                     parent = RootBone.transform;
-                } else
+                } else {
+                    //string boneName = newPart.bones[i].parent.name.Remove(0, 6);
+                    //string boneToFind = "Bip01" + boneName;
                     parent = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
+                    Debug.Log("Call find deep child (parent) : " + newPart.bones[i].parent.name + "  parent : " + "");
+                }
 
-                //GameObject newbone = new GameObject(ThisRenderer.bones[i].name);
-                //newbone.transform.parent = parent;ww
-                //newbone.transform.localPosition = ThisRenderer.bones[i].localPosition;
-                //newbone.transform.localRotation = ThisRenderer.bones[i].localRotation;
+                if(parent != null) {
+                    //GameObject newbone = new GameObject(newPart.bones[i].name);
+                    //newbone.transform.parent = parent;
+                    //newbone.transform.localPosition = newPart.bones[i].localPosition;
+                    //newbone.transform.localRotation = newPart.bones[i].localRotation;
 
-                //test
-                MyBones[i] = parent;
+                    //test
+                    MyBones[i] = parent;
+                }
+                               
 
                 if (parent == null) {
                     Debug.LogError("Can't locate the bone : "+ newPart.bones[i].name);
