@@ -62,6 +62,7 @@ public class MechPartSheetImplement : MonoBehaviour {
             MechPartManager.Legs[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(legs_GUID[i]), typeof(Leg)) as Leg;
         }
 
+        AssetDatabase.SaveAssets();
         //load Boosters to manager
         //not implemented
     }
@@ -106,7 +107,7 @@ public class MechPartSheetImplement : MonoBehaviour {
                 head.Weight = (data.Weight == 0) ? 5000 : data.Weight;
                 head.EnergyDrain = (data.Endrain == 0) ? 100 : data.Endrain;
                 head.Size = (data.Size == 0)? 600 : data.Size;
-
+                
                 break;
                 case 'A':
                 assets = AssetDatabase.FindAssets(dataName + "  t:Arm");
@@ -255,6 +256,23 @@ public class MechPartSheetImplement : MonoBehaviour {
         foreach (Transform t in transforms) {
             Object prefab = PrefabUtility.CreateEmptyPrefab("Assets/Exteel/Prefabs/MechParts/Legs/" + t.gameObject.name + ".prefab");
             PrefabUtility.ReplacePrefab(t.gameObject, prefab, ReplacePrefabOptions.ConnectToPrefab);
+        }
+    }
+
+    [MenuItem("LoadData/MaterialName")]
+    static void ChangeAllMaterialNmae() {
+        string[] folderToSearch = new string[1] {"Assets/Exteel/Prefabs/Resources/MechPartMaterials"};
+        string[] material_guid = AssetDatabase.FindAssets("t:Material", folderToSearch);
+
+        foreach(string guid in material_guid) {
+            Material mat = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(Material)) as Material;
+
+            if (mat.name.Contains("mat")) {
+                continue;
+            } else {
+                string newName = mat.name + mat;
+                AssetDatabase.RenameAsset(AssetDatabase.GUIDToAssetPath(guid) , newName);
+            }
         }
     }
 

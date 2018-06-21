@@ -244,9 +244,10 @@ public class BuildMech : Photon.MonoBehaviour {
 
                     //test
                     MyBones[i] = parent;
+                    
                 }
                                
-
+                Debug.Log(MyBones[i].transform.position);
                 if (parent == null) {
                     Debug.LogError("Can't locate the bone : "+ newPart.bones[i].name);
                 }
