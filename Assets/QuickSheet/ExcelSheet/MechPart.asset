@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80e14a72067f1ad408ec8d661bc560ce, type: 3}
+  m_Name: MechPart
+  m_EditorClassIdentifier: 
+  templatePath: QuickSheet/ExcelPlugin/Templates
+  scriptFilePath: QuickSheet/Runtime
+  editorScriptFilePath: QuickSheet/Editor
+  sheetName: MechPartSheet.xlsx
+  workSheetName: MechPartSheet
+  columnHeaderList:
+  - type: 0
+    name: Name
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: DisplayName
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: ID
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: HP
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: EN
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: SP
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: MPU
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: Size
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: Weight
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: BasicSpeed
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: EN_Output
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: MinENRequired
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: ENDrain
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: Scan
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: MaxHeat
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: CoolDown
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: Mark
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: Capacity
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: Deceleration
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: DashOutput
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: DashENDrain
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: JumpENDrain
+    isEnable: 0
+    isArray: 0
+  - type: 0
+    name: WeightType
+    isEnable: 0
+    isArray: 0
+  excelFilePath: Assets/QuickSheet/ExcelSheet/MechPartSheet.xlsx
+  SheetNames:
+  - MechPartSheet
+  currentSelectedSheet: 0
