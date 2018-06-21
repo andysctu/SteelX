@@ -2,7 +2,7 @@
 
 public abstract class Part : ScriptableObject {
     [Header("Part General")]
-    [SerializeField]private GameObject part;
+    public GameObject part;
 
     [Tooltip("This name will be display in hangar")]
     public string displayName;

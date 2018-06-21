@@ -224,7 +224,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 //MyBones[i] = null;
 
             if (MyBones[i] == null) {
-                Debug.Log("Adding bone : " + newPart.bones[i].name + " on  : " + newPart.bones[i].parent.name);
+                Debug.Log(i +" : Adding bone : " + newPart.bones[i].name + " on  : " + newPart.bones[i].parent.name);
 
                 Transform parent;
                 if (newPart.bones[i].parent.name == "Bip01") {//the root bone may not been checked
