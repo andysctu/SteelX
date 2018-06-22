@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.IO;
+
 
 public class MechPartSheetImplement : MonoBehaviour {
     static MechPartSheet MechPartSheet;
@@ -270,8 +272,57 @@ public class MechPartSheetImplement : MonoBehaviour {
             if (mat.name.Contains("mat")) {
                 continue;
             } else {
-                string newName = mat.name + mat;
+                //Debug.Log("mat name is : "+ Path.GetFileName((AssetDatabase.GUIDToAssetPath(guid))));
+                string newName = mat.name + "mat";
+
+                //Debug.Log("new name : "+newName);
                 AssetDatabase.RenameAsset(AssetDatabase.GUIDToAssetPath(guid) , newName);
+            }
+        }
+    }
+
+    [MenuItem("LoadData/LoadTextureToMat")]
+    static void LoadTextureToMat() {
+        string[] folderToSearch = new string[1] { "Assets/Exteel/Prefabs/Resources/MechPartMaterials" };
+        string[] material_guid = AssetDatabase.FindAssets("t:Material", folderToSearch);
+
+        string[] textureFolderToSearch = new string[1] { "Assets/Exteel/Textures Exported/GFT_Mech/Texture" };
+        string[] texture_guid = AssetDatabase.FindAssets("t:Texture", textureFolderToSearch);
+        
+        foreach (string guid in material_guid) {
+            Material mat = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(Material)) as Material;
+            
+            string nameToSearchInTextureFolder = mat.name.Replace("mat", "");
+            string[] textureGuid = AssetDatabase.FindAssets(nameToSearchInTextureFolder + "t:Texture", textureFolderToSearch);
+            if(textureGuid.Length == 0) {
+                Debug.LogError("Can't find : "+ nameToSearchInTextureFolder);
+                return;
+            } else {
+                Debug.Log("Found : "+ nameToSearchInTextureFolder);
+
+                Shader shader = Shader.Find("Standar(Specular setup)");
+                if (shader == null) {
+                    Debug.LogError("shader is null");
+                    return;
+                }
+                mat.shader = shader;//change shader to specular setup
+
+                foreach (string t_guid in textureGuid) {
+                    Texture texture = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(t_guid), typeof(Texture) ) as Texture;
+                    
+
+                    if (texture.name.Contains("spc")) {
+                        mat.SetTexture("_SpecGlossMap", texture);
+                    } else {
+                        mat.SetTexture("_EmissionMap", texture);
+                        mat.SetTexture("_MainTex", texture);
+                        mat.SetTexture("_DetailAlbedoMap",texture);
+                    }
+                }
+                mat.SetFloat("_SmoothnessTextureChannel", 1);
+                mat.SetFloat("_GlossMapScale", 0.3f);
+                mat.SetColor("_EmissionColor", new Color(0.3f,0.3f,0.3f));
+
             }
         }
     }
