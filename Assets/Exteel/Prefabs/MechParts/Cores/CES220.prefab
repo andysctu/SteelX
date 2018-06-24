@@ -364,7 +364,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4449949443175512}
-  - component: {fileID: 95940686157050746}
   m_Layer: 0
   m_Name: CES220
   m_TagString: Untagged
@@ -2692,23 +2691,6 @@ Transform:
   m_Father: {fileID: 4057960396125276}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95940686157050746
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1213703262237998}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: a3e0b49b99f01714aa3d4706099874b8, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137332654933268510
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

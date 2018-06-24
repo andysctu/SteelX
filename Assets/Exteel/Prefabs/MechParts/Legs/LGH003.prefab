@@ -875,7 +875,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4182392675367366}
-  - component: {fileID: 95613493783562438}
   m_Layer: 0
   m_Name: LGH003
   m_TagString: Untagged
@@ -2662,23 +2661,6 @@ Transform:
   m_Father: {fileID: 4220409065503402}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95613493783562438
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1632065450799484}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 22324fd732285fc41b5c0d8a9d361477, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137086565806607044
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

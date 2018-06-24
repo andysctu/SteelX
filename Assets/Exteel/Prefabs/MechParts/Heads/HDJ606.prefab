@@ -454,7 +454,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4822541924448544}
-  - component: {fileID: 95425134893573202}
   m_Layer: 0
   m_Name: HDJ606
   m_TagString: Untagged
@@ -1565,23 +1564,6 @@ Transform:
   m_Father: {fileID: 4728963344270646}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95425134893573202
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1442140800473350}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 50f44aa33a53c9e4abbbf5cd20e4c50e, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137040663104810968
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

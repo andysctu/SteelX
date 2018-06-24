@@ -154,7 +154,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4793558488884374}
-  - component: {fileID: 95192717635822746}
   m_Layer: 0
   m_Name: LTM819
   m_TagString: Untagged
@@ -2450,23 +2449,6 @@ Transform:
   m_Father: {fileID: 4754798536685230}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95192717635822746
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1200714509255266}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: eaa8083b6228d6d4ba600b89a8f31faa, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137730554536072188
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

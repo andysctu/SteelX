@@ -141,7 +141,7 @@ public class BuildMech : Photon.MonoBehaviour {
         // Create new array to store skinned mesh renderers
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[4];
 
-        Material[] materials = new Material[4];
+        //Material[] materials = new Material[4];
         for (int i = 0; i < 4; i++) {
             // Load mech part & info
             Part part = MechPartManager.FindData(parts[i]);
@@ -158,7 +158,8 @@ public class BuildMech : Photon.MonoBehaviour {
             newSMR[i] = part.GetPartPrefab().GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
 
             // Load texture
-            materials[i] = Resources.Load("MechPartMaterials/" + parts[i] + "mat", typeof(Material)) as Material;
+            //materials[i] = Resources.Load("MechPartMaterials/" + parts[i] + "mat", typeof(Material)) as Material;
+            
         }
 
         // Replace all
@@ -175,7 +176,12 @@ public class BuildMech : Photon.MonoBehaviour {
 
             //test
             curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-            curSMR[i].material = materials[i];
+            //curSMR[i].material = materials[i];            
+            Material[] mats = new Material[2];
+            mats[0] = Resources.Load("MechPartMaterials/" + parts[i] + "mat", typeof(Material)) as Material;
+            mats[1] = Resources.Load("MechPartMaterials/" + parts[i] + "_2mat", typeof(Material)) as Material;
+            curSMR[i].materials = mats; 
+
             curSMR[i].enabled = true;
         }       
 
@@ -201,63 +207,51 @@ public class BuildMech : Photon.MonoBehaviour {
         Transform[] MyBones = new Transform[newPart.bones.Length];
 
         for (var i = 0; i < newPart.bones.Length; i++) {
-            //Debug.Log(newPart.gameObject.name + "'s " + i + " : " + newPart.bones[i].name);
-
+            Debug.Log("Bone name : "+ newPart.bones[i].name);
             if (newPart.bones[i].name.Contains(newPart.name)) {
                 string boneName = newPart.bones[i].name.Remove(0, 6);
                 string boneToFind = "Bip01" + boneName;
                 MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone, boneToFind);
 
-                //if(MyBones[i] != null)
-                    //Debug.Log("Found : " + boneToFind + "  parent : " + newPart.bones[i].parent.name);
+                if (MyBones[i] != null) {
+                    Debug.Log("Found the bone : "+ newPart.bones[i].name + " at : " + MyBones[i].name);
+                }
             }
 
             if (MyBones[i] == null) {
                 MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name, newPart.bones[i].parent.name);
-
-                if(MyBones[i] != null)
-                    Debug.Log("Found : " + newPart.bones[i].name + "  parent : " + newPart.bones[i].parent.name);
             }
             
-
-            //if (MyBones[i] != null && MyBones[i].parent.name != newPart.bones[i].parent.name)//the parent does not match
-                //MyBones[i] = null;
-
             if (MyBones[i] == null) {
-                Debug.Log(i +" : Adding bone : " + newPart.bones[i].name + " on  : " + newPart.bones[i].parent.name);
+                Debug.Log(i +" : Retarget bone : " + newPart.bones[i].name + " to parent  : " + newPart.bones[i].parent.name);
 
                 Transform parent;
-                if (newPart.bones[i].parent.name == "Bip01") {//the root bone may not been checked
+                if (newPart.bones[i].parent.name == "Bip01") {//the root bone is not checked
+                    RootBone.transform.rotation = Quaternion.identity;
                     parent = RootBone.transform;
+
+                    GameObject newbone = new GameObject(newPart.bones[i].name); //TODO : improve this (mesh on hip has rotation bug , temp. use this to solve)
+                    newbone.transform.parent = parent;
+                    newbone.transform.localPosition = Vector3.zero;
+                    newbone.transform.localRotation = Quaternion.Euler(0,0,90);
+                    newbone.transform.localScale = new Vector3(1,1,1);
+                    MyBones[i] = newbone.transform;
                 } else {
-                    //string boneName = newPart.bones[i].parent.name.Remove(0, 6);
-                    //string boneToFind = "Bip01" + boneName;
                     parent = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
+                    MyBones[i] = parent;
                     Debug.Log("Call find deep child (parent) : " + newPart.bones[i].parent.name + "  parent : " + "");
                 }
 
-                if(parent != null) {
-                    //GameObject newbone = new GameObject(newPart.bones[i].name);
-                    //newbone.transform.parent = parent;
-                    //newbone.transform.localPosition = newPart.bones[i].localPosition;
-                    //newbone.transform.localRotation = newPart.bones[i].localRotation;
-
-                    //test
-                    MyBones[i] = parent;
-                    
-                }
-                               
-                Debug.Log(MyBones[i].transform.position);
-                if (parent == null) {
-                    Debug.LogError("Can't locate the bone : "+ newPart.bones[i].name);
-                }
-            } else {
-                //MyBones[i].localPosition = newPart.bones[i].localPosition;
-                //MyBones[i].localRotation = newPart.bones[i].localRotation;
-            }
+                if(parent == null) {
+                    Debug.LogError("Can't locate the bone : " + newPart.bones[i].name);
+                }           
+            } 
         }
 
-        partToSwitch.bones = MyBones;
+        
+        partToSwitch.bones = MyBones;    
+        //hierarchyOnStitch.Restore();
+       // animator.enabled = true;
     }
 
 
@@ -348,8 +342,9 @@ public class BuildMech : Photon.MonoBehaviour {
             weapons[i] = Instantiate(weaponScripts[i].weaponPrefab, Vector3.zero, Quaternion.identity) as GameObject;
 
             //TODO : remake this
-            weapons[i].transform.localScale = new Vector3(weapons[i].transform.localScale.x * transform.root.localScale.x,
-            weapons[i].transform.localScale.y * transform.root.localScale.y, weapons[i].transform.localScale.z * transform.root.localScale.z);
+            float newscale= transform.root.localScale.x * transform.localScale.x;
+            weapons[i].transform.localScale = new Vector3(weapons[i].transform.localScale.x * newscale,
+            weapons[i].transform.localScale.y * newscale, weapons[i].transform.localScale.z * newscale);
 
             if (weaponScripts[i].twoHanded) {
                 weapons[i].transform.SetParent(hands[(i + 1) % 2]);
@@ -678,7 +673,7 @@ public struct MechProperty {
     public Vector3 handOffset;
 
     public float GetJumpENDrain(int totalWeight) {
-        return JumpENDrain + totalWeight / 62f;
+        return JumpENDrain + totalWeight / 80f;
     }
 
     public float GetDashSpeed(int totalWeight) {

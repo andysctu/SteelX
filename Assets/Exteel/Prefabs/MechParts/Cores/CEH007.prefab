@@ -154,7 +154,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4462368493209526}
-  - component: {fileID: 95640129275977838}
   m_Layer: 0
   m_Name: CEH007
   m_TagString: Untagged
@@ -1624,23 +1623,6 @@ Transform:
   m_Father: {fileID: 4442998157313552}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95640129275977838
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1185912350507406}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: d1f714ac8f5c5f142915214c7dd56912, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137653986189555284
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

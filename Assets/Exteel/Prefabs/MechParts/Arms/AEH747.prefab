@@ -919,7 +919,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4781748696254948}
-  - component: {fileID: 95708247604034814}
   m_Layer: 0
   m_Name: AEH747
   m_TagString: Untagged
@@ -2133,23 +2132,6 @@ Transform:
   m_Father: {fileID: 4167813657153364}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95708247604034814
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1859650600368728}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 90e3f80144ce15b4b96a5b56bb5a654c, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137535388480920928
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

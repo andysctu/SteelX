@@ -172,7 +172,7 @@ ModelImporter:
   humanDescription:
     serializedVersion: 2
     human:
-    - boneName: Bip01_Pelvis
+    - boneName: Bip01
       humanName: Hips
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -228,7 +228,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Bip01_Spine1
+    - boneName: Bip01_Spine
       humanName: Spine
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -236,7 +236,7 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Bip01_Spine3
+    - boneName: Bip01_Spine1
       humanName: Chest
       limit:
         min: {x: 0, y: 0, z: 0}
@@ -476,8 +476,16 @@ ModelImporter:
         value: {x: 0, y: 0, z: 0}
         length: 0
         modified: 0
-    - boneName: Bip01_Neck
+    - boneName: Bip01_Spine2
       humanName: UpperChest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Bip01_Neck
+      humanName: Neck
       limit:
         min: {x: 0, y: 0, z: 0}
         max: {x: 0, y: 0, z: 0}
@@ -653,7 +661,7 @@ ModelImporter:
     - name: Bip01_L_Finger21
       parentName: Bip01_L_Finger2
       position: {x: -0.30713165, y: 0, z: 0.00000006055832}
-      rotation: {x: 0.0000014109532, y: 0.0000004097818, z: -0.034142252, w: 0.99941695}
+      rotation: {x: 0.0000014109534, y: 0.00000040978182, z: -0.034142256, w: 0.999417}
       scale: {x: 1, y: 1, z: 1}
     - name: Bip01_L_Finger2Nub
       parentName: Bip01_L_Finger21
@@ -700,7 +708,7 @@ ModelImporter:
     - name: Bip01_R_Finger01
       parentName: Bip01_R_Finger0
       position: {x: -0.23833467, y: 0, z: -0.00000019378662}
-      rotation: {x: -0.000000029802312, y: 0.000000335276, z: -0.040086776, w: 0.9991962}
+      rotation: {x: -0.000000029802314, y: 0.00000033527604, z: -0.04008678, w: 0.99919623}
       scale: {x: 1, y: 1, z: 1}
     - name: Bip01_R_Finger0Nub
       parentName: Bip01_R_Finger01

@@ -740,7 +740,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4085435395395300}
-  - component: {fileID: 95009667159472256}
   m_Layer: 0
   m_Name: CNM002
   m_TagString: Untagged
@@ -1624,23 +1623,6 @@ Transform:
   m_Father: {fileID: 4030352450366060}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95009667159472256
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1909935218381414}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 20f33357906d3c44b8557a3cad45ee26, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137050133129309294
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

@@ -589,7 +589,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4232013855217296}
-  - component: {fileID: 95368402211621180}
   m_Layer: 0
   m_Name: LTJ606
   m_TagString: Untagged
@@ -1835,23 +1834,6 @@ Transform:
   m_Father: {fileID: 4396139996608270}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95368402211621180
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1550432148791798}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 9101d4eab7c797140b62724762b78b66, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137420023737623708
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

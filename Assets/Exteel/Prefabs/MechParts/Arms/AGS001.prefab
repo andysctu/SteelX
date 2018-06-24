@@ -1250,7 +1250,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4936756548277078}
-  - component: {fileID: 95778154213335764}
   m_Layer: 0
   m_Name: AGS001
   m_TagString: Untagged
@@ -2805,23 +2804,6 @@ Transform:
   m_Father: {fileID: 4132993214826574}
   m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95778154213335764
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1831623326714928}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 66a32e924be4a0449a8d01445f476120, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137679322203679964
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -2836,8 +2818,8 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 66a32e924be4a0449a8d01445f476120, type: 3}
-  - {fileID: 2100002, guid: 66a32e924be4a0449a8d01445f476120, type: 3}
+  - {fileID: 2100000, guid: d2438f3bdcb49054a9ba395d3ba48894, type: 2}
+  - {fileID: 2100000, guid: b8757f972500ea24b8507481886a1a4d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

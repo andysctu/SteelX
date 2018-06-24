@@ -530,7 +530,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4469957804020794}
-  - component: {fileID: 95130813022693394}
   m_Layer: 0
   m_Name: AGM002
   m_TagString: Untagged
@@ -2455,23 +2454,6 @@ Transform:
   m_Father: {fileID: 4942831374788212}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95130813022693394
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1433863200169584}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: c4b4c11e2fb41424e94c072094bdb21c, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137973470588196012
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

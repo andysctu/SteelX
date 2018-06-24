@@ -4436,19 +4436,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: viewIdField
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11416036, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: instantiationId
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: viewIdField
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 11496946, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: instantiationId
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
       propertyPath: m_IsActive
@@ -14215,6 +14215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7c1cd7401c84b6198c82b5788a3c5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RootBone: {fileID: 0}
   MechCombat: {fileID: 0}
   MechController: {fileID: 0}
   Sounds: {fileID: 56435101}
@@ -14257,7 +14258,6 @@ MonoBehaviour:
     DashENDrain: 0
     handOffset: {x: 0, y: 0, z: 0}
   Mech_Num: 0
-  onPanel: 1
 --- !u!114 &999463095
 MonoBehaviour:
   m_ObjectHideFlags: 0

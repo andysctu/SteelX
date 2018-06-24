@@ -649,7 +649,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4173564216101836}
-  - component: {fileID: 95950408119679056}
   m_Layer: 0
   m_Name: LTN806
   m_TagString: Untagged
@@ -1835,23 +1834,6 @@ Transform:
   m_Father: {fileID: 4135888237070496}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95950408119679056
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1715179533534194}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: e04db87a89019ae44b647d01cc00324c, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137202987348682654
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

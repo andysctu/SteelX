@@ -35,7 +35,7 @@ public class MechPartManager : ScriptableObject {
 
     Part SearchInArray(Part[] parts, string name) {
         for (int i = 0; i < parts.Length; i++) {
-            if (parts[i].GetPartPrefab().name == name) {
+            if (parts[i]!= null && parts[i].GetPartPrefab()!=null &&parts[i].GetPartPrefab().name == name) {
                 return parts[i];
             }
         }

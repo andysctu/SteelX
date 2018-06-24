@@ -229,7 +229,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4750655083584424}
-  - component: {fileID: 95200329790105472}
   m_Layer: 0
   m_Name: HSM002
   m_TagString: Untagged
@@ -2369,23 +2368,6 @@ Transform:
   m_Father: {fileID: 4565202556204112}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95200329790105472
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1298291945437096}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 81396bc056c2d174fa526719d45a36ab, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137128575517089776
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

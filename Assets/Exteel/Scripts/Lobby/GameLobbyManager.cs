@@ -86,6 +86,8 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 			lobbyPlayer.transform.SetParent (Team2.transform);
 		}
 
+        lobbyPlayer.transform.localPosition = Vector3.zero;
+
 		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
 		lobbyPlayer.name = name;
 		lobbyPlayer.GetComponentInChildren<Text> ().text = name;

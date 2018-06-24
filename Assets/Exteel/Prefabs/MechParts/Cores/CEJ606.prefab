@@ -815,7 +815,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4447121776699706}
-  - component: {fileID: 95783889407173178}
   m_Layer: 0
   m_Name: CEJ606
   m_TagString: Untagged
@@ -1595,23 +1594,6 @@ Transform:
   m_Father: {fileID: 4195962143237716}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95783889407173178
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1996620638600440}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 49c10bf59c01125409a55cf6883ab201, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137554232757558238
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

@@ -710,7 +710,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4383198730656752}
-  - component: {fileID: 95234329495541580}
   m_Layer: 0
   m_Name: LTH712
   m_TagString: Untagged
@@ -1834,23 +1833,6 @@ Transform:
   m_Father: {fileID: 4234816475268876}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95234329495541580
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1684442828702884}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: ad27f24c82f4f8045858fa41cecce61f, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137628410950340158
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

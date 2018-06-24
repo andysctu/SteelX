@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
 using System.IO;
 
@@ -109,7 +110,8 @@ public class MechPartSheetImplement : MonoBehaviour {
                 head.Weight = (data.Weight == 0) ? 5000 : data.Weight;
                 head.EnergyDrain = (data.Endrain == 0) ? 100 : data.Endrain;
                 head.Size = (data.Size == 0)? 600 : data.Size;
-                
+
+                EditorUtility.SetDirty(head);
                 break;
                 case 'A':
                 assets = AssetDatabase.FindAssets(dataName + "  t:Arm");
@@ -144,6 +146,8 @@ public class MechPartSheetImplement : MonoBehaviour {
                 arm.Weight = (data.Weight == 0) ? 15000 : data.Weight;
                 arm.EnergyDrain = (data.Endrain == 0) ? 100 : data.Endrain;
                 arm.Size = (data.Size == 0) ? 3500 : arm.Size;
+
+                EditorUtility.SetDirty(arm);
                 break;
                 case 'L':
                 assets = AssetDatabase.FindAssets(dataName + "  t:Leg");
@@ -177,6 +181,8 @@ public class MechPartSheetImplement : MonoBehaviour {
                 leg.Weight = (data.Weight == 0) ? 20000 : data.Weight;
                 leg.EnergyDrain = (data.Endrain == 0) ? 50 : data.Endrain;
                 leg.Size = (data.Size == 0) ? 5000 : data.Size;
+
+                EditorUtility.SetDirty(leg);
                 break;
                 case 'C':
                 assets = AssetDatabase.FindAssets(dataName + "  t:Core");
@@ -210,6 +216,8 @@ public class MechPartSheetImplement : MonoBehaviour {
                 core.Weight = (data.Weight == 0) ? 24000 : data.Weight;
                 core.EnergyDrain = (data.Endrain == 0) ? 150 : data.Endrain;
                 core.Size = (data.Size == 0) ? 5000 : data.Size;
+
+                EditorUtility.SetDirty(core);
                 break;
 
                 case 'P':
@@ -281,6 +289,8 @@ public class MechPartSheetImplement : MonoBehaviour {
         }
     }
 
+    /*
+     * //TODO : fix get wrong mat (few)
     [MenuItem("LoadData/LoadTextureToMat")]
     static void LoadTextureToMat() {
         string[] folderToSearch = new string[1] { "Assets/Exteel/Prefabs/Resources/MechPartMaterials" };
@@ -293,14 +303,14 @@ public class MechPartSheetImplement : MonoBehaviour {
             Material mat = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(Material)) as Material;
             
             string nameToSearchInTextureFolder = mat.name.Replace("mat", "");
-            string[] textureGuid = AssetDatabase.FindAssets(nameToSearchInTextureFolder + "t:Texture", textureFolderToSearch);
+            string[] textureGuid = AssetDatabase.FindAssets(nameToSearchInTextureFolder, textureFolderToSearch);
             if(textureGuid.Length == 0) {
                 Debug.LogError("Can't find : "+ nameToSearchInTextureFolder);
-                return;
+                continue;
             } else {
                 Debug.Log("Found : "+ nameToSearchInTextureFolder);
 
-                Shader shader = Shader.Find("Standar(Specular setup)");
+                Shader shader = Shader.Find("Standard");
                 if (shader == null) {
                     Debug.LogError("shader is null");
                     return;
@@ -326,5 +336,7 @@ public class MechPartSheetImplement : MonoBehaviour {
             }
         }
     }
+    */
 
 }
+#endif

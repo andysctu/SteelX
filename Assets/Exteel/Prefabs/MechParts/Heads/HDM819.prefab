@@ -469,7 +469,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4843343578722854}
-  - component: {fileID: 95304052363249372}
   m_Layer: 0
   m_Name: HDM819
   m_TagString: Untagged
@@ -2444,23 +2443,6 @@ Transform:
   m_Father: {fileID: 4564491777962702}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95304052363249372
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1413900204565756}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 2feb9cf1f8b7b9a4ba6c607ae4f0c490, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137385578093792596
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

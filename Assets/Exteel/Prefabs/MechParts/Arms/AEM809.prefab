@@ -890,7 +890,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4265065543290218}
-  - component: {fileID: 95389606646007496}
   m_Layer: 0
   m_Name: AEM809
   m_TagString: Untagged
@@ -2450,23 +2449,6 @@ Transform:
   m_Father: {fileID: 4729788781104758}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95389606646007496
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1713731158558574}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 688b293e8815635459cadd152c5a3f6a, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137002649592657580
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

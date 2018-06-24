@@ -109,7 +109,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4367765995386516}
-  - component: {fileID: 95434708594616626}
   m_Layer: 0
   m_Name: HDS003
   m_TagString: Untagged
@@ -1565,23 +1564,6 @@ Transform:
   m_Father: {fileID: 4900276318208306}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95434708594616626
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1144381259636456}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 60f4a3705abe86f4da608b470588231a, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137147923282849822
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

@@ -12,11 +12,16 @@ public class HangarManager : MonoBehaviour {
     [SerializeField] private WeaponManager WeaponManager;
     [SerializeField] private SkillManager SkillManager;
     [SerializeField] private MechPartManager MechPartManager;
+    private Button[] main_buttons;
     private Transform[] contents;
     private int activeTab;
     //private Dictionary<string, string> equipped;
     private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
     public int Mech_Num = 0;
+
+    private void Awake() {
+        Application.targetFrameRate = 60;
+    }
 
     private void Start() {
         //Mech m = UserData.myData.Mech[0];
@@ -24,29 +29,16 @@ public class HangarManager : MonoBehaviour {
         displaybutton1.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
         displaybutton2.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());
 
-        Button[] buttons = GameObject.FindObjectsOfType<Button>();
-        foreach (Button b in buttons) {
-            b.image.overrideSprite = buttonTexture;
-            b.GetComponentInChildren<Text>().color = Color.white;
-        }
-
-        activeTab = 0;
         contents = new Transform[Tabs.Length];
         for (int i = 0; i < Tabs.Length; i++) {
-            Transform tabTransform = Tabs[i].transform;
-            GameObject smallTab = tabTransform.Find("Tab").gameObject;
-            Color c = new Color(255, 255, 255, 63);
-            smallTab.GetComponent<Image>().color = c;
-            int index = i;
-            smallTab.GetComponent<Button>().onClick.AddListener(() => activateTab(index));
-            GameObject pane = tabTransform.Find("Pane").gameObject;
-            pane.SetActive(i == 0);
-            contents[i] = pane.transform.Find("Viewport/Content");
+            Transform pane = Tabs[i].transform.Find("Pane");            
+            contents[i] = pane.Find("Viewport/Content");
         }
 
         // Debug, take out
         Part[] Parts = MechPartManager.GetAllParts();
         foreach (Part part in Parts) {
+            if(part == null || part.GetPartPrefab()==null)continue;
             //foreach (string part in UserData.myData.Owns) {
             int parent = -1;
             switch (part.name[0]) {
@@ -70,15 +62,39 @@ public class HangarManager : MonoBehaviour {
                 break;
             }
             GameObject uiPart;
-            uiPart = Instantiate(UIPart, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            uiPart = Instantiate(UIPart, new Vector3(0, 0, 69.2f), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[parent]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
             Sprite s = Resources.Load<Sprite>(part.name);
-            if (s == null) Debug.Log(part + "'s sprite is missing");
-            uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
-            uiPart.GetComponentInChildren<Text>().text = part.displayName;
+            uiPart.GetComponentInChildren<Text>().text = part.name;
             uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => EquipMechPart(part.name));
+
+            GameObject displayPart = Instantiate(part.GetPartPrefab(), Vector3.zero, Quaternion.Euler(0, -90, 0));
+
+            //Parent part to its center & move the center to the grip point
+            GameObject displayCenter = new GameObject();
+            displayCenter.name = "part_center";
+            displayCenter.transform.position = displayPart.GetComponentInChildren<SkinnedMeshRenderer>().bounds.center;
+
+            displayPart.transform.SetParent(displayCenter.transform);
+
+            Transform grip = uiPart.transform.Find("grip");
+
+            displayCenter.transform.position = grip.position;
+            displayCenter.transform.SetParent(grip);
+            displayCenter.transform.localScale = new Vector3(1,1,1);
+
+            if (parent == 4) { //booster adjust the size
+                grip.localScale = new Vector3(30, 30, 30);
+                displayCenter.transform.localRotation = Quaternion.Euler(180,-90,-90);
+            }
+
+            displayCenter.transform.localPosition -= Vector3.forward * 2;
+
+            Material[] mats = new Material[2];
+            mats[0] = Resources.Load("MechPartMaterials/" + part.name + "mat", typeof(Material)) as Material;
+            mats[1] = Resources.Load("MechPartMaterials/" + part.name + "_2mat", typeof(Material)) as Material;
+            displayPart.GetComponentInChildren<SkinnedMeshRenderer>().materials = mats;
         }
 
         LoadWeapons();
@@ -89,13 +105,28 @@ public class HangarManager : MonoBehaviour {
     private void LoadWeapons() {
         foreach (Weapon weapon in WeaponManager.GetAllWeaponss()) {
             string weaponName = weapon.weaponPrefab.name;
-            GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, 69.2f), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[5]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
+
+            GameObject displayWeapon = Instantiate(weapon.weaponPrefab, Vector3.zero, Quaternion.Euler(0,-90,0));
+
+            //Parent part to its center & move the center to the grip point
+            GameObject displayCenter = new GameObject();
+            displayCenter.name = "part_center";
+            displayCenter.transform.position = displayWeapon.GetComponentInChildren<SkinnedMeshRenderer>().bounds.center;
+
+            displayWeapon.transform.SetParent(displayCenter.transform);
+
+            Transform grip = uiPart.transform.Find("grip");
+
+            displayCenter.transform.position = grip.position;
+            displayCenter.transform.SetParent(grip);
+            displayCenter.transform.localScale = new Vector3(1, 1, 1);
+
             Sprite s = Resources.Load<Sprite>(weaponName);
             if (s == null) Debug.Log(weapon + "'s sprite is missing");
-            uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
+
             uiPart.GetComponentInChildren<Text>().text = weapon.displayName == "" ? weaponName : weapon.displayName;
 
             Button[] btns = uiPart.GetComponentsInChildren<Button>();
@@ -117,10 +148,9 @@ public class HangarManager : MonoBehaviour {
         foreach (SkillConfig skill in SkillManager.GetAllSkills()) {
             string skillName = skill.name;//TODO : don't use .name
 
-            GameObject uiPart = Instantiate(UISkill, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+            GameObject uiPart = Instantiate(UISkill, new Vector3(0, 0, 69.2f), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[6]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            uiPart.GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
             Sprite s = skill.icon;
             if (s == null) Debug.Log(skill.name + "'s sprite is missing");
             uiPart.GetComponentsInChildren<Image>()[1].sprite = s;
@@ -145,32 +175,6 @@ public class HangarManager : MonoBehaviour {
                 }
             }
         }
-    }
-
-    private void activateTab(int index) {
-        for (int i = 0; i < Tabs.Length; i++) {
-            Transform tabTransform = Tabs[i].transform;
-            GameObject smallTab = tabTransform.Find("Tab").gameObject;
-            Color c = new Color(255, 255, 255, 63);
-            smallTab.GetComponent<Image>().color = c;
-            tabTransform.Find("Pane").gameObject.SetActive(i == index);
-        }
-        if ((index == 4 && activeTab != 4) || (index != 4 && activeTab == 4)) {
-            Debug.Log("rotating");
-
-            //create the rotation we need to be in to look at the target
-            Quaternion newRot = Quaternion.Euler(new Vector3(Mech.transform.rotation.eulerAngles.x, Mech.transform.rotation.eulerAngles.y + 180, Mech.transform.rotation.eulerAngles.z));
-
-            Vector3 rot = Mech.transform.rotation.eulerAngles;
-            rot = new Vector3(rot.x, rot.y + 180, rot.z);
-
-            //			Debug.Log ("newRot: " + newRot.x + ", " + newRot.y + ", " + newRot.z);
-            //			Debug.Log ("rot: " + Mech.transform.rotation.x + ", " + Mech.transform.rotation.y + ", " + Mech.transform.rotation.z);
-            //			Debug.Log ("localRot: " + Mech.transform.localRotation.x + ", " + Mech.transform.localRotation.y + ", " + Mech.transform.localRotation.z);
-            //rotate towards a direction, but not immediately (rotate a little every frame)
-            Mech.transform.rotation = Quaternion.Slerp(Mech.transform.rotation, Quaternion.Euler(rot), Time.deltaTime * 0.5f);
-        }
-        activeTab = index;
     }
 
     public void Back() {
@@ -208,12 +212,19 @@ public class HangarManager : MonoBehaviour {
                 return;
             }
 
+            //TODO : for fun . remove this ;
+            if (part.displayName == "GameMaster") {
+                if(PhotonNetwork.player.NickName != "chonz")
+                    return;
+            }
+
             string mechPartToReplace = "";
             int parent = -1;
             if (part_name[0] != 'P') {
                 SkinnedMeshRenderer newSMR = (partPrefab == null) ? null : partPrefab.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
                 SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer>();
-                Material material = Resources.Load("MechPartMaterials/"+part_name + "mat", typeof(Material)) as Material;
+                //Material material = Resources.Load("MechPartMaterials/"+part_name + "mat", typeof(Material)) as Material;
+                
 
                 switch (part_name[0]) {
                     case 'C':
@@ -244,7 +255,11 @@ public class HangarManager : MonoBehaviour {
                 Mech.GetComponent<BuildMech>().ProcessBonedObject(newSMR, curSMR[parent]);
 
                 curSMR[parent].sharedMesh = newSMR.sharedMesh;
-                curSMR[parent].material = material;
+                //curSMR[parent].material = material;
+                Material[] mats = new Material[2];
+                mats[0] = Resources.Load("MechPartMaterials/" + part_name + "mat", typeof(Material)) as Material;
+                mats[1] = Resources.Load("MechPartMaterials/" + part_name + "_2mat", typeof(Material)) as Material;
+                curSMR[parent].materials = mats;
 
             } else {//Booster
                 parent = 4;
@@ -316,3 +331,42 @@ public class HangarManager : MonoBehaviour {
         DisplayPlayerSkills();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//private void activateTab(int index) {
+//    for (int i = 0; i < Tabs.Length; i++) {
+//        Transform tabTransform = Tabs[i].transform;
+//        GameObject smallTab = tabTransform.Find("Tab").gameObject;
+//        Color c = new Color(255, 255, 255, 63);
+//        smallTab.GetComponent<Image>().color = c;
+//        tabTransform.Find("Pane").gameObject.SetActive(i == index);
+//    }
+//    if ((index == 4 && activeTab != 4) || (index != 4 && activeTab == 4)) {
+//        Debug.Log("rotating");
+
+//        //create the rotation we need to be in to look at the target
+//        Quaternion newRot = Quaternion.Euler(new Vector3(Mech.transform.rotation.eulerAngles.x, Mech.transform.rotation.eulerAngles.y + 180, Mech.transform.rotation.eulerAngles.z));
+
+//        Vector3 rot = Mech.transform.rotation.eulerAngles;
+//        rot = new Vector3(rot.x, rot.y + 180, rot.z);
+
+//        //			Debug.Log ("newRot: " + newRot.x + ", " + newRot.y + ", " + newRot.z);
+//        //			Debug.Log ("rot: " + Mech.transform.rotation.x + ", " + Mech.transform.rotation.y + ", " + Mech.transform.rotation.z);
+//        //			Debug.Log ("localRot: " + Mech.transform.localRotation.x + ", " + Mech.transform.localRotation.y + ", " + Mech.transform.localRotation.z);
+//        //rotate towards a direction, but not immediately (rotate a little every frame)
+//        Mech.transform.rotation = Quaternion.Slerp(Mech.transform.rotation, Quaternion.Euler(rot), Time.deltaTime * 0.5f);
+//    }
+//    activeTab = index;
+//}

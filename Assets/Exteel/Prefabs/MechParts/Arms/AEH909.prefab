@@ -1190,7 +1190,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4498884382291746}
-  - component: {fileID: 95509707897635854}
   m_Layer: 0
   m_Name: AEH909
   m_TagString: Untagged
@@ -2573,23 +2572,6 @@ Transform:
   m_Father: {fileID: 4560949740053026}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95509707897635854
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1945109682216054}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: d86d10d4825685343adc052d8c3b1818, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137867948107042738
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

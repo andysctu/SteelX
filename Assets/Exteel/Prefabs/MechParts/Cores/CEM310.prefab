@@ -920,7 +920,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4168919235437704}
-  - component: {fileID: 95083771502658718}
   m_Layer: 0
   m_Name: CEM310
   m_TagString: Untagged
@@ -2509,23 +2508,6 @@ Transform:
   m_Father: {fileID: 4571153194610738}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95083771502658718
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1671171636990312}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 65ec68869b43cc245943c148389597b2, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137637971018223266
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

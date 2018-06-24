@@ -259,7 +259,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4626729021632956}
-  - component: {fileID: 95994464801399564}
   m_Layer: 0
   m_Name: AEJ606
   m_TagString: Untagged
@@ -2134,23 +2133,6 @@ Transform:
   m_Father: {fileID: 4857717932114560}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &95994464801399564
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1262133791483672}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: d7c39330347248f45a19c2ada81af480, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!137 &137860903882466586
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
