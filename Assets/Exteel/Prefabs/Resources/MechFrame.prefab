@@ -210,8 +210,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 254.2, y: 15.35, z: -62.2}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 385, y: 0.1, z: 385}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 405268}
@@ -659,7 +659,6 @@ MonoBehaviour:
     Capacity: 0
     Deceleration: 0
     DashENDrain: 0
-    handOffset: {x: 0, y: 0, z: 0}
   Mech_Num: 0
 --- !u!114 &11436158
 MonoBehaviour:
@@ -4590,7 +4589,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 7ef6b00267c1b9c49b9ae8beb6e12999, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1

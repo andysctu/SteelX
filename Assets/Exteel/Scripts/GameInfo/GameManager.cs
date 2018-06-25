@@ -356,7 +356,7 @@ public class GameManager : Photon.MonoBehaviour {
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 			PhotonNetwork.LeaveRoom();
-			SceneManager.LoadScene("Lobby");
+			SceneManager.LoadScene("MainScenes");
 		}
 		// Update time
 		if (storedStartTime != 0 || storedDuration != 0) {//sometimes storedStartTime is 0 but duration is not

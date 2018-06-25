@@ -3,18 +3,27 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class LobbyManager: MonoBehaviour {
+    [SerializeField] GameObject CreateRoomModel;
+    [SerializeField] Text RoomName;
+    [SerializeField] GameObject RoomPanel;
+    [SerializeField] Transform RoomsWrapper; 
+    //just to see how many player in lobby
+    [SerializeField] Text playercountText;
+    private MySceneManager MySceneManager;
+    private GameObject[] rooms;
+    private float roomHeight = 50;
+    private float checkPlayerTime = 0;
+    private string selectedRoom = "";
+    private const float checkPlayerDeltaTime = 6f;
 
-	[SerializeField] Text RoomName;
-
-	//just to see how many player in lobby
-	[SerializeField] Text playercountText;
-	private float checkPlayerTime = 0;
-	private const float checkPlayerDeltaTime = 6f;
-
-	// Use this for initialization
-	void Start () {
-		// For debugging, so we don't have to login each time
-		if (!PhotonNetwork.connected) {
+    private void Awake() {
+        MySceneManager = FindObjectOfType<MySceneManager>();
+    }
+    // Use this for initialization
+    void Start () {
+        
+        // For debugging, so we don't have to login each time
+        if (!PhotonNetwork.connected) {
 			// this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
 			PhotonNetwork.automaticallySyncScene = true;
 
@@ -34,20 +43,14 @@ public class LobbyManager: MonoBehaviour {
 		PhotonNetwork.autoJoinLobby = true;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
 	void FixedUpdate(){
-		if(Time.time - checkPlayerTime >= checkPlayerDeltaTime){
+		if(Time.time - checkPlayerTime >= checkPlayerDeltaTime){//update player count
 			checkPlayerTime = Time.time;
 			playercountText.text = PhotonNetwork.countOfPlayers.ToString();
 		}
 	}
 
 	void OnJoinedLobby(){
-		//PhotonNetwork.LoadLevel (1);
 		print ("Joined Lobby");
 	}
 
@@ -66,7 +69,9 @@ public class LobbyManager: MonoBehaviour {
 		string[] str = { "Map", "GameMode"};
 		ro.CustomRoomPropertiesForLobby = str;
 		PhotonNetwork.CreateRoom(RoomName.text,ro,TypedLobby.Default);
-	}
+        HideCreateRoomModel();
+
+    }
 
 	public void OnPhotonCreateRoomFailed()
 	{
@@ -89,11 +94,70 @@ public class LobbyManager: MonoBehaviour {
 	public void OnCreatedRoom()
 	{
 		Debug.Log("Room created successfully.");
-		PhotonNetwork.LoadLevel("GameLobby");
+		//PhotonNetwork.LoadLevel("GameLobby");
+        MySceneManager.GoToGameLobby();
 	}
 
 	public void OnDisconnectedFromPhoton()
 	{
 		Debug.Log("Disconnected from Photon.");
 	}
+
+    public void OnReceivedRoomListUpdate() {
+        Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);
+        Refresh();
+    }
+
+    public void Refresh() {
+        if (rooms != null) {
+            for (int i = 0; i < rooms.Length; i++) {
+                Destroy(rooms[i]);
+            }
+        }
+
+        RoomInfo[] roomsInfo = PhotonNetwork.GetRoomList();
+        Debug.Log("roomsInfo.length :" + roomsInfo.Length);
+        rooms = new GameObject[roomsInfo.Length];
+        for (int i = 0; i < roomsInfo.Length; i++) {
+            GameObject roomPanel = Instantiate(RoomPanel);
+            Text[] info = roomPanel.GetComponentsInChildren<Text>();
+            Debug.Log(roomsInfo[i].name);
+            info[3].text = "Players: " + roomsInfo[i].playerCount + "/" + roomsInfo[i].MaxPlayers;
+            info[2].text = "GameMode: " + roomsInfo[i].CustomProperties["GameMode"];
+            info[1].text = "Map: " + roomsInfo[i].CustomProperties["Map"];
+            info[0].text = "Room Name: " + roomsInfo[i].name;
+
+            roomPanel.transform.SetParent(RoomsWrapper);
+            RectTransform rt = roomPanel.GetComponent<RectTransform>();
+            rt.localPosition = new Vector3(0, 0, 0);
+            rt.localScale = new Vector3(1, 1, 1);
+            int index = i;
+            roomPanel.GetComponent<Button>().onClick.AddListener(() => {
+                selectedRoom = roomsInfo[index].name;
+            });
+            rooms[i] = roomPanel;
+        }
+        //RoomsWrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(600, 50 * roomsInfo.Length);
+    }
+
+    public void ShowCreateRoomModal() {
+        CreateRoomModel.SetActive(true);
+    }
+
+    public void HideCreateRoomModel() {
+        CreateRoomModel.SetActive(false);
+    }
+
+    public void JoinRoom() {
+        if (!string.IsNullOrEmpty(selectedRoom)) {
+            Debug.Log("Joining Room " + selectedRoom);
+            PhotonNetwork.JoinRoom(selectedRoom);
+        }
+    }
+
+    public void OnJoinedRoom() {
+        Debug.Log("OnJoinedRoom");
+        //PhotonNetwork.LoadLevel("GameLobby");
+        MySceneManager.GoToGameLobby();
+    }
 }

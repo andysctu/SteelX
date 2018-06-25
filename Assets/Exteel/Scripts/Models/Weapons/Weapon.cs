@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
 public abstract class Weapon : ScriptableObject {
+    [SerializeField] private GameObject weaponPrefab_lft, weaponPrefab_rt;
+
     [Tooltip("Special weapon types")]
     public string weaponType;//APS , LMG , Rocket , Cannon , Shotgun , ...
-    public string displayName;//this will be displayed in hangar
-    public GameObject weaponPrefab;
+    public string weaponName, displayName;//this will be displayed in hangar    
     public GameObject[] Grip = new GameObject[2];//L&R , only set the rotation , the position is adjusted by hand offset
     public int damage = 0, weight = 0;
 
@@ -31,6 +32,14 @@ public abstract class Weapon : ScriptableObject {
     public abstract void SwitchAnimationClips(Animator weaponAniamtor);
 
     public AnimationClip[] skillAnimations;
+
+    public string GetWeaponName() {
+        return weaponName;
+    }
+
+    public GameObject GetWeaponPrefab(int hand = 0) {
+        return (hand==0 || weaponPrefab_rt==null) ? weaponPrefab_lft : weaponPrefab_rt;
+    }
 
     public AnimationClip FindSkillAnimationClip(string name) {
         if(skillAnimations != null) {

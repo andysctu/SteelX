@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de86d7dc4fc5214bba24a3b16c24e82, type: 3}
   m_Name: BCN029
   m_EditorClassIdentifier: 
-  weaponType: Cannon
-  displayName: 
-  weaponPrefab: {fileID: 1651160528419118, guid: 94cca59dc89f66f4aabcd2cfb29552e2,
+  weaponPrefab_lft: {fileID: 1651160528419118, guid: 94cca59dc89f66f4aabcd2cfb29552e2,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: Cannon
+  weaponName: BCN029
+  displayName: 
   Grip:
   - {fileID: 0}
   - {fileID: 1096434313937498, guid: cab6ccf5c933fbf45b88e4da61268fa8, type: 2}

@@ -143,7 +143,7 @@ public class BulletTrace : MonoBehaviour {
         if (!isTargetShield) {
             impact = Instantiate(bulletImpact, impactPoint, Quaternion.identity, bulletCollector);
         } else {
-            impact = Instantiate(bulletImpact_onShield, target.position - target.forward * 2f, Quaternion.identity, bulletCollector);
+            impact = Instantiate(bulletImpact_onShield, target.position, Quaternion.identity, bulletCollector);
             impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
         }
         impact.GetComponent<ParticleSystem>().Play();

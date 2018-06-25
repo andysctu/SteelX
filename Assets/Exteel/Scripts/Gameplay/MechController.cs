@@ -426,7 +426,7 @@ public class MechController : Photon.MonoBehaviour {
             ResetCurSpeed();
             Boost(false);
         } else {
-            onSkillMoving = false;
+            onInstantMoving = false;
             ResetCurBoostingSpeed();
             ResetCurSpeed();
         }

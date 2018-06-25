@@ -1,40 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 public class PlayMusic : MonoBehaviour {
+    private MySceneManager MySceneManager;
 
-	static bool isLobbyMusicExist = false;
+    static bool isLobbyMusicExist = false;
 	AudioSource audiosource;
-	// Use this for initialization
-	void Start () {
-		if (isLobbyMusicExist) {
-			Destroy (gameObject);
-		} else {
 
-			SceneManager.sceneLoaded += Musicmanage;
+    private void Awake() {
+        if(isLobbyMusicExist)Destroy(this);
 
-			DontDestroyOnLoad (this);
-			audiosource = GetComponent<AudioSource> ();
-			audiosource.Play ();
-			isLobbyMusicExist = true;
-		}
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-	void FixedUpdate(){
-		if(!isLobbyMusicExist){
-			Destroy (gameObject);
-		}
-	}
+        MySceneManager = FindObjectOfType<MySceneManager>();
+        if(MySceneManager==null)return;
+        MySceneManager.OnSceneLoaded += ManageMusic;
+        audiosource = GetComponent<AudioSource>();
+    }
 
-	void Musicmanage(Scene scene, LoadSceneMode mode){
-		if(scene.name!="Lobby"&&scene.name!="Hangar"&&scene.name!="Store"&&scene.name!="GameLobby"){
-			isLobbyMusicExist = false;
-		}
+    void ManageMusic(int scene){
+        if(MySceneManager.ActiveScene == MySceneManager.SceneName.Login)
+            return;
+
+        if(!audiosource.isPlaying)            
+            audiosource.Play();
+        if (scene != MySceneManager.SceneName.Lobby && scene != MySceneManager.SceneName.Hangar && scene != MySceneManager.SceneName.Store && scene != MySceneManager.SceneName.GameLobby) {
+            //Destroy music in game
+            isLobbyMusicExist = false;
+            Destroy(this);
+        } else {            
+            //if (!isLobbyMusicExist) {
+            //    isLobbyMusicExist = true;
+            //    audiosource = GetComponent<AudioSource>();
+            //    audiosource.Play();
+            //} else {
+            //    //already has one playing
+            //    Destroy(this);
+            //}
+        }
 	}
 }

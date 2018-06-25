@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e82af62f59454044890b7fdd3024bfd6, type: 3}
   m_Name: APS043
   m_EditorClassIdentifier: 
-  weaponType: APS
-  displayName: 
-  weaponPrefab: {fileID: 1897089457237074, guid: 04cda4f3c04101948bc96fab9c03c76c,
+  weaponPrefab_lft: {fileID: 1897089457237074, guid: 04cda4f3c04101948bc96fab9c03c76c,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: APS
+  weaponName: APS043
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: 49a879610535bdc48b7f8346d7636325, type: 2}
   - {fileID: 1096434313937498, guid: 57c368d780206b94c8000f1af845fa5f, type: 2}

@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
 
 public class LoginManager : MonoBehaviour {
-
-	public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
+    [SerializeField]private Text ConnectingText;
+    [SerializeField]private Button login_button;
+    private MySceneManager MySceneManager;
+    private Coroutine connectionCoroutine = null;
+    private string region, gameVersion = "1.5";
+    private int focus = 0;  
 
 	public InputField[] fields;
 	public GameObject error;
     public Dropdown serverToConnect;
-    string region, gameVersion = "1.4";
+    public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
 
-    private int focus = 0;
+    void Awake() {
+        MySceneManager = FindObjectOfType<MySceneManager>();
 
-	void Awake() {
-		// the following line checks if this client was just created (and not yet online). if so, we connect
-		if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
+        // the following line checks if this client was just created (and not yet online). if so, we connect
+        if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
 		{
 			// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
 			//print("Connecting to server...");
@@ -25,9 +28,7 @@ public class LoginManager : MonoBehaviour {
         // if you wanted more debug out, turn this on:
         // PhotonNetwork.logLevel = NetworkLogLevel.Full;
 
-       
-         Application.targetFrameRate = 60;//60:temp
-        
+         Application.targetFrameRate = 60;//TODO : consider remake this
     }
 
 	void OnConnectedToMaster(){
@@ -82,14 +83,41 @@ public class LoginManager : MonoBehaviour {
 		}
 		PhotonNetwork.playerName = fields [0].text;
         ConnectToServerSelected();
-        StartCoroutine(LoadLobbyWhenConnected());
-        //Application.LoadLevel (1);
-	}
+
+        if (connectionCoroutine!=null)StopCoroutine(connectionCoroutine);
+        connectionCoroutine = StartCoroutine(LoadLobbyWhenConnected());
+
+    }
 
     IEnumerator LoadLobbyWhenConnected() {
-        yield return new WaitUntil(() => !PhotonNetwork.connected);
+        int times = 0;
+        login_button.interactable = false;
+        ConnectingText.gameObject.SetActive(true);
+        //check if connected
+        while (!PhotonNetwork.connected && times < 25) {
+            times++;
+            string dots = "";
+            for(int j=0;j<=times%3;j++)//UI effect
+                dots+=".";
+            ConnectingText.color = Color.yellow;
+            ConnectingText.text = "Connecting" + dots;
+            yield return new WaitForSeconds(0.3f);
+        }
+        
+        if(times >= 15) {
+            ConnectingText.color = Color.red;
+            ConnectingText.text = "Failed to connect";
+            login_button.interactable = true;
+            yield break;
+        } else {
+            ConnectingText.color = Color.green;
+            ConnectingText.text = "Connected";
+            yield return new WaitForSeconds(0.3f);
+        }
 
-        Application.LoadLevel(1);
+        login_button.interactable = true;
+        MySceneManager.LoadScene(MySceneManager.SceneName.Lobby);
+        ConnectingText.gameObject.SetActive(false);        
     }
 
 	void Update() {
@@ -132,4 +160,8 @@ public class LoginManager : MonoBehaviour {
 	{
 		Debug.Log("OnFailedToConnectToPhoton. StatusCode: " + parameters + " ServerAddress: " + PhotonNetwork.ServerAddress);
 	}
+
+    public void Exit() {
+        Application.Quit();
+    }
 }

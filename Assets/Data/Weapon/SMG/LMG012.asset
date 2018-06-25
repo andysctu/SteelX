@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e82af62f59454044890b7fdd3024bfd6, type: 3}
   m_Name: LMG012
   m_EditorClassIdentifier: 
-  weaponType: LMG
-  displayName: 
-  weaponPrefab: {fileID: 1316237739393798, guid: a056fdeacf902ca449e3d6b3cfd6b916,
+  weaponPrefab_lft: {fileID: 1316237739393798, guid: a056fdeacf902ca449e3d6b3cfd6b916,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: LMG
+  weaponName: LMG012
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: 5b0b9c5a77b46624b948932ba204b4c6, type: 2}
   - {fileID: 1096434313937498, guid: bfb15ce42fc23954ea62986df08c6f1b, type: 2}

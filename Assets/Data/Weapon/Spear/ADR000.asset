@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 263ed7253479dd94a92e8dd6bbafde33, type: 3}
   m_Name: ADR000
   m_EditorClassIdentifier: 
-  weaponType: Spear
-  displayName: 
-  weaponPrefab: {fileID: 1134705389196492, guid: 1f16e29851900d147b2d204be13cca7f,
+  weaponPrefab_lft: {fileID: 1134705389196492, guid: 1f16e29851900d147b2d204be13cca7f,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: Spear
+  weaponName: ADR000
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: 8fa33346c45fa9b4a83651136d903e0f, type: 2}
   - {fileID: 1096434313937498, guid: 94c0a2720dfed1740b469b3854b96949, type: 2}

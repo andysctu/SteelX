@@ -157,6 +157,7 @@ public class MechCombat : Combat {
     }
 
     private void RegisterOnWeaponBuilt() {
+        if(bm== null)return;
         bm.OnMechBuilt += InitWeapons;
         //bm.OnMechBuilt += UpdateMovementClips;
     }
@@ -171,7 +172,7 @@ public class MechCombat : Combat {
         MechSize = bm.MechProperty.Size;
         TotalWeight = bm.MechProperty.Weight;
         energyProperties.minENRequired = bm.MechProperty.MinENRequired;
-        energyProperties.energyOutput = bm.MechProperty.ENOutputRate - bm.MechProperty.EnergyDrain;
+        energyProperties.energyOutput = bm.MechProperty.ENOutputRate - bm.MechProperty.EnergyDrain/2; //TODO : improve this
 
         scanRange = bm.MechProperty.ScanRange;
     }
@@ -329,10 +330,8 @@ public class MechCombat : Combat {
             } else//the player may just initialize
                 weaponOffset = 0;
 
-            for (int i = 0; i < 4; i++) {
-                int num = (weaponOffset + i) % 4;
-                if (weapons[num] != null) weapons[num].SetActive(num == weaponOffset || num == weaponOffset + 1);
-            }
+
+            ActivateWeapons();
         }
     }
 
@@ -503,7 +502,7 @@ public class MechCombat : Combat {
 
         if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rocket) {
             if (photonView.isMine) {
-                GameObject bullet = PhotonNetwork.Instantiate(bm.weaponScripts[weaponOffset].weaponPrefab.name + "B", transform.position + new Vector3(0, 5, 0) + transform.forward * 10, Quaternion.LookRotation(bullet_directions[hand]), 0);
+                GameObject bullet = PhotonNetwork.Instantiate(bm.weaponScripts[weaponOffset].GetWeaponName() + "B", transform.position + new Vector3(0, 5, 0) + transform.forward * 10, Quaternion.LookRotation(bullet_directions[hand]), 0);
                 RCLBulletTrace bulletTrace = bullet.GetComponent<RCLBulletTrace>();
                 bulletTrace.SetShooterInfo(gameObject, cam);
                 bulletTrace.SetBulletPropertis(weaponScripts[weaponOffset].damage, ((Rocket)weaponScripts[weaponOffset]).bullet_speed, ((Rocket)weaponScripts[weaponOffset]).impact_radius);
@@ -609,9 +608,7 @@ public class MechCombat : Combat {
             return;
         }
 
-        if (CheckIsSwordByStr(weapon)) {
-            EffectController.SlashOnHitEffect(true, shield);
-        } else if (CheckIsSpearByStr(weapon)) {
+        if (CheckIsSwordByStr(weapon) || CheckIsSpearByStr(weapon)) {
             EffectController.SlashOnHitEffect(true, shield);
         }
 
@@ -787,6 +784,7 @@ public class MechCombat : Combat {
 
     // Set animations and tweaks
     private void LateUpdate() {
+        if(!photonView.isMine)return;
         HandleAnimation(LEFT_HAND);
         HandleAnimation(RIGHT_HAND);
     }
@@ -1058,8 +1056,11 @@ public class MechCombat : Combat {
             if (weapons[i] != null) {
                 Renderer[] renderers = weapons[i].GetComponentsInChildren<Renderer>();
                 foreach (Renderer renderer in renderers) {
+                    Debug.Log(i + " enable : "+ (i == weaponOffset || i == weaponOffset + 1));
                     renderer.enabled = (i == weaponOffset || i == weaponOffset + 1);
                 }
+            } else {
+                Debug.Log("weapon : "+i + " is null");
             }
         }
     }

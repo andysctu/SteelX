@@ -10,12 +10,17 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	[SerializeField] GameObject Team1, Team2, MenuBar, MapInfo;
 	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
 	[SerializeField] private InRoomChat InRoomChat;
-
-	private bool callStartgame = false;
-	private string[] Maps = new string[3]{"Simulation", "V-Hill", "City"};
+    [SerializeField] private Button startButton;
+    private MySceneManager MySceneManager;
+    private bool callStartgame = false;
+	private string[] Maps = new string[1]{"Simulation"};
 	List<GameObject> players ;
-	// Use this for initialization
-	void Start () {
+
+    private void Awake() {
+        MySceneManager = FindObjectOfType<MySceneManager>();
+    }
+
+    void OnEnable () {
 		// For debugging, so we don't have to login each time
 		//if (!PhotonNetwork.connected) {
 		//	Debug.Log ("Not connected");
@@ -37,14 +42,20 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	//	}
 
 		if (!PhotonNetwork.connected) {
-			PhotonNetwork.LoadLevel("Lobby");
-			return;
+            //PhotonNetwork.LoadLevel("Lobby");
+            MySceneManager.GoToLobby();
+            return;
 		}
 
-//		Team1.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
-//		Team2.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.4f);
-//		MenuBar.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.6f, Screen.height * 0.2f);
-//		MapInfo.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.4f, Screen.height);
+
+        //check if previous players are not destroyed
+        if(players != null && players.Count > 0) {
+            foreach(GameObject player in players) {
+                if(player != null) {
+                    Destroy(player);
+                }
+            }
+        }
 
 		players = new List<GameObject>();
 		for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
@@ -59,16 +70,15 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 
 		PhotonNetwork.automaticallySyncScene = true;
 
-		if (PhotonNetwork.isMasterClient) {
-			GameObject startButton = GameObject.Find("Canvas/MenuBar/Start");
-			startButton.GetComponent<Button>().interactable = true;
-			Map.interactable = true;
-			GameMode.interactable = true;
-			MaxKills.interactable = true;
-			MaxPlayers.interactable = true;
-			MaxTime.interactable = true;
-		}
+        bool isMasterClient = PhotonNetwork.isMasterClient;
 
+		startButton.interactable = isMasterClient;
+		Map.interactable = isMasterClient;
+		GameMode.interactable = isMasterClient;
+		MaxKills.interactable = isMasterClient;
+		MaxPlayers.interactable = isMasterClient;
+		MaxTime.interactable = isMasterClient;
+        
 		//set default team
 		if(PhotonNetwork.player.GetTeam()==PunTeams.Team.none){
 			PhotonNetwork.player.SetTeam (PunTeams.Team.blue);
@@ -118,11 +128,6 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
 	public void StartGame() {
 		if(callStartgame){
 			return;
@@ -147,7 +152,8 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	public void LeaveGame() {
 		Debug.Log("Leaving game");
 		PhotonNetwork.LeaveRoom();
-		PhotonNetwork.LoadLevel("Lobby");
+		//PhotonNetwork.LoadLevel("Lobby");
+        MySceneManager.GoToLobby();
 	}
 
 	public void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
@@ -174,8 +180,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		Debug.Log ("Master switched.");
 		InRoomChat.AddLine ("The Master is switched to " + newMaster.NickName);
 		if (PhotonNetwork.isMasterClient) {
-			GameObject startButton = GameObject.Find("Canvas/MenuBar/Start");
-			startButton.GetComponent<Button>().interactable = true;
+			startButton.interactable = true;
 			Map.interactable = true;
 			GameMode.interactable = true;
 			MaxKills.interactable = true;

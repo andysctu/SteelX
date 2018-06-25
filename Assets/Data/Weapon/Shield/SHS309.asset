@@ -11,10 +11,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 554f2d6cd2c6d70438a8bb892c3f7da6, type: 3}
   m_Name: SHS309
   m_EditorClassIdentifier: 
-  weaponType: Shield
-  displayName: 
-  weaponPrefab: {fileID: 1115578862501112, guid: 037ed19d13d6c475faf2a8443d14cc43,
+  weaponPrefab_lft: {fileID: 1115578862501112, guid: 037ed19d13d6c475faf2a8443d14cc43,
     type: 2}
+  weaponPrefab_rt: {fileID: 1104480446687680, guid: 5d277719c4b911348bdd44fcb8f8036f,
+    type: 2}
+  weaponType: Shield
+  weaponName: SHS309
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: fabaae854be3ec44fbc03b02f6521703, type: 2}
   - {fileID: 1096434313937498, guid: b99539039cf28c6428ab7c433efc0555, type: 2}

@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 200ed0de3fc5b6e49ae846786216beea, type: 3}
   m_Name: SHL009
   m_EditorClassIdentifier: 
-  weaponType: Sword
-  displayName: 
-  weaponPrefab: {fileID: 1262561255075506, guid: 66d6c48ab19a76840bdba77b56e7dd53,
+  weaponPrefab_lft: {fileID: 1262561255075506, guid: 66d6c48ab19a76840bdba77b56e7dd53,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: Sword
+  weaponName: SHL009
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: 7a0d86b3c6330a449bdec105281a0eff, type: 2}
   - {fileID: 1096434313937498, guid: d2e6b508631160c4a940459178fb5898, type: 2}

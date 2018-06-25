@@ -62,7 +62,7 @@ public class HangarManager : MonoBehaviour {
                 break;
             }
             GameObject uiPart;
-            uiPart = Instantiate(UIPart, new Vector3(0, 0, 69.2f), Quaternion.identity) as GameObject;
+            uiPart = Instantiate(UIPart, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[parent]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             Sprite s = Resources.Load<Sprite>(part.name);
@@ -104,12 +104,12 @@ public class HangarManager : MonoBehaviour {
 
     private void LoadWeapons() {
         foreach (Weapon weapon in WeaponManager.GetAllWeaponss()) {
-            string weaponName = weapon.weaponPrefab.name;
-            GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, 69.2f), Quaternion.identity) as GameObject;
+            string weaponName = weapon.GetWeaponName();
+            GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[5]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
-            GameObject displayWeapon = Instantiate(weapon.weaponPrefab, Vector3.zero, Quaternion.Euler(0,-90,0));
+            GameObject displayWeapon = Instantiate(weapon.GetWeaponPrefab(), Vector3.zero, Quaternion.Euler(0,-90,0));
 
             //Parent part to its center & move the center to the grip point
             GameObject displayCenter = new GameObject();
@@ -148,7 +148,7 @@ public class HangarManager : MonoBehaviour {
         foreach (SkillConfig skill in SkillManager.GetAllSkills()) {
             string skillName = skill.name;//TODO : don't use .name
 
-            GameObject uiPart = Instantiate(UISkill, new Vector3(0, 0, 69.2f), Quaternion.identity) as GameObject;
+            GameObject uiPart = Instantiate(UISkill, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[6]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             Sprite s = skill.icon;
@@ -324,11 +324,16 @@ public class HangarManager : MonoBehaviour {
         Mech_Num = Num;
         Mech m = UserData.myData.Mech[Num];
         bm.Mech_Num = Num;
+        Debug.Log("weapon R : " + m.Weapon1R + " , " + m.Weapon1L);
         bm.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
         bm.DisplayFirstWeapons();
         bm.CheckAnimatorState();
 
         DisplayPlayerSkills();
+    }
+
+    private void OnDisable() {
+        ChangeDisplayMech(0);
     }
 }
 

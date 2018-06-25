@@ -64,6 +64,7 @@ TextureImporter:
     21300114: panels_1_handle
     21300116: part_slot
     21300118: bluePlayerCard
+    21300120: panels_5
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -960,8 +961,22 @@ TextureImporter:
         width: 232
         height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 9, y: 6, z: 94, w: 7}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: panels_5
+      rect:
+        serializedVersion: 2
+        x: 665
+        y: 971
+        width: 81
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 6, y: 5, z: 6, w: 5}
       outline: []
       physicsShape: []
       tessellationDetail: 0

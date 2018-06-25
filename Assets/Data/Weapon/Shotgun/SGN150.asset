@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85c003a33c19e93448c7220613b6123b, type: 3}
   m_Name: SGN150
   m_EditorClassIdentifier: 
-  weaponType: Shotgun
-  displayName: 
-  weaponPrefab: {fileID: 1146680324410742, guid: 8c8a5a4a3588a874e8bb624a06cc095e,
+  weaponPrefab_lft: {fileID: 1146680324410742, guid: 8c8a5a4a3588a874e8bb624a06cc095e,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: Shotgun
+  weaponName: SGN150
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: 6896c23376b229f4a94e67125490ec0a, type: 2}
   - {fileID: 1096434313937498, guid: 29f73c51e41892743a98ab87783c3de7, type: 2}

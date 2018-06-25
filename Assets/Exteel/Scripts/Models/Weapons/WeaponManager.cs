@@ -14,7 +14,6 @@ public class WeaponManager : ScriptableObject {
     public Cannon[] Cannons;
     
     public Weapon FindData(string name) {
-
         if (name.Contains("APS") || name.Contains("LMG")) {
             return SearchInArray(SMGs, name);
         } else if (name.Contains("RF")) {
@@ -41,7 +40,7 @@ public class WeaponManager : ScriptableObject {
 
     Weapon SearchInArray(Weapon[] weapons, string name) {
         for(int i = 0; i < weapons.Length; i++) {
-            if(weapons[i].weaponPrefab.name == name) {
+            if (weapons[i].GetWeaponPrefab(0).name == name || (weapons[i].GetWeaponPrefab(1) != null && weapons[i].GetWeaponPrefab(1).name == name)) {
                 return weapons[i];
             }
         }

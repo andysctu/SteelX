@@ -12,14 +12,9 @@ public class UIManager : MonoBehaviour {
 	private GameObject[] rooms;
 	private float roomHeight = 50;
 	private string selectedRoom = "";
+    private string[] SceneName = new string[5]{ "Login", "Lobby", "Hangar", "GameLobby", "Store"};
 
-	// Use this for initialization
 	void Start () {
-//		GameObject roomsPanel = GameObject.Find ("Canvas/RoomsPanel");
-//		GameObject roomsScroll = GameObject.Find ("Canvas/RoomsPanel/RoomsScroll");
-//		roomsPanel.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.7f, Screen.height * 0.7f);
-//		roomsScroll.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width * 0.7f - 100, Screen.height * 0.7f);
-//		RoomsWrapper.GetComponent<RectTransform>().sizeDelta = new Vector2 (Screen.width * 0.7f - 100, Screen.height * 0.7f);
 
 	}
 
@@ -79,13 +74,5 @@ public class UIManager : MonoBehaviour {
 	{
 		Debug.Log("OnJoinedRoom");
 		PhotonNetwork.LoadLevel ("GameLobby");
-	}
-
-	public void GoToHangar() {
-		SceneManager.LoadScene ("Hangar");
-	}
-
-	public void GoToStore(){
-		SceneManager.LoadScene ("Store");
 	}
 }

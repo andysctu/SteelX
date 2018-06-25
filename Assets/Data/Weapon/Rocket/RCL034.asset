@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 890afb3303b655443be0005c550e8859, type: 3}
   m_Name: RCL034
   m_EditorClassIdentifier: 
-  weaponType: Rocket
-  displayName: 
-  weaponPrefab: {fileID: 1088236672148428, guid: 4324dd40bb697ba43a8322fae7edeab8,
+  weaponPrefab_lft: {fileID: 1088236672148428, guid: 4324dd40bb697ba43a8322fae7edeab8,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: Rocket
+  weaponName: RCL034
+  displayName: 
   Grip:
   - {fileID: 0}
   - {fileID: 1096434313937498, guid: e17e069a6ee40824aaa63b9784736718, type: 2}

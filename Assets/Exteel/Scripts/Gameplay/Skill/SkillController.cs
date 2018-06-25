@@ -198,7 +198,6 @@ public class SkillController : MonoBehaviour {
                     AnimationClip clip = skills[j].GetWeaponAnimation(i % 2);
 
                     if (clip != null) {
-                        //Debug.Log("clip name : " + clip.name + " on weapon : " + i);
                         clipOverrides["sk" + j] = clip;
                     } else {
                         clipOverrides["sk" + j] = bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name);

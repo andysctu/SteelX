@@ -11,10 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc6eb7a02e93cca4bbb2b834e66a5c28, type: 3}
   m_Name: ENG041
   m_EditorClassIdentifier: 
-  weaponType: Rectifier
-  displayName: 
-  weaponPrefab: {fileID: 1041980411709434, guid: 3dacf733236a76f499e5528fe56a1b7b,
+  weaponPrefab_lft: {fileID: 1041980411709434, guid: 3dacf733236a76f499e5528fe56a1b7b,
     type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponType: Rectifier
+  weaponName: ENG041
+  displayName: 
   Grip:
   - {fileID: 1096434313937498, guid: 5ade168637b141e49b6c5107727dc052, type: 2}
   - {fileID: 1096434313937498, guid: 8c28f4fbe97687747a81c814a99b68c7, type: 2}
