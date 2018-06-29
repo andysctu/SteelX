@@ -50,7 +50,7 @@ public class InRoomChat : Photon.MonoBehaviour
         scrollPos = GUILayout.BeginScrollView(scrollPos);
         GUILayout.FlexibleSpace();
 
-		if (messages.Count >= 6)
+		if (messages.Count >= 10)
 			messages.RemoveAt (messages.Count - 1);
 
         for (int i = messages.Count - 1; i >= 0; i--)

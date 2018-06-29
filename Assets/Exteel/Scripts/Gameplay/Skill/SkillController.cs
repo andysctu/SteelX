@@ -375,15 +375,15 @@ public class SkillController : MonoBehaviour {
         throw new NotImplementedException();
     }
 
-    public void TargetOnSkill(AnimationClip skill_target, AnimationClip skillcam_target, Transform skill_user) {//TODO : generalize this
+    public void TargetOnSkill(AnimationClip skill_target, AnimationClip skillcam_target, Vector3 skill_user_pos) {//TODO : generalize this
         if (OnSkill != null) OnSkill(true);
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
         if (skillcam != null) {
             //rotate skill cam to face the target so the skill_cam animation is correct
-            skillcamAnimator.transform.LookAt(transform.position + (transform.position - skill_user.position) * 9999);
-
+            skillcamAnimator.transform.LookAt(transform.position + (transform.position - skill_user_pos) * 9999);
+            Debug.DrawRay(transform.position + new Vector3(0,5,0), (transform.position - skill_user_pos) * 9999);
             skillcam_clipOverrides[Target_Animation_Name] = skillcam_target;
             skillcamAnimator_OC.ApplyOverrides(skillcam_clipOverrides);
 

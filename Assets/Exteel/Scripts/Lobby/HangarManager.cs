@@ -12,6 +12,7 @@ public class HangarManager : MonoBehaviour {
     [SerializeField] private WeaponManager WeaponManager;
     [SerializeField] private SkillManager SkillManager;
     [SerializeField] private MechPartManager MechPartManager;
+    private OperatorStatsUI OperatorStatsUI;
     private Button[] main_buttons;
     private Transform[] contents;
     private int activeTab;
@@ -21,6 +22,7 @@ public class HangarManager : MonoBehaviour {
 
     private void Awake() {
         Application.targetFrameRate = 60;
+        OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
     }
 
     private void Start() {
@@ -66,10 +68,12 @@ public class HangarManager : MonoBehaviour {
             uiPart.transform.SetParent(contents[parent]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             Sprite s = Resources.Load<Sprite>(part.name);
-            uiPart.GetComponentInChildren<Text>().text = part.name;
-            uiPart.GetComponentInChildren<Button>().onClick.AddListener(() => EquipMechPart(part.name));
+            uiPart.GetComponentInChildren<Text>().text = part.displayName;
+            uiPart.transform.Find("Equip").GetComponent<Button>().onClick.AddListener(() => EquipMechPart(part.name));
+            uiPart.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() => OperatorStatsUI.PreviewMechProperty(part.name, false));
 
-            GameObject displayPart = Instantiate(part.GetPartPrefab(), Vector3.zero, Quaternion.Euler(0, -90, 0));
+            GameObject displayPart = Instantiate(part.GetPartPrefab(), Vector3.zero, Quaternion.Euler(0, -45, 0));
+            displayPart.transform.localRotation = (part.name[0] == 'P')? Quaternion.Euler(0,-90,0) : Quaternion.Euler(0, -45, 0);
 
             //Parent part to its center & move the center to the grip point
             GameObject displayCenter = new GameObject();
@@ -108,7 +112,6 @@ public class HangarManager : MonoBehaviour {
             GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[5]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-
             GameObject displayWeapon = Instantiate(weapon.GetWeaponPrefab(), Vector3.zero, Quaternion.Euler(0,-90,0));
 
             //Parent part to its center & move the center to the grip point
@@ -129,12 +132,12 @@ public class HangarManager : MonoBehaviour {
 
             uiPart.GetComponentInChildren<Text>().text = weapon.displayName == "" ? weaponName : weapon.displayName;
 
-            Button[] btns = uiPart.GetComponentsInChildren<Button>();
+            Button[] btns = uiPart.transform.Find("Equip").GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {
                 if ((weapon.twoHanded) && (i == 1 || i == 3)) {//if two handed , turn off equip on right hand
-                    uiPart.transform.Find("Equip1r").gameObject.SetActive(false);
-                    uiPart.transform.Find("Equip2r").gameObject.SetActive(false);
-
+                    //uiPart.transform.Find("Equip1r").gameObject.SetActive(false);
+                    //uiPart.transform.Find("Equip2r").gameObject.SetActive(false);
+                    btns[i].gameObject.SetActive(false);
                     btns[i].image.enabled = false;
                     continue;
                 }
@@ -280,6 +283,7 @@ public class HangarManager : MonoBehaviour {
             }
             Mech.GetComponent<BuildMech>().ReplaceMechPart(mechPartToReplace, part_name);
 
+            OperatorStatsUI.DisplayMechProperties();
         }
     }
 

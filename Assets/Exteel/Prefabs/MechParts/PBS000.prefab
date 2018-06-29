@@ -267,7 +267,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -367,7 +367,7 @@ MonoBehaviour:
   BoostClose: {fileID: 0}
   PSs:
   - {fileID: 198682705277167366}
-  animator: {fileID: 0}
+  animator: {fileID: 95794003786869318}
 --- !u!137 &137416573210893396
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -475,7 +475,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 685766332
+  randomSeed: 1085785474
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3905,7 +3905,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -840170561
+  randomSeed: 1587775934
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -7272,7 +7272,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -478460561
+  randomSeed: -1874822686
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -10627,7 +10627,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 920554404
+  randomSeed: -1433906139
   InitialModule:
     serializedVersion: 3
     enabled: 1

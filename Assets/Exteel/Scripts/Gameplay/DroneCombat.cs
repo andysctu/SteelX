@@ -13,6 +13,8 @@ public class DroneCombat : Combat {
     private Vector3 instantMoveDir;
     private CharacterController CharacterController;
     private float TeleportMinDistance = 3f;
+    
+    public Transform Shield;
 
     private void Awake() {
         if (SkillController != null) SkillController.OnSkill += OnSkill;

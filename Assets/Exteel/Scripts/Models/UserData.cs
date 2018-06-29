@@ -25,6 +25,9 @@ public class UserData : NetworkBehaviour {
 	void Awake(){
 		PhotonNetwork.sendRate = 60;
 		PhotonNetwork.sendRateOnSerialize = 30;
+
+        if(FindObjectsOfType<UserData>().Length > 1)//already exist
+            Destroy(transform.parent.gameObject);
 	}
 	// Use this for initialization
 	void Start () {

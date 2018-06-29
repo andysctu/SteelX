@@ -15,10 +15,15 @@ public static class UIExtensionMethods{
 
         }
         finalStr += "/ ";
-        for (int i = 0; i < 3; i++) {
+
+        for (int i = 0; i < 4 - maxvalueStr.Length; i++) {
+            finalStr += "0 ";
+        }
+
+        for (int i = 0; i < maxvalueStr.Length - 1; i++) {
             finalStr += (maxvalueStr[i] + " ");
         }
-        finalStr += maxvalueStr[3];
+        finalStr += maxvalueStr[maxvalueStr.Length - 1];
 
         return finalStr;
     }

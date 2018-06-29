@@ -356,7 +356,8 @@ public class GameManager : Photon.MonoBehaviour {
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 			PhotonNetwork.LeaveRoom();
-			SceneManager.LoadScene("MainScenes");
+            MySceneManager.ActiveScene = MySceneManager.SceneName.Lobby;
+			SceneManager.LoadScene("MainScenes");            
 		}
 		// Update time
 		if (storedStartTime != 0 || storedDuration != 0) {//sometimes storedStartTime is 0 but duration is not
@@ -431,7 +432,8 @@ public class GameManager : Photon.MonoBehaviour {
 				PhotonNetwork.Destroy (BlueFlag);
 				PhotonNetwork.Destroy (RedFlag);
 			}
-			PhotonNetwork.LoadLevel("GameLobby");
+            MySceneManager.ActiveScene = MySceneManager.SceneName.GameLobby;
+            PhotonNetwork.LoadLevel("MainScenes");
 		}
 
 		// Code to execute after the delay
@@ -629,7 +631,7 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public void ShowRespawnPanel(){
 		RespawnPanel.SetActive (true);
-		MechFrame.GetComponent<BuildMech> ().CheckAnimatorState ();
+		//MechFrame.GetComponent<BuildMech> ().CheckAnimatorState ();
 	}
 
 	public void CloseRespawnPanel(){
@@ -659,10 +661,10 @@ public class GameManager : Photon.MonoBehaviour {
 		}else{
 			PhotonView pv = PhotonView.Find (player_viewID);
 			if(flag == BLUE){
-				SetFlagProperties (BLUE, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
+				SetFlagProperties (BLUE, pv.transform.Find ("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone"), Vector3.zero, pv.owner);
 				BlueFlag.GetComponent<Flag> ().isOnBase = false;
 			}else{
-				SetFlagProperties (RED, pv.transform.Find ("CurrentMech/metarig/hips/spine/chest/neck"), Vector3.zero, pv.owner);
+				SetFlagProperties (RED, pv.transform.Find ("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone"), Vector3.zero, pv.owner);
 				RedFlag.GetComponent<Flag> ().isOnBase = false;
 			}
 		}
@@ -746,7 +748,7 @@ public class GameManager : Photon.MonoBehaviour {
 			if (parent != null) {
 				BlueFlag.transform.parent = parent;
 				BlueFlag.transform.localPosition = Vector3.zero;
-				BlueFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
+				BlueFlag.transform.localRotation = Quaternion.Euler (new Vector3(225,-180,180));
 				BlueFlagHolder = holder;
 				BlueFlag.GetComponent<Flag> ().isGrounded = false;
 			}else{
@@ -760,7 +762,7 @@ public class GameManager : Photon.MonoBehaviour {
 			if (parent != null) {
 				RedFlag.transform.parent = parent;
 				RedFlag.transform.localPosition = Vector3.zero;
-				RedFlag.transform.localRotation = Quaternion.Euler (new Vector3(-30,0,0));
+				RedFlag.transform.localRotation = Quaternion.Euler (new Vector3(225, -180, 180));
 				RedFlagHolder = holder;
 				RedFlag.GetComponent<Flag> ().isGrounded = false;
 			}else{

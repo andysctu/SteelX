@@ -4,7 +4,7 @@ using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
     private string[] defaultParts = { "CES301", "AES104", "LTN411", "HDS003", "PBS016", "SHL009", "SHL501", "APS043", "SHS309", "RCL034", "BCN029", "BRF025", "SGN150", "LMG012", "ENG041", "ADR000", "Empty" };
-    //eng : 14
+                                                                                                                                                                                //eng : 14
     [SerializeField] private Transform RootBone;
     [SerializeField] private MechCombat MechCombat;
     [SerializeField] private MechController MechController;
@@ -22,14 +22,14 @@ public class BuildMech : Photon.MonoBehaviour {
     [HideInInspector] public GameObject[] weapons;
     [HideInInspector] public GameObject[] bulletPrefabs;
 
-    private GameManager gm;    
+    private GameManager gm;
     private Animator animator;
     private AnimatorOverrideController animatorOverrideController;
     private AnimationClipOverrides clipOverrides;
 
     private Transform shoulderL, shoulderR;
     private Transform[] hands;
-    private Part[] curMechParts = new Part[5];
+    public Part[] curMechParts = new Part[5];
     private int weaponOffset = 0;
 
     private bool buildLocally = false, isDataGetSaved = true, onPanel = false;
@@ -95,7 +95,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    private void SetName(string name) {
+    private void SetName(string name) {//TODO : consider not putting here
         gameObject.name = name;
         FindGameManager();
         gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam() == PunTeams.Team.red) ? RED : BLUE);// blue & none team => set to blue
@@ -127,7 +127,7 @@ public class BuildMech : Photon.MonoBehaviour {
             parts[i] = string.IsNullOrEmpty(parts[i]) ? defaultParts[i] : parts[i];
         }
 
-        //set weapons if null (in offline )
+        //set weapons if null (in offline)
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
@@ -142,21 +142,18 @@ public class BuildMech : Photon.MonoBehaviour {
         // Create new array to store skinned mesh renderers
         SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[4];
 
-        //Material[] materials = new Material[4];
         for (int i = 0; i < 4; i++) {
             // Load mech part & info
             Part part = MechPartManager.FindData(parts[i]);
             if (part != null) {
                 curMechParts[i] = part;
-                //part.LoadPartInfo(ref MechProperty);
             } else {
                 curMechParts[i] = null;
                 Debug.LogError("Can't find part in MechPartManager");
                 continue;
             }
-
             // Extract Skinned Mesh
-            newSMR[i] = part.GetPartPrefab().GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;         
+            newSMR[i] = part.GetPartPrefab().GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
         }
 
         // Replace all
@@ -164,21 +161,19 @@ public class BuildMech : Photon.MonoBehaviour {
 
         for (int i = 0; i < 4; i++) {//TODO : improve this so the order does not matter
                                      //Note the order of parts in MechFrame.prefab matters
-
-            if (newSMR[i] == null) Debug.LogError(i + " is null.");
+            if (newSMR[i] == null) { Debug.LogError(i + " is null."); continue; }
 
             ProcessBonedObject(newSMR[i], curSMR[i]);
 
-            //test
             curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-            //curSMR[i].material = materials[i];            
+
             Material[] mats = new Material[2];
             mats[0] = Resources.Load("MechPartMaterials/" + parts[i] + "mat", typeof(Material)) as Material;
             mats[1] = Resources.Load("MechPartMaterials/" + parts[i] + "_2mat", typeof(Material)) as Material;
-            curSMR[i].materials = mats; 
+            curSMR[i].materials = mats;
 
             curSMR[i].enabled = true;
-        }       
+        }
 
         LoadBooster(parts[4]);
 
@@ -195,10 +190,18 @@ public class BuildMech : Photon.MonoBehaviour {
             UpdateMechCombatVars();//this will turn trail on ( enable all renderer)
             for (int i = 0; i < 4; i++)//turn off trail
                 ShutDownTrail(weapons[i]);
+        } else {
+            //display properties
+            if (!onPanel) {//hargar,lobby,store
+                OperatorStatsUI OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
+                if (OperatorStatsUI != null) {
+                    OperatorStatsUI.DisplayMechProperties();
+                }
+            }
         }
     }
 
-    public void ProcessBonedObject(SkinnedMeshRenderer newPart , SkinnedMeshRenderer partToSwitch) {
+    public void ProcessBonedObject(SkinnedMeshRenderer newPart, SkinnedMeshRenderer partToSwitch) {
         Transform[] MyBones = new Transform[newPart.bones.Length];
 
         for (var i = 0; i < newPart.bones.Length; i++) {
@@ -211,7 +214,7 @@ public class BuildMech : Photon.MonoBehaviour {
             if (MyBones[i] == null) {
                 MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name, newPart.bones[i].parent.name);
             }
-            
+
             if (MyBones[i] == null) {
                 Transform parent;
                 if (newPart.bones[i].parent.name == "Bip01") {//the root bone is not checked
@@ -221,26 +224,23 @@ public class BuildMech : Photon.MonoBehaviour {
                     GameObject newbone = new GameObject(newPart.bones[i].name); //TODO : improve this (mesh on hip has rotation bug , temp. use this to solve)
                     newbone.transform.parent = parent;
                     newbone.transform.localPosition = Vector3.zero;
-                    newbone.transform.localRotation = Quaternion.Euler(0,0,90);
-                    newbone.transform.localScale = new Vector3(1,1,1);
+                    newbone.transform.localRotation = Quaternion.Euler(0, 0, 90);
+                    newbone.transform.localScale = new Vector3(1, 1, 1);
                     MyBones[i] = newbone.transform;
                 } else {
                     parent = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
                     MyBones[i] = parent;
                 }
 
-                if(parent == null) {
+                if (parent == null) {
                     Debug.LogError("Can't locate the bone : " + newPart.bones[i].name);
-                }           
-            } 
+                }
+            }
         }
-
-        
-        partToSwitch.bones = MyBones;    
+        partToSwitch.bones = MyBones;
     }
 
-
-    public void ReplaceMechPart(string toReplace , string newPart) {
+    public void ReplaceMechPart(string toReplace, string newPart) {
         Part p = MechPartManager.FindData(newPart);
         if (p == null) {
             Debug.LogError("Can't find the new part");
@@ -249,14 +249,13 @@ public class BuildMech : Photon.MonoBehaviour {
 
         for (int i = 0; i < 5; i++) {
             if (curMechParts[i] != null) {
-                if(curMechParts[i].name == toReplace) {
+                if (curMechParts[i].name == toReplace) {
                     curMechParts[i] = p;
                     LoadAllPartInfo();
                     return;
                 }
             }
         }
-
         Debug.Log("Fail to replace");
     }
 
@@ -323,30 +322,21 @@ public class BuildMech : Photon.MonoBehaviour {
                 continue;
             }
 
-            weapons[i] = Instantiate(weaponScripts[i].GetWeaponPrefab(i%2), Vector3.zero, Quaternion.identity) as GameObject;
+            weapons[i] = Instantiate(weaponScripts[i].GetWeaponPrefab(i % 2), Vector3.zero, Quaternion.identity) as GameObject;
 
             //TODO : remake this
-            float newscale= transform.root.localScale.x * transform.localScale.x;
+            float newscale = transform.root.localScale.x * transform.localScale.x;
             weapons[i].transform.localScale = new Vector3(weapons[i].transform.localScale.x * newscale,
-            weapons[i].transform.localScale.y * newscale, weapons[i].transform.localScale.z * newscale);
+            weapons[i].transform.localScale.y * newscale, weapons[i].transform.localScale.z * newscale);            
 
             if (weaponScripts[i].twoHanded) {
                 weapons[i].transform.SetParent(hands[(i + 1) % 2]);
-                //if (weaponScripts[i].Grip[(i + 1) % 2] == null) { Debug.LogError("The right hand grip is null, two handed weapons must have right hand grip"); continue; }
-                //weapons[i].transform.localRotation = weaponScripts[i].Grip[(i + 1) % 2].transform.rotation;
-
-                //test
-                weapons[i].transform.localRotation = Quaternion.Euler(90,0,0);
+                weapons[i].transform.localRotation = Quaternion.Euler(90, 0, 0);
             } else {
                 weapons[i].transform.SetParent(hands[i % 2]);
-                //if (weaponScripts[i].Grip[i % 2] == null) { Debug.LogError(i + " weapon grip is null"); continue; }
-                //weapons[i].transform.localRotation = weaponScripts[i].Grip[i % 2].transform.rotation;
-
-                //test
                 weapons[i].transform.localRotation = Quaternion.Euler(90, 0, 0);
             }
 
-            //Adjust weapon local position by hand offset
             weapons[i].transform.localPosition = Vector3.zero;
 
             switch (weaponScripts[i].weaponType) {
@@ -497,30 +487,22 @@ public class BuildMech : Photon.MonoBehaviour {
             weapons[weapPos].transform.localScale = new Vector3(weapons[weapPos].transform.localScale.x * newscale,
             weapons[weapPos].transform.localScale.y * newscale, weapons[weapPos].transform.localScale.z * newscale);
 
-
             weapons[weapPos].transform.SetParent(hands[(weapPos + 1) % 2]);
             weapons[weapPos].transform.localPosition = Vector3.zero;
-            //weapons[weapPos].transform.localRotation = newWeapon.Grip[(weapPos + 1) % 2].transform.rotation;
-
-            weapons[weapPos].transform.localRotation = Quaternion.Euler(90,0,0);
-
+            weapons[weapPos].transform.localRotation = Quaternion.Euler(90, 0, 0);
             break;
             default:
-
             weapons[weapPos] = Instantiate(newWeapon.GetWeaponPrefab(weapPos % 2), Vector3.zero, Quaternion.identity) as GameObject;
 
             float newscale_2 = transform.root.localScale.x * transform.localScale.x;
             weapons[weapPos].transform.localScale = new Vector3(weapons[weapPos].transform.localScale.x * newscale_2,
             weapons[weapPos].transform.localScale.y * newscale_2, weapons[weapPos].transform.localScale.z * newscale_2);
 
-
             weapons[weapPos].transform.SetParent(hands[weapPos % 2]);
             weapons[weapPos].transform.localPosition = Vector3.zero;
-            //weapons[weapPos].transform.localRotation = newWeapon.Grip[weapPos % 2].transform.rotation;
             weapons[weapPos].transform.localRotation = Quaternion.Euler(90, 0, 0);
             break;
         }
-
 
         //replace the script
         weaponScripts[weapPos] = newWeapon;
@@ -536,6 +518,14 @@ public class BuildMech : Photon.MonoBehaviour {
             UpdateMechCombatVars();
         }
         ShutDownTrail(weapons[weapPos]);
+
+        //display properties
+        if (!onPanel) {//hargar,lobby,store
+            OperatorStatsUI OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
+            if (OperatorStatsUI != null) {
+                OperatorStatsUI.DisplayMechProperties();
+            }
+        }
     }
 
     private void FindGameManager() {
@@ -546,20 +536,22 @@ public class BuildMech : Photon.MonoBehaviour {
 
     public void DisplayFirstWeapons() {
         weaponOffset = 0;
-
         for (int i = 0; i < 4; i++) if (weaponScripts[i] != null) EquipWeapon(weaponScripts[i].GetWeaponPrefab(i % 2).name, i);
     }
 
     public void DisplaySecondWeapons() {
         weaponOffset = 2;
-
         for (int i = 0; i < 4; i++) if (weaponScripts[i] != null) EquipWeapon(weaponScripts[i].GetWeaponPrefab(i % 2).name, i);
+    }
+
+    public int GetWeaponOffset() {
+        return weaponOffset;
     }
 
     public void CheckAnimatorState() {
         if (animator == null) { Debug.LogError("Animator is null"); return; };
 
-        MovementClips movementClips = (weaponScripts[weaponOffset].twoHanded) ? TwoHandedMovementClips : defaultMovementClips;
+        MovementClips movementClips = (weaponScripts[weaponOffset]!= null && weaponScripts[weaponOffset].twoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
@@ -635,7 +627,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void CheckIfBuildLocally() {
-        buildLocally = (MySceneManager.ActiveScene ==  MySceneManager.SceneName.Hangar  ||
+        buildLocally = (MySceneManager.ActiveScene == MySceneManager.SceneName.Hangar ||
             MySceneManager.ActiveScene == MySceneManager.SceneName.Lobby || MySceneManager.ActiveScene == MySceneManager.SceneName.Store || onPanel);
     }
 
@@ -673,7 +665,7 @@ public struct MechProperty {
     }
 
     public float GetDashSpeed(int totalWeight) {
-        return DashOutput * 1.7f - totalWeight * 0.004f; //DashOutput * 1.7f : max speed  ;  0.004 weight coefficient
+        return DashOutput * 1.8f - totalWeight * 0.004f; //DashOutput * 1.8f : max speed  ;  0.004 weight coefficient
     }
 
     public float GetMoveSpeed(int totalWeight) {

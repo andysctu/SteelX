@@ -15,6 +15,9 @@ public class BoosterController : MonoBehaviour {
     }
 
     public void StartBoost() {
+        if(audioSource == null)//this gameObejct is destroyed
+            return;
+
         audioSource.PlayOneShot(BoostOpen);
         if (BoostLoop != null) audioSource.Play();
         animator.SetTrigger("open");
@@ -25,6 +28,10 @@ public class BoosterController : MonoBehaviour {
     }
 
     public void StopBoost() {
+        if (audioSource == null) {//this gameObejct is destroyed
+            Debug.LogWarning("StopBoost gets called when boosterController is destroyed.");//TODO : debug take out
+            return;
+        }
         if (BoostLoop != null) audioSource.Stop();
         animator.SetTrigger("close");
         foreach (ParticleSystem ps in PSs) {
@@ -32,5 +39,9 @@ public class BoosterController : MonoBehaviour {
         }
         if (BoostClose != null)
             audioSource.PlayOneShot(BoostClose, 0.5f);
+    }
+
+    private void OnDestroy() {
+        audioSource = null;
     }
 }

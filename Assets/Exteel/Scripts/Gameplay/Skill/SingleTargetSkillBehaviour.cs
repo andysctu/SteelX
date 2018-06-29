@@ -7,6 +7,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private Crosshair Crosshair;
     private PhotonView player_pv;
     private Transform target;
+    private int TerrainLayer;
 
     private void Start() {
         InitComponent();
@@ -17,6 +18,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         SkillController = GetComponent<SkillController>();
         Crosshair = SkillController.GetCamera().GetComponent<Crosshair>();
         mcbt = GetComponent<MechCombat>();
+        TerrainLayer = LayerMask.GetMask("Terrain");
 
         Transform CurrentMech = transform.Find("CurrentMech");
         Sounds = CurrentMech.GetComponent<Sounds>();
@@ -31,10 +33,42 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
         if (target != null) {
             PhotonView target_pv = target.GetComponent<PhotonView>();
-            //Move to the right position
-            transform.position = (transform.position - target.position).normalized * config.SingleTargetSkillParams.distance + target.position;
 
-            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, skill_num, transform.position, transform.forward);
+            RaycastHit hit;
+            Physics.Raycast(target.position, - Vector3.up, out hit, Mathf.Infinity, TerrainLayer);
+
+            Vector3 target_onGroundPos = hit.point;
+
+            if(Mathf.Abs( hit.point.y - transform.position.y) > 5) {//TODO : improve this
+                //target is on something higher or lower
+                player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, Vector3.zero, Vector3.zero);
+                return true;
+            }
+
+            //Move to the right position
+            Vector3 posProj = new Vector3(transform.position.x, 0 , transform.position.z);
+            Vector3 target_posProj = new Vector3(target_onGroundPos.x, 0, target_onGroundPos.z);
+
+            float distanceBetween = (posProj - target_posProj).magnitude;
+
+            Vector3 idealPos = (posProj - target_posProj).normalized * (config.SingleTargetSkillParams.distance - distanceBetween) + transform.position;
+
+            //check if the point is inside wall
+            bool goBackToOriginalPoint = false;
+            Vector3 orgPoint = transform.position;
+            if (Physics.CheckSphere(idealPos + new Vector3(0, 5, 0), 1, TerrainLayer)) {
+                goBackToOriginalPoint = true;
+            }
+
+            GetComponent<CharacterController>().Move((posProj - target_posProj).normalized * (config.SingleTargetSkillParams.distance - distanceBetween));
+            //transform.position = (posProj - target_posProj).normalized * (config.SingleTargetSkillParams.distance - distanceBetween) + transform.position;
+
+
+            player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, skill_num, idealPos, transform.forward);
+
+            if (goBackToOriginalPoint) {
+                transform.position = orgPoint;
+            }
         } else {
             player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, -1, 0, Vector3.zero, Vector3.zero);
         }
@@ -49,22 +83,37 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             PhotonView target_pv = PhotonView.Find(targetpv_id);
             if (target_pv == null) { Debug.Log("Can't find target photonView when using skill"); return; }
             SkillController target_SkillController = target_pv.GetComponent<SkillController>();
-            target = target_pv.transform;
 
+            target = target_pv.transform;            
             //Attach effects on target
             SetEffectsInfo(target, skill_num);
 
             //rotate target to the right direction
             float angle = Vector3.Angle(direction, target.transform.forward);
 
-            target.transform.LookAt((angle > 90) ? transform.position + new Vector3(0, 5, 0) : transform.position + new Vector3(0, 5, 0) + transform.forward * 9999);
+            RaycastHit hit;
+            Physics.Raycast(target.position, -Vector3.up, out hit, Mathf.Infinity, TerrainLayer);
+
+            Vector3 target_onGroundPos = hit.point;
+            //target teleport to ground
+            target.transform.position = hit.point;
+            //should not move the target
+
+            target.transform.LookAt((angle > 90) ? start_pos + new Vector3(0, 5, 0) : start_pos + new Vector3(0, 5, 0) + direction * 9999);            
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
 
             //Play target on skill animation
             if (target_SkillController != null) {
                 target_SkillController.SetSkillUser(transform);
-                target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation(), config.GetTargetCamAnimation(), transform);
+                target_SkillController.TargetOnSkill((angle > 90) ? config.GetTargetFrontAnimation() : config.GetTargetBackAnimation(), config.GetTargetCamAnimation(), start_pos);
             }
+
+            //Sync the start position
+            transform.position = start_pos;
+
+            //Sync the start rotation
+            transform.LookAt(target.position + new Vector3(0, 5, 0));
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
             //Play skill animation
             SkillController.PlayPlayerAnimation(skill_num);
@@ -74,12 +123,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //Play skill sound
             SkillController.PlaySkillSound(skill_num);
 
-            //Sync the start position ( this need to be called after stopping sync position
-            transform.position = start_pos;
-
-            //Sync the start rotation
-            transform.LookAt(target.position + new Vector3(0, 5, 0));
-            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+            
 
             //SkillController.PlayPlayerEffects(skill_num);
             foreach (GameObject g in config.GetPlayerEffects()) {

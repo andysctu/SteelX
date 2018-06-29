@@ -135,7 +135,7 @@ public class MechCombat : Combat {
         findGameManager();
         initMechStats();
         initComponents();
-        initCombatVariables();
+        //initCombatVariables(); 
         initTransforms();
         initGameObjects();
         initTargetProperties();
@@ -159,7 +159,7 @@ public class MechCombat : Combat {
     private void RegisterOnWeaponBuilt() {
         if(bm== null)return;
         bm.OnMechBuilt += InitWeapons;
-        //bm.OnMechBuilt += UpdateMovementClips;
+        bm.OnMechBuilt += initCombatVariables;
     }
 
     private void RegisterOnSkill() {
@@ -250,15 +250,28 @@ public class MechCombat : Combat {
 
     public void initCombatVariables() {// this will be called also when respawn
         weaponOffset = 0;
-        if (photonView.isMine) SetWeaponOffsetProperty(weaponOffset);
+        if (photonView.isMine) {
+            SetWeaponOffsetProperty(weaponOffset);
+            animator.SetBool("SlashL", false);
+            animator.SetBool("SlashL2", false);
+            animator.SetBool("SlashL3", false);
+            animator.SetBool("SlashL4", false);
+
+            animator.SetBool("SlashR", false);
+            animator.SetBool("SlashR2", false);
+            animator.SetBool("SlashR3", false);
+            animator.SetBool("SlashR4", false);
+        }
         if (SwitchWeaponcoroutine != null) {//die when switching weapons
             StopCoroutine(SwitchWeaponcoroutine);
             IsSwitchingWeapon = false;
             SwitchWeaponcoroutine = null;
         }
         onSkill = false;
+
         isRMeleePlaying = false;
-        isLMeleePlaying = false;
+        isLMeleePlaying = false;        
+
         setIsFiring(0, false);
         setIsFiring(1, false);
 
@@ -469,7 +482,7 @@ public class MechCombat : Combat {
             case (int)SpecialWeaponTypes.Cannon:
             return;
             default:
-            Debug.LogError("Should never get here");
+            Debug.LogError("Should never get here with type : "+ curSpecialWeaponTypes[weaponOffset + hand]);
             break;
         }
         clipName += "Shoot" + ((hand == 0) ? "L" : "R");
@@ -478,7 +491,16 @@ public class MechCombat : Combat {
 
     private void SetTargetInfo(int hand, Vector3 direction, int playerPVid, bool isShield, int target_handOnShield) {
         if (playerPVid != -1) {
-            Targets[hand] = PhotonView.Find(playerPVid).gameObject;
+            GameObject target = PhotonView.Find(playerPVid).gameObject;
+
+            if (isShield) {
+                if(target.tag != "Drone")
+                    Targets[hand] = target.GetComponent<BuildMech>().weapons[target.GetComponent<MechCombat>().GetCurrentWeaponOffset() + target_handOnShield];
+                else
+                    Targets[hand] = target.GetComponent<DroneCombat>().Shield.gameObject;
+            } else
+                Targets[hand] = target;
+
             isTargetShield[hand] = isShield;
             target_HandOnShield[hand] = target_handOnShield;
             bullet_directions[hand] = direction;
@@ -548,7 +570,7 @@ public class MechCombat : Combat {
 
             if (Targets[hand] != null) {
                 if (isTargetShield[hand]) {
-                    bulletTrace.SetTarget((mcbt != null) ? mcbt.Hands[target_HandOnShield[hand]] : Targets[hand].transform.root.GetComponent<DroneCombat>().Hands[target_HandOnShield[hand]], true);
+                    bulletTrace.SetTarget(Targets[hand].transform, true);
                 } else {
                     bulletTrace.SetTarget(Targets[hand].transform, false);
                 }
@@ -580,6 +602,8 @@ public class MechCombat : Combat {
         } else if (CheckIsSpearByStr(weapon)) {
             EffectController.SlashOnHitEffect(false, 0);
         }
+
+        //TODO : sync disable player
 
         if (photonView.isMine) {
             if (isSlowDown)
@@ -689,12 +713,6 @@ public class MechCombat : Combat {
             }
         }
 
-        if (photonView.isMine) {
-            CurrentHP = 0;
-            animator.SetBool(AnimatorVars.BCNPose_id, false);
-            gm.ShowRespawnPanel();
-        }
-
         gameObject.layer = default_layer;
         setIsFiring(0, false);
         setIsFiring(1, false);
@@ -708,6 +726,13 @@ public class MechCombat : Combat {
 
     private IEnumerator DisablePlayerWhenNotOnSkill() {
         yield return new WaitWhile(() => onSkill);
+
+        if (photonView.isMine) {
+            CurrentHP = 0;
+            animator.SetBool(AnimatorVars.BCNPose_id, false);
+            gm.ShowRespawnPanel();
+        }
+
         displayPlayerInfo.gameObject.SetActive(false);
 
         crosshair.ShutDownAllCrosshairs();
@@ -1056,8 +1081,12 @@ public class MechCombat : Combat {
             if (weapons[i] != null) {
                 Renderer[] renderers = weapons[i].GetComponentsInChildren<Renderer>();
                 foreach (Renderer renderer in renderers) {
-                    Debug.Log(i + " enable : "+ (i == weaponOffset || i == weaponOffset + 1));
                     renderer.enabled = (i == weaponOffset || i == weaponOffset + 1);
+                }
+
+                Collider[] colliders = weapons[i].GetComponentsInChildren<Collider>();
+                foreach (Collider collider in colliders) {
+                    collider.enabled = (i == weaponOffset || i == weaponOffset + 1);
                 }
             } else {
                 Debug.Log("weapon : "+i + " is null");
@@ -1067,10 +1096,10 @@ public class MechCombat : Combat {
 
     public void UpdateMovementClips() {
         if (weaponScripts == null) return;
-        bool isPreviousWeaponTwoHanded = (weaponScripts[(weaponOffset + 2) % 4] != null && weaponScripts[(weaponOffset + 2) % 4].twoHanded);
+        //bool isPreviousWeaponTwoHanded = (weaponScripts[(weaponOffset + 2) % 4] != null && weaponScripts[(weaponOffset + 2) % 4].twoHanded);
         bool isCurrentWeaponTwoHanded = (weaponScripts[(weaponOffset) % 4] != null && weaponScripts[(weaponOffset) % 4].twoHanded);
 
-        if (isPreviousWeaponTwoHanded == isCurrentWeaponTwoHanded) return;
+        //if (isPreviousWeaponTwoHanded == isCurrentWeaponTwoHanded) return;
 
         MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
@@ -1146,8 +1175,7 @@ public class MechCombat : Combat {
         foreach (Renderer renderer in renderers) {
             renderer.enabled = b;
         }
-
-        ActivateWeapons();
+        if(b)ActivateWeapons();
     }
 
     public void EnableAllColliders(bool b) {

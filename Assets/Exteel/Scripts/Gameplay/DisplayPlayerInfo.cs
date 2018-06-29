@@ -34,14 +34,15 @@ public class DisplayPlayerInfo : MonoBehaviour {
         textMesh.text = name_text;
 
         if (GameManager.isTeamMode) {
-            if (PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) {
+            if (tag != "Drone" &&  PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) {
                 bar.color = Color.red; //enemy
                 textMesh.color = Color.red;
-            } else {
+            } else {                
                 bar.color = color_ally;
                 textMesh.color = Color.white;
             }
         } else {
+            Debug.Log("run here");
             bar.color = Color.red; //enemy
             textMesh.color = Color.red;
         }

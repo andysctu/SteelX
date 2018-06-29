@@ -6,29 +6,15 @@ public class MySceneManager : MonoBehaviour {
 #endif
     [SerializeField] private GameObject[] Scenes;
     [SerializeField] private GameObject OperatorPanel;
-    public static class SceneName { public const int Login = 0, Lobby = 1, Hangar = 2, GameLobby = 3, Store = 4; };
-    public static int ActiveScene { get;private set;}
+    public static class SceneName { public const int Login = 0, Lobby = 1, Hangar = 2, GameLobby = 3, Store = 4;};
+    public static int ActiveScene;
     private GameObject curActiveScene;
     public delegate void LoadSceneAction(int scene);
     public event LoadSceneAction OnSceneLoaded;
 
     private void Awake() {
-        ActiveScene = FindActiveScene();
-        curActiveScene = Scenes[FindActiveScene()];
-
+        curActiveScene = Scenes[ActiveScene];
         LoadScene(ActiveScene);
-    }
-
-    private int FindActiveScene() {
-        for (int i = 0; i < Scenes.Length; i++) {
-            if (Scenes[i].activeSelf) {
-                return i;
-            }
-        }
-
-        Debug.LogError("No scene are active.");
-        LoadScene(SceneName.Lobby);
-        return SceneName.Lobby;
     }
 
     private void SetCurrentScene(int scene) {
@@ -37,13 +23,11 @@ public class MySceneManager : MonoBehaviour {
     }
 
     public void LoadScene(int scene) {
-        //Disable current scene
-        curActiveScene.SetActive(false);
+        //Disable current scene & Enable new scene
+        for (int i=0;i<Scenes.Length;i++)
+            if(Scenes[i]!=null)Scenes[i].SetActive(i == scene);
 
         OperatorPanel.SetActive(scene == SceneName.Lobby || scene == SceneName.Hangar || scene == SceneName.Store);
-
-        //Enable new scene
-        Scenes[scene].SetActive(true);
 
         //Update current scene
         SetCurrentScene(scene);

@@ -641,6 +641,12 @@ MonoBehaviour:
   - 
   weapons: []
   bulletPrefabs: []
+  curMechParts:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   MechProperty:
     HP: 0
     EN: 0
@@ -739,6 +745,7 @@ MonoBehaviour:
   Sounds: {fileID: 114000010976113334}
   EffectController: {fileID: 114512345716719972}
   camTransform: {fileID: 405268}
+  boosterBone: {fileID: 4073627584581096}
   CharacterController: {fileID: 14356836}
   Terrain:
     serializedVersion: 2
@@ -757,6 +764,7 @@ MonoBehaviour:
   InAirSpeedCoeff: 0.55
   lerpCam_coeff: 2
   grounded: 1
+  onSkill: 0
   LocalxOffset: -4
   cam_orbitradius: 19
   cam_angleoffset: 33
@@ -4606,7 +4614,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: faaa136a868701141aaad7e781f105a1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1

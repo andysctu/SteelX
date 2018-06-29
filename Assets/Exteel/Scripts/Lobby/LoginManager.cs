@@ -7,7 +7,7 @@ public class LoginManager : MonoBehaviour {
     [SerializeField]private Button login_button;
     private MySceneManager MySceneManager;
     private Coroutine connectionCoroutine = null;
-    private string region, gameVersion = "1.5";
+    private string region = "US" , gameVersion = "1.7";
     private int focus = 0;  
 
 	public InputField[] fields;

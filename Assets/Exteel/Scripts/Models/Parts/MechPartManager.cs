@@ -33,6 +33,24 @@ public class MechPartManager : ScriptableObject {
         }
     }
 
+    public System.Type GetPartType(string name) {
+        switch (name[0]) {
+            case 'H':
+            return typeof(Head);
+            case 'C':
+            return typeof(Core);
+            case 'A':
+            return typeof(Arm);
+            case 'L':
+            return typeof(Leg);
+            case 'P':
+            return typeof(Booster);
+            default:
+            Debug.LogError("Can catarize : " + name);
+            return null;
+        }
+    }
+
     Part SearchInArray(Part[] parts, string name) {
         for (int i = 0; i < parts.Length; i++) {
             if (parts[i]!= null && parts[i].GetPartPrefab()!=null &&parts[i].GetPartPrefab().name == name) {

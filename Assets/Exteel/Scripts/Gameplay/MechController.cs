@@ -10,7 +10,7 @@ public class MechController : Photon.MonoBehaviour {
     [SerializeField] private MechCamera mechCamera;
     [SerializeField] private Sounds Sounds;
     [SerializeField] private EffectController EffectController;
-    [SerializeField] private Transform camTransform;
+    [SerializeField] private Transform camTransform, boosterBone;
     [SerializeField] private CharacterController CharacterController;
     [SerializeField] private LayerMask Terrain;
     [SerializeField] private SkillController SkillController;
@@ -45,7 +45,7 @@ public class MechController : Photon.MonoBehaviour {
     public float maxDownSpeed = -140f;
     public float InAirSpeedCoeff = 0.7f;
     public float lerpCam_coeff = 5;
-    public bool grounded = true; //changes with animator bool "grounded"
+    public bool grounded = true, onSkill = false; //changes with animator bool "grounded"
     public float LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
     [HideInInspector] public bool onSkillMoving = false, onInstantMoving = false;
@@ -57,18 +57,26 @@ public class MechController : Photon.MonoBehaviour {
 
     private void Start() {
         initComponents();
-        initControllerVar();
+        //initControllerVar();
         initCam(cam_orbitradius, cam_angleoffset);
     }
 
     private void RegisterOnMechBuilt() {
         if ((bm = GetComponent<BuildMech>()) != null) {
             bm.OnMechBuilt += FindBoosterController;
+            bm.OnMechBuilt += initControllerVar;
         }
     }
 
     private void RegisterOnSkill() {
-        if (SkillController != null) SkillController.OnSkill += InterruptCurrentMovement;
+        if (SkillController != null) {
+            SkillController.OnSkill += OnSkill;
+            SkillController.OnSkill += InterruptCurrentMovement;
+        }
+    }
+
+    private void OnSkill(bool b) {
+        onSkill = b;
     }
 
     public void initControllerVar() {
@@ -76,26 +84,28 @@ public class MechController : Photon.MonoBehaviour {
         canVerticalBoost = false;
         isSlowDown = false;
         curboostingSpeed = movementVariables.moveSpeed;
+        Animator.SetBool("Boost", false);
+        Animator.SetBool("Jump", false);
         Animator.SetBool("Grounded", true);
+        //back to default state
+        Animator.Play("Walk", 0);
         run_xzDir = Vector2.zero;
     }
 
     private void FindBoosterController() {
-        Transform boosterBone = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone");
-        if (boosterBone != null)
-            BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
+        BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
     }
 
     public void UpdateWeightRelatedVars(int totalWeight) {
-        movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(totalWeight) * 0.1f;
+        movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(totalWeight) * 0.08f;
         movementVariables.maxHorizontalBoostSpeed = bm.MechProperty.GetDashSpeed(totalWeight) * 0.1f;
         movementVariables.minBoostSpeed = (movementVariables.moveSpeed + movementVariables.maxHorizontalBoostSpeed) / 2f;
 
         movementVariables.acceleration = bm.MechProperty.GetDashAcceleration(totalWeight);
         movementVariables.deceleration = bm.MechProperty.GetDashDecelleration(totalWeight);
 
-        movementVariables.verticalBoostSpeed = bm.MechProperty.VerticalBoostSpeed;
         //jump boost speed
+        movementVariables.verticalBoostSpeed = bm.MechProperty.VerticalBoostSpeed;
         //jump speed
     }
 
@@ -136,7 +146,7 @@ public class MechController : Photon.MonoBehaviour {
 
     public void UpdateSpeed() {
         if (onInstantMoving) {
-            InstantMove();
+            InstantMove(); 
             return;
         }
 
@@ -179,7 +189,6 @@ public class MechController : Photon.MonoBehaviour {
         if (Mathf.Abs(instantMoveSpeed) > 0.01f) {
             ySpeed = 0;
         }
-
         CharacterController.Move(instantMoveDir * instantMoveSpeed);
         move.x = 0;
         move.z = 0;
@@ -296,9 +305,8 @@ public class MechController : Photon.MonoBehaviour {
                         curboostingSpeed -= movementVariables.acceleration * Time.deltaTime * 10;
                 } else {//increase magnitude if < max
                     if (curboostingSpeed <= movementVariables.maxHorizontalBoostSpeed)
-                        curboostingSpeed += movementVariables.acceleration * Time.deltaTime * 5;
+                        curboostingSpeed += movementVariables.acceleration * Time.deltaTime * 3;
                 }
-
                 //ideal speed
                 float idealSpeed_x = (curboostingSpeed * xzDir.x * transform.right).x + (curboostingSpeed * xzDir.y * transform.forward).x,
                 idealSpeed_z = (curboostingSpeed * xzDir.y * transform.forward).z + (curboostingSpeed * xzDir.x * transform.right).z;
@@ -313,7 +321,7 @@ public class MechController : Photon.MonoBehaviour {
                 } else {
                     if (Mathf.Abs(idealSpeed_x - xSpeed) < movementVariables.acceleration) acc_x = 0;
 
-                    xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime * 50;
+                    xSpeed += Mathf.Sign(idealSpeed_x - xSpeed) * acc_x * Time.deltaTime * 35;
                 }
 
                 if (Mathf.Abs(dir.y) < 0.1f && zSpeed != 0) {
@@ -321,7 +329,7 @@ public class MechController : Photon.MonoBehaviour {
                 } else {
                     if (Mathf.Abs(idealSpeed_z - zSpeed) < movementVariables.acceleration) acc_z = 0;
 
-                    zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime * 50;
+                    zSpeed += Mathf.Sign(idealSpeed_z - zSpeed) * acc_z * Time.deltaTime * 35;
                 }
                 run_xzDir.x = xzDir.x;
                 run_xzDir.y = xzDir.y;
@@ -413,7 +421,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public bool CheckIsGrounded() {
-        return Physics.CheckSphere(transform.position + new Vector3(0, 1.7f, 0), 2.0f, Terrain);
+        return Physics.CheckSphere(transform.position + new Vector3(0, 1, 0), 2.0f, Terrain);
     }
 
     public void CallLockMechRot(bool b) {

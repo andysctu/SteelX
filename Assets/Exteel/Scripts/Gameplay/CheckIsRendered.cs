@@ -39,6 +39,11 @@ public class CheckIsRendered : MonoBehaviour {
                 }
             }
         } else {
+            if(theMeshRenderer == null) {//TODO : remake this
+                SkinnedMeshRenderer[] meshRenderers = transform.Find("CurrentMech").GetComponentsInChildren<SkinnedMeshRenderer>();
+                theMeshRenderer = meshRenderers[0];
+            }
+
             if (theMeshRenderer.isVisible) {
                 if (!isVisible) {
                     isVisible = true;

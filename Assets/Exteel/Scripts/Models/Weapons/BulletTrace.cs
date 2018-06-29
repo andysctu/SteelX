@@ -138,14 +138,18 @@ public class BulletTrace : MonoBehaviour {
     }
 
     void PlayImpact(Vector3 impactPoint) {
-        GameObject impact;
+        GameObject impact = null;
         Transform bulletCollector = transform.parent;
         if (!isTargetShield) {
             impact = Instantiate(bulletImpact, impactPoint, Quaternion.identity, bulletCollector);
+
+            impact.GetComponent<ParticleSystem>().Play();
         } else {
-            impact = Instantiate(bulletImpact_onShield, target.position, Quaternion.identity, bulletCollector);
-            impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
+            //impact = Instantiate(bulletImpact_onShield, target.position, Quaternion.identity, bulletCollector);
+            //impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
+
+            target.GetComponent<ParticleSystem>().Play();
         }
-        impact.GetComponent<ParticleSystem>().Play();
+        
     }
 }

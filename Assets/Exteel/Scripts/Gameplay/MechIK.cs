@@ -184,7 +184,7 @@ public class MechIK : MonoBehaviour {
     public void UpdateMechIK(int weaponOffset) {//called by buildMech
         this.weaponOffset = weaponOffset;
 
-        if (bm.weaponScripts[weaponOffset].twoHanded) {
+        if (bm.weaponScripts[weaponOffset]!= null &&  bm.weaponScripts[weaponOffset].twoHanded) {
             Knob = FindKnob(bm.weapons[weaponOffset].transform);
             AimTransform = bm.weapons[weaponOffset].transform.Find("AimTransform");//TODO : update when switchweapon
             if (AimTransform == null)
