@@ -382,7 +382,9 @@ public class SkillController : MonoBehaviour {
         animatorOverrideController.ApplyOverrides(clipOverrides);
         if (skillcam != null) {
             //rotate skill cam to face the target so the skill_cam animation is correct
-            skillcamAnimator.transform.LookAt(transform.position + (transform.position - skill_user_pos) * 9999);
+            skillcam.transform.localRotation = Quaternion.identity;
+            skillcam.transform.parent.LookAt(transform.position + (transform.position - skill_user_pos) * 9999);
+
             Debug.DrawRay(transform.position + new Vector3(0,5,0), (transform.position - skill_user_pos) * 9999);
             skillcam_clipOverrides[Target_Animation_Name] = skillcam_target;
             skillcamAnimator_OC.ApplyOverrides(skillcam_clipOverrides);
@@ -477,9 +479,15 @@ public class SkillController : MonoBehaviour {
     private void PlaySkillCamAnimation(int skill_num) {//-1 : target animation
         if (!photonView.isMine) return;
 
-        if (skill_num != -1)
+        //Rotate to correct angle
+        skillcam.transform.localRotation = Quaternion.identity;
+
+        if (skill_num != -1) {
+            skillcam.transform.localRotation = Quaternion.identity;
+            skillcam.transform.parent.localRotation = Quaternion.identity;
+
             skillcamAnimator.Play("sk" + skill_num);
-        else {
+        } else {
             Debug.Log("call : " + Target_Animation_Name);
             skillcamAnimator.Play(Target_Animation_Name);
         }

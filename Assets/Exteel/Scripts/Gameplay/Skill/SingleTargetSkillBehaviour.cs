@@ -61,8 +61,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             }
 
             GetComponent<CharacterController>().Move((posProj - target_posProj).normalized * (config.SingleTargetSkillParams.distance - distanceBetween));
-            //transform.position = (posProj - target_posProj).normalized * (config.SingleTargetSkillParams.distance - distanceBetween) + transform.position;
-
 
             player_pv.RPC("CastSingleTargetSkill", PhotonTargets.All, target_pv.viewID, skill_num, idealPos, transform.forward);
 
@@ -91,14 +89,8 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
             //rotate target to the right direction
             float angle = Vector3.Angle(direction, target.transform.forward);
 
-            RaycastHit hit;
-            Physics.Raycast(target.position, -Vector3.up, out hit, Mathf.Infinity, TerrainLayer);
-
-            Vector3 target_onGroundPos = hit.point;
-            //target teleport to ground
-            target.transform.position = hit.point;
-            //should not move the target
-
+            target.transform.position = start_pos + direction * config.SingleTargetSkillParams.distance;
+ 
             target.transform.LookAt((angle > 90) ? start_pos + new Vector3(0, 5, 0) : start_pos + new Vector3(0, 5, 0) + direction * 9999);            
             target.transform.rotation = Quaternion.Euler(0, target.transform.rotation.eulerAngles.y, 0);
 
@@ -122,8 +114,6 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
 
             //Play skill sound
             SkillController.PlaySkillSound(skill_num);
-
-            
 
             //SkillController.PlayPlayerEffects(skill_num);
             foreach (GameObject g in config.GetPlayerEffects()) {

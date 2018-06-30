@@ -48,12 +48,13 @@ public class ShieldUpdater : MonoBehaviour {
     }
 
     private void LateUpdate() {//TODO : get bool
-        if (Animator.GetBool((hand == 0) ? "BlockL" : "BlockR")) {//TODO : no reference
-            boxcollider.transform.LookAt(transform.root.position + MECH_MID_POINT);
-            boxcollider.transform.rotation = Quaternion.Euler(new Vector3(0, boxcollider.transform.rotation.eulerAngles.y + ((hand == 0) ? rotOffset : -rotOffset), 0));
-        } else {
-            boxcollider.transform.localRotation = Quaternion.Euler(new Vector3(0, ((hand == 0) ? 90 : -90), 0));
-            boxcollider.transform.rotation = Quaternion.Euler(new Vector3(0, boxcollider.transform.rotation.eulerAngles.y, 0));
-        }
+        if(Animator != null) //this happens when shield get destroyed
+            if (Animator.GetBool((hand == 0) ? "BlockL" : "BlockR")) {//TODO : no reference
+                boxcollider.transform.LookAt(transform.root.position + MECH_MID_POINT);
+                boxcollider.transform.rotation = Quaternion.Euler(new Vector3(0, boxcollider.transform.rotation.eulerAngles.y + ((hand == 0) ? rotOffset : -rotOffset), 0));
+            } else {
+                boxcollider.transform.localRotation = Quaternion.Euler(new Vector3(0, ((hand == 0) ? 90 : -90), 0));
+                boxcollider.transform.rotation = Quaternion.Euler(new Vector3(0, boxcollider.transform.rotation.eulerAngles.y, 0));
+            }
     }
 }

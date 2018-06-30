@@ -42,7 +42,6 @@ public class DisplayPlayerInfo : MonoBehaviour {
                 textMesh.color = Color.white;
             }
         } else {
-            Debug.Log("run here");
             bar.color = Color.red; //enemy
             textMesh.color = Color.red;
         }

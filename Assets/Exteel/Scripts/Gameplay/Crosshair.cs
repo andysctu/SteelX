@@ -403,11 +403,11 @@ public class Crosshair : MonoBehaviour {
 
         if (id == LastLockTargetID) {
             if (Time.time - TimeOfLastSend >= SendMsgDeltaTime) {
-                target_pv.RPC("OnLocked", PhotonTargets.All, Name);
+                target_pv.RPC("OnLocked", PhotonTargets.All);
                 TimeOfLastSend = Time.time;
             }
         } else {
-            target_pv.RPC("OnLocked", PhotonTargets.All, Name);
+            target_pv.RPC("OnLocked", PhotonTargets.All);
             TimeOfLastSend = Time.time;
             LastLockTargetID = id;
         }

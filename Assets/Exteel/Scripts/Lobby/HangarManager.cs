@@ -310,7 +310,6 @@ public class HangarManager : MonoBehaviour {
 
     public void EquipSkill(int skill_id, int skill_pos) {
         UserData.myData.Mech[Mech_Num].skillIDs[skill_pos] = skill_id;
-        Debug.Log("equip skill : " + skill_id + " on skill_pos :" + skill_pos);
 
         if (skill_id == -1) {
             skill_slots[skill_pos].sprite = null;

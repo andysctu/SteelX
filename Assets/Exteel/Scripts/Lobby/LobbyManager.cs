@@ -6,12 +6,10 @@ public class LobbyManager: MonoBehaviour {
     [SerializeField] GameObject CreateRoomModel;
     [SerializeField] Text RoomName;
     [SerializeField] GameObject RoomPanel;
-    [SerializeField] Transform RoomsWrapper; 
-    //just to see how many player in lobby
-    [SerializeField] Text playercountText;
+    [SerializeField] Transform RoomsWrapper;    
+    [SerializeField] Text playercountText; //just to see how many player in lobby
     private MySceneManager MySceneManager;
     private GameObject[] rooms;
-    private float roomHeight = 50;
     private float checkPlayerTime = 0;
     private string selectedRoom = "";
     private const float checkPlayerDeltaTime = 6f;
@@ -19,7 +17,7 @@ public class LobbyManager: MonoBehaviour {
     private void Awake() {
         MySceneManager = FindObjectOfType<MySceneManager>();
     }
-    // Use this for initialization
+    
     void Start () {
         
         // For debugging, so we don't have to login each time
@@ -94,7 +92,6 @@ public class LobbyManager: MonoBehaviour {
 	public void OnCreatedRoom()
 	{
 		Debug.Log("Room created successfully.");
-		//PhotonNetwork.LoadLevel("GameLobby");
         MySceneManager.GoToGameLobby();
 	}
 
@@ -137,10 +134,11 @@ public class LobbyManager: MonoBehaviour {
             });
             rooms[i] = roomPanel;
         }
-        //RoomsWrapper.GetComponent<RectTransform>().sizeDelta = new Vector2(600, 50 * roomsInfo.Length);
     }
 
     public void ShowCreateRoomModal() {
+        //Reset input
+        CreateRoomModel.transform.Find("InputField").GetComponent<InputField>().text = "";
         CreateRoomModel.SetActive(true);
     }
 
@@ -157,7 +155,6 @@ public class LobbyManager: MonoBehaviour {
 
     public void OnJoinedRoom() {
         Debug.Log("OnJoinedRoom");
-        //PhotonNetwork.LoadLevel("GameLobby");
         MySceneManager.GoToGameLobby();
     }
 }

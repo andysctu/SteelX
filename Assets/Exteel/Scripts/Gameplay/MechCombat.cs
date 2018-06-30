@@ -603,8 +603,6 @@ public class MechCombat : Combat {
             EffectController.SlashOnHitEffect(false, 0);
         }
 
-        //TODO : sync disable player
-
         if (photonView.isMine) {
             if (isSlowDown)
                 MechController.SlowDown();
@@ -614,15 +612,8 @@ public class MechCombat : Combat {
 
         CurrentHP -= damage;
 
-        if (CurrentHP <= 0) {
-            isDead = true;
-
-            DisablePlayer();
-
-            // Update scoreboard
-            gm.RegisterKill(shooter_viewID, photonView.viewID);
-            PhotonView shooterpv = PhotonView.Find(shooter_viewID);
-            DisplayKillMsg(shooterpv.owner.NickName, photonView.name, weapon);
+        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {//sync disable player
+            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter_viewID, weapon);
         }
     }
 
@@ -638,15 +629,6 @@ public class MechCombat : Combat {
 
         CurrentHP -= damage;
 
-        if (CurrentHP <= 0) {
-            DisablePlayer();//TODO : sync this
-
-            // Update scoreboard
-            gm.RegisterKill(shooter_viewID, photonView.viewID);
-            PhotonView shooterpv = PhotonView.Find(shooter_viewID);
-            DisplayKillMsg(shooterpv.owner.NickName, photonView.name, weapon);
-        }
-
         if (photonView.isMine) {//heat
             if (!is_overheat[weaponOffset + shield]) {
                 if (shield == 0) {
@@ -655,11 +637,15 @@ public class MechCombat : Combat {
                     HeatBar.IncreaseHeatBarR(30);
                 }
             }
-
             SkillController.IncreaseSP((int)damage / 2);
         }
+
+        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {
+            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter_viewID, weapon);
+        }
     }
-    private bool CheckIsSwordByStr(string name) {
+
+    private bool CheckIsSwordByStr(string name) {//TODO : improve this
         return name.Contains("SHL");
     }
     private bool CheckIsSpearByStr(string name) {
@@ -684,10 +670,8 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    private void OnLocked(string name) {//TODO : remake this check ( use event )
-        if (PhotonNetwork.playerName != name)
-            return;
-        crosshair.ShowLocked();
+    private void OnLocked() {
+        if (photonView.isMine)crosshair.ShowLocked();
     }
 
     [PunRPC]
@@ -702,7 +686,7 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    private void DisablePlayer() {
+    private void DisablePlayer(int shooter_viewID, string weapon) {
         //check if he has the flag
         if (PhotonNetwork.isMasterClient) {
             if (photonView.owner.NickName == ((gm.BlueFlagHolder == null) ? "" : gm.BlueFlagHolder.NickName)) {
@@ -712,6 +696,12 @@ public class MechCombat : Combat {
                 gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 1, transform.position);
             }
         }
+        isDead = true;//TODO : check this again
+
+        // Update scoreboard
+        gm.RegisterKill(shooter_viewID, photonView.viewID);
+        PhotonView shooterpv = PhotonView.Find(shooter_viewID);
+        DisplayKillMsg(shooterpv.owner.NickName, photonView.name, weapon);
 
         gameObject.layer = default_layer;
         setIsFiring(0, false);
@@ -721,7 +711,7 @@ public class MechCombat : Combat {
 
         MechController.enabled = false;
         EnableAllColliders(false);
-        GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
+        GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed) //TODO : check this if necessary
     }
 
     private IEnumerator DisablePlayerWhenNotOnSkill() {
@@ -789,7 +779,7 @@ public class MechCombat : Combat {
         //TODO : remove this
         if (forceDead) {
             forceDead = false;
-            photonView.RPC("OnHit", PhotonTargets.All, 3000, photonView.viewID, "ForceDead", true);
+            photonView.RPC("OnHit", PhotonTargets.All, 10000, photonView.viewID, "ForceDead", true);
         }
 
         if (onSkill) return;
@@ -1298,7 +1288,7 @@ public class MechCombat : Combat {
             slashL_threshold = ((Sword)weaponScripts[weaponOffset]).threshold;
         }
         if (curSpecialWeaponTypes[weaponOffset + 1] == (int)SpecialWeaponTypes.Sword)
-            slashR_threshold = ((Sword)weaponScripts[weaponOffset + 1]).threshold;
+            slashR_threshold = ((Sword)weaponScripts[weaponOffset + 1]).threshold;//TODO : no reference
     }
 
     public void SetMeleePlaying(int hand, bool isPlaying) {

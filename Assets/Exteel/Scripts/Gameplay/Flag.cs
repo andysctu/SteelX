@@ -33,13 +33,11 @@ public class Flag : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider collider) {
-        if (!isGrounded || collider.gameObject.layer == Terrain)
-            return;
-
+        if (!isGrounded || collider.gameObject.layer == Terrain)return;
+        
         PhotonView pv = collider.transform.root.GetComponent<PhotonView>();
         PhotonPlayer player = pv.owner;
-        if (!pv.isMine)
-            return;
+        if (!pv.isMine)return;
 
         if (player.GetTeam() == team) {
             //do I hold the other team's flag ?

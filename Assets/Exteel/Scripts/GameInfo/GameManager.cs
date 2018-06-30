@@ -757,7 +757,9 @@ public class GameManager : Photon.MonoBehaviour {
 				BlueFlag.transform.rotation = Quaternion.identity;
 				BlueFlagHolder = null;
 				BlueFlag.GetComponent<Flag> ().isGrounded = true;
-			}
+                BlueFlag.GetComponent<Flag>().isOnBase = false;
+                BlueFlag.layer = 2;//ignoreRaycast
+            }
 		}else{
 			if (parent != null) {
 				RedFlag.transform.parent = parent;
@@ -771,7 +773,9 @@ public class GameManager : Photon.MonoBehaviour {
 				RedFlag.transform.rotation = Quaternion.identity;
 				RedFlagHolder = null;
 				RedFlag.GetComponent<Flag> ().isGrounded = true;
-			}
+                RedFlag.GetComponent<Flag>().isOnBase = false;
+                RedFlag.layer = 2;
+            }
 		}
 	}
 

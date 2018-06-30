@@ -42,11 +42,9 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	//	}
 
 		if (!PhotonNetwork.connected) {
-            //PhotonNetwork.LoadLevel("Lobby");
             MySceneManager.GoToLobby();
             return;
 		}
-
 
         //check if previous players are not destroyed
         if(players != null && players.Count > 0) {
@@ -71,16 +69,12 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		PhotonNetwork.automaticallySyncScene = true;
 
         bool isMasterClient = PhotonNetwork.isMasterClient;
+        startButton.interactable = Map.interactable = GameMode.interactable = MaxKills.interactable = MaxPlayers.interactable = MaxTime.interactable = isMasterClient;
+        //Reset options
+        MaxTime.value = MaxPlayers.value = MaxKills.value = GameMode.value = Map.value = 0;
 
-		startButton.interactable = isMasterClient;
-		Map.interactable = isMasterClient;
-		GameMode.interactable = isMasterClient;
-		MaxKills.interactable = isMasterClient;
-		MaxPlayers.interactable = isMasterClient;
-		MaxTime.interactable = isMasterClient;
-        
-		//set default team
-		if(PhotonNetwork.player.GetTeam()==PunTeams.Team.none){
+        //set default team
+        if (PhotonNetwork.player.GetTeam()==PunTeams.Team.none){
 			PhotonNetwork.player.SetTeam (PunTeams.Team.blue);
 		}
 

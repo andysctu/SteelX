@@ -86,9 +86,6 @@ public class MechController : Photon.MonoBehaviour {
         curboostingSpeed = movementVariables.moveSpeed;
         Animator.SetBool("Boost", false);
         Animator.SetBool("Jump", false);
-        Animator.SetBool("Grounded", true);
-        //back to default state
-        Animator.Play("Walk", 0);
         run_xzDir = Vector2.zero;
     }
 
