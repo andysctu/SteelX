@@ -40,7 +40,6 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 			//yield return new WaitUntil (PhotonNetwork.connected);
 			//PhotonNetwork.CreateRoom("Test Room", new RoomOptions() { MaxPlayers = 10 }, null);
 	//	}
-
 		if (!PhotonNetwork.connected) {
             MySceneManager.GoToLobby();
             return;
@@ -82,7 +81,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	}
 
 	private void addPlayer(string name, PunTeams.Team team) {//addPlayer also setTeam
-		GameObject lobbyPlayer = PhotonNetwork.Instantiate (LobbyPlayer.name, transform.position, Quaternion.identity, 0);
+		GameObject lobbyPlayer = Instantiate (LobbyPlayer, transform.position, Quaternion.identity, null);
 
 		if (team == PunTeams.Team.blue || team == PunTeams.Team.none) {
 			lobbyPlayer.transform.SetParent (Team1.transform);
@@ -146,7 +145,6 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 	public void LeaveGame() {
 		Debug.Log("Leaving game");
 		PhotonNetwork.LeaveRoom();
-		//PhotonNetwork.LoadLevel("Lobby");
         MySceneManager.GoToLobby();
 	}
 
@@ -165,7 +163,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 		}
 
 		if(player!=null){
-			PhotonNetwork.Destroy(player);
+			Destroy(player);
 			players.Remove(player);
 		}
 	}
@@ -265,7 +263,7 @@ public class GameLobbyManager : Photon.MonoBehaviour {
 			}
 		}
 		if (playerToDestroy != null) {
-			PhotonNetwork.Destroy (playerToDestroy);
+			Destroy (playerToDestroy);
 			players.Remove (playerToDestroy);
 		}
 

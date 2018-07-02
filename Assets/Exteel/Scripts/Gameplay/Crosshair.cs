@@ -164,6 +164,10 @@ public class Crosshair : MonoBehaviour {
                     TargetsToRemove.Add(target);
                     continue;
                 }
+
+                if(target.layer == 0)//onskill
+                    continue;
+
                 PhotonView targetpv = target.GetComponent<PhotonView>();
                 if (targetpv.viewID == pv.viewID)
                     continue;
@@ -222,6 +226,10 @@ public class Crosshair : MonoBehaviour {
                     TargetsToRemove.Add(target);
                     continue;
                 }
+
+                if (target.layer == 0)//onskill
+                    continue;
+
                 PhotonView targetpv = target.GetComponent<PhotonView>();
                 if (targetpv.viewID == pv.viewID)
                     continue;

@@ -77,10 +77,14 @@ public class MechController : Photon.MonoBehaviour {
 
     private void OnSkill(bool b) {
         onSkill = b;
+
+        if (!b) {
+            CallLockMechRot(false); //on skill when slashing & smashing
+        }
     }
 
     public void initControllerVar() {
-        grounded = true;
+        //grounded = true;
         canVerticalBoost = false;
         isSlowDown = false;
         curboostingSpeed = movementVariables.moveSpeed;

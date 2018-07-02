@@ -7440,7 +7440,7 @@ RectTransform:
   - {fileID: 809045325}
   - {fileID: 1982958567}
   m_Father: {fileID: 1635177317}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -32222,85 +32222,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1453858515}
---- !u!1 &1459355167
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1459355170}
-  - component: {fileID: 1459355168}
-  - component: {fileID: 1459355169}
-  m_Layer: 0
-  m_Name: GameLobbyManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1459355168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1459355167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 090993f9e29a5424f9be39c27da88b3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LobbyPlayer: {fileID: 140194, guid: a9f961e8420b84fbdba83d5dbdbe1444, type: 2}
-  Team1: {fileID: 1439170038}
-  Team2: {fileID: 1561280147}
-  MenuBar: {fileID: 342247038}
-  MapInfo: {fileID: 344872273}
-  Map: {fileID: 1665928808}
-  GameMode: {fileID: 1166368178}
-  MaxKills: {fileID: 1084882967}
-  MaxPlayers: {fileID: 1253704927}
-  MaxTime: {fileID: 2126898053}
-  InRoomChat: {fileID: 1861853798}
-  startButton: {fileID: 0}
---- !u!114 &1459355169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1459355167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ownerId: 0
-  group: 0
-  OwnerShipWasTransfered: 0
-  prefixBackup: -1
-  synchronization: 0
-  onSerializeTransformOption: 3
-  onSerializeRigidBodyOption: 2
-  ownershipTransfer: 0
-  ObservedComponents:
-  - {fileID: 0}
-  ObservedComponentsFoldoutOpen: 1
-  viewIdField: 5
-  instantiationId: 5
-  currentMasterID: -1
-  isRuntimeInstantiated: 0
---- !u!4 &1459355170
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1459355167}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -5.7585907, z: -518.2734}
-  m_LocalScale: {x: 5.758595, y: 5.758595, z: 5.758595}
-  m_Children: []
-  m_Father: {fileID: 1635177317}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1464908736
 GameObject:
   m_ObjectHideFlags: 0
@@ -37166,7 +37087,6 @@ RectTransform:
   - {fileID: 45571718}
   - {fileID: 344872277}
   - {fileID: 2007376789}
-  - {fileID: 1459355170}
   - {fileID: 1861853800}
   - {fileID: 342247039}
   m_Father: {fileID: 369380274}
@@ -37214,7 +37134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 090993f9e29a5424f9be39c27da88b3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LobbyPlayer: {fileID: 140194, guid: a9f961e8420b84fbdba83d5dbdbe1444, type: 2}
+  LobbyPlayer: {fileID: 140194, guid: 3fb53051643cb184cb5e442587ab51e8, type: 2}
   Team1: {fileID: 1439170038}
   Team2: {fileID: 1561280147}
   MenuBar: {fileID: 342247038}
@@ -43218,8 +43138,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 2
-  instantiationId: 2
+  viewIdField: 17
+  instantiationId: 17
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!4 &1861853800
@@ -43233,7 +43153,7 @@ Transform:
   m_LocalScale: {x: 5.758595, y: 5.758595, z: 5.758595}
   m_Children: []
   m_Father: {fileID: 1635177317}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1865118715
 GameObject:

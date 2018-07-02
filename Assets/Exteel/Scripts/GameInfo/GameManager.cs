@@ -432,12 +432,13 @@ public class GameManager : Photon.MonoBehaviour {
 				PhotonNetwork.Destroy (BlueFlag);
 				PhotonNetwork.Destroy (RedFlag);
 			}
-            MySceneManager.ActiveScene = MySceneManager.SceneName.GameLobby;
             PhotonNetwork.LoadLevel("MainScenes");
-		}
+            PhotonNetwork.room.open = true;
+        }
+        MySceneManager.ActiveScene = MySceneManager.SceneName.GameLobby;
 
-		// Code to execute after the delay
-		Cursor.visible = true;
+        // Code to execute after the delay
+        Cursor.visible = true;
 	}
 
 	public void RegisterKill(int shooter_viewID, int victim_viewID) {

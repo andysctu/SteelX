@@ -72,6 +72,12 @@ public class BulletTrace : MonoBehaviour {
         if (!isfollow) {
             return;
         } else {
+            if(target == null) {//target exit game
+                Destroy(this);
+                return;
+            }
+
+
             if (!isCollided) {
                 if (isTargetShield) {
                     dir = (target.position - transform.position).normalized;
@@ -101,8 +107,6 @@ public class BulletTrace : MonoBehaviour {
                     rb.velocity = Vector3.zero;
                     //show hit msg
                     ShowHitMsg(target);
-
-                    //Destroy(gameObject);
                 }
                 
             }

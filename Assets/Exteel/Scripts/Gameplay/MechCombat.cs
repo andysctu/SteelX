@@ -73,7 +73,7 @@ public class MechCombat : Combat {
 
     public bool IsSwitchingWeapon { get; private set; }
 
-    private bool receiveNextSlash = true;
+    private bool receiveNextSlash;
     private const int slashMaxDistance = 30;//the ray which checks if hitting shield max distance
     public float slashL_threshold, slashR_threshold;
 
@@ -135,7 +135,6 @@ public class MechCombat : Combat {
         findGameManager();
         initMechStats();
         initComponents();
-        //initCombatVariables(); 
         initTransforms();
         initGameObjects();
         initTargetProperties();
@@ -252,15 +251,11 @@ public class MechCombat : Combat {
         weaponOffset = 0;
         if (photonView.isMine) {
             SetWeaponOffsetProperty(weaponOffset);
-            animator.SetBool("SlashL", false);
-            animator.SetBool("SlashL2", false);
-            animator.SetBool("SlashL3", false);
-            animator.SetBool("SlashL4", false);
+            animator.Play("Walk", 0);
+            ResetArmAnimatorState();
 
-            animator.SetBool("SlashR", false);
-            animator.SetBool("SlashR2", false);
-            animator.SetBool("SlashR3", false);
-            animator.SetBool("SlashR4", false);
+            ResetMeleeVars();
+            
         }
         if (SwitchWeaponcoroutine != null) {//die when switching weapons
             StopCoroutine(SwitchWeaponcoroutine);
@@ -268,9 +263,6 @@ public class MechCombat : Combat {
             SwitchWeaponcoroutine = null;
         }
         onSkill = false;
-
-        isRMeleePlaying = false;
-        isLMeleePlaying = false;        
 
         setIsFiring(0, false);
         setIsFiring(1, false);
@@ -321,6 +313,24 @@ public class MechCombat : Combat {
                 ENtext = ENBar.GetComponentInChildren<Text>();
             }
         }
+    }
+
+    private void ResetMeleeVars() {
+        if(!photonView.isMine)return;
+
+        isRMeleePlaying = false;
+        isLMeleePlaying = false;
+        receiveNextSlash = true;
+
+        animator.SetBool("SlashL", false);
+        animator.SetBool("SlashL2", false);
+        animator.SetBool("SlashL3", false);
+        animator.SetBool("SlashL4", false);
+
+        animator.SetBool("SlashR", false);
+        animator.SetBool("SlashR2", false);
+        animator.SetBool("SlashR3", false);
+        animator.SetBool("SlashR4", false);
     }
 
     private void initSlashDetector() {
@@ -483,7 +493,7 @@ public class MechCombat : Combat {
             return;
             default:
             Debug.LogError("Should never get here with type : "+ curSpecialWeaponTypes[weaponOffset + hand]);
-            break;
+            return;
         }
         clipName += "Shoot" + ((hand == 0) ? "L" : "R");
         animator.Play(clipName, hand + 1, 0);
@@ -512,7 +522,7 @@ public class MechCombat : Combat {
 
     public void InstantiateBulletTrace(int hand) {//aniamtion event driven
         if (bullets[weaponOffset + hand] == null) {
-            Debug.LogError("bullet is null");
+            Debug.LogWarning("bullet is null");
             return;
         }
         //Play Muz
@@ -747,7 +757,7 @@ public class MechCombat : Combat {
 
         initMechStats();
 
-        MechController.initControllerVar();
+        //MechController.initControllerVar();
         displayPlayerInfo.gameObject.SetActive(!photonView.isMine);
 
         transform.position = gm.SpawnPoints[respawnPoint].position;
@@ -1048,7 +1058,7 @@ public class MechCombat : Combat {
         ActivateWeapons();
 
         if (OnWeaponSwitched != null) OnWeaponSwitched();
-        UpdateMovementClips();
+        //UpdateMovementClips();
         if (photonView.isMine) SetWeaponOffsetProperty(weaponOffset);
 
         SwitchWeaponcoroutine = null;
@@ -1086,10 +1096,7 @@ public class MechCombat : Combat {
 
     public void UpdateMovementClips() {
         if (weaponScripts == null) return;
-        //bool isPreviousWeaponTwoHanded = (weaponScripts[(weaponOffset + 2) % 4] != null && weaponScripts[(weaponOffset + 2) % 4].twoHanded);
         bool isCurrentWeaponTwoHanded = (weaponScripts[(weaponOffset) % 4] != null && weaponScripts[(weaponOffset) % 4].twoHanded);
-
-        //if (isPreviousWeaponTwoHanded == isCurrentWeaponTwoHanded) return;
 
         MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
@@ -1117,7 +1124,10 @@ public class MechCombat : Combat {
 
     private void UpdateSpecialCurWeaponType() {
         for (int i = 0; i < 4; i++) {
-            if (weaponScripts[i] == null) continue;
+            if (weaponScripts[i] == null) {
+                curSpecialWeaponTypes[i] = (int)SpecialWeaponTypes.EMPTY;
+                continue;
+            }
 
             for (int j = 0; j < SpecialWeaponTypeStrs.Length; j++) {
                 if (weaponScripts[i].weaponType == SpecialWeaponTypeStrs[j]) {
@@ -1242,11 +1252,13 @@ public class MechCombat : Combat {
             EnableAllColliders(false);
             GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
             ResetWeaponAnimationVariables();
+            ResetMeleeVars();
         } else {
             if (!isDead) {
                 gameObject.layer = playerlayer;
                 EnableAllColliders(true);
             }
+            receiveNextSlash = true;//on skill when melee attacking            
         }
     }
 
