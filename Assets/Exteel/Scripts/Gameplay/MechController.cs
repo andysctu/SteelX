@@ -48,7 +48,7 @@ public class MechController : Photon.MonoBehaviour {
     public bool grounded = true, onSkill = false; //changes with animator bool "grounded"
     public float LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
-    [HideInInspector] public bool onSkillMoving = false, onInstantMoving = false;
+    public bool onSkillMoving = false, onInstantMoving = false;
 
     private void Awake() {
         RegisterOnMechBuilt();
@@ -57,7 +57,6 @@ public class MechController : Photon.MonoBehaviour {
 
     private void Start() {
         initComponents();
-        //initControllerVar();
         initCam(cam_orbitradius, cam_angleoffset);
     }
 
@@ -85,8 +84,10 @@ public class MechController : Photon.MonoBehaviour {
 
     public void initControllerVar() {
         //grounded = true;
+        onInstantMoving = false;
         canVerticalBoost = false;
         isSlowDown = false;
+        mechCamera.LockMechRotation(false);
         curboostingSpeed = movementVariables.moveSpeed;
         Animator.SetBool("Boost", false);
         Animator.SetBool("Jump", false);
@@ -118,7 +119,6 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void initCam(float radius, float offset) {
-        mechCamera.LockMechRotation(false);
         mechCamera.orbitRadius = radius;
         mechCamera.angleOffset = offset;
     }

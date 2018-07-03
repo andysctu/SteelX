@@ -362,7 +362,7 @@ public class GameManager : Photon.MonoBehaviour {
 		// Update time
 		if (storedStartTime != 0 || storedDuration != 0) {//sometimes storedStartTime is 0 but duration is not
 			timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
-			currentTimer = storedDuration - timerDuration;
+			currentTimer = storedDuration - timerDuration ;
 
 			int seconds = currentTimer % 60;
 			int minutes = currentTimer / 60;
@@ -697,6 +697,10 @@ public class GameManager : Photon.MonoBehaviour {
 		//this is always received by master
 
 		PhotonView pv = PhotonView.Find (player_viewID);
+        if(pv == null) {
+            Debug.LogWarning("can't find pv");
+            return;
+        }
 
 		//check if no one is taking the another flag
 		if(pv.owner.GetTeam() == PunTeams.Team.blue || pv.owner.GetTeam() == PunTeams.Team.none){

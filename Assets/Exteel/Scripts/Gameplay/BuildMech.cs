@@ -63,7 +63,6 @@ public class BuildMech : Photon.MonoBehaviour {
         InitAnimatorControllers();
 
         if (buildLocally) {
-            Debug.Log("called here");
             buildMech(UserData.myData.Mech[0]);
         } else { // Register my name on all clients
             photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
@@ -530,7 +529,12 @@ public class BuildMech : Photon.MonoBehaviour {
 
     private void FindGameManager() {
         if (gm == null) {
-            gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+            GameObject GameManager_go = GameObject.Find("GameManager");
+            if (GameManager_go == null) {//TODO : remake this , this happens when game end
+                DestroyImmediate(this.gameObject);
+            }else
+                gm = GameManager_go.GetComponent<GameManager>();
+            
         }
     }
 

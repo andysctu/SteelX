@@ -77,5 +77,7 @@ public class SlashDetector : MonoBehaviour {
     public void EnableDetector(bool b) {
         boxCollider.enabled = b;
         enabled = b;
+
+        Target.Clear();
     }
 }

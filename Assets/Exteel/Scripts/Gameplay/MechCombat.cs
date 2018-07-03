@@ -18,6 +18,7 @@ public class MechCombat : Combat {
     [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;
     [SerializeField] private SkillController SkillController;
     private InRoomChat InRoomChat;
+    private int TerrainLayer;
 
     private string[] SpecialWeaponTypeStrs = new string[11] { "APS", "LMG", "Rifle", "Shotgun", "Rectifier", "Sword", "Spear", "Shield", "Rocket", "Cannon", "EMPTY" };
     private enum GeneralWeaponTypes { Ranged, Rectifier, Melee, Shield, Rocket, Cannon, Empty };//for efficiency
@@ -127,7 +128,7 @@ public class MechCombat : Combat {
     private void Awake() {
         InitAnimatorControllers();
         RegisterOnWeaponSwitched();
-        RegisterOnWeaponBuilt();
+        RegisterOnMechBuilt();
         RegisterOnSkill();
     }
 
@@ -155,7 +156,7 @@ public class MechCombat : Combat {
         OnWeaponSwitched += UpdateMovementClips;
     }
 
-    private void RegisterOnWeaponBuilt() {
+    private void RegisterOnMechBuilt() {
         if(bm== null)return;
         bm.OnMechBuilt += InitWeapons;
         bm.OnMechBuilt += initCombatVariables;
@@ -202,6 +203,7 @@ public class MechCombat : Combat {
     }
 
     private void initGameObjects() {
+        TerrainLayer = LayerMask.GetMask("Terrain");
         BulletCollector = GameObject.Find("BulletCollector");
         GameObject g = GameObject.Find("InRoomChat");
         if (g != null)
@@ -267,6 +269,7 @@ public class MechCombat : Combat {
         setIsFiring(0, false);
         setIsFiring(1, false);
 
+        animator.SetBool("OnBCN", false);
         animator.SetBool("BCNLoad", false);
         BCNbulletNum = 2;
     }
@@ -700,10 +703,17 @@ public class MechCombat : Combat {
         //check if he has the flag
         if (PhotonNetwork.isMasterClient) {
             if (photonView.owner.NickName == ((gm.BlueFlagHolder == null) ? "" : gm.BlueFlagHolder.NickName)) {
-                print("that dead man has the flag.");
-                gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 0, transform.position);
+
+                RaycastHit hit;
+                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayer);
+
+                gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 0, hit.point);
             } else if (photonView.owner.NickName == ((gm.RedFlagHolder == null) ? "" : gm.RedFlagHolder.NickName)) {
-                gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 1, transform.position);
+
+                RaycastHit hit;
+                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayer);
+
+                gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 1, hit.point);
             }
         }
         isDead = true;//TODO : check this again
@@ -756,11 +766,13 @@ public class MechCombat : Combat {
         }
 
         initMechStats();
-
         //MechController.initControllerVar();
         displayPlayerInfo.gameObject.SetActive(!photonView.isMine);
 
+        gameObject.layer = default_layer;
+        GetComponent<CharacterController>().enabled = false;
         transform.position = gm.SpawnPoints[respawnPoint].position;
+        GetComponent<CharacterController>().enabled = true;
         gameObject.layer = playerlayer;
         isDead = false;
         EffectController.RespawnEffect();
@@ -1251,6 +1263,7 @@ public class MechCombat : Combat {
             gameObject.layer = default_layer;
             EnableAllColliders(false);
             GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed)
+            animator.Play("Walk",0);
             ResetWeaponAnimationVariables();
             ResetMeleeVars();
         } else {
@@ -1270,6 +1283,9 @@ public class MechCombat : Combat {
         isRMeleePlaying = false;
         ShowTrail(0, false);
         ShowTrail(1, false);
+        animator.SetBool("OnBCN", false);
+        animator.SetBool("BCNLoad",false);
+        BCNbulletNum = 2;
 
         if (photonView.isMine) {
             animator.SetBool(AnimatorVars.onMelee_id, false);

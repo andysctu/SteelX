@@ -149,11 +149,11 @@ public class BulletTrace : MonoBehaviour {
 
             impact.GetComponent<ParticleSystem>().Play();
         } else {
-            //impact = Instantiate(bulletImpact_onShield, target.position, Quaternion.identity, bulletCollector);
-            //impact.transform.rotation = Quaternion.LookRotation(target.transform.forward);
+            if(target == null)return;
 
-            target.GetComponent<ParticleSystem>().Play();
+            ParticleSystem ps_onShield = target.GetComponent<ParticleSystem>();            
+            if (ps_onShield != null)//ps_onShield sometimes is null ( target respawn too fast so the shield get destroyed first )
+                ps_onShield.Play();
         }
-        
     }
 }
