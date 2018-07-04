@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class HangarManager : MonoBehaviour {
     [SerializeField] private GameObject[] Tabs;
@@ -98,7 +99,12 @@ public class HangarManager : MonoBehaviour {
             Material[] mats = new Material[2];
             mats[0] = Resources.Load("MechPartMaterials/" + part.name + "mat", typeof(Material)) as Material;
             mats[1] = Resources.Load("MechPartMaterials/" + part.name + "_2mat", typeof(Material)) as Material;
-            displayPart.GetComponentInChildren<SkinnedMeshRenderer>().materials = mats;
+
+            SkinnedMeshRenderer displaypart_SMR = displayPart.GetComponentInChildren<SkinnedMeshRenderer>();
+            displaypart_SMR.materials = mats;
+            displaypart_SMR.receiveShadows = false;
+            displaypart_SMR.allowOcclusionWhenDynamic = false;
+            displaypart_SMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
 
         LoadWeapons();

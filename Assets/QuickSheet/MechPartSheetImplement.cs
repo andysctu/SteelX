@@ -28,49 +28,50 @@ public class MechPartSheetImplement : MonoBehaviour {
     //        return;
     //    }
 
-    //    ImplementData();
+    //    //ImplementData();
 
     //    //load heads to manager
-    //    string[] path = new string[1] { "Assets/Data/MechParts/Head" };
-    //    string[] heads_GUID = AssetDatabase.FindAssets("t:Head", path);
-    //    MechPartManager.Heads = new Head[heads_GUID.Length];
+    //    //string[] path = new string[1] { "Assets/Data/MechParts/Head" };
+    //    //string[] heads_GUID = AssetDatabase.FindAssets("t:Head", path);
+    //    //MechPartManager.Heads = new Head[heads_GUID.Length];
 
-    //    for (int i = 0; i < heads_GUID.Length; i++) {
-    //        MechPartManager.Heads[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(heads_GUID[i]), typeof(Head)) as Head;
-    //    }
+    //    //for (int i = 0; i < heads_GUID.Length; i++) {
+    //    //    MechPartManager.Heads[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(heads_GUID[i]), typeof(Head)) as Head;
+    //    //}
     //    Array.Sort(MechPartManager.Heads, (x, y) => String.Compare(((x == null) ? "z" : x.displayName), ((y == null) ? "z" : y.displayName)));
-
+        
     //    //load Arms to manager
-    //    path = new string[1] { "Assets/Data/MechParts/Arm" };
-    //    string[] arms_GUID = AssetDatabase.FindAssets("t:Arm", path);
-    //    MechPartManager.Arms = new Arm[heads_GUID.Length];
+    //    //path = new string[1] { "Assets/Data/MechParts/Arm" };
+    //    //string[] arms_GUID = AssetDatabase.FindAssets("t:Arm", path);
+    //    //MechPartManager.Arms = new Arm[heads_GUID.Length];
 
-    //    for (int i = 0; i < arms_GUID.Length; i++) {
-    //        MechPartManager.Arms[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(arms_GUID[i]), typeof(Arm)) as Arm;
-    //    }
+    //    //for (int i = 0; i < arms_GUID.Length; i++) {
+    //    //    MechPartManager.Arms[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(arms_GUID[i]), typeof(Arm)) as Arm;
+    //    //}
     //    Array.Sort(MechPartManager.Arms, (x, y) => String.Compare(((x == null) ? "z" : x.displayName), ((y == null) ? "z" : y.displayName)));
 
     //    //load Cores to manager
-    //    path = new string[1] { "Assets/Data/MechParts/Core" };
-    //    string[] cores_GUID = AssetDatabase.FindAssets("t:Core", path);
-    //    MechPartManager.Cores = new Core[cores_GUID.Length];
+    //    //path = new string[1] { "Assets/Data/MechParts/Core" };
+    //    //string[] cores_GUID = AssetDatabase.FindAssets("t:Core", path);
+    //    //MechPartManager.Cores = new Core[cores_GUID.Length];
 
-    //    for (int i = 0; i < cores_GUID.Length; i++) {
-    //        MechPartManager.Cores[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(cores_GUID[i]), typeof(Core)) as Core;
-    //    }
+    //    //for (int i = 0; i < cores_GUID.Length; i++) {
+    //    //    MechPartManager.Cores[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(cores_GUID[i]), typeof(Core)) as Core;
+    //    //}
 
-    //    Array.Sort(MechPartManager.Cores, (x, y) => String.Compare( ((x==null)? "z" : x.displayName), ((y == null) ? "z" : y.displayName)));
+    //    Array.Sort(MechPartManager.Cores, (x, y) => String.Compare(((x == null) ? "z" : x.displayName), ((y == null) ? "z" : y.displayName)));
 
     //    //load Legs to manager
-    //    path = new string[1] { "Assets/Data/MechParts/Leg" };
-    //    string[] legs_GUID = AssetDatabase.FindAssets("t:Leg", path);
-    //    MechPartManager.Legs = new Leg[legs_GUID.Length];
+    //    //path = new string[1] { "Assets/Data/MechParts/Leg" };
+    //    //string[] legs_GUID = AssetDatabase.FindAssets("t:Leg", path);
+    //    //MechPartManager.Legs = new Leg[legs_GUID.Length];
 
-    //    for (int i = 0; i < legs_GUID.Length; i++) {
-    //        MechPartManager.Legs[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(legs_GUID[i]), typeof(Leg)) as Leg;
-    //    }
+    //    //for (int i = 0; i < legs_GUID.Length; i++) {
+    //    //    MechPartManager.Legs[i] = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(legs_GUID[i]), typeof(Leg)) as Leg;
+    //    //}
     //    Array.Sort(MechPartManager.Legs, (x, y) => String.Compare(((x == null) ? "z" : x.displayName), ((y == null) ? "z" : y.displayName)));
 
+    //    EditorUtility.SetDirty(MechPartManager);
     //    AssetDatabase.SaveAssets();
     //    //load Boosters to manager
     //    //not implemented

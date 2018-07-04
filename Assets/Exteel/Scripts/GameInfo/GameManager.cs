@@ -627,7 +627,6 @@ public class GameManager : Photon.MonoBehaviour {
 
 		CloseRespawnPanel();
 		mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint, mech_num);
-		mcbt.isDead = false;
 	}
 
 	public void ShowRespawnPanel(){
