@@ -631,12 +631,12 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void CheckIfBuildLocally() {
-        buildLocally = (MySceneManager.ActiveScene == MySceneManager.SceneName.Hangar ||
-            MySceneManager.ActiveScene == MySceneManager.SceneName.Lobby || MySceneManager.ActiveScene == MySceneManager.SceneName.Store || onPanel);
+        buildLocally = (SceneStateController.ActiveScene == HangarManager._sceneName ||
+            SceneStateController.ActiveScene == LobbyManager._sceneName || SceneStateController.ActiveScene == StoreManager._sceneName || onPanel);
     }
 
     private void CheckIsDataGetSaved() {
-        isDataGetSaved = (SceneManagerHelper.ActiveSceneName != "Store");
+        isDataGetSaved = (SceneManagerHelper.ActiveSceneName != StoreManager._sceneName);
     }
 }
 

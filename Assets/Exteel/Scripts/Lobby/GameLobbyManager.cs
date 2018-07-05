@@ -1,71 +1,49 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
-public class GameLobbyManager : Photon.MonoBehaviour {
-
-	[SerializeField] GameObject LobbyPlayer;
-	[SerializeField] GameObject Team1, Team2, MenuBar, MapInfo;
-	[SerializeField] Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
-	[SerializeField] private InRoomChat InRoomChat;
+public class GameLobbyManager : IScene {
+    [SerializeField] private GameObject LobbyPlayer;
+    [SerializeField] private GameObject Team1, Team2, MenuBar, MapInfo;
+    [SerializeField] private Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
+    [SerializeField] private InRoomChat InRoomChat;
     [SerializeField] private Button startButton;
-    private MySceneManager MySceneManager;
+    [SerializeField] private PhotonView photonView;
+    [SerializeField] private AudioClip gameLobbyMusic;
+    private MusicManager MusicManager;
+    private const int Waiting = 0, inBattle = 1;
     private bool callStartgame = false;
-	private string[] Maps = new string[1]{"Simulation"};
-	List<GameObject> players ;
+    private string[] Maps = new string[1] { "Simulation" };
+    private List<GameObject> players;
 
-    private void Awake() {
-        MySceneManager = FindObjectOfType<MySceneManager>();
-    }
+    public const string _sceneName = "GameLobby";
 
-    void OnEnable () {
-		// For debugging, so we don't have to login each time
-		//if (!PhotonNetwork.connected) {
-		//	Debug.Log ("Not connected");
-			// this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
-			//PhotonNetwork.automaticallySyncScene = true;
+    public override void StartScene() {
+        base.StartScene();
 
-			// the following line checks if this client was just created (and not yet online). if so, we connect
-//			if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated) {
-			// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
-//			PhotonNetwork.ConnectUsingSettings ("0.9");
-//			}
-
-			// generate a name for this player, if none is assigned yet
-			/*if (string.IsNullOrEmpty (PhotonNetwork.playerName)) {
-				PhotonNetwork.playerName = "Guest" + Random.Range (1, 9999);
-			}*/
-			//yield return new WaitUntil (PhotonNetwork.connected);
-			//PhotonNetwork.CreateRoom("Test Room", new RoomOptions() { MaxPlayers = 10 }, null);
-	//	}
-		if (!PhotonNetwork.connected) {
-            MySceneManager.GoToLobby();
+        if (!PhotonNetwork.connected) {
+            SceneStateController.LoadScene(LobbyManager._sceneName);
             return;
-		}
+        }
 
         //check if previous players are not destroyed
-        if(players != null && players.Count > 0) {
-            foreach(GameObject player in players) {
-                if(player != null) {
-                    Destroy(player);
-                }
+        if (players != null && players.Count > 0) {
+            foreach (GameObject player in players) {
+                if (player != null) Destroy(player);
             }
         }
 
-		players = new List<GameObject>();
-		for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
-			PhotonPlayer player = PhotonNetwork.playerList[i];
+        players = new List<GameObject>();
+        for (int i = 0; i < PhotonNetwork.playerList.Length; i++) {
+            PhotonPlayer player = PhotonNetwork.playerList[i];
 
-			if(player.GetTeam() == null){
-				player.SetTeam (PunTeams.Team.blue);
-			}
+            if (player.GetTeam() == PunTeams.Team.none) {
+                player.SetTeam(PunTeams.Team.blue);
+            }
+            AddPlayer(player.NickName, player.GetTeam());
+        }
 
-			addPlayer(player.name, player.GetTeam());
-		}
-
-		PhotonNetwork.automaticallySyncScene = true;
+        PhotonNetwork.automaticallySyncScene = true;
 
         bool isMasterClient = PhotonNetwork.isMasterClient;
         startButton.interactable = Map.interactable = GameMode.interactable = MaxKills.interactable = MaxPlayers.interactable = MaxTime.interactable = isMasterClient;
@@ -73,206 +51,210 @@ public class GameLobbyManager : Photon.MonoBehaviour {
         MaxTime.value = MaxPlayers.value = MaxKills.value = GameMode.value = Map.value = 0;
 
         //set default team
-        if (PhotonNetwork.player.GetTeam()==PunTeams.Team.none){
-			PhotonNetwork.player.SetTeam (PunTeams.Team.blue);
-		}
+        if (PhotonNetwork.player.GetTeam() == PunTeams.Team.none) {
+            PhotonNetwork.player.SetTeam(PunTeams.Team.blue);
+        }
 
-		LoadRoomInfo ();//Update the caption text
-	}
+        LoadRoomInfo();//Update the caption text
+        InRoomChat.Clear();
+        if (MusicManager == null)
+            MusicManager = FindObjectOfType<MusicManager>();
+        MusicManager.ManageMusic(gameLobbyMusic);
+    }
 
-	private void addPlayer(string name, PunTeams.Team team) {//addPlayer also setTeam
-		GameObject lobbyPlayer = Instantiate (LobbyPlayer, transform.position, Quaternion.identity, null);
+    private void AddPlayer(string name, PunTeams.Team team) {//addPlayer also setTeam
+        GameObject lobbyPlayer = Instantiate(LobbyPlayer, transform.position, Quaternion.identity, null);
 
-		if (team == PunTeams.Team.blue || team == PunTeams.Team.none) {
-			lobbyPlayer.transform.SetParent (Team1.transform);
-		} else {
-			lobbyPlayer.transform.SetParent (Team2.transform);
-		}
-
+        lobbyPlayer.transform.SetParent((team == PunTeams.Team.blue || team == PunTeams.Team.none) ? Team1.transform : Team2.transform);
         lobbyPlayer.transform.localPosition = Vector3.zero;
 
-		lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1,1,1);
-		lobbyPlayer.name = name;
-		lobbyPlayer.GetComponentInChildren<Text> ().text = name;
+        lobbyPlayer.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        lobbyPlayer.name = name;
+        lobbyPlayer.GetComponentInChildren<Text>().text = name;
 
-		players.Add(lobbyPlayer);
-	}
+        players.Add(lobbyPlayer);
+    }
 
-	public void SwitchTeamBlue(){
-		if(callStartgame){
-			return;
-		}
-		if(PunTeams.Team.blue == PhotonNetwork.player.GetTeam()){
-			return;
-		}else{
-			PhotonNetwork.player.SetTeam (PunTeams.Team.blue);
-			photonView.RPC ("SwitchTeam",PhotonTargets.All, PhotonNetwork.player.name, 0);
-		}
-	}
-	public void SwitchTeamRed(){
-		if(callStartgame){
-			return;
-		}
-		if(PunTeams.Team.red == PhotonNetwork.player.GetTeam()){
-			return;
-		}else{
-			PhotonNetwork.player.SetTeam (PunTeams.Team.red);
-			photonView.RPC ("SwitchTeam",PhotonTargets.All,  PhotonNetwork.player.name, 1);
-		}
-	}
+    public void SwitchTeamBlue() {
+        if (callStartgame) return;
 
-	public void StartGame() {
-		if(callStartgame){
-			return;
-		}
-		Debug.Log ("Starting game");
-		PhotonNetwork.room.open = false;//join mid game
+        if (PunTeams.Team.blue == PhotonNetwork.player.GetTeam()) {
+            return;
+        } else {
+            PhotonNetwork.player.SetTeam(PunTeams.Team.blue);
+            photonView.RPC("SwitchTeam", PhotonTargets.All, PhotonNetwork.player.NickName, 0);
+        }
+    }
 
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("GameInit", false);
-		PhotonNetwork.room.SetCustomProperties (h);
+    public void SwitchTeamRed() {
+        if (callStartgame) return;
 
-		photonView.RPC ("CallStartGame", PhotonTargets.All);
+        if (PunTeams.Team.red == PhotonNetwork.player.GetTeam()) {
+            return;
+        } else {
+            PhotonNetwork.player.SetTeam(PunTeams.Team.red);
+            photonView.RPC("SwitchTeam", PhotonTargets.All, PhotonNetwork.player.NickName, 1);
+        }
+    }
 
-		Invoke ("MasterLoadLevel", 0f);
-		//PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
-	}
+    public void StartGame() {
+        if (callStartgame) return;
 
-	void MasterLoadLevel(){
-		PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
-	}
+        PhotonNetwork.room.IsOpen = false;//join mid game
 
-	public void LeaveGame() {
-		Debug.Log("Leaving game");
-		PhotonNetwork.LeaveRoom();
-        MySceneManager.GoToLobby();
-	}
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("GameInit", false);
+        h.Add("Status", inBattle);
+        PhotonNetwork.room.SetCustomProperties(h);
 
-	public void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
-		Debug.Log("Player connected: " + newPlayer.name);
-		addPlayer(newPlayer.name, newPlayer.GetTeam());
-	}
+        photonView.RPC("CallStartGame", PhotonTargets.All);
 
-	public void OnPhotonPlayerDisconnected(PhotonPlayer disconnectedPlayer) {
-		Debug.Log ("Player disconnected: " + disconnectedPlayer.name);
-		GameObject player = null;
-		foreach (GameObject lobbyPlayer in players) {
-			if (lobbyPlayer.name == disconnectedPlayer.name) {
-				player = lobbyPlayer;
-			}
-		}
+        Invoke("MasterLoadLevel", 0f);
+    }
 
-		if(player!=null){
-			Destroy(player);
-			players.Remove(player);
-		}
-	}
+    private void MasterLoadLevel() {
+        PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
+    }
 
-	public void OnMasterClientSwitched(PhotonPlayer newMaster){
-		Debug.Log ("Master switched.");
-		InRoomChat.AddLine ("The Master is switched to " + newMaster.NickName);
-		if (PhotonNetwork.isMasterClient) {
-			startButton.interactable = true;
-			Map.interactable = true;
-			GameMode.interactable = true;
-			MaxKills.interactable = true;
-			MaxPlayers.interactable = true;
-			MaxTime.interactable = true;
-		}
-	}
-	public void LoadRoomInfo(){
-		Map.captionText.text = PhotonNetwork.room.CustomProperties["Map"].ToString();
-		MaxTime.captionText.text = PhotonNetwork.room.CustomProperties["MaxTime"].ToString();
-		MaxPlayers.captionText.text = PhotonNetwork.room.MaxPlayers.ToString() ;
-		MaxKills.captionText.text = PhotonNetwork.room.CustomProperties["MaxKills"].ToString();
-		GameMode.captionText.text = PhotonNetwork.room.CustomProperties["GameMode"].ToString();
-	}
-		
-	public void ChangeMap() {
-		photonView.RPC("ChangeMap", PhotonTargets.All, Map.captionText.text);
+    public void LeaveGame() {
+        Debug.Log("Leaving game");
+        PhotonNetwork.LeaveRoom();
+        SceneStateController.LoadScene(LobbyManager._sceneName);
+    }
 
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("Map", Map.captionText.text);
-		PhotonNetwork.room.SetCustomProperties (h);
-	}
+    public void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
+        Debug.Log("Player connected: " + newPlayer.NickName);
+        AddPlayer(newPlayer.NickName, newPlayer.GetTeam());
+    }
 
-	public void ChangeGameMode() {
-		photonView.RPC("ChangeGameMode", PhotonTargets.All, GameMode.captionText.text);
+    public void OnPhotonPlayerDisconnected(PhotonPlayer disconnectedPlayer) {
+        Debug.Log("Player disconnected: " + disconnectedPlayer.NickName);
+        GameObject player = null;
+        foreach (GameObject lobbyPlayer in players) {
+            if (lobbyPlayer.name == disconnectedPlayer.NickName) {
+                player = lobbyPlayer;
+            }
+        }
 
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("GameMode", GameMode.captionText.text);
-		PhotonNetwork.room.SetCustomProperties (h);
-	}
+        if (player != null) {
+            Destroy(player);
+            players.Remove(player);
+        }
+    }
 
-	public void ChangeMaxKills() {
-		photonView.RPC("ChangeMaxKills", PhotonTargets.All, MaxKills.captionText.text);
+    public void OnMasterClientSwitched(PhotonPlayer newMaster) {
+        Debug.Log("Master switched.");
+        InRoomChat.AddLine("The Master is switched to " + newMaster.NickName);
+        if (PhotonNetwork.isMasterClient) {
+            startButton.interactable = true;
+            Map.interactable = true;
+            GameMode.interactable = true;
+            MaxKills.interactable = true;
+            MaxPlayers.interactable = true;
+            MaxTime.interactable = true;
+        }
+    }
+    public void LoadRoomInfo() {
+        Map.captionText.text = PhotonNetwork.room.CustomProperties["Map"].ToString();
+        MaxTime.captionText.text = PhotonNetwork.room.CustomProperties["MaxTime"].ToString();
+        MaxPlayers.captionText.text = PhotonNetwork.room.MaxPlayers.ToString();
+        MaxKills.captionText.text = PhotonNetwork.room.CustomProperties["MaxKills"].ToString();
+        GameMode.captionText.text = PhotonNetwork.room.CustomProperties["GameMode"].ToString();
+    }
 
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("MaxKills", int.Parse(MaxKills.captionText.text));
-		PhotonNetwork.room.SetCustomProperties (h);
-	}
+    public void ChangeMap() {
+        photonView.RPC("ChangeMap", PhotonTargets.All, Map.captionText.text);
 
-	public void ChangeMaxPlayers() {
-		photonView.RPC("ChangeMaxPlayers", PhotonTargets.All, MaxPlayers.captionText.text);
-		PhotonNetwork.room.MaxPlayers = int.Parse (MaxPlayers.captionText.text);
-	}
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("Map", Map.captionText.text);
+        PhotonNetwork.room.SetCustomProperties(h);
+    }
 
-	public void ChangeMaxTime() {
-		photonView.RPC("ChangeMaxTime", PhotonTargets.All, MaxTime.captionText.text);
+    public void ChangeGameMode() {
+        photonView.RPC("ChangeGameMode", PhotonTargets.All, GameMode.captionText.text);
 
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("MaxTime", int.Parse(MaxTime.captionText.text));
-		PhotonNetwork.room.SetCustomProperties (h);
-	}
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("GameMode", GameMode.captionText.text);
+        PhotonNetwork.room.SetCustomProperties(h);
+    }
 
-	// RPCs
-	[PunRPC]
-	public void ChangeMap(string map) {
-		int i = Array.IndexOf(Maps, map);
-		Map.captionText.text = map;
-	}
+    public void ChangeMaxKills() {
+        photonView.RPC("ChangeMaxKills", PhotonTargets.All, MaxKills.captionText.text);
 
-	[PunRPC]
-	public void ChangeMaxTime(string time) {
-		MaxTime.captionText.text = time;
-	}
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("MaxKills", int.Parse(MaxKills.captionText.text));
+        PhotonNetwork.room.SetCustomProperties(h);
+    }
 
-	// Not implemented yet
-	[PunRPC]
-	public void ChangeGameMode(string gameMode) {
-		GameMode.captionText.text = gameMode;
-	}
+    public void ChangeMaxPlayers() {
+        photonView.RPC("ChangeMaxPlayers", PhotonTargets.All, MaxPlayers.captionText.text);
+        PhotonNetwork.room.MaxPlayers = int.Parse(MaxPlayers.captionText.text);
+    }
 
-	[PunRPC]
-	public void ChangeMaxKills(string maxKills) {
-		MaxKills.captionText.text = maxKills;
-	}
+    public void ChangeMaxTime() {
+        photonView.RPC("ChangeMaxTime", PhotonTargets.All, MaxTime.captionText.text);
 
-	[PunRPC]
-	public void ChangeMaxPlayers(string maxPlayers) {
-		MaxPlayers.captionText.text = maxPlayers;
-	}
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("MaxTime", int.Parse(MaxTime.captionText.text));
+        PhotonNetwork.room.SetCustomProperties(h);
+    }
 
-	[PunRPC]
-	public void SwitchTeam(string name, int teamID){
-		GameObject playerToDestroy = null;
-		foreach (GameObject lobbyPlayer in players) {
-			if (lobbyPlayer.name == name) {
-				playerToDestroy = lobbyPlayer;
-				break;
-			}
-		}
-		if (playerToDestroy != null) {
-			Destroy (playerToDestroy);
-			players.Remove (playerToDestroy);
-		}
+    // RPCs
+    [PunRPC]
+    public void ChangeMap(string map) {
+        Map.captionText.text = map;
+    }
 
-		addPlayer (name, (teamID == 0) ? PunTeams.Team.blue : PunTeams.Team.red);
-	}
+    [PunRPC]
+    public void ChangeMaxTime(string time) {
+        MaxTime.captionText.text = time;
+    }
 
-	[PunRPC]
-	void CallStartGame(){
-		callStartgame = true;
-		InRoomChat.AddLine ("Game is starting.");
-	}
+    [PunRPC]
+    public void ChangeGameMode(string gameMode) {
+        GameMode.captionText.text = gameMode;
+    }
+
+    [PunRPC]
+    public void ChangeMaxKills(string maxKills) {
+        MaxKills.captionText.text = maxKills;
+    }
+
+    [PunRPC]
+    public void ChangeMaxPlayers(string maxPlayers) {
+        MaxPlayers.captionText.text = maxPlayers;
+    }
+
+    [PunRPC]
+    public void SwitchTeam(string name, int teamID) {
+        GameObject playerToDestroy = null;
+        foreach (GameObject lobbyPlayer in players) {
+            if (lobbyPlayer.name == name) {
+                playerToDestroy = lobbyPlayer;
+                break;
+            }
+        }
+        if (playerToDestroy != null) {
+            Destroy(playerToDestroy);
+            players.Remove(playerToDestroy);
+        }
+
+        AddPlayer(name, (teamID == 0) ? PunTeams.Team.blue : PunTeams.Team.red);
+    }
+
+    [PunRPC]
+    private void CallStartGame() {
+        callStartgame = true;
+        SceneStateController.SetSceneToLoadOnLoaded(GameSceneManager._sceneName);
+        InRoomChat.AddLine("Game is starting.");
+    }
+
+    public override void EndScene() {
+        base.EndScene();
+        MusicManager.ManageMusic(null);
+    }
+
+    public override string GetSceneName() {
+        return _sceneName;
+    }
 }

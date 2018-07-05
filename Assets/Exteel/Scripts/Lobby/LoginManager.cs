@@ -1,47 +1,34 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
-public class LoginManager : MonoBehaviour {
-    [SerializeField]private Text ConnectingText;
-    [SerializeField]private Button login_button;
-    private MySceneManager MySceneManager;
-    private Coroutine connectionCoroutine = null;
-    private string region = "US" , gameVersion = "1.7";
-    private int focus = 0;  
+public class LoginManager : IScene {
+    [SerializeField] private Text ConnectingText;
+    [SerializeField] private Button login_button;
+    [SerializeField] private InputField[] fields;
+    [SerializeField] private Dropdown serverToConnect;
+    [SerializeField] private GameObject error;
+    [SerializeField] private AudioClip loginMusic;
+    private MusicManager MusicManager;
+    private string region = "US";
+    private int selectedInputField = 0;
 
-	public InputField[] fields;
-	public GameObject error;
-    public Dropdown serverToConnect;
+    public const string _sceneName = "Login";
     public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
+    public string gameVersion = "2.8";
 
-    void Awake() {
-        MySceneManager = FindObjectOfType<MySceneManager>();
+    public override void StartScene() {
+        base.StartScene();
+        ResetInputFields();
+        Application.targetFrameRate = 60;
 
-        // the following line checks if this client was just created (and not yet online). if so, we connect
-        if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
-		{
-			// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
-			//print("Connecting to server...");
-            //PhotonNetwork.ConnectUsingSettings(gameVersion);
-        }
-        // if you wanted more debug out, turn this on:
-        // PhotonNetwork.logLevel = NetworkLogLevel.Full;
-
-         Application.targetFrameRate = 60;//TODO : consider remake this
+        if (MusicManager == null)
+            MusicManager = FindObjectOfType<MusicManager>();
+        MusicManager.ManageMusic(loginMusic);
     }
 
-	void OnConnectedToMaster(){
-		print ("Connected to Server successfully.");
-	}
-
-	void Start() {
-		fields[0].Select();
-		fields[0].ActivateInputField();
-	}
-
-	public void Login(){
-		/*WWWForm form = new WWWForm();
+    public void Login() {
+        /*WWWForm form = new WWWForm();
 
 		if (fields [0].text.Length == 0) {
 			fields [0].text = "andysctu";
@@ -76,35 +63,33 @@ public class LoginManager : MonoBehaviour {
 			//error.SetActive(true);
 		}*/
 
-		// for debug
-		UserData.myData.Mech = new Mech[4]; // receiving Json will set the array to null
-		for (int i = 0; i < 4; i++) {
-			UserData.myData.Mech [i].PopulateParts ();
-		}
-		PhotonNetwork.playerName = fields [0].text;
+        // for debug
+        UserData.myData.Mech = new Mech[4];
+        UserData.region = FindRegionCode(region);
+        UserData.version = gameVersion;
+        for (int i = 0; i < 4; i++)UserData.myData.Mech[i].PopulateParts();        
+        PhotonNetwork.playerName = (string.IsNullOrEmpty(fields[0].text)) ? "Guest" + Random.Range(0, 9999) : fields[0].text;        
+
         ConnectToServerSelected();
-
-        if (connectionCoroutine!=null)StopCoroutine(connectionCoroutine);
-        connectionCoroutine = StartCoroutine(LoadLobbyWhenConnected());
-
+        StartCoroutine(LoadLobbyWhenConnected());
     }
 
-    IEnumerator LoadLobbyWhenConnected() {
-        int times = 0;
+    private IEnumerator LoadLobbyWhenConnected() {
+        int attempt_times = 0;
         login_button.interactable = false;
         ConnectingText.gameObject.SetActive(true);
         //check if connected
-        while (!PhotonNetwork.connected && times < 25) {
-            times++;
+        while (!PhotonNetwork.connected && attempt_times < 20) {
+            attempt_times++;
             string dots = "";
-            for(int j=0;j<=times%3;j++)//UI effect
-                dots+=".";
+            for (int j = 0; j <= attempt_times % 3; j++)//UI effect
+                dots += ".";
             ConnectingText.color = Color.yellow;
             ConnectingText.text = "Connecting" + dots;
             yield return new WaitForSeconds(0.3f);
         }
-        
-        if(times >= 15) {
+
+        if (attempt_times >= 20) {
             ConnectingText.color = Color.red;
             ConnectingText.text = "Failed to connect";
             login_button.interactable = true;
@@ -116,52 +101,86 @@ public class LoginManager : MonoBehaviour {
         }
 
         login_button.interactable = true;
-        MySceneManager.LoadScene(MySceneManager.SceneName.Lobby);
-        ConnectingText.gameObject.SetActive(false);        
+        SceneStateController.LoadScene(LobbyManager._sceneName);
+        ConnectingText.gameObject.SetActive(false);
     }
 
-	void Update() {
-		if (Input.GetKeyDown(KeyCode.Tab)) {
-			focus = (focus+1)%2;
-			fields[focus].Select();
-			fields[focus].ActivateInputField();
-		}
+    private void Update() {
+        InputProcess();
+    }
 
-		if (Input.GetKeyDown(KeyCode.Return)) {
-			Login();
-		}
-	}
+    private void InputProcess() {
+        if (Input.GetKeyDown(KeyCode.Tab)) {
+            selectedInputField = (selectedInputField + 1) % 2;
+            fields[selectedInputField].Select();
+            fields[selectedInputField].ActivateInputField();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return)) {
+            Login();
+        }
+    }
 
     public void ChangeServerToConnect() {
         region = serverToConnect.captionText.text;
     }
 
-    void ConnectToServerSelected() {
+    private void ConnectToServerSelected() {
+        PhotonNetwork.ConnectToRegion(FindRegionCode(region), gameVersion);
+    }
+
+    private CloudRegionCode FindRegionCode(string region) {
         switch (region) {
             case "US":
-            PhotonNetwork.ConnectToRegion(CloudRegionCode.us, gameVersion);
-            break;
+            return CloudRegionCode.us;
             case "EU":
-            PhotonNetwork.ConnectToRegion(CloudRegionCode.eu, gameVersion);
-            break;
+            return CloudRegionCode.eu;
             case "KR":
-            PhotonNetwork.ConnectToRegion(CloudRegionCode.kr, gameVersion);
-            break;
+            return CloudRegionCode.kr;
             case "SA":
-            PhotonNetwork.ConnectToRegion(CloudRegionCode.sa, gameVersion);
-            break;
+            return CloudRegionCode.sa;
             case "JP":
-            PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, gameVersion);
-            break;
+            return CloudRegionCode.jp;
+            case "Asia":
+            return CloudRegionCode.asia;
+            default:
+            return CloudRegionCode.jp;
         }
     }
 
-	public void OnFailedToConnectToPhoton(object parameters)
-	{
-		Debug.Log("OnFailedToConnectToPhoton. StatusCode: " + parameters + " ServerAddress: " + PhotonNetwork.ServerAddress);
-	}
+    private void ResetInputFields() {
+        foreach (InputField i in fields)
+            i.text = "";
 
-    public void Exit() {
+        fields[0].Select();
+        fields[0].ActivateInputField();
+    }
+
+    public override string GetSceneName() {
+        return _sceneName;
+    }
+
+    public void ExitGame() {
         Application.Quit();
     }
+
+    public void OnFailedToConnectToPhoton(object parameters) {
+        Debug.Log("OnFailedToConnectToPhoton. StatusCode: " + parameters + " ServerAddress: " + PhotonNetwork.ServerAddress);
+    }
+
+    private void OnConnectedToMaster() {
+        print("Connected to Server successfully.");
+    }
 }
+
+//  void Awake() {
+//      // the following line checks if this client was just created (and not yet online). if so, we connect
+//      if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
+//{
+//	// Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
+//	//print("Connecting to server...");
+//          //PhotonNetwork.ConnectUsingSettings(gameVersion);
+//      }
+//      // if you wanted more debug out, turn this on:
+//      // PhotonNetwork.logLevel = NetworkLogLevel.Full;
+//  }

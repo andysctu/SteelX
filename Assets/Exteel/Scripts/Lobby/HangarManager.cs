@@ -1,47 +1,49 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
-public class HangarManager : MonoBehaviour {
+public class HangarManager : IScene {
     [SerializeField] private GameObject[] Tabs;
     [SerializeField] private GameObject UIPart, UIWeap, UISkill;
     [SerializeField] private GameObject Mech;
-    [SerializeField] private Sprite buttonTexture;
     [SerializeField] private Button displaybutton1, displaybutton2;
     [SerializeField] private Image[] skill_slots;
     [SerializeField] private WeaponManager WeaponManager;
     [SerializeField] private SkillManager SkillManager;
     [SerializeField] private MechPartManager MechPartManager;
-    private OperatorStatsUI OperatorStatsUI;
-    private Button[] main_buttons;
+    [SerializeField] private OperatorStatsUI OperatorStatsUI;
+    [SerializeField] private AudioClip hangarMusic;
+    private MusicManager MusicManager;
     private Transform[] contents;
-    private int activeTab;
     //private Dictionary<string, string> equipped;
     private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/mech";
     public int Mech_Num = 0;
+    public const string _sceneName = "Hangar";
 
-    private void Awake() {
+    public override void StartScene() {
+        base.StartScene();
+        OperatorStatsUI.gameObject.SetActive(true);
         Application.targetFrameRate = 60;
-        OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
+
+        if (MusicManager==null)
+            MusicManager = FindObjectOfType<MusicManager>();
+        MusicManager.ManageMusic(hangarMusic);
     }
 
     private void Start() {
         //Mech m = UserData.myData.Mech[0];
-
         displaybutton1.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
         displaybutton2.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());
 
         contents = new Transform[Tabs.Length];
         for (int i = 0; i < Tabs.Length; i++) {
-            Transform pane = Tabs[i].transform.Find("Pane");            
+            Transform pane = Tabs[i].transform.Find("Pane");
             contents[i] = pane.Find("Viewport/Content");
         }
 
         // Debug, take out
         Part[] Parts = MechPartManager.GetAllParts();
         foreach (Part part in Parts) {
-            if(part == null || part.GetPartPrefab()==null)continue;
+            if (part == null || part.GetPartPrefab() == null) continue;
             //foreach (string part in UserData.myData.Owns) {
             int parent = -1;
             switch (part.name[0]) {
@@ -68,13 +70,12 @@ public class HangarManager : MonoBehaviour {
             uiPart = Instantiate(UIPart, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[parent]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            Sprite s = Resources.Load<Sprite>(part.name);
             uiPart.GetComponentInChildren<Text>().text = part.displayName;
             uiPart.transform.Find("Equip").GetComponent<Button>().onClick.AddListener(() => EquipMechPart(part.name));
             uiPart.transform.Find("Preview").GetComponent<Button>().onClick.AddListener(() => OperatorStatsUI.PreviewMechProperty(part.name, false));
 
             GameObject displayPart = Instantiate(part.GetPartPrefab(), Vector3.zero, Quaternion.Euler(0, -45, 0));
-            displayPart.transform.localRotation = (part.name[0] == 'P')? Quaternion.Euler(0,-90,0) : Quaternion.Euler(0, -45, 0);
+            displayPart.transform.localRotation = (part.name[0] == 'P') ? Quaternion.Euler(0, -90, 0) : Quaternion.Euler(0, -45, 0);
 
             //Parent part to its center & move the center to the grip point
             GameObject displayCenter = new GameObject();
@@ -87,11 +88,11 @@ public class HangarManager : MonoBehaviour {
 
             displayCenter.transform.position = grip.position;
             displayCenter.transform.SetParent(grip);
-            displayCenter.transform.localScale = new Vector3(1,1,1);
+            displayCenter.transform.localScale = new Vector3(1, 1, 1);
 
             if (parent == 4) { //booster adjust the size
                 grip.localScale = new Vector3(30, 30, 30);
-                displayCenter.transform.localRotation = Quaternion.Euler(180,-90,-90);
+                displayCenter.transform.localRotation = Quaternion.Euler(180, -90, -90);
             }
 
             displayCenter.transform.localPosition -= Vector3.forward * 2;
@@ -106,7 +107,6 @@ public class HangarManager : MonoBehaviour {
             displaypart_SMR.allowOcclusionWhenDynamic = false;
             displaypart_SMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
-
         LoadWeapons();
         LoadSkills();
         DisplayPlayerSkills();
@@ -118,7 +118,7 @@ public class HangarManager : MonoBehaviour {
             GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[5]);
             uiPart.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            GameObject displayWeapon = Instantiate(weapon.GetWeaponPrefab(), Vector3.zero, Quaternion.Euler(0,-90,0));
+            GameObject displayWeapon = Instantiate(weapon.GetWeaponPrefab(), Vector3.zero, Quaternion.Euler(0, -90, 0));
 
             //Parent part to its center & move the center to the grip point
             GameObject displayCenter = new GameObject();
@@ -133,16 +133,11 @@ public class HangarManager : MonoBehaviour {
             displayCenter.transform.SetParent(grip);
             displayCenter.transform.localScale = new Vector3(1, 1, 1);
 
-            Sprite s = Resources.Load<Sprite>(weaponName);
-            if (s == null) Debug.Log(weapon + "'s sprite is missing");
-
             uiPart.GetComponentInChildren<Text>().text = weapon.displayName == "" ? weaponName : weapon.displayName;
 
             Button[] btns = uiPart.transform.Find("Equip").GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {
                 if ((weapon.twoHanded) && (i == 1 || i == 3)) {//if two handed , turn off equip on right hand
-                    //uiPart.transform.Find("Equip1r").gameObject.SetActive(false);
-                    //uiPart.transform.Find("Equip2r").gameObject.SetActive(false);
                     btns[i].gameObject.SetActive(false);
                     btns[i].image.enabled = false;
                     continue;
@@ -207,7 +202,7 @@ public class HangarManager : MonoBehaviour {
 		}*/
 
         // Return to lobby
-        SceneManager.LoadScene("Lobby");
+        SceneStateController.LoadScene(LobbyManager._sceneName);
     }
 
     public void EquipMechPart(string part_name) {
@@ -223,7 +218,7 @@ public class HangarManager : MonoBehaviour {
 
             //TODO : for fun . remove this ;
             if (part.displayName == "GameMaster") {
-                if(PhotonNetwork.player.NickName != "chonz")
+                if (PhotonNetwork.player.NickName != "chonz")
                     return;
             }
 
@@ -233,7 +228,6 @@ public class HangarManager : MonoBehaviour {
                 SkinnedMeshRenderer newSMR = (partPrefab == null) ? null : partPrefab.GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
                 SkinnedMeshRenderer[] curSMR = Mech.GetComponentsInChildren<SkinnedMeshRenderer>();
                 //Material material = Resources.Load("MechPartMaterials/"+part_name + "mat", typeof(Material)) as Material;
-                
 
                 switch (part_name[0]) {
                     case 'C':
@@ -249,7 +243,7 @@ public class HangarManager : MonoBehaviour {
                     case 'L':
                     parent = 2;
                     mechPartToReplace = UserData.myData.Mech[Mech_Num].Legs;
-                    UserData.myData.Mech[Mech_Num].Legs = part_name;                       
+                    UserData.myData.Mech[Mech_Num].Legs = part_name;
                     break;
                     case 'H':
                     parent = 3;
@@ -257,7 +251,7 @@ public class HangarManager : MonoBehaviour {
                     UserData.myData.Mech[Mech_Num].Head = part_name;
                     break;
                     default:
-                        Debug.Log("Can't catorize this : "+ part_name);
+                    Debug.Log("Can't catorize this : " + part_name);
                     break;
                 }
 
@@ -269,7 +263,6 @@ public class HangarManager : MonoBehaviour {
                 mats[0] = Resources.Load("MechPartMaterials/" + part_name + "mat", typeof(Material)) as Material;
                 mats[1] = Resources.Load("MechPartMaterials/" + part_name + "_2mat", typeof(Material)) as Material;
                 curSMR[parent].materials = mats;
-
             } else {//Booster
                 parent = 4;
                 mechPartToReplace = UserData.myData.Mech[Mech_Num].Booster;
@@ -278,9 +271,9 @@ public class HangarManager : MonoBehaviour {
                 Transform boosterbone = Mech.transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone");
                 if (boosterbone != null) {
                     GameObject booster = (boosterbone.childCount == 0) ? null : boosterbone.GetChild(0).gameObject;
-                    if (booster != null) {//destroy previous 
+                    if (booster != null) {//destroy previous
                         DestroyImmediate(booster);
-                    }                   
+                    }
 
                     GameObject newBooster = Instantiate(partPrefab, boosterbone);
                     newBooster.transform.localPosition = Vector3.zero;
@@ -341,23 +334,22 @@ public class HangarManager : MonoBehaviour {
         DisplayPlayerSkills();
     }
 
-    private void OnDisable() {
+    public void GoToLobby() {
+        SceneStateController.LoadScene(LobbyManager._sceneName);
+    }
+
+    public override void EndScene() {
+        base.EndScene();
+        OperatorStatsUI.gameObject.SetActive(false);
         ChangeDisplayMech(0);
+    }
+
+    public override string GetSceneName() {
+        return _sceneName;
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+//private int activeTab;
 
 //private void activateTab(int index) {
 //    for (int i = 0; i < Tabs.Length; i++) {

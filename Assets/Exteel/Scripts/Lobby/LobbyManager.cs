@@ -1,116 +1,71 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
-public class LobbyManager: MonoBehaviour {
-    [SerializeField] GameObject CreateRoomModel;
-    [SerializeField] Text RoomName;
-    [SerializeField] GameObject RoomPanel;
-    [SerializeField] Transform RoomsWrapper;    
-    [SerializeField] Text playercountText; //just to see how many player in lobby
-    private MySceneManager MySceneManager;
+public class LobbyManager : IScene {
+    [SerializeField] private GameObject OperatorStatsUI, CreateRoomModel, RoomPanel;
+    [SerializeField] private Text RoomName, playerCountText;
+    [SerializeField] private Transform RoomsWrapper;
+    [SerializeField] private AudioClip lobbyMusic;
+    private MusicManager MusicManager;
+    private const int Waiting = 0, inBattle = 1;
     private GameObject[] rooms;
-    private float checkPlayerTime = 0;
     private string selectedRoom = "";
+    private float checkPlayerTime = 0;
     private const float checkPlayerDeltaTime = 6f;
 
-    private void Awake() {
-        MySceneManager = FindObjectOfType<MySceneManager>();
-    }
-    
-    void Start () {
-        
-        // For debugging, so we don't have to login each time
-        if (!PhotonNetwork.connected) {
-			// this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
-			PhotonNetwork.automaticallySyncScene = true;
+    public const string _sceneName = "Lobby";
 
-			// the following line checks if this client was just created (and not yet online). if so, we connect
-			if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated)
-			{
-                // Connect to the photon master-server. We use the settings saved in PhotonServerSettings (a .asset file in this project)
-                PhotonNetwork.ConnectUsingSettings("1.4");//TODO : connect to region set in login
+    public override void StartScene() {
+        base.StartScene();
+        CheckIfPlayerConnected();
+        PhotonNetwork.autoJoinLobby = true;
+        OperatorStatsUI.gameObject.SetActive(true);
+
+        if (MusicManager == null)
+            MusicManager = FindObjectOfType<MusicManager>();
+        MusicManager.ManageMusic(lobbyMusic);
+    }
+
+    private void CheckIfPlayerConnected() {
+        if (!PhotonNetwork.connected) {
+            // the following line checks if this client was just created (and not yet online). if so, we connect
+            if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated) {
+                PhotonNetwork.ConnectToRegion(UserData.region, UserData.version);
             }
 
-			// generate a name for this player, if none is assigned yet
-			if (string.IsNullOrEmpty(PhotonNetwork.playerName))
-			{
-				PhotonNetwork.playerName = "Guest" + Random.Range(1, 9999);
-			}
-		}
-		PhotonNetwork.autoJoinLobby = true;
-	}
-	
-	void FixedUpdate(){
-		if(Time.time - checkPlayerTime >= checkPlayerDeltaTime){//update player count
-			checkPlayerTime = Time.time;
-			playercountText.text = PhotonNetwork.countOfPlayers.ToString();
-		}
-	}
-
-	void OnJoinedLobby(){
-		print ("Joined Lobby");
-	}
-
-	public void CreateRoom() {
-		Debug.Log ("Creating room: " + RoomName.text);
-
-		//Default settings
-		ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable ();
-		h.Add ("Map", "Simulation");
-		h.Add ("GameMode", "DeathMatch");
-		h.Add ("MaxKills", 1);
-		h.Add ("MaxTime", 5); 
-		//PhotonNetwork.CreateRoom(RoomName.text, new RoomOptions() {IsVisible = true, IsOpen = true, MaxPlayers = 10 },h, TypedLobby.Default);
-		RoomOptions ro = new RoomOptions(){IsVisible = true, IsOpen = true, MaxPlayers = 4 };
-		ro.CustomRoomProperties = h;
-		string[] str = { "Map", "GameMode"};
-		ro.CustomRoomPropertiesForLobby = str;
-		PhotonNetwork.CreateRoom(RoomName.text,ro,TypedLobby.Default);
-        HideCreateRoomModel();
-
+            if (string.IsNullOrEmpty(PhotonNetwork.playerName)) {
+                PhotonNetwork.playerName = "Guest" + Random.Range(1, 9999);
+            }
+        }
     }
 
-	public void OnPhotonCreateRoomFailed()
-	{
-//		ErrorDialog = "Error: Can't create room (room name maybe already used).";
-		Debug.Log("OnPhotonCreateRoomFailed got called. This can happen if the room exists (even if not visible). Try another room name.");
-	}
+    private void FixedUpdate() {
+        if (Time.time - checkPlayerTime >= checkPlayerDeltaTime) {//update player count
+            checkPlayerTime = Time.time;
+            playerCountText.text = PhotonNetwork.countOfPlayers.ToString();
+        }
+    }
 
-	public void OnPhotonJoinRoomFailed(object[] cause)
-	{
-//		ErrorDialog = "Error: Can't join room (full or unknown room name). " + cause[1];
-		Debug.Log("OnPhotonJoinRoomFailed got called. This can happen if the room is not existing or full or closed.");
-	}
+    public void CreateRoom() {
+        Debug.Log("Creating room: " + RoomName.text);
 
-	public void OnPhotonRandomJoinFailed()
-	{
-//		ErrorDialog = "Error: Can't join random room (none found).";
-		Debug.Log("OnPhotonRandomJoinFailed got called. Happens if no room is available (or all full or invisible or closed). JoinrRandom filter-options can limit available rooms.");
-	}
-
-	public void OnCreatedRoom()
-	{
-		Debug.Log("Room created successfully.");
-        MySceneManager.GoToGameLobby();
-	}
-
-	public void OnDisconnectedFromPhoton()
-	{
-		Debug.Log("Disconnected from Photon.");
-	}
-
-    public void OnReceivedRoomListUpdate() {
-        Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);
-        Refresh();
+        //Default settings
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("Map", "Simulation");
+        h.Add("GameMode", "DeathMatch");
+        h.Add("MaxKills", 1);
+        h.Add("MaxTime", 5);
+        h.Add("Status", Waiting);
+        RoomOptions ro = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
+        ro.CustomRoomProperties = h;
+        string[] str = { "Map", "GameMode", "Status" };
+        ro.CustomRoomPropertiesForLobby = str;
+        PhotonNetwork.CreateRoom(RoomName.text, ro, TypedLobby.Default);
+        HideCreateRoomModel();
     }
 
     public void Refresh() {
-        if (rooms != null) {
-            for (int i = 0; i < rooms.Length; i++) {
-                Destroy(rooms[i]);
-            }
-        }
+        if (rooms != null) for (int i = 0; i < rooms.Length; i++) Destroy(rooms[i]);
 
         RoomInfo[] roomsInfo = PhotonNetwork.GetRoomList();
         Debug.Log("roomsInfo.length :" + roomsInfo.Length);
@@ -118,20 +73,23 @@ public class LobbyManager: MonoBehaviour {
         for (int i = 0; i < roomsInfo.Length; i++) {
             GameObject roomPanel = Instantiate(RoomPanel);
             Text[] info = roomPanel.GetComponentsInChildren<Text>();
-            Debug.Log(roomsInfo[i].name);
-            info[3].text = "Players: " + roomsInfo[i].playerCount + "/" + roomsInfo[i].MaxPlayers;
-            info[2].text = "GameMode: " + roomsInfo[i].CustomProperties["GameMode"];
-            info[1].text = "Map: " + roomsInfo[i].CustomProperties["Map"];
-            info[0].text = "Room Name: " + roomsInfo[i].name;
+            Debug.Log(roomsInfo[i].Name);
+            info[3].text = roomsInfo[i].PlayerCount + "/" + roomsInfo[i].MaxPlayers;
+
+            if(roomsInfo[i].CustomProperties["Status"] != null)
+                info[2].text = int.Parse(roomsInfo[i].CustomProperties["Status"].ToString()) == Waiting ? "Waiting" : "In Battle";
+            else
+                info[2].text = "";
+
+            info[1].text = roomsInfo[i].CustomProperties["GameMode"].ToString();
+            info[0].text = roomsInfo[i].Name;
 
             roomPanel.transform.SetParent(RoomsWrapper);
             RectTransform rt = roomPanel.GetComponent<RectTransform>();
             rt.localPosition = new Vector3(0, 0, 0);
             rt.localScale = new Vector3(1, 1, 1);
             int index = i;
-            roomPanel.GetComponent<Button>().onClick.AddListener(() => {
-                selectedRoom = roomsInfo[index].name;
-            });
+            roomPanel.GetComponent<Button>().onClick.AddListener(() => { selectedRoom = roomsInfo[index].Name; });
             rooms[i] = roomPanel;
         }
     }
@@ -153,8 +111,63 @@ public class LobbyManager: MonoBehaviour {
         }
     }
 
+    public void GoToHangar() {
+        SceneStateController.LoadScene(HangarManager._sceneName);
+    }
+
+    public void GoToStore() {
+        SceneStateController.LoadScene(StoreManager._sceneName);
+    }
+
+    public void ExitToLogin() {
+        PhotonNetwork.Disconnect();
+        SceneStateController.LoadScene(LoginManager._sceneName);
+    }
+
+    public override void EndScene() {
+        base.EndScene();
+        OperatorStatsUI.gameObject.SetActive(false);
+    }
+
     public void OnJoinedRoom() {
         Debug.Log("OnJoinedRoom");
-        MySceneManager.GoToGameLobby();
+        SceneStateController.LoadScene(GameLobbyManager._sceneName);
+    }
+
+    public override string GetSceneName() {
+        return _sceneName;
+    }
+
+    private void OnJoinedLobby() {
+        print("Joined Lobby");
+    }
+
+    public void OnPhotonCreateRoomFailed() {
+        //		ErrorDialog = "Error: Can't create room (room name maybe already used).";
+        Debug.Log("OnPhotonCreateRoomFailed got called. This can happen if the room exists (even if not visible). Try another room name.");
+    }
+
+    public void OnPhotonJoinRoomFailed(object[] cause) {
+        //		ErrorDialog = "Error: Can't join room (full or unknown room name). " + cause[1];
+        Debug.Log("OnPhotonJoinRoomFailed got called. This can happen if the room is not existing or full or closed.");
+    }
+
+    public void OnPhotonRandomJoinFailed() {
+        //		ErrorDialog = "Error: Can't join random room (none found).";
+        Debug.Log("OnPhotonRandomJoinFailed got called. Happens if no room is available (or all full or invisible or closed). JoinrRandom filter-options can limit available rooms.");
+    }
+
+    public void OnCreatedRoom() {
+        Debug.Log("Room created successfully.");
+        //MySceneManager.GoToGameLobby();
+    }
+
+    public void OnDisconnectedFromPhoton() {
+        Debug.Log("Disconnected from Photon.");
+    }
+
+    public void OnReceivedRoomListUpdate() {
+        Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);
+        Refresh();
     }
 }

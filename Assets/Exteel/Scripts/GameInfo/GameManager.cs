@@ -66,6 +66,9 @@ public class GameManager : Photon.MonoBehaviour {
 	private BuildMech mechBuilder;
 	float curtime;
 
+    //TODO : debug take out
+    public bool endGameImm = false;
+
 	//TODO : player can choose target frame rate
 	void Awake(){
 		Application.targetFrameRate = 60;//60:temp
@@ -356,13 +359,19 @@ public class GameManager : Photon.MonoBehaviour {
 			Cursor.visible = true;
 			Cursor.lockState = CursorLockMode.None;
 			PhotonNetwork.LeaveRoom();
-            MySceneManager.ActiveScene = MySceneManager.SceneName.Lobby;
+            SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
 			SceneManager.LoadScene("MainScenes");            
 		}
 		// Update time
 		if (storedStartTime != 0 || storedDuration != 0) {//sometimes storedStartTime is 0 but duration is not
 			timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
 			currentTimer = storedDuration - timerDuration ;
+
+            //TODO : debug take out
+            if (endGameImm) {
+                endGameImm = false;
+                currentTimer = 0;
+            }
 
 			int seconds = currentTimer % 60;
 			int minutes = currentTimer / 60;
@@ -434,8 +443,12 @@ public class GameManager : Photon.MonoBehaviour {
 			}
             PhotonNetwork.LoadLevel("MainScenes");
             PhotonNetwork.room.open = true;
+
+            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+            h.Add("Status", 0);
+            PhotonNetwork.room.SetCustomProperties(h);
         }
-        MySceneManager.ActiveScene = MySceneManager.SceneName.GameLobby;
+        SceneStateController.SetSceneToLoadOnLoaded(GameLobbyManager._sceneName);
 
         // Code to execute after the delay
         Cursor.visible = true;

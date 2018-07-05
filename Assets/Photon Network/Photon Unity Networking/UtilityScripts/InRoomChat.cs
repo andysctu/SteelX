@@ -98,4 +98,8 @@ public class InRoomChat : Photon.MonoBehaviour
 		this.messages.Insert (0, newLine);
        // this.messages.Add(newLine);
     }
+
+    public void Clear() {
+        this.messages.Clear();
+    }
 }

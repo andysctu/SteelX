@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 //Data uid , eid
 
-public class StoreManager : MonoBehaviour {
+public class StoreManager : IScene {
 
 	[SerializeField] GameObject[] Tabs;
 	[SerializeField] GameObject UIPart;
@@ -22,8 +22,9 @@ public class StoreManager : MonoBehaviour {
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/purchase";
 	private int eid_to_pass;
 	public int Mech_Num = 0;
+    public static readonly string _sceneName = "Store";
 
-	void Start () {
+    void Start () {
 		Mech m = UserData.myData.Mech[Mech_Num];
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
@@ -244,5 +245,9 @@ public class StoreManager : MonoBehaviour {
 
 		return eid;
 	}
+
+    public override string GetSceneName() {
+        return _sceneName;
+    }
 }
 
