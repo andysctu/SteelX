@@ -4,7 +4,7 @@
 // <copyright company="Exit Games GmbH">Photon Chat Api - Copyright (C) 2014 Exit Games GmbH</copyright>
 // ----------------------------------------------------------------------------------------------------------------------
 
-#if UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_2017
+#if UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6_0
 #define UNITY
 #endif
 
@@ -23,10 +23,7 @@ namespace ExitGames.Client.Photon.Chat
     /// <summary>Central class of the Photon Chat API to connect, handle channels and messages.</summary>
     /// <remarks>
     /// This class must be instantiated with a IChatClientListener instance to get the callbacks.
-    /// Integrate it into your game loop by calling Service regularly. If the target platform supports Threads/Tasks,
-    /// set UseBackgroundWorkerForSending = true, to let the ChatClient keep the connection by sending from
-    /// an independent thread.
-    ///
+    /// Integrate it into your game loop by calling Service regularly.
     /// Call Connect with an AppId that is setup as Photon Chat application. Note: Connect covers multiple
     /// messages between this client and the servers. A short workflow will connect you to a chat server.
     ///
@@ -126,53 +123,12 @@ namespace ExitGames.Client.Photon.Chat
 
         private readonly IChatClientListener listener = null;
         public ChatPeer chatPeer = null;
-        private const string ChatAppName = "chat";
-        private bool didAuthenticate;
 
+        private bool didAuthenticate;
         private int msDeltaForServiceCalls = 50;
         private int msTimestampOfLastServiceCall;
 
-        /// <summary>Defines if a background thread will call SendOutgoingCommands, while your code calls Service to dispatch received messages.</summary>
-        /// <remarks>
-        /// The benefit of using a background thread to call SendOutgoingCommands is this:
-        ///
-        /// Even if your game logic is being paused, the background thread will keep the connection to the server up.
-        /// On a lower level, acknowledgements and pings will prevent a server-side timeout while (e.g.) Unity loads assets.
-        ///
-        /// Your game logic still has to call Service regularly, or else incoming messages are not dispatched.
-        /// As this typicalls triggers UI updates, it's easier to call Service from the main/UI thread.
-        /// </remarks>
-        public bool UseBackgroundWorkerForSending { get; set; }
-
-        /// <summary>Exposes the TransportProtocol of the used PhotonPeer. Settable while not connected.</summary>
-        public ConnectionProtocol TransportProtocol
-        {
-            get { return this.chatPeer.TransportProtocol; }
-            set
-            {
-                if (this.chatPeer == null || this.chatPeer.PeerState != PeerStateValue.Disconnected)
-                {
-                    this.listener.DebugReturn(DebugLevel.WARNING, "Can't set TransportProtocol. Disconnect first! " + ((this.chatPeer != null) ? "PeerState: " + this.chatPeer.PeerState : "The chatPeer is null."));
-                    return;
-                }
-                this.chatPeer.TransportProtocol = value;
-            }
-        }
-
-        /// <summary>Defines which IPhotonSocket class to use per ConnectionProtocol.</summary>
-        /// <remarks>
-        /// Several platforms have special Socket implementations and slightly different APIs.
-        /// To accomodate this, switching the socket implementation for a network protocol was made available.
-        /// By default, UDP and TCP have socket implementations assigned.
-        ///
-        /// You only need to set the SocketImplementationConfig once, after creating a PhotonPeer
-        /// and before connecting. If you switch the TransportProtocol, the correct implementation is being used.
-        /// </remarks>
-        public Dictionary<ConnectionProtocol, Type> SocketImplementationConfig
-        {
-            get { return this.chatPeer.SocketImplementationConfig; }
-        }
-
+        private const string ChatAppName = "chat";
 
         public ChatClient(IChatClientListener listener, ConnectionProtocol protocol = ConnectionProtocol.Udp)
         {
@@ -202,11 +158,11 @@ namespace ExitGames.Client.Photon.Chat
             if (authValues != null)
             {
                 this.AuthValues = authValues;
-                if (string.IsNullOrEmpty(this.AuthValues.UserId))
+                if (this.AuthValues.UserId == null || this.AuthValues.UserId == "")
                 {
                     if (this.DebugOut >= DebugLevel.ERROR)
                     {
-                        this.listener.DebugReturn(DebugLevel.ERROR, "Connect failed: no UserId specified in authentication values.");
+                        this.listener.DebugReturn(DebugLevel.ERROR, "Connect failed: no UserId specified in authentication values");
                     }
                     return false;
                 }
@@ -222,6 +178,7 @@ namespace ExitGames.Client.Photon.Chat
             this.AppId = appId;
             this.AppVersion = appVersion;
             this.didAuthenticate = false;
+            this.msDeltaForServiceCalls = 100;
             this.chatPeer.QuickResendAttempts = 2;
             this.chatPeer.SentCountAllowance = 7;
 
@@ -231,28 +188,12 @@ namespace ExitGames.Client.Photon.Chat
             this.PrivateChannels.Clear();
             this.PublicChannelsUnsubscribing.Clear();
 
-
-            #if UNITY_WEBGL
-            if (this.TransportProtocol == ConnectionProtocol.Tcp || this.TransportProtocol == ConnectionProtocol.Udp)
-            {
-                this.listener.DebugReturn(DebugLevel.WARNING, "WebGL requires WebSockets. Switching TransportProtocol to WebSocketSecure.");
-                this.TransportProtocol = ConnectionProtocol.WebSocketSecure;
-            }
-            #endif
-
-
             this.NameServerAddress = this.chatPeer.NameServerAddress;
             bool isConnecting = this.chatPeer.Connect();
             if (isConnecting)
             {
                 this.State = ChatState.ConnectingToNameServer;
             }
-
-            if (this.UseBackgroundWorkerForSending)
-            {
-                SupportClass.StartBackgroundCalls(this.SendOutgoingInBackground, this.msDeltaForServiceCalls, "ChatClient Service Thread");
-            }
-
             return isConnecting;
         }
 
@@ -265,49 +206,13 @@ namespace ExitGames.Client.Photon.Chat
         /// </remarks>
         public void Service()
         {
-            // Dispatch until every already-received message got dispatched
-            while (this.HasPeer && this.chatPeer.DispatchIncomingCommands())
+            if (this.HasPeer && (Environment.TickCount - this.msTimestampOfLastServiceCall > this.msDeltaForServiceCalls || this.msTimestampOfLastServiceCall == 0))
             {
-            }
-
-            // if there is no background thread for sending, Service() will do that as well, in intervals
-            if (!this.UseBackgroundWorkerForSending)
-            {
-                if (Environment.TickCount - this.msTimestampOfLastServiceCall > this.msDeltaForServiceCalls || this.msTimestampOfLastServiceCall == 0)
-                {
-                    this.msTimestampOfLastServiceCall = Environment.TickCount;
-
-                    while (this.HasPeer && this.chatPeer.SendOutgoingCommands())
-                    {
-                    }
-                }
+                this.msTimestampOfLastServiceCall = Environment.TickCount;
+                this.chatPeer.Service(); //TODO: make sure to call service regularly. in best case it could be integrated into PhotonHandler.FallbackSendAckThread()!
             }
         }
 
-        /// <summary>
-        /// Called by a separate thread, this sends outgoing commands of this peer, as long as it's connected.
-        /// </summary>
-        /// <returns>True as long as the client is not disconnected.</returns>
-        private bool SendOutgoingInBackground()
-        {
-            while (this.HasPeer && this.chatPeer.SendOutgoingCommands())
-            {
-            }
-
-            return this.State != ChatState.Disconnected;
-        }
-
-
-        [Obsolete("Better use UseBackgroundWorkerForSending and Service().")]
-        public void SendAcksOnly()
-        {
-            if (this.HasPeer) this.chatPeer.SendAcksOnly();
-        }
-
-
-        /// <summary>
-        /// Disconnects from the Chat Server by sending a "disconnect command", which prevents a timeout server-side.
-        /// </summary>
         public void Disconnect()
         {
             if (this.HasPeer && this.chatPeer.PeerState != PeerStateValue.Disconnected)
@@ -316,9 +221,6 @@ namespace ExitGames.Client.Photon.Chat
             }
         }
 
-        /// <summary>
-        /// Locally shuts down the connection to the Chat Server. This resets states locally but the server will have to timeout this peer.
-        /// </summary>
         public void StopThread()
         {
             if (this.HasPeer)
@@ -778,6 +680,11 @@ namespace ExitGames.Client.Photon.Chat
             return found;
         }
 
+        public void SendAcksOnly()
+        {
+            if (this.chatPeer != null) this.chatPeer.SendAcksOnly();
+        }
+
         /// <summary>
         /// Sets the level (and amount) of debug output provided by the library.
         /// </summary>
@@ -1062,6 +969,8 @@ namespace ExitGames.Client.Photon.Chat
                 }
                 else if (this.State == ChatState.ConnectingToFrontEnd)
                 {
+                    this.msDeltaForServiceCalls = this.msDeltaForServiceCalls * 4; // when we arrived on chat server: limit Service calls some more
+
                     this.State = ChatState.ConnectedToFrontEnd;
                     this.listener.OnChatStateChange(this.State);
                     this.listener.OnConnected();
@@ -1124,14 +1033,6 @@ namespace ExitGames.Client.Photon.Chat
             {
                 this.listener.DebugReturn(DebugLevel.INFO, "Connecting to frontend " + this.FrontendAddress);
             }
-
-            #if UNITY_WEBGL
-            if (this.TransportProtocol == ConnectionProtocol.Tcp || this.TransportProtocol == ConnectionProtocol.Udp)
-            {
-                this.listener.DebugReturn(DebugLevel.WARNING, "WebGL requires WebSockets. Switching TransportProtocol to WebSocketSecure.");
-                this.TransportProtocol = ConnectionProtocol.WebSocketSecure;
-            }
-            #endif
 
             this.chatPeer.Connect(this.FrontendAddress, ChatAppName);
         }

@@ -55,7 +55,7 @@ public class SceneStateController : MonoBehaviour {
     }
 
     public void LoadScene(string sceneName) {
-        if (curActiveScene != null) curActiveScene.EndScene();
+        if (curActiveScene != null)curActiveScene.EndScene();
 
         SetCurrentScene(sceneName);
 

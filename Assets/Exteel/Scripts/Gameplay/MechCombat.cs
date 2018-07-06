@@ -17,7 +17,7 @@ public class MechCombat : Combat {
     [SerializeField] private Animator animator;
     [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;
     [SerializeField] private SkillController SkillController;
-    private InRoomChat InRoomChat;
+    private InGameChat InGameChat;
     private int TerrainLayer;
 
     private string[] SpecialWeaponTypeStrs = new string[11] { "APS", "LMG", "Rifle", "Shotgun", "Rectifier", "Sword", "Spear", "Shield", "Rocket", "Cannon", "EMPTY" };
@@ -205,9 +205,7 @@ public class MechCombat : Combat {
     private void initGameObjects() {
         TerrainLayer = LayerMask.GetMask("Terrain");
         BulletCollector = GameObject.Find("BulletCollector");
-        GameObject g = GameObject.Find("InRoomChat");
-        if (g != null)
-            InRoomChat = g.GetComponent<InRoomChat>();
+        InGameChat = FindObjectOfType<InGameChat>();
     }
 
     private void initTargetProperties() {
@@ -666,7 +664,7 @@ public class MechCombat : Combat {
     }
 
     private void DisplayKillMsg(string shooter, string target, string weapon) {
-        InRoomChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
+        InGameChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
     }
 
     [PunRPC]

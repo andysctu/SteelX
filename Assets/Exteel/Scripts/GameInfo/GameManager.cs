@@ -19,10 +19,10 @@ public class GameManager : Photon.MonoBehaviour {
     public static bool isTeamMode;
     public float TimeLeft;
 
-    public InRoomChat InRoomChat;
 	public Transform[] SpawnPoints;
 	public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
-	private GameObject RedFlag, BlueFlag;
+    private InGameChat InGameChat;
+    private GameObject RedFlag, BlueFlag;
 	private GameObject player;
 	private GreyZone[] greyZones;
 
@@ -72,7 +72,8 @@ public class GameManager : Photon.MonoBehaviour {
 	//TODO : player can choose target frame rate
 	void Awake(){
 		Application.targetFrameRate = 60;//60:temp
-	}
+        InGameChat = FindObjectOfType<InGameChat>();
+    }
 
 	void Start() {
 		if (Offline) {
@@ -104,7 +105,7 @@ public class GameManager : Photon.MonoBehaviour {
 		GameInfo.MaxPlayers = PhotonNetwork.room.MaxPlayers;
 		MaxKills = GameInfo.MaxKills;
 		MaxTimeInSeconds = GameInfo.MaxTime * 60;
-		InRoomChat.enabled = true;
+		InGameChat.enabled = true;
 		//playerScorePanels = new Dictionary<string, GameObject>();
 		RedFlagHolder = null;
 		BlueFlagHolder = null;
@@ -160,16 +161,16 @@ public class GameManager : Photon.MonoBehaviour {
 	IEnumerator LateStart(){
 		if(!IsMasterInitGame && sendTimes <10){//sometime master connects very slow
 				sendTimes++;
-				InRoomChat.AddLine ("Sending sync game request..." + sendTimes);
+				InGameChat.AddLine ("Sending sync game request..." + sendTimes);
 				yield return new WaitForSeconds (1f);
 				SendSyncInitGameRequest ();
 				yield return StartCoroutine (LateStart ());
 		}else{
 			if(sendTimes >= 10){
-				InRoomChat.AddLine ("Failed to sync game properties. Is master disconnected ? ");
+				InGameChat.AddLine ("Failed to sync game properties. Is master disconnected ? ");
 				Debug.Log ("master not connected");
 			}else{
-				InRoomChat.AddLine ("Game is sync.");
+				InGameChat.AddLine ("Game is sync.");
 				photonView.RPC ("PlayerFinishedLoading", PhotonTargets.AllBuffered);
 			}
 
@@ -529,11 +530,11 @@ public class GameManager : Photon.MonoBehaviour {
 			return false;
 	}
 	void OnPhotonPlayerConnected(PhotonPlayer newPlayer){
-		InRoomChat.AddLine (newPlayer + " is connected.");
+		InGameChat.AddLine (newPlayer + " is connected.");
 	}
 
 	void OnPhotonPlayerDisconnected(PhotonPlayer player){
-		InRoomChat.AddLine (player + " is disconnected.");
+		InGameChat.AddLine (player + " is disconnected.");
 		playerScorePanels.Remove (player.NickName);
 		playerScores.Remove (player.NickName);
 

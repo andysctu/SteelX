@@ -8,18 +8,18 @@ public class NamePickNewGui : MonoBehaviour
 	
 	public ChatNewGui chatNewComponent;
 	
-	public InputField idInput;
+	//public InputField idInput;
 	
 	public void Start()
 	{
 		this.chatNewComponent = FindObjectOfType<ChatNewGui>();
 		
 		
-		string prefsName = PlayerPrefs.GetString(NamePickNewGui.UserNamePlayerPref);
-		if (!string.IsNullOrEmpty(prefsName))
-		{
-			this.idInput.text = prefsName;
-		}
+		//string prefsName = PlayerPrefs.GetString(NamePickNewGui.UserNamePlayerPref);
+		//if (!string.IsNullOrEmpty(prefsName))
+		//{
+		//	this.idInput.text = prefsName;
+		//}
 	}
 	
 	
@@ -35,8 +35,10 @@ public class NamePickNewGui : MonoBehaviour
 	public void StartChat()
 	{
 		ChatNewGui chatNewComponent = FindObjectOfType<ChatNewGui>();
-		chatNewComponent.UserName = this.idInput.text.Trim();
-		chatNewComponent.Connect();
+        //chatNewComponent.UserName = this.idInput.text.Trim();
+        chatNewComponent.UserName = PhotonNetwork.player.NickName;
+
+        chatNewComponent.Connect();
 		enabled = false;
 		
 		PlayerPrefs.SetString(NamePickNewGui.UserNamePlayerPref, chatNewComponent.UserName);

@@ -6,6 +6,7 @@ public class LobbyManager : IScene {
     [SerializeField] private Text RoomName, playerCountText;
     [SerializeField] private Transform RoomsWrapper;
     [SerializeField] private AudioClip lobbyMusic;
+    [SerializeField] private ChatNewGui ChatNewGui;
     private MusicManager MusicManager;
     private const int Waiting = 0, inBattle = 1;
     private GameObject[] rooms;
@@ -20,6 +21,7 @@ public class LobbyManager : IScene {
         CheckIfPlayerConnected();
         PhotonNetwork.autoJoinLobby = true;
         OperatorStatsUI.gameObject.SetActive(true);
+        ChatNewGui.Init();
 
         if (MusicManager == null)
             MusicManager = FindObjectOfType<MusicManager>();
@@ -127,6 +129,7 @@ public class LobbyManager : IScene {
     public override void EndScene() {
         base.EndScene();
         OperatorStatsUI.gameObject.SetActive(false);
+        ChatNewGui.DisconnectClient();
     }
 
     public void OnJoinedRoom() {
