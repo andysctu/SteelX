@@ -1,27 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
 
 public class HUD : MonoBehaviour {
-    [SerializeField] private HUDText Hit, Kill, Defense;
-
-    // HUD
-    private Slider healthBar;
-    private Slider ENBar;
+    private Combat Combat;
+    private PhotonView pv;
+    private Slider HPBar, ENBar;
     private Image ENBar_fill;
     private bool ENNotEnoughEffectIsPlaying = false;
-    private bool isENAvailable = true;
-    private Text healthtext, ENtext;
+    private Text HPtext, ENtext;
 
-    //Only display one hit msg at the same time
+    private void Start() {
+        Combat = GetComponent<Combat>();
+        pv = Combat.photonView;
 
-    private void initHealthAndENBars() {
-        Slider[] sliders = GameObject.Find("PanelCanvas").GetComponentsInChildren<Slider>();
+        if (!pv.isMine) {
+            enabled = false;
+            return;
+        }
+        InitComponents();
+    }
+
+    private void InitComponents() {
+        InitHealthAndENBars();
+    }
+
+    private void InitHealthAndENBars() {
+        Slider[] sliders = GameObject.Find("PanelCanvas/HUDPanel/HUD").GetComponentsInChildren<Slider>();
         if (sliders.Length > 0) {
-            healthBar = sliders[0];
-            healthBar.value = 1;
-            healthtext = healthBar.GetComponentInChildren<Text>();
+            HPBar = sliders[0];
+            HPBar.value = 1;
+            HPtext = HPBar.GetComponentInChildren<Text>();
             if (sliders.Length > 1) {
                 ENBar = sliders[1];
                 ENBar_fill = ENBar.transform.Find("Fill Area/Fill").GetComponent<Image>();
@@ -31,15 +41,42 @@ public class HUD : MonoBehaviour {
         }
     }
 
-    public void DisplayHit(Camera cam) {//this is called by the player who needs to see
-        Hit.Display(cam);
+    private void Update() {
+        // Update Health bar gradually
+        HPBar.value = calculateSliderPercent(HPBar.value, Combat.CurrentHP / (float)Combat.MAX_HP);
+        HPtext.text = UIExtensionMethods.BarValueToString((int)(Combat.MAX_HP * HPBar.value), Combat.MAX_HP);
+
+        // Update EN bar gradually
+        ENBar.value = calculateSliderPercent(ENBar.value, Combat.CurrentEN / (float)Combat.MAX_EN);
+        ENtext.text = UIExtensionMethods.BarValueToString((int)(Combat.MAX_EN * ENBar.value), (int)Combat.MAX_EN);
     }
 
-    public void DisplayDefense(Camera cam) {
-        Defense.Display(cam);
+    // Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
+    private float calculateSliderPercent(float currentPercent, float targetPercent) {
+        float err = 0.015f;
+        if (Mathf.Abs(currentPercent - targetPercent) > err) {
+            currentPercent = currentPercent + (currentPercent > targetPercent ? -err : err);
+        } else {
+            currentPercent = targetPercent;
+        }
+        return currentPercent;
     }
 
-    public void DisplayKill(Camera cam) {
-        Kill.Display(cam);
+    public void PlayENnotEnoughEffect() {
+        if (!ENNotEnoughEffectIsPlaying) {
+            StartCoroutine(ENNotEnoughEffect());
+        }
+    }
+
+    private IEnumerator ENNotEnoughEffect() {
+        ENNotEnoughEffectIsPlaying = true;
+        for (int i = 0; i < 4; i++) {
+            ENBar_fill.color = new Color32(133, 133, 133, 255);
+            yield return new WaitForSeconds(0.15f);
+            ENBar_fill.color = new Color32(255, 255, 255, 255);
+            yield return new WaitForSeconds(0.15f);
+        }
+        ENNotEnoughEffectIsPlaying = false;
+        yield break;
     }
 }

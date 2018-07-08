@@ -21,7 +21,7 @@ public class MechCombat : Combat {
 
     // EN
     [SerializeField] private EnergyProperties energyProperties = new EnergyProperties();
-    private float currentEN;
+    bool isENAvailable = true;
 
     // Game variables
     private const int playerlayer = 8, default_layer = 0;
@@ -87,15 +87,8 @@ public class MechCombat : Combat {
     private GameObject BulletCollector;//collect all bullets
     private Weapon[] weaponScripts;
 
-    // HUD
-    private Slider healthBar;
-    private Slider ENBar;
-    private Image ENBar_fill;
-    private bool ENNotEnoughEffectIsPlaying = false;
-    private bool isENAvailable = true;
-    private Text healthtext, ENtext;
-
     // Components
+    private HUD HUD;
     private Crosshair crosshair;
     private SlashDetector slashDetector;
     private Sounds Sounds;
@@ -132,7 +125,6 @@ public class MechCombat : Combat {
         initSlashDetector();
 
         SyncWeaponOffset();//TODO : check this
-        initHUD();
     }
 
     private void RegisterOnWeaponSwitched() {
@@ -178,7 +170,7 @@ public class MechCombat : Combat {
 
     private void initMechStats() {//call also when respawn
         CurrentHP = MAX_HP;
-        currentEN = MAX_EN;
+        CurrentEN = MAX_EN;
     }
 
     private void initGameObjects() {
@@ -206,6 +198,7 @@ public class MechCombat : Combat {
         AnimationEventController = currentMech.GetComponent<AnimationEventController>();
         animator = currentMech.GetComponent<Animator>();
         crosshair = cam.GetComponent<Crosshair>();
+        HUD = GetComponent<HUD>();
     }
 
     private void InitAnimatorControllers() {
@@ -252,12 +245,6 @@ public class MechCombat : Combat {
         BCNbulletNum = 2;
     }
 
-    private void initHUD() {
-        if (!photonView.isMine)
-            return;
-        initHealthAndENBars();//other player should not call this ( they share hud )
-    }
-
     private void FindEffectEnd() {
         for (int i = 0; i < 4; i++) {
             if (weapons[i] != null) {
@@ -279,21 +266,6 @@ public class MechCombat : Combat {
 
     private float TimeOfLastShot(int hand) {
         return hand == LEFT_HAND ? timeOfLastShotL : timeOfLastShotR;
-    }
-
-    private void initHealthAndENBars() {
-        Slider[] sliders = GameObject.Find("PanelCanvas").GetComponentsInChildren<Slider>();
-        if (sliders.Length > 0) {
-            healthBar = sliders[0];
-            healthBar.value = 1;
-            healthtext = healthBar.GetComponentInChildren<Text>();
-            if (sliders.Length > 1) {
-                ENBar = sliders[1];
-                ENBar_fill = ENBar.transform.Find("Fill Area/Fill").GetComponent<Image>();
-                ENBar.value = 1;
-                ENtext = ENBar.GetComponentInChildren<Text>();
-            }
-        }
     }
 
     private void ResetMeleeVars() {
@@ -355,9 +327,9 @@ public class MechCombat : Combat {
                     targetpv.RPC("OnHit", PhotonTargets.All, damage, photonView.viewID, weaponName, weaponScripts[weaponOffset + hand].slowDown);
 
                     if (target.gameObject.GetComponent<Combat>().CurrentHP <= 0) {
-                        targetpv.GetComponent<HUD>().DisplayKill(cam);
+                        targetpv.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
                     } else {
-                        targetpv.GetComponent<HUD>().DisplayHit(cam);
+                        targetpv.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
                     }
                 } else {
                     //check what hand is it
@@ -377,15 +349,14 @@ public class MechCombat : Combat {
                     } else {//target is drone
                         targetpv.RPC("ShieldOnHit", PhotonTargets.All, (int)(damage * shieldUpdater.GetDefendEfficiency(false)), photonView.viewID, target_handOnShield, weaponName);
                     }
-
-                    targetpv.GetComponent<HUD>().DisplayDefense(cam);
+                    targetpv.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
                 }
             } else {//ENG
                 photonView.RPC("Shoot", PhotonTargets.All, hand, direction, target_viewID, false, -1);
 
                 targetpv.RPC("OnHeal", PhotonTargets.All, photonView.viewID, damage);
 
-                targetpv.GetComponent<HUD>().DisplayHit(cam);
+                targetpv.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
             }
 
             //increase SP
@@ -431,12 +402,12 @@ public class MechCombat : Combat {
                 }
 
                 if (target.GetComponent<Combat>().CurrentHP <= 0) {
-                    target.GetComponent<HUD>().DisplayKill(cam);
+                    target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL ,cam);
                 } else {
                     if (isHitShield)
-                        target.GetComponent<HUD>().DisplayDefense(cam);
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
                     else
-                        target.GetComponent<HUD>().DisplayHit(cam);
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
                 }
 
                 //increase SP
@@ -539,14 +510,14 @@ public class MechCombat : Combat {
                     if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.LMG) {
                         if (!isTargetShield[hand]) {
                             if (mcbt != null)
-                                mcbt.GetComponent<HUD>().DisplayHit(cam);
+                                mcbt.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
                             else
-                                Targets[hand].transform.root.GetComponent<HUD>().DisplayHit(cam);
+                                Targets[hand].transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
                         } else {
                             if (mcbt != null)
-                                mcbt.GetComponent<HUD>().DisplayDefense(cam);
+                                mcbt.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
                             else
-                                Targets[hand].transform.root.GetComponent<HUD>().DisplayDefense(cam);
+                                Targets[hand].transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
                         }
                     }
                 }
@@ -696,6 +667,7 @@ public class MechCombat : Combat {
         }
         isDead = true;//TODO : check this again
 
+        CurrentHP = 0;
         // Update scoreboard
         gm.RegisterKill(shooter_viewID, photonView.viewID);
         PhotonView shooterpv = PhotonView.Find(shooter_viewID);
@@ -765,14 +737,6 @@ public class MechCombat : Combat {
     private void Update() {
         if (!photonView.isMine || gm.GameOver() || !gm.GameIsBegin) return;
 
-        updateHUD(); // this is also called when on skill & dead
-
-        // Drain HP bar gradually
-        if (isDead) {
-            if (healthBar.value > 0) { healthBar.value = healthBar.value - 0.01f; CurrentHP = 0; };
-            return;
-        }
-
         //TODO : remove this
         if (forceDead) {
             forceDead = false;
@@ -788,7 +752,7 @@ public class MechCombat : Combat {
 
         // Switch weapons
         if (Input.GetKeyDown(KeyCode.R) && !IsSwitchingWeapon && !isDead) {
-            currentEN -= (currentEN >= MAX_EN / 3) ? MAX_EN / 3 : currentEN;
+            CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
 
             photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
         }
@@ -1002,26 +966,6 @@ public class MechCombat : Combat {
         }
     }
 
-    private void updateHUD() {
-        // Update Health bar gradually
-        healthBar.value = calculateSliderPercent(healthBar.value, CurrentHP / (float)MAX_HP);
-        healthtext.text = UIExtensionMethods.BarValueToString((int)(MAX_HP * healthBar.value), MAX_HP);
-        // Update EN bar gradually
-        ENBar.value = calculateSliderPercent(ENBar.value, currentEN / (float)MAX_EN);
-        ENtext.text = UIExtensionMethods.BarValueToString((int)(MAX_EN * ENBar.value), (int)MAX_EN);
-    }
-
-    // Returns currentPercent + 0.01 if currentPercent < targetPercent, else - 0.01
-    private float calculateSliderPercent(float currentPercent, float targetPercent) {
-        float err = 0.015f;
-        if (Mathf.Abs(currentPercent - targetPercent) > err) {
-            currentPercent = currentPercent + (currentPercent > targetPercent ? -err : err);
-        } else {
-            currentPercent = targetPercent;
-        }
-        return currentPercent;
-    }
-
     [PunRPC]
     private void CallSwitchWeapons() {//Play switch weapon animation
         EffectController.SwitchWeaponEffect();
@@ -1181,43 +1125,30 @@ public class MechCombat : Combat {
     }
 
     public void IncrementEN() {
-        currentEN += energyProperties.energyOutput * Time.fixedDeltaTime;
-        if (currentEN > MAX_EN) currentEN = MAX_EN;
+        CurrentEN += energyProperties.energyOutput * Time.fixedDeltaTime;
+        if (CurrentEN > MAX_EN) CurrentEN = MAX_EN;
     }
 
     public void DecrementEN() {
         if (MechController.grounded)
-            currentEN -= energyProperties.dashENDrain * Time.fixedDeltaTime;
+            CurrentEN -= energyProperties.dashENDrain * Time.fixedDeltaTime;
         else
-            currentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime;
+            CurrentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime;
 
-        if (currentEN < 0)
-            currentEN = 0;
+        if (CurrentEN < 0)
+            CurrentEN = 0;
     }
 
     public bool EnoughENToBoost() {
-        if (currentEN >= energyProperties.minENRequired) {
+        if (CurrentEN >= energyProperties.minENRequired) {
             isENAvailable = true;
             return true;
-        } else {//false -> play effect if not already playing
-            if (!ENNotEnoughEffectIsPlaying) {
-                StartCoroutine(ENNotEnoughEffect());
-            }
-            if (!animator.GetBool("Boost"))//can set to false in transition to grounded state but not in transition from grounded state to boost state
+        } else {//play effect
+            HUD.PlayENnotEnoughEffect();
+            if (!animator.GetBool("Boost"))
                 isENAvailable = false;
             return false;
         }
-    }
-
-    private IEnumerator ENNotEnoughEffect() {
-        ENNotEnoughEffectIsPlaying = true;
-        for (int i = 0; i < 4; i++) {
-            ENBar_fill.color = new Color32(133, 133, 133, 255);
-            yield return new WaitForSeconds(0.15f);
-            ENBar_fill.color = new Color32(255, 255, 255, 255);
-            yield return new WaitForSeconds(0.15f);
-        }
-        ENNotEnoughEffectIsPlaying = false;
     }
 
     public bool IsENAvailable() {
@@ -1228,7 +1159,7 @@ public class MechCombat : Combat {
     }
 
     public bool IsENEmpty() {
-        return currentEN <= 0;
+        return CurrentEN <= 0;
     }
 
     private void OnSkill(bool b) {

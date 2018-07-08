@@ -120,14 +120,14 @@ public class BulletTrace : MonoBehaviour {
             if (mcbt == null) {
                 //drone
                 if (target.transform.root.GetComponent<DroneCombat>().CurrentHP <= 0)
-                    target.transform.root.GetComponent<HUD>().DisplayKill(cam);
+                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
                 else
-                    target.transform.root.GetComponent<HUD>().DisplayHit(cam);
+                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
             } else {
                 if (mcbt.CurrentHP <= 0)
-                    target.transform.root.GetComponent<HUD>().DisplayKill(cam);
+                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
                 else
-                    target.transform.root.GetComponent<HUD>().DisplayHit(cam);
+                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
             }
         }
     }

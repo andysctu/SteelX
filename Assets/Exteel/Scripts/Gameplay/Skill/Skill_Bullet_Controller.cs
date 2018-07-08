@@ -200,19 +200,19 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 MechCombat target_mcbt = target.GetComponent<MechCombat>();
                 if (target_mcbt == null) {//Drone
                     if (target.GetComponent<DroneCombat>().CurrentHP <= 0) {
-                        target.GetComponent<HUD>().DisplayKill(cam);
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
                     } else {
-                        target.GetComponent<HUD>().DisplayHit(cam);
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
                     }
                 } else {
                     if (target_mcbt.CurrentHP <= 0) {
-                        target.GetComponent<HUD>().DisplayKill(cam);
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
                     } else {
-                        target.GetComponent<HUD>().DisplayHit(cam);
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
                     }
                 }
             } else {
-                target.GetComponent<HUD>().DisplayHit(cam);
+                target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
             }
         } else {
             bulletTrace.SetShooter(player_pv);

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class DisplayPlayerInfo : MonoBehaviour {
     private TextMesh textMesh;
+    private MeshRenderer textMeshRenderer;
     private Image bar;
     private Combat Combat;
     private Camera cam;
@@ -19,6 +20,7 @@ public class DisplayPlayerInfo : MonoBehaviour {
     private void InitComponents() {
         Combat = transform.root.GetComponent<Combat>();
         textMesh = GetComponentInChildren<TextMesh>();
+        textMeshRenderer = textMesh.GetComponent<MeshRenderer>();
         bar = FindBar();
     }
 
@@ -27,6 +29,8 @@ public class DisplayPlayerInfo : MonoBehaviour {
     }
 
     private void OnMechEnabled(bool b) {
+        textMeshRenderer.enabled = b;
+
         Image[] child_images = GetComponentsInChildren<Image>();
         foreach(Image i in child_images) {
             i.enabled = b;

@@ -101,10 +101,10 @@ public class RCLBulletTrace : MonoBehaviour {
             if (hitColliders [i].tag == "Shield") {//TODO : check if shield overheat
 
 				if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP - bulletdmg / 2 <= 0) {
-                    colliderPV.GetComponent<HUD>().DisplayKill(cam);
+                    colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
 				} else {
-                    colliderPV.GetComponent<HUD>().DisplayDefense(cam);
-				}
+                    colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
+                }
                 ShieldUpdater shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldUpdater>();
                 int hand = shieldUpdater.GetHand();
                 colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, (int)(bulletdmg * shieldUpdater.GetDefendEfficiency(false)), shooter_viewID, hand, "RCL");
@@ -112,9 +112,9 @@ public class RCLBulletTrace : MonoBehaviour {
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
 			} else {
 				if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP - bulletdmg <= 0) {
-                    colliderPV.GetComponent<HUD>().DisplayKill(cam);
+                    colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
 				} else {
-                    colliderPV.GetComponent<HUD>().DisplayHit(cam);
+                    colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
 				}
                 colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_viewID, "RCL", true);
                 colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);

@@ -42,7 +42,7 @@ public class SmashState : MechStateMachineBehaviour {
 	}
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		if ( cc == null || !cc.enabled) return;
+        if ( cc == null || !cc.enabled) return;
 		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
 
         bool b = (inAir && !mcbt.isLMeleePlaying && !mcbt.isRMeleePlaying);
@@ -71,7 +71,7 @@ public class SmashState : MechStateMachineBehaviour {
     }
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-		if (cc == null || !cc.enabled)
+        if (cc == null || !cc.enabled)
 			return;
 
 		mctrl.SetCanVerticalBoost (false);

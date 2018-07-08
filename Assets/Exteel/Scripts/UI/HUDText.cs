@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class HUDText : MonoBehaviour {
+public class HUDText{
+    private Transform transform;
     private Image img;
     private Camera cam;
     private float alpha_decrease_speed = 1, alpha_threshold = 0.75f, scale_decrease_speed = 1f;
     private Vector3 Mech_Mid_Point = new Vector3(0, 5, 0);
+    private bool finishDisplay = true;
 
-    private void Start() {
-        img = GetComponent<Image>();
+    public void Init(GameObject hudText) {
+        transform = hudText.transform;
+        img = hudText.GetComponent<Image>();
     }
     
     public void Display(Camera cam) {
@@ -19,14 +22,12 @@ public class HUDText : MonoBehaviour {
         img.SetNativeSize();
 
         img.color = new Color(img.color.r, img.color.g, img.color.b, 1);
-
-
+        finishDisplay = false;
         img.enabled = (transform.position.z > 0);
-        enabled = (transform.position.z > 0);
     }
 
-	void Update () {
-		if (cam == null) return;
+	public void Update () {
+		if (finishDisplay) return;
 
         img.color = new Color(img.color.r, img.color.g, img.color.b, img.color.a - Time.deltaTime * alpha_decrease_speed);
 
@@ -35,12 +36,17 @@ public class HUDText : MonoBehaviour {
 
        if(transform.position.z < 0) {
             img.enabled = false;
-            enabled = false;
+            finishDisplay = true;
         }
 
         if (img.color.a < alpha_threshold) {
             img.enabled = false;
-            enabled = false;
+            finishDisplay = true;
         }
+    }
+
+    public void StopDisplay() {
+        img.color = new Color(255,255,255,0);
+        finishDisplay = true;
     }
 }

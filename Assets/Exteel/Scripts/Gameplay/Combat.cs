@@ -7,6 +7,8 @@ public class Combat : Photon.MonoBehaviour {
     public float MAX_EN { get { return max_EN; } protected set { max_EN = value; } }
 
     public int CurrentHP { get; protected set; }
+    public float CurrentEN { get; protected set; }
+
     protected GameManager gm;
     public delegate void EnablePlayerAction(bool b);
     public EnablePlayerAction OnMechEnabled;

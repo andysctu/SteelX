@@ -19,6 +19,7 @@ public class DroneCombat : Combat {
     private void Awake() {
         if (SkillController != null) SkillController.OnSkill += OnSkill;
     }
+
     private void Start() {
         CurrentHP = MAX_HP;
         EffectController = GetComponent<EffectController>();
@@ -111,9 +112,11 @@ public class DroneCombat : Combat {
             renderer.enabled = false;
         }
         StartCoroutine(RespawnAfterTime(2));
+        OnMechEnabled(false);
     }
 
     private void EnableDrone() {
+        OnMechEnabled(true);
         EffectController.RespawnEffect();
         gameObject.layer = player_layer;
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
