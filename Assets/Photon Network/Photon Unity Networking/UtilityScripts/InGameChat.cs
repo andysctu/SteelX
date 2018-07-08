@@ -36,7 +36,8 @@ public class InGameChat : Photon.MonoBehaviour {
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Return)) {
             chat_image.enabled = !chat_image.enabled;
-            InputFieldChat.Select();
+            if(chat_image.enabled)
+                InputFieldChat.Select();
         }
     }
 

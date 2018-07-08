@@ -674,9 +674,11 @@ public struct MechProperty {
 
     public float GetMoveSpeed(int totalWeight) {
         if (totalWeight > Capacity) {
-            return BasicSpeed - Capacity / 400f - (totalWeight - Capacity) / 200f;
+            Debug.Log("bas : "+BasicSpeed);
+            return BasicSpeed - 186 - (float)(totalWeight - Capacity) / Capacity * 146;
         } else {
-            return BasicSpeed - totalWeight / 400f;
+            Debug.Log("bas : " + BasicSpeed + " total : " + totalWeight + " cap : " + Capacity + "return : " + (BasicSpeed - totalWeight / Capacity * 186));
+            return BasicSpeed - (float)totalWeight / Capacity * 186;
         }
     }
 

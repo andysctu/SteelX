@@ -2,49 +2,66 @@
 using UnityEngine.UI;
 
 public class DisplayPlayerInfo : MonoBehaviour {
-    [SerializeField] private TextMesh textMesh;
-    [SerializeField] private Canvas barcanvas;
-    [SerializeField] private Image bar;
-
-    private MechCombat mcbt;
-    private DroneCombat drone_mcbt;
+    private TextMesh textMesh;
+    private Image bar;
+    private Combat Combat;
     private Camera cam;
-    private GameObject player;
-    private string name_text; //name
+    private GameObject targetPlayer;
+    private string thisPlayerName; 
+
     private float LastInitRequestTime;
-    private Color32 color_ally = new Color32(223, 234, 11, 255);
-    private delegate int GetCurrentHp();//get mech or drone
-    private GetCurrentHp getCurrentHp, getCurrentMaxHp;
+
+    private void Awake() {
+        InitComponents();
+        RegisterOnMechEnabled();
+    }
+
+    private void InitComponents() {
+        Combat = transform.root.GetComponent<Combat>();
+        textMesh = GetComponentInChildren<TextMesh>();
+        bar = FindBar();
+    }
+
+    private void RegisterOnMechEnabled() {
+        Combat.OnMechEnabled += OnMechEnabled;
+    }
+
+    private void OnMechEnabled(bool b) {
+        Image[] child_images = GetComponentsInChildren<Image>();
+        foreach(Image i in child_images) {
+            i.enabled = b;
+        }
+    }
 
     private void Start() {
-        PhotonView pv = transform.root.GetComponent<PhotonView>();
-        mcbt = transform.root.GetComponent<MechCombat>();
+        PhotonView pv = Combat.photonView;
 
-        if (mcbt == null) {//drone
-            drone_mcbt = transform.root.GetComponent<DroneCombat>();
-            getCurrentHp = GetCurrentDroneHP;
-            getCurrentMaxHp = GetCurrentDroneMaxHP;
-        } else {//player
-            gameObject.SetActive(!pv.isMine);//do not show my name & hp bar
-            getCurrentHp = GetCurrentMechHP;
-            getCurrentMaxHp = GetCurrentMechMaxHP;
-        }
+        //Do not show my name & hp bar
+        gameObject.SetActive(!pv.isMine || tag=="Drone");
+        
+        //Init name
+        thisPlayerName = (pv.owner == null) ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
+        textMesh.text = thisPlayerName;
 
-        name_text = (pv.owner == null) ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
-        textMesh.text = name_text;
-
-        if (GameManager.isTeamMode) {
-            if (tag != "Drone" &&  PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) {
-                bar.color = Color.red; //enemy
-                textMesh.color = Color.red;
-            } else {                
-                bar.color = color_ally;
-                textMesh.color = Color.white;
-            }
+        if (GameManager.isTeamMode && (tag == "Drone" || PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) ) {
+            bar.color = Color.white;
+            textMesh.color = Color.white;
         } else {
             bar.color = Color.red; //enemy
             textMesh.color = Color.red;
         }
+    }
+
+    private Image FindBar() {
+        Image[] child_images = GetComponentsInChildren<Image>();
+        foreach(Image i in child_images) {
+            if(i.type == Image.Type.Filled) {
+                return i;
+            }
+        }
+
+        Debug.LogError("Can't find hp bar");
+        return null;
     }
 
     private void Update() {
@@ -59,31 +76,15 @@ public class DisplayPlayerInfo : MonoBehaviour {
             distance = Mathf.Clamp(distance, 0, 200f);
             transform.localScale = new Vector3(1 + distance / 100 * 1.5f, 1 + distance / 100 * 1.5f, 1);
         } else {
-            if (Time.time - LastInitRequestTime > 0.5f) {
-                player = GameObject.Find(PhotonNetwork.playerName);
-                if (player != null)
-                    cam = player.GetComponentInChildren<Camera>();
+            if (Time.time - LastInitRequestTime > 0.5f) { //some other player's mechs may get built first , so they can't find the target player's cam
+                targetPlayer = GameObject.Find(PhotonNetwork.playerName);
+                if (targetPlayer != null)
+                    cam = targetPlayer.GetComponentInChildren<Camera>();
                 LastInitRequestTime = Time.time;
             }
         }
 
         //update bar value
-        bar.fillAmount = (float)getCurrentHp() / getCurrentMaxHp();
-    }
-
-    private int GetCurrentMechHP() {
-        return mcbt.CurrentHP;
-    }
-
-    private int GetCurrentMechMaxHP() {
-        return mcbt.GetMaxHp();
-    }
-
-    private int GetCurrentDroneHP() {
-        return drone_mcbt.CurrentHP;
-    }
-
-    private int GetCurrentDroneMaxHP() {
-        return drone_mcbt.GetMaxHp();
+        bar.fillAmount = (float)Combat.CurrentHP / Combat.MAX_HP;
     }
 }

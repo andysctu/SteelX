@@ -8,6 +8,8 @@ public class Combat : Photon.MonoBehaviour {
 
     public int CurrentHP { get; protected set; }
     protected GameManager gm;
+    public delegate void EnablePlayerAction(bool b);
+    public EnablePlayerAction OnMechEnabled;
 
     [PunRPC]
     public virtual void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown) { }

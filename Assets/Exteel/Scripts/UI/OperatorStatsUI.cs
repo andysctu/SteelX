@@ -104,6 +104,7 @@ public class OperatorStatsUI : MonoBehaviour {
         PropertiesArray[4] = mechProperty.Size;
         PropertiesArray[5] = mechProperty.Weight;
         PropertiesArray[6] = (int)mechProperty.GetMoveSpeed(totalWeight);
+        Debug.Log("speed : " + PropertiesArray[6]);
         PropertiesArray[7] = (int)mechProperty.GetDashSpeed(totalWeight);
         PropertiesArray[8] = mechProperty.ENOutputRate;
         PropertiesArray[9] = mechProperty.MinENRequired;

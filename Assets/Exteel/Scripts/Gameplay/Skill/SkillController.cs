@@ -420,7 +420,7 @@ public class SkillController : MonoBehaviour {
                 req_2 = CheckIfBoosterMatch(skills[i], boosterName);
 
             skill_isMatchRequirements[i] = req_1 && req_2;
-            Debug.Log("skill : " + i + " is usable ? " + skill_isMatchRequirements[i]);
+            //Debug.Log("skill : " + i + " is usable ? " + skill_isMatchRequirements[i]);
         }
     }
 

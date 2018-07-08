@@ -829,6 +829,10 @@ public class GameManager : Photon.MonoBehaviour {
 		GameIsBegin = true;
 	}
 
+    public void DisplayMsgOnRoomChat(string str) {
+        InGameChat.AddLine(str);
+    }
+
 	Vector3 RandomXZposition(Vector3 pos, float radius){
 		float x = Random.Range (pos.x - radius, pos.x + radius);
 		float z = Random.Range (pos.z - radius, pos.z + radius);

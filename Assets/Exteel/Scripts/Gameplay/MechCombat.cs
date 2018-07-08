@@ -8,17 +8,12 @@ using XftWeapon;
 public class MechCombat : Combat {
     [SerializeField] private MechController MechController;
     [SerializeField] private HeatBar HeatBar;
-    [SerializeField] private DisplayPlayerInfo displayPlayerInfo;
-    [SerializeField] private CrosshairImage crosshairImage;
     [SerializeField] private EffectController EffectController;
-    [SerializeField] private LayerMask playerlayerMask;
     [SerializeField] private Camera cam;
     [SerializeField] private BuildMech bm;
     [SerializeField] private Animator animator;
-    [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;
+    [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;//remove this
     [SerializeField] private SkillController SkillController;
-    private InGameChat InGameChat;
-    private int TerrainLayer;
 
     private string[] SpecialWeaponTypeStrs = new string[11] { "APS", "LMG", "Rifle", "Shotgun", "Rectifier", "Sword", "Spear", "Shield", "Rocket", "Cannon", "EMPTY" };
     private enum GeneralWeaponTypes { Ranged, Rectifier, Melee, Shield, Rocket, Cannon, Empty };//for efficiency
@@ -29,17 +24,17 @@ public class MechCombat : Combat {
     private float currentEN;
 
     // Game variables
-    public Score score;
     private const int playerlayer = 8, default_layer = 0;
+    private int TerrainLayerMask, PlayerLayerMask;
 
     // Combat variables
     public bool isDead;
-    public bool[] is_overheat = new bool[4]; // this is handled by HeatBar.cs , but other player also need to access it (shield)
+    public bool[] is_overheat = new bool[4]; //TODO : *remove this
     public int scanRange, MechSize, TotalWeight;//TODO : implement scanRange & MechSize
-    public int BCNbulletNum = 2;
-    public bool isOnBCNPose, onSkill = false;//called by BCNPoseState to check if on the right pose
-    private bool on_BCNShoot = false;
-    public bool On_BCNShoot {
+    public int BCNbulletNum = 2; //TODO : *remove this
+    public bool isOnBCNPose, onSkill = false; //TODO : *remove this
+    private bool on_BCNShoot = false;//TODO : *remove this
+    public bool On_BCNShoot { //TODO : *remove this
         get { return on_BCNShoot; }
         set {
             on_BCNShoot = value;
@@ -56,7 +51,7 @@ public class MechCombat : Combat {
     private int weaponOffset = 0;
     private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
     private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
-    private bool isBCNcanceled = false;//check if right click cancel
+    private bool isBCNcanceled = false;//check if right click cancel //TODO : *remove this
 
     // Left
     private const int LEFT_HAND = 0;
@@ -78,11 +73,6 @@ public class MechCombat : Combat {
     private const int slashMaxDistance = 30;//the ray which checks if hitting shield max distance
     public float slashL_threshold, slashR_threshold;
 
-    [HideInInspector] public Transform[] Hands;//other player use this to locate hand position quickly
-    private Transform shoulderL;
-    private Transform shoulderR;
-    private Transform head;
-    private Transform camTransform;
     private Transform[] Effect_Ends = new Transform[4];
 
     //Targets
@@ -121,8 +111,9 @@ public class MechCombat : Combat {
     //for Debug
     public bool forceDead = false;
 
-    public delegate void WeaponSwitchedAction();
-    public WeaponSwitchedAction OnWeaponSwitched;
+    public delegate void MechCombatAction();
+    public MechCombatAction OnWeaponSwitched;
+
     private Coroutine SwitchWeaponcoroutine;
 
     private void Awake() {
@@ -136,7 +127,6 @@ public class MechCombat : Combat {
         findGameManager();
         initMechStats();
         initComponents();
-        initTransforms();
         initGameObjects();
         initTargetProperties();
         initSlashDetector();
@@ -172,7 +162,7 @@ public class MechCombat : Combat {
         MechSize = bm.MechProperty.Size;
         TotalWeight = bm.MechProperty.Weight;
         energyProperties.minENRequired = bm.MechProperty.MinENRequired;
-        energyProperties.energyOutput = bm.MechProperty.ENOutputRate - bm.MechProperty.EnergyDrain/2; //TODO : improve this
+        energyProperties.energyOutput = bm.MechProperty.ENOutputRate - bm.MechProperty.EnergyDrain; //TODO : improve this
 
         scanRange = bm.MechProperty.ScanRange;
     }
@@ -191,21 +181,11 @@ public class MechCombat : Combat {
         currentEN = MAX_EN;
     }
 
-    private void initTransforms() {
-        camTransform = cam.transform;
-        head = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_Head");
-        shoulderL = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle");
-        shoulderR = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
-
-        Hands = new Transform[2];
-        Hands[0] = shoulderL.Find("Bip01_L_UpperArm/Bip01_L_ForeArm/Bip01_L_Hand");
-        Hands[1] = shoulderR.Find("Bip01_R_UpperArm/Bip01_R_ForeArm/Bip01_R_Hand");
-    }
-
     private void initGameObjects() {
-        TerrainLayer = LayerMask.GetMask("Terrain");
+        TerrainLayerMask = LayerMask.GetMask("Terrain");
+        PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
+        Debug.Log("terrain : "+TerrainLayerMask);
         BulletCollector = GameObject.Find("BulletCollector");
-        InGameChat = FindObjectOfType<InGameChat>();
     }
 
     private void initTargetProperties() {
@@ -431,7 +411,7 @@ public class MechCombat : Combat {
                 RaycastHit[] hitpoints;
                 Transform t = target;
 
-                hitpoints = Physics.RaycastAll(transform.position + new Vector3(0, 5, 0), (target.transform.root.position + new Vector3(0, 5, 0)) - transform.position - new Vector3(0, 5, 0), slashMaxDistance, playerlayerMask).OrderBy(h => h.distance).ToArray();
+                hitpoints = Physics.RaycastAll(transform.position + new Vector3(0, 5, 0), (target.transform.root.position + new Vector3(0, 5, 0)) - transform.position - new Vector3(0, 5, 0), slashMaxDistance, PlayerLayerMask).OrderBy(h => h.distance).ToArray();
                 foreach (RaycastHit hit in hitpoints) {
                     if (hit.transform.root == target) {
                         if (hit.collider.transform.tag == "Shield") {
@@ -553,7 +533,7 @@ public class MechCombat : Combat {
             MechCombat mcbt = (Targets[hand] == null) ? null : Targets[hand].transform.root.GetComponent<MechCombat>();
 
             if (photonView.isMine) {
-                crosshairImage.ShakingEffect(hand);
+                crosshair.CallShakingEffect(hand);
                 if (Targets[hand] != null && !CheckTargetIsDead(Targets[hand])) {
                     //only APS & LMG have multiple msgs.
                     if (curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.APS || curSpecialWeaponTypes[weaponOffset + hand] == (int)SpecialWeaponTypes.LMG) {
@@ -664,7 +644,7 @@ public class MechCombat : Combat {
     }
 
     private void DisplayKillMsg(string shooter, string target, string weapon) {
-        InGameChat.AddLine(shooter + " killed " + photonView.name + " by " + weapon);
+        gm.DisplayMsgOnRoomChat(shooter + " killed " + photonView.name + " by " + weapon);
     }
 
     [PunRPC]
@@ -703,13 +683,13 @@ public class MechCombat : Combat {
             if (photonView.owner.NickName == ((gm.BlueFlagHolder == null) ? "" : gm.BlueFlagHolder.NickName)) {
 
                 RaycastHit hit;
-                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayer);
+                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
 
                 gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 0, hit.point);
             } else if (photonView.owner.NickName == ((gm.RedFlagHolder == null) ? "" : gm.RedFlagHolder.NickName)) {
 
                 RaycastHit hit;
-                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayer);
+                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
 
                 gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 1, hit.point);
             }
@@ -741,15 +721,13 @@ public class MechCombat : Combat {
             gm.ShowRespawnPanel();
         }
 
-        displayPlayerInfo.gameObject.SetActive(false);
+        OnMechEnabled(false);
 
-        crosshair.ShutDownAllCrosshairs();
-        crosshair.enabled = false;
+        crosshair.EnableCrosshair(false);
 
         EnableAllRenderers(false);
         animator.enabled = false;
 
-        crosshairImage.gameObject.SetActive(false);
         HeatBar.gameObject.SetActive(false);
     }
 
@@ -764,8 +742,8 @@ public class MechCombat : Combat {
         }
 
         initMechStats();
-        //MechController.initControllerVar();
-        displayPlayerInfo.gameObject.SetActive(!photonView.isMine);
+        
+        OnMechEnabled(false);
 
         gameObject.layer = default_layer;
         GetComponent<CharacterController>().enabled = false;
@@ -778,9 +756,8 @@ public class MechCombat : Combat {
         if (!photonView.isMine) return;
 
         MechController.enabled = true;
-        crosshair.enabled = true;
+        crosshair.EnableCrosshair(true);
 
-        crosshairImage.gameObject.SetActive(true);
         HeatBar.gameObject.SetActive(true);
     }
 

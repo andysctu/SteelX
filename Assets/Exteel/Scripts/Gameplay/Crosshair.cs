@@ -75,20 +75,6 @@ public class Crosshair : MonoBehaviour {
         Marksmanship = bm.MechProperty.Marksmanship;
     }
 
-    public void ShutDownAllCrosshairs() {//called when disabling player
-        if (crosshairImage != null) {
-            crosshairImage.CloseAllCrosshairs_L();
-            crosshairImage.CloseAllCrosshairs_R();
-
-            targetL = null;
-            targetR = null;
-
-            crosshairImage.targetMark.gameObject.SetActive(false);
-            crosshairImage.middlecross.enabled = false;
-            crosshairImage.EngTargetMark.enabled = false;
-        }
-    }
-
     public void UpdateCrosshair() {
         weaponOffset = MechCombat.GetCurrentWeaponOffset();
 
@@ -458,5 +444,32 @@ public class Crosshair : MonoBehaviour {
         yield return new WaitForSeconds(time);
         LockedImg.SetActive(false);
         isOnLocked = false;
+    }
+
+    public void CallShakingEffect(int hand) {
+        crosshairImage.ShakingEffect(hand);
+    }
+
+    public void EnableCrosshair(bool b) {
+        enabled = b;
+        crosshairImage.gameObject.SetActive(b);
+
+        if (!b) {
+            ShutDownAllCrosshairs();
+        }
+    }
+
+    private void ShutDownAllCrosshairs() {
+        if (crosshairImage != null) {
+            crosshairImage.CloseAllCrosshairs_L();
+            crosshairImage.CloseAllCrosshairs_R();
+
+            targetL = null;
+            targetR = null;
+
+            crosshairImage.targetMark.gameObject.SetActive(false);
+            crosshairImage.middlecross.enabled = false;
+            crosshairImage.EngTargetMark.enabled = false;
+        }
     }
 }
