@@ -22,7 +22,17 @@ public class MechCamera : MonoBehaviour {
     public float orbitRadius = 19, lerpFakePosSpeed = 12, angleOffset = 33;
 
     private void Awake() {
+        PhotonView pv = currentMech.transform.root.GetComponent<PhotonView>();
+        EnableCamera(pv.isMine);
+        if(!pv.isMine)return;
+        
         RegisterOnSkill();
+    }
+
+    private void EnableCamera(bool b) {
+        enabled = b;
+        GetComponent<Camera>().enabled = b;
+        GetComponent<AudioListener>().enabled = b;
     }
 
     private void RegisterOnSkill() {

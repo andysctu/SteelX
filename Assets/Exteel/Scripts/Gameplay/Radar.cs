@@ -6,9 +6,15 @@ public class Radar : MonoBehaviour {
     private Rect rect;
     private Texture2D texture;
 
+    private void Awake() {
+        radar = GetComponent<Camera>();
+        PhotonView pv = transform.root.GetComponent<PhotonView>();
+        radar.enabled = pv.isMine;
+        enabled = pv.isMine;
+    }
+
     // Use this for initialization
     private void Start() {
-        radar = GetComponent<Camera>();
         texture = new Texture2D(1, 1);
         texture.SetPixel(0, 0, Color.blue);
         texture.wrapMode = TextureWrapMode.Repeat;

@@ -58,6 +58,8 @@ public class MechController : Photon.MonoBehaviour {
     private void Start() {
         initComponents();
         initCam(cam_orbitradius, cam_angleoffset);
+
+        enabled = photonView.isMine;
     }
 
     private void RegisterOnMechBuilt() {
@@ -65,6 +67,10 @@ public class MechController : Photon.MonoBehaviour {
             bm.OnMechBuilt += FindBoosterController;
             bm.OnMechBuilt += initControllerVar;
         }
+    }
+
+    private void RegisterOnMechEnabled() {
+        mechCombat.OnMechEnabled += OnMechEnabled;
     }
 
     private void RegisterOnSkill() {
@@ -80,6 +86,13 @@ public class MechController : Photon.MonoBehaviour {
         if (!b) {
             CallLockMechRot(false); //on skill when slashing & smashing
         }
+    }
+
+    private void OnMechEnabled(bool b) {
+        if(!photonView.isMine)
+            return;
+
+        enabled = b;
     }
 
     public void initControllerVar() {
@@ -98,13 +111,13 @@ public class MechController : Photon.MonoBehaviour {
         BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
     }
 
-    public void UpdateWeightRelatedVars(int totalWeight) {
-        movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(totalWeight) * 0.08f;
-        movementVariables.maxHorizontalBoostSpeed = bm.MechProperty.GetDashSpeed(totalWeight) * 0.1f;
+    public void UpdateWeightRelatedVars(int partWeight, int weaponWeight) {
+        movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(partWeight, weaponWeight) * 0.08f;
+        movementVariables.maxHorizontalBoostSpeed = bm.MechProperty.GetDashSpeed(partWeight + weaponWeight) * 0.1f;
         movementVariables.minBoostSpeed = (movementVariables.moveSpeed + movementVariables.maxHorizontalBoostSpeed) / 2f;
 
-        movementVariables.acceleration = bm.MechProperty.GetDashAcceleration(totalWeight);
-        movementVariables.deceleration = bm.MechProperty.GetDashDecelleration(totalWeight);
+        movementVariables.acceleration = bm.MechProperty.GetDashAcceleration(partWeight + weaponWeight);
+        movementVariables.deceleration = bm.MechProperty.GetDashDecelleration(partWeight + weaponWeight);
 
         //jump boost speed
         movementVariables.verticalBoostSpeed = bm.MechProperty.VerticalBoostSpeed;

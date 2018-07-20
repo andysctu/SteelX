@@ -2,23 +2,27 @@
 using UnityEngine.UI;
 
 public class RespawnPanel : MonoBehaviour {
-    [SerializeField] private Sprite Panel_bluemark, Panel_redmark, Panel_greymark;
-    [SerializeField] private GameObject[] zone_marks;
-    private const int BLUE = 0, RED = 1, NONE = -1;
+    [SerializeField] private Transform MechButtons, Map;
+    private GameManager gm;
 
-    public void ChangeMark(int zone_id, int num) {
-        Image zone_mark = zone_marks[zone_id].GetComponent<Image>();
+    private void Start() {
+        gm = FindObjectOfType<GameManager>();
 
-        switch (num) {
-            case BLUE:
-            zone_mark.sprite = Panel_bluemark;
-            break;
-            case RED:
-            zone_mark.sprite = Panel_redmark;
-            break;
-            case NONE:
-            zone_mark.sprite = Panel_greymark;
-            break;
+        //init respawn buttons
+        Button[] RespawnButtons = MechButtons.GetComponentsInChildren<Button>();
+        for(int i = 0; i < RespawnButtons.Length; i++) {
+            RespawnButtons[i].onClick.AddListener(() => gm.CallRespawn(i));
         }
+    }
+
+    public void InitMap() {
+        GameObject g = FindObjectOfType<MapPanelController>().gameObject;
+        GameObject map = Instantiate(g, Map);
+        map.transform.localPosition = Vector3.zero;
+        //map.GetComponent<MapPanelController>().InitButtons();
+    }
+
+    public void ShowRespawnPanel(bool b) {
+        gameObject.SetActive(b);
     }
 }

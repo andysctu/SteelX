@@ -680,7 +680,6 @@ GameObject:
   - component: {fileID: 114951403473723264}
   - component: {fileID: 82650234535562008}
   - component: {fileID: 114271684801052568}
-  - component: {fileID: 114903171848031198}
   - component: {fileID: 82892796584822044}
   - component: {fileID: 114831540118652372}
   - component: {fileID: 114152351073109060}
@@ -2938,8 +2937,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1613417622782256}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 314.5, y: 1, z: 290.2}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 151.7, y: 0.1, z: -14.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4343254825913442}
@@ -4808,7 +4807,7 @@ MonoBehaviour:
   MechController: {fileID: 0}
   MechCamera: {fileID: 0}
   Animator: {fileID: 95198505659783780}
-  AnimatorVars: {fileID: 114903171848031198}
+  AnimatorVars: {fileID: 0}
   SlashDetector: {fileID: 0}
   Sounds: {fileID: 114951403473723264}
 --- !u!114 &114297830734448278
@@ -5104,43 +5103,6 @@ MonoBehaviour:
     LayerIndex: 1
   - SynchronizeType: 1
     LayerIndex: 2
---- !u!114 &114903171848031198
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1328751364581036}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cc: {fileID: 0}
-  mctrl: {fileID: 0}
-  mcbt: {fileID: 0}
-  Sounds: {fileID: 0}
-  mechIK: {fileID: 0}
-  EffectController: {fileID: 0}
-  boost_id: 0
-  grounded_id: 0
-  jump_id: 0
-  speed_id: 0
-  direction_id: 0
-  onMelee_id: 0
-  blockL_id: 0
-  blockR_id: 0
-  slashL_id: 0
-  slashL2_id: 0
-  slashL3_id: 0
-  slashL4_id: 0
-  slashR_id: 0
-  slashR2_id: 0
-  slashR3_id: 0
-  slashR4_id: 0
-  BCNPose_id: 0
-  OnBCN_id: 0
-  BCNShoot_id: 0
-  inHangar: 0
 --- !u!114 &114930514929124886
 MonoBehaviour:
   m_ObjectHideFlags: 1

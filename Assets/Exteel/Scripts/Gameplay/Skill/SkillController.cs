@@ -25,7 +25,7 @@ public class SkillController : MonoBehaviour {
     private string boosterName;
     private int weaponOffset = 0;
     private bool[] skill_isMatchRequirements = new bool[4];
-    private float[] curCooldowns, MaxCooldowns; // curMaxCooldown = MIN_COOLDOWN || MaxCooldown
+    private float[] curCooldowns, MaxCooldowns; // curMaxCooldown = MIN_COOLDOWN or MaxCooldown
     private const string Target_Animation_Name = "skill_target";
     private const float MIN_COOLDOWN = 3;
 
@@ -96,7 +96,7 @@ public class SkillController : MonoBehaviour {
     private void InitSkillHUD() {
         if (!photonView.isMine || tag == "Drone")
             return;
-        Transform PanelCanvas = FindObjectOfType<RespawnPanel>().transform;
+        Transform PanelCanvas = GameObject.Find("PanelCanvas").transform;//TODO : remake this
         SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
 
         SkillHUD.enabled = true;

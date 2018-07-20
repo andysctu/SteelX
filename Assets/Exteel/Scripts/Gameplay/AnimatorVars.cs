@@ -36,7 +36,7 @@ public class AnimatorVars : MonoBehaviour {
 
     public bool inHangar = false;//in Store also manually set this to TRUE
 
-    private void Start() {
+    private void Awake() {
         if(inHangar)return;
         FindComponents();
         HashAnimatorVars();

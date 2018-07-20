@@ -4,7 +4,7 @@ public class Flag : MonoBehaviour {
     [SerializeField] private ParticleSystem ps;
     [SerializeField] private GameObject flag_base;
     private LayerMask Terrain = 10;
-    private GameManager gm;
+    private CTFManager gm;
     private PhotonView gmpv;
     public PunTeams.Team team = PunTeams.Team.none;
     private bool isOnPlay = true;
@@ -12,7 +12,7 @@ public class Flag : MonoBehaviour {
 
     private void Start() {
         ps.Play();
-        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gm = FindObjectOfType<CTFManager>();
         gmpv = gm.GetComponent<PhotonView>();
     }
 
@@ -33,12 +33,13 @@ public class Flag : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider collider) {
-        Debug.Log("triggered enter");
         if (!isGrounded || collider.gameObject.layer == Terrain)return;
         
         PhotonView pv = collider.transform.root.GetComponent<PhotonView>();
         PhotonPlayer player = pv.owner;
         if (!pv.isMine)return;
+
+        if(gm == null)return;//not init
 
         if (player.GetTeam() == team) {
             //do I hold the other team's flag ?
@@ -49,10 +50,10 @@ public class Flag : MonoBehaviour {
                 //send back the flag
                 print("send back the flag");
                 if (team == PunTeams.Team.red) {
-                    Vector3 pos = new Vector3(gm.SpawnPoints[1].transform.position.x, 0, gm.SpawnPoints[1].transform.position.z);
+                    Vector3 pos = new Vector3(gm.GetRedBasePosition().x, 0, gm.GetRedBasePosition().z);
                     gmpv.RPC("SetFlag", PhotonTargets.All, -1, 1, pos);
                 } else {
-                    Vector3 pos = new Vector3(gm.SpawnPoints[0].transform.position.x, 0, gm.SpawnPoints[0].transform.position.z);
+                    Vector3 pos = new Vector3(gm.GetBlueBasePosition().x, 0, gm.GetBlueBasePosition().z);
                     gmpv.RPC("SetFlag", PhotonTargets.All, -1, 0, pos);
                 }
             }

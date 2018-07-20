@@ -42,7 +42,7 @@ public class OperatorStatsUI : MonoBehaviour {
         curMechProperty = Mech.MechProperty;
         MechParts = Mech.curMechParts;
 
-        int[] MechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculateTotalWeight(MechParts, Mech.weaponScripts));
+        int[] MechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculatePartsWeight(MechParts), CalculateWeaponWeight(Mech.weaponScripts));
         for (int i = 0; i < MechPropertiesArray.Length; i++) {
             stat_texts[i].text = MechPropertiesArray[i].ToString();
         }
@@ -79,8 +79,8 @@ public class OperatorStatsUI : MonoBehaviour {
             }
 
             //show diff
-            int[] curMechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculateTotalWeight(MechParts, Mech.weaponScripts));
-            int[] newMechPropertiesArray = TransformMechPropertiesToArray(newMechProperty, CalculateTotalWeight(tmpParts, Mech.weaponScripts));
+            int[] curMechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculatePartsWeight(MechParts), CalculateWeaponWeight(Mech.weaponScripts));
+            int[] newMechPropertiesArray = TransformMechPropertiesToArray(newMechProperty, CalculatePartsWeight(tmpParts), CalculateWeaponWeight(Mech.weaponScripts));
 
             for (int j = 0; j < 18; j++) {
                 if (j == 4 || j == 5 || j == 9 || j == 10 || j == 11) {
@@ -95,7 +95,7 @@ public class OperatorStatsUI : MonoBehaviour {
         }
     }
 
-    private int[] TransformMechPropertiesToArray(MechProperty mechProperty, int totalWeight) {
+    private int[] TransformMechPropertiesToArray(MechProperty mechProperty, int partWeight, int weaponWeight) {
         int[] PropertiesArray = new int[STAT_LABELS.Length];
         PropertiesArray[0] = mechProperty.HP;
         PropertiesArray[1] = mechProperty.EN;
@@ -103,15 +103,14 @@ public class OperatorStatsUI : MonoBehaviour {
         PropertiesArray[3] = mechProperty.MPU;
         PropertiesArray[4] = mechProperty.Size;
         PropertiesArray[5] = mechProperty.Weight;
-        PropertiesArray[6] = (int)mechProperty.GetMoveSpeed(totalWeight);
-        Debug.Log("speed : " + PropertiesArray[6]);
-        PropertiesArray[7] = (int)mechProperty.GetDashSpeed(totalWeight);
+        PropertiesArray[6] = (int)mechProperty.GetMoveSpeed(partWeight, weaponWeight);
+        PropertiesArray[7] = (int)mechProperty.GetDashSpeed(partWeight + weaponWeight);
         PropertiesArray[8] = mechProperty.ENOutputRate;
         PropertiesArray[9] = mechProperty.MinENRequired;
         PropertiesArray[10] = mechProperty.DashENDrain;
-        PropertiesArray[11] = (int)mechProperty.GetJumpENDrain(totalWeight);
-        PropertiesArray[12] = (int)mechProperty.GetDashAcceleration(totalWeight);
-        PropertiesArray[13] = (int)mechProperty.GetDashDecelleration(totalWeight);
+        PropertiesArray[11] = (int)mechProperty.GetJumpENDrain(partWeight + weaponWeight);
+        PropertiesArray[12] = (int)mechProperty.GetDashAcceleration(partWeight + weaponWeight);
+        PropertiesArray[13] = (int)mechProperty.GetDashDecelleration(partWeight + weaponWeight);
         PropertiesArray[14] = mechProperty.MaxHeat;
         PropertiesArray[15] = mechProperty.CooldownRate;
         PropertiesArray[16] = mechProperty.ScanRange;
@@ -120,15 +119,18 @@ public class OperatorStatsUI : MonoBehaviour {
         return PropertiesArray;
     }
 
-    private int CalculateTotalWeight(Part[] parts, Weapon[] weapons) {
-        int totalweight = 0;
+    private int CalculatePartsWeight(Part[] parts) {
+        int partsWeight = 0;
         for (int i = 0; i < parts.Length; i++) {
-            totalweight += parts[i].Weight;
+            partsWeight += parts[i].Weight;
         }
+        return partsWeight;
+    }
 
-        totalweight += (weapons[Mech.GetWeaponOffset()] == null) ? 0 : weapons[Mech.GetWeaponOffset()].weight;
-        totalweight += (weapons[Mech.GetWeaponOffset() + 1] == null) ? 0 : weapons[Mech.GetWeaponOffset() + 1].weight;
-        return totalweight;
+    private int CalculateWeaponWeight(Weapon[] weapons) {
+        int weight_1 = (weapons[Mech.GetWeaponOffset()] == null) ? 0 : weapons[Mech.GetWeaponOffset()].weight,
+            weight_2 = (weapons[Mech.GetWeaponOffset() + 1] == null) ? 0 : weapons[Mech.GetWeaponOffset() + 1].weight;
+        return weight_1 + weight_2;
     }
 
     private void ClearAllDiff() {

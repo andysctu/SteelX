@@ -44,10 +44,10 @@ public class DisplayPlayerInfo : MonoBehaviour {
         gameObject.SetActive(!pv.isMine || tag=="Drone");
         
         //Init name
-        thisPlayerName = (pv.owner == null) ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
+        thisPlayerName = (tag == "Drone") ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
         textMesh.text = thisPlayerName;
 
-        if (GameManager.isTeamMode && (tag == "Drone" || PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) ) {
+        if (tag != "Drone" && GameManager.isTeamMode && PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) {
             bar.color = Color.white;
             textMesh.color = Color.white;
         } else {

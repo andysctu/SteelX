@@ -17,14 +17,8 @@ public class Combat : Photon.MonoBehaviour {
     public virtual void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown) { }
 
     protected void findGameManager() {
-        if (gm == null) {
-            GameObject g = GameObject.Find("GameManager");
-            if (g != null)
-                gm = g.GetComponent<GameManager>();
-            else {
-                Debug.Log("Can't find GameManager. Ignore this if there isn't one");
-            }
-        }
+        gm = FindObjectOfType<GameManager>();
+        if (gm == null)Debug.LogError("Can't find GameManager");            
     }
 
     public int GetMaxHp() {

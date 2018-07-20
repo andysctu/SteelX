@@ -18,25 +18,30 @@ public class HeatBar : MonoBehaviour {
     private void Awake() {
         RegisterOnMechBuilt();
         RegisterOnWeaponSwitched();
+        RegisterOnMechEnabled();
     }
 
     private void RegisterOnMechBuilt() {
-        if (bm != null) {
-            bm.OnMechBuilt += InitVars;
-            bm.OnMechBuilt += ResetHeatBar;
-        }
+        bm.OnMechBuilt += InitVars;
+        bm.OnMechBuilt += ResetHeatBar;
+    }
+
+    private void RegisterOnMechEnabled() {
+        mcbt.OnMechEnabled += ActivateHeatBar;
     }
 
     private void RegisterOnWeaponSwitched() {
-        if (mcbt != null) {
-            mcbt.OnWeaponSwitched += UpdateHeatBar;
-        }
+        mcbt.OnWeaponSwitched += UpdateHeatBar;
     }
 
     private void InitVars() {//called when finished buildmech
         weaponScripts = bm.weaponScripts;
         cooldownRate = bm.MechProperty.CooldownRate;
         MaxHeat = bm.MechProperty.MaxHeat;
+    }
+
+    private void Start() {
+        gameObject.SetActive(pv.isMine);
     }
 
     private void FixedUpdate() {
@@ -120,6 +125,12 @@ public class HeatBar : MonoBehaviour {
             barR.enabled = b;
             barR_fill.enabled = b;
         }
+    }
+
+    private void ActivateHeatBar(bool b) {
+        if(!pv.isMine)return;
+
+        gameObject.SetActive(b);
     }
 
     private void DrawBarL() {

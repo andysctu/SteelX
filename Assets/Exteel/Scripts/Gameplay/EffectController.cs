@@ -32,7 +32,7 @@ public class EffectController : MonoBehaviour {
     }
 
     private void Start() {
-        initComponents();
+        InitComponents();
         initTransforms();
         ImplementDamageless();
     }
@@ -48,7 +48,7 @@ public class EffectController : MonoBehaviour {
         damageless.transform.localPosition = Vector3.zero;
     }
 
-    private void initComponents() {
+    private void InitComponents() {
         mcbt = transform.root.GetComponent<MechCombat>();
         mctrl = transform.root.GetComponent<MechController>();
     }

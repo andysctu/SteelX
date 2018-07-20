@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using XftWeapon;
 
 public class MechCombat : Combat {
@@ -12,12 +11,14 @@ public class MechCombat : Combat {
     [SerializeField] private Camera cam;
     [SerializeField] private BuildMech bm;
     [SerializeField] private Animator animator;
-    [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;//remove this
+    [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;//TODO : remove this
     [SerializeField] private SkillController SkillController;
 
     private string[] SpecialWeaponTypeStrs = new string[11] { "APS", "LMG", "Rifle", "Shotgun", "Rectifier", "Sword", "Spear", "Shield", "Rocket", "Cannon", "EMPTY" };
     private enum GeneralWeaponTypes { Ranged, Rectifier, Melee, Shield, Rocket, Cannon, Empty };//for efficiency
     private enum SpecialWeaponTypes { APS, LMG, Rifle, Shotgun, Rectifier, Sword, Spear, Shield, Rocket, Cannon, EMPTY };//These types all use different animations
+    private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
+    private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
 
     // EN
     [SerializeField] private EnergyProperties energyProperties = new EnergyProperties();
@@ -27,14 +28,14 @@ public class MechCombat : Combat {
     private const int playerlayer = 8, default_layer = 0;
     private int TerrainLayerMask, PlayerLayerMask;
 
-    // Combat variables
+    // Combat variables  //TODO : Remove this
     public bool isDead;
-    public bool[] is_overheat = new bool[4]; //TODO : *remove this
-    public int scanRange, MechSize, TotalWeight;//TODO : implement scanRange & MechSize
-    public int BCNbulletNum = 2; //TODO : *remove this
-    public bool isOnBCNPose, onSkill = false; //TODO : *remove this
-    private bool on_BCNShoot = false;//TODO : *remove this
-    public bool On_BCNShoot { //TODO : *remove this
+    public bool[] is_overheat = new bool[4];
+    public int scanRange, MechSize, TotalWeight;
+    public int BCNbulletNum = 2;
+    public bool isOnBCNPose, onSkill = false;
+    private bool on_BCNShoot = false;
+    public bool On_BCNShoot {
         get { return on_BCNShoot; }
         set {
             on_BCNShoot = value;
@@ -49,8 +50,7 @@ public class MechCombat : Combat {
     }
 
     private int weaponOffset = 0;
-    private int[] curGeneralWeaponTypes = new int[4];//ranged , melee , ...
-    private int[] curSpecialWeaponTypes = new int[4];//APS , BRF , ...
+    
     private bool isBCNcanceled = false;//check if right click cancel //TODO : *remove this
 
     // Left
@@ -165,7 +165,7 @@ public class MechCombat : Combat {
         energyProperties.jumpENDrain = bm.MechProperty.GetJumpENDrain(TotalWeight);
         energyProperties.dashENDrain = bm.MechProperty.DashENDrain;
 
-        MechController.UpdateWeightRelatedVars(TotalWeight);
+        MechController.UpdateWeightRelatedVars(bm.MechProperty.Weight, ((weaponScripts[weaponOffset] == null) ? 0 : weaponScripts[weaponOffset].weight) + ((weaponScripts[weaponOffset + 1] == null) ? 0 : weaponScripts[weaponOffset + 1].weight));
     }
 
     private void initMechStats() {//call also when respawn
@@ -176,7 +176,6 @@ public class MechCombat : Combat {
     private void initGameObjects() {
         TerrainLayerMask = LayerMask.GetMask("Terrain");
         PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
-        Debug.Log("terrain : "+TerrainLayerMask);
         BulletCollector = GameObject.Find("BulletCollector");
     }
 
@@ -614,10 +613,6 @@ public class MechCombat : Combat {
         return name.Contains("ADR");
     }
 
-    private void DisplayKillMsg(string shooter, string target, string weapon) {
-        gm.DisplayMsgOnRoomChat(shooter + " killed " + photonView.name + " by " + weapon);
-    }
-
     [PunRPC]
     private void OnHeal(int viewID, int amount) {
         if (isDead) {
@@ -649,37 +644,17 @@ public class MechCombat : Combat {
 
     [PunRPC]
     private void DisablePlayer(int shooter_viewID, string weapon) {
-        //check if he has the flag
-        if (PhotonNetwork.isMasterClient) {
-            if (photonView.owner.NickName == ((gm.BlueFlagHolder == null) ? "" : gm.BlueFlagHolder.NickName)) {
+        gm.OnPlayerDead(gameObject, shooter_viewID, weapon);
 
-                RaycastHit hit;
-                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
-
-                gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 0, hit.point);
-            } else if (photonView.owner.NickName == ((gm.RedFlagHolder == null) ? "" : gm.RedFlagHolder.NickName)) {
-
-                RaycastHit hit;
-                Physics.Raycast(transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
-
-                gm.GetComponent<PhotonView>().RPC("DropFlag", PhotonTargets.All, photonView.viewID, 1, hit.point);
-            }
-        }
         isDead = true;//TODO : check this again
 
         CurrentHP = 0;
-        // Update scoreboard
-        gm.RegisterKill(shooter_viewID, photonView.viewID);
-        PhotonView shooterpv = PhotonView.Find(shooter_viewID);
-        DisplayKillMsg(shooterpv.owner.NickName, photonView.name, weapon);
 
         gameObject.layer = default_layer;
-        setIsFiring(0, false);
-        setIsFiring(1, false);
 
         StartCoroutine(DisablePlayerWhenNotOnSkill());
 
-        MechController.enabled = false;
+        MechController.enabled = false;//stop control immediately
         EnableAllColliders(false);
         GetComponent<Collider>().enabled = true;//set to true to trigger exit (while layer changed) //TODO : check this if necessary
     }
@@ -695,12 +670,8 @@ public class MechCombat : Combat {
 
         OnMechEnabled(false);
 
-        crosshair.EnableCrosshair(false);
-
         EnableAllRenderers(false);
         animator.enabled = false;
-
-        HeatBar.gameObject.SetActive(false);
     }
 
     // Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
@@ -717,20 +688,16 @@ public class MechCombat : Combat {
         
         OnMechEnabled(false);
 
+        //this is to avoid trigger flag
         gameObject.layer = default_layer;
         GetComponent<CharacterController>().enabled = false;
-        transform.position = gm.SpawnPoints[respawnPoint].position;
+        transform.position = gm.GetRespawnPointPosition(respawnPoint);
         GetComponent<CharacterController>().enabled = true;
         gameObject.layer = playerlayer;
+
+
         isDead = false;
         EffectController.RespawnEffect();
-
-        if (!photonView.isMine) return;
-
-        MechController.enabled = true;
-        crosshair.EnableCrosshair(true);
-
-        HeatBar.gameObject.SetActive(true);
     }
 
     // Update is called once per frame

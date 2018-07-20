@@ -26,8 +26,7 @@ public class DroneCombat : Combat {
         findGameManager();
         EffectController.RespawnEffect();
         CharacterController = GetComponent<CharacterController>();
-
-        gm.RegisterPlayer(photonView.viewID, 0);
+        gm.RegisterPlayer(photonView.viewID);
     }
 
     [PunRPC]
@@ -39,7 +38,6 @@ public class DroneCombat : Combat {
         }
 
         if (CurrentHP <= 0) {
-            //			if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
             DisableDrone();
             //gm.RegisterKill(shooter_viewID, photonView.viewID);
         }
@@ -56,7 +54,6 @@ public class DroneCombat : Combat {
         }
 
         if (CurrentHP <= 0) {
-            //if (shooter == PhotonNetwork.playerName) hud.ShowText(cam, transform.position, "Kill");
             DisableDrone();
             gm.RegisterKill(shooter_viewID, photonView.viewID);
         }

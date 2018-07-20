@@ -40,22 +40,34 @@ public class Crosshair : MonoBehaviour {
     private void Awake() {
         RegisterOnWeaponBuilt();
         RegisterOnWeaponSwitched();
+        RegisterOnMechEnabled();
         RegisterOnSkill();
     }
 
     private void RegisterOnWeaponBuilt() {
-        if (bm != null) bm.OnMechBuilt += OnMechBuilt;
+        bm.OnMechBuilt += OnMechBuilt;
     }
 
     private void RegisterOnWeaponSwitched() {
-        if (MechCombat != null) MechCombat.OnWeaponSwitched += UpdateCrosshair;
+        MechCombat.OnWeaponSwitched += UpdateCrosshair;
     }
+
+    private void RegisterOnMechEnabled() {
+        MechCombat.OnMechEnabled += EnableCrosshair;
+    }
+
 
     private void RegisterOnSkill() {
         if (SkillController != null) SkillController.OnSkill += OnSkill;
     }
 
     private void Start() {
+        if (!pv.isMine) {//Enable local
+            enabled = false;
+            crosshairImage.gameObject.SetActive(false);
+            return;
+        }
+
         GetGameVars();
         initComponent();
         UpdateCrosshair();
@@ -451,6 +463,8 @@ public class Crosshair : MonoBehaviour {
     }
 
     public void EnableCrosshair(bool b) {
+        if(!pv.isMine)return;
+
         enabled = b;
         crosshairImage.gameObject.SetActive(b);
 

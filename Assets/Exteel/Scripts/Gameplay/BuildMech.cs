@@ -97,7 +97,7 @@ public class BuildMech : Photon.MonoBehaviour {
     private void SetName(string name) {//TODO : consider not putting here
         gameObject.name = name;
         FindGameManager();
-        gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam() == PunTeams.Team.red) ? RED : BLUE);// blue & none team => set to blue
+        gm.RegisterPlayer(photonView.viewID);// blue & none team => set to blue
     }
 
     public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
@@ -672,14 +672,13 @@ public struct MechProperty {
         return DashOutput * 1.8f - totalWeight * 0.004f; //DashOutput * 1.8f : max speed  ;  0.004 weight coefficient
     }
 
-    public float GetMoveSpeed(int totalWeight) {
-        if (totalWeight > Capacity) {
-            Debug.Log("bas : "+BasicSpeed);
-            return BasicSpeed - 186 - (float)(totalWeight - Capacity) / Capacity * 146;
-        } else {
-            Debug.Log("bas : " + BasicSpeed + " total : " + totalWeight + " cap : " + Capacity + "return : " + (BasicSpeed - totalWeight / Capacity * 186));
-            return BasicSpeed - (float)totalWeight / Capacity * 186;
-        }
+    public float GetMoveSpeed(int partWeight, int weaponWeight) {
+        int cal_capacity = (Capacity > 195000)? 195000 : Capacity;
+
+        double x1 = 0.0001064 * cal_capacity + 190.2552f, x2 = -0.0000024659 * cal_capacity + 0.69024f;
+        //Debug.Log("part weight : "+partWeight + " weapon Weight : "+weaponWeight);
+        //Debug.Log("basic speed : "+BasicSpeed + " coeff x1 : "+x1+" , x2 : "+x2);
+        return (float)(BasicSpeed - (partWeight * x2 + weaponWeight )/x1);        
     }
 
     public float GetDashAcceleration(int totalWeight) {

@@ -100,7 +100,6 @@ GameObject:
   - component: {fileID: 14356836}
   - component: {fileID: 11462782}
   - component: {fileID: 11416036}
-  - component: {fileID: 11436158}
   - component: {fileID: 11422958}
   - component: {fileID: 11445986}
   - component: {fileID: 114000012410893822}
@@ -410,7 +409,7 @@ Behaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!95 &9563454
 Animator:
   serializedVersion: 3
@@ -434,7 +433,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e209798f836304cfabd478f5db070121, type: 3}
   m_Name: 
@@ -589,7 +588,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bb352c25d8ac45e6801ecdc35cd56f0, type: 3}
   m_Name: 
@@ -667,21 +666,6 @@ MonoBehaviour:
     Deceleration: 0
     DashENDrain: 0
   Mech_Num: 0
---- !u!114 &11436158
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ca87e29fb2ce47b3be85f2139582c1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCamera: {fileID: 2087740}
-  radar: {fileID: 2093468}
-  HeatBar: {fileID: 1003962184624644}
-  crosshairImage: {fileID: 106124}
 --- !u!114 &11445986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -727,7 +711,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
   m_Name: 
