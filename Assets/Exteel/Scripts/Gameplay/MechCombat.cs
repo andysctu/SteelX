@@ -247,7 +247,7 @@ public class MechCombat : Combat {
     private void FindEffectEnd() {
         for (int i = 0; i < 4; i++) {
             if (weapons[i] != null) {
-                Effect_Ends[i] = TransformDeepChildExtension.FindDeepChild(weapons[i].transform, "EffectEnd");
+                Effect_Ends[i] = TransformExtension.FindDeepChild(weapons[i].transform, "EffectEnd");
             }
         }
     }
@@ -665,7 +665,7 @@ public class MechCombat : Combat {
         if (photonView.isMine) {
             CurrentHP = 0;
             animator.SetBool(AnimatorVars.BCNPose_id, false);
-            gm.ShowRespawnPanel();
+            gm.EnableRespawnPanel(true);
         }
 
         OnMechEnabled(false);
@@ -677,6 +677,7 @@ public class MechCombat : Combat {
     // Enable MechController, Crosshair, Renderers, set layer to player layer, move player to spawn position
     [PunRPC]
     private void EnablePlayer(int respawnPoint, int mech_num) {
+        //Debug.Log("called enable num : "+mech_num);
         bm.SetMechNum(mech_num);
         animator.enabled = true;
         if (photonView.isMine) { // build mech also init MechCombat
@@ -686,7 +687,7 @@ public class MechCombat : Combat {
 
         initMechStats();
         
-        OnMechEnabled(false);
+        OnMechEnabled(true);
 
         //this is to avoid trigger flag
         gameObject.layer = default_layer;
@@ -702,7 +703,7 @@ public class MechCombat : Combat {
 
     // Update is called once per frame
     private void Update() {
-        if (!photonView.isMine || gm.GameOver() || !gm.GameIsBegin) return;
+        if (!photonView.isMine || gm.GameOver() || !GameManager.gameIsBegin) return;
 
         //TODO : remove this
         if (forceDead) {
@@ -710,7 +711,7 @@ public class MechCombat : Combat {
             photonView.RPC("OnHit", PhotonTargets.All, 10000, photonView.viewID, "ForceDead", true);
         }
 
-        if (onSkill) return;
+        if (onSkill || isDead) return;
 
         // Animate left and right combat
         handleCombat(LEFT_HAND);

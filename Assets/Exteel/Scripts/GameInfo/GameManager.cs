@@ -1,102 +1,127 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
-public abstract class GameManager : Photon.MonoBehaviour {    
-    private RespawnPanel RespawnPanel;    
-    private GameMsgDisplayer GameMsgDisplayer;    
+public abstract class GameManager : Photon.MonoBehaviour {
     private InGameChat InGameChat;
+    protected RespawnPanel RespawnPanel;    
+    protected Vector3[] RespawnPoints;
     protected Transform PanelCanvas;
-    protected GameObject PlayerPrefab;
+    protected GameObject MechPrefab;
     protected Timer Timer = new Timer();
     protected GameObject player;
     protected MechCombat player_mcbt;
-
-    public enum Team { BLUE, RED, NONE };
-
-    //TODO : remove this
-    public int MaxKills = 2, CurrentMaxKills = 0;
-
-	private bool gameEnding = false;
-
-	private bool IsMasterInitGame = false, canStart = false; // this is true when all player finish loading
-	private float lastCheckCanStartTime = 0;
-    private bool OnSyncTimeRequest = false, is_Time_init = false;
-    private int waitTimes = 0, sendTimes = 0, playerfinishedloading = 0;
-    private bool callGameBegin = false;
-
-    public bool GameIsBegin = false;
-	protected int respawnPoint;
-	
-	public bool callEndGame = false, Offline = false;
-
+    protected int respawnPointNum;//The current respawn point choosed , may be invalid
     public static bool isTeamMode;
 
-    private bool endGameImmediately = false;//debug use
+    public enum Team { BLUE, RED, NONE };
+    public enum Status { Waiting, InBattle};
 
-    //TODO : player can choose target frame rate
-    protected virtual void Awake(){
-		Application.targetFrameRate = 60;//60:temp
-        InitComponents();
+    //end & start
+    private bool gameEnding = false, callEndGame = false;
+    public static bool gameIsBegin = false;
+    public bool calledGameBegin = false;
+
+    private bool IsMasterInitGame = false;
+
+    //check the player number
+    private bool canStart = false; // canStart is true when all player finish loading
+    private float lastCheckCanStartTime = 0;
+    private int NumOfPlayerfinishedloading = 0;
+
+    //sync time
+    private bool OnSyncTimeRequest = false, is_Time_init = false;
+    private int waitTimes = 0, sendTimes = 0;
+
+    //debug
+    public bool Offline = false;
+    public bool endGameImmediately = false;//debug use
+
+    protected GameManager() {
+        gameIsBegin = false;
     }
 
-	protected virtual void Start() {           
+    protected virtual void Awake() {
+        Application.targetFrameRate = 40;//TODO : player can choose target frame rate
+        InitComponents();
+        BuildGameScene();
+        LoadGameInfo();
+    }
+
+    protected virtual void BuildGameScene() {
+        string mapName = PhotonNetwork.room.CustomProperties["Map"].ToString(); ;
+        GameObject map_res = (GameObject)Resources.Load("GameScene/" + mapName);
+        if (map_res == null) {
+            Debug.LogError("Can't find : " + mapName + " in GameScene/");
+            return;
+        }
+        GameObject map = Instantiate(map_res);
+    }
+
+    protected virtual void LoadGameInfo() {
+        GameInfo.Map = PhotonNetwork.room.CustomProperties["Map"].ToString();
+        GameInfo.GameMode = PhotonNetwork.room.CustomProperties["GameMode"].ToString();
+        GameInfo.MaxTime = int.Parse(PhotonNetwork.room.CustomProperties["MaxTime"].ToString());
+        GameInfo.MaxPlayers = PhotonNetwork.room.MaxPlayers;
+
+        Debug.Log("Map : " + GameInfo.Map + "Gamemode :" + GameInfo.GameMode);
+    }
+
+    protected virtual void Start() {
         Timer.Init();
 
-        if (Offline) { ApplyOfflineSettings();return;}
+        if (Offline) { ApplyOfflineSettings(); return; }
 
-        LoadGameInfo();//TODO : remake this
+        InitRespawnPoints();
 
-        MaxKills = GameInfo.MaxKills;//TODO : check this	
+        //Master initializes room's properties ( team score, ... )
+        if (PhotonNetwork.isMasterClient) MasterInitGame();
 
-		//Master initializes room's properties ( team score, ... )
-		if (PhotonNetwork.isMasterClient)MasterInitGame();
-
-        // client ini himself
         ClientInitSelf();
 
-        GameMsgDisplayer.ShowWaitOtherPlayer (true);
+        InstantiatePlayer();
 
         StartCoroutine(LateStart());
     }
 
     private void InitComponents() {
         PanelCanvas = GameObject.Find("PanelCanvas").transform;
-        PlayerPrefab = Resources.Load<GameObject>("MechFrame");
+        MechPrefab = Resources.Load<GameObject>("MechFrame");
         RespawnPanel = PanelCanvas.GetComponentInChildren<RespawnPanel>(true);
-        GameMsgDisplayer = GetComponentInChildren<GameMsgDisplayer>();
         InGameChat = FindObjectOfType<InGameChat>();
     }
 
-    private void LoadGameInfo() {
-        GameInfo.Map = PhotonNetwork.room.CustomProperties["Map"].ToString();
-        GameInfo.GameMode = PhotonNetwork.room.CustomProperties["GameMode"].ToString();
-        GameInfo.MaxKills = int.Parse(PhotonNetwork.room.CustomProperties["MaxKills"].ToString());
-        GameInfo.MaxTime = int.Parse(PhotonNetwork.room.CustomProperties["MaxTime"].ToString());
-        GameInfo.MaxPlayers = PhotonNetwork.room.MaxPlayers;
-        Debug.Log("Map : "+ GameInfo.Map + "Gamemode :" + GameInfo.GameMode + " MaxKills :" + GameInfo.MaxKills);
+    protected abstract void InitRespawnPoints();
+
+    private IEnumerator LateStart() {
+        //Send sync request
+        if (!IsMasterInitGame && sendTimes < 15) {//sometime master connects very slow
+            sendTimes++;
+            InGameChat.AddLine("Sending sync game request..." + sendTimes);
+            yield return new WaitForSeconds(1f);
+            SendSyncInitGameRequest();
+            yield return StartCoroutine(LateStart());
+        } else {
+            if (sendTimes >= 15 && !IsMasterInitGame) {
+                InGameChat.AddLine("Failed to sync game properties. Is master disconnected ? ");
+                Debug.Log("master not connected");
+
+                //TODO : Exit the game
+
+            } else {
+                InGameChat.AddLine("Game is sync.");
+                photonView.RPC("PlayerFinishedLoading", PhotonTargets.AllBuffered);
+            }
+
+            OnMasterFinishInit();
+        }
     }
-		
-	IEnumerator LateStart(){
-		if(!IsMasterInitGame && sendTimes <10){//sometime master connects very slow
-				sendTimes++;
-				InGameChat.AddLine ("Sending sync game request..." + sendTimes);
-				yield return new WaitForSeconds (1f);
-				SendSyncInitGameRequest ();
-				yield return StartCoroutine (LateStart ());
-		}else{
-			if(sendTimes >= 10){
-				InGameChat.AddLine ("Failed to sync game properties. Is master disconnected ? ");
-				Debug.Log ("master not connected");
-			}else{
-				InGameChat.AddLine ("Game is sync.");
-				photonView.RPC ("PlayerFinishedLoading", PhotonTargets.AllBuffered);
-			}
 
-            SyncPanel();
-		}
-
-	}
+    private void SendSyncInitGameRequest() {
+        if (bool.Parse(PhotonNetwork.room.CustomProperties["GameInit"].ToString()) && CheckIfGameSync()) {
+            IsMasterInitGame = true;
+        }
+    }
 
     protected virtual void ClientInitSelf() {
         ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable {
@@ -106,252 +131,248 @@ public abstract class GameManager : Photon.MonoBehaviour {
         };
     }
 
-    protected virtual void SyncPanel() { }
+    protected virtual void OnMasterFinishInit() {
+        SyncPanel();
+    }
+    protected virtual void SyncPanel() {
+    }
+
     public abstract void OnPlayerDead(GameObject player, int shooter_id, string weapon);
 
-    private void SendSyncInitGameRequest(){
-		if(bool.Parse(PhotonNetwork.room.CustomProperties["GameInit"].ToString())){
-            if(CheckIfGameSync())IsMasterInitGame = true;
-		}
-	}
-
     protected abstract bool CheckIfGameSync();
-    
+
     public abstract void InstantiatePlayer();
 
     public abstract void RegisterPlayer(int player_viewID);
 
-	protected virtual void MasterInitGame(){
+    protected virtual void MasterInitGame() {
         SyncTime();
-        LoadMapSetting();
+        MasterLoadMapSetting();
         IsMasterInitGame = true;
-
-        //      ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
-        //          { "BlueScore", 0 },
-        //          { "RedScore", 0 },
-        //          { "GameInit", true }//this is set to false when master pressing "start"
-        //      };
-        //      if (isTeamMode){
-        //	h.Add ("Zone", -1);
-        //}
-        //PhotonNetwork.room.SetCustomProperties (h);
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
+                  { "GameInit", true }//this is set to false when master pressing "start" in game lobby
+        };
+        PhotonNetwork.room.SetCustomProperties(h);
     }
 
-    protected abstract void LoadMapSetting();
+    protected abstract void MasterLoadMapSetting();
 
-	void SyncTime() {
+    private void SyncTime() {
         Timer.MasterSyncTime();
         is_Time_init = true;
     }
 
-	public void OnPhotonCustomRoomPropertiesChanged(ExitGames.Client.Photon.Hashtable propertiesThatChanged) {
-		if (propertiesThatChanged.ContainsKey("startTime") && propertiesThatChanged.ContainsKey("duration")) {
+    public void OnPhotonCustomRoomPropertiesChanged(ExitGames.Client.Photon.Hashtable propertiesThatChanged) {
+        if (propertiesThatChanged.ContainsKey("startTime") && propertiesThatChanged.ContainsKey("duration")) {
             Timer.SetStoredTime((int)propertiesThatChanged["startTime"], (int)propertiesThatChanged["duration"]);
-		}
-	}
+        }
+    }
 
-	void Update() {
-		if (!GameOver () && !gameEnding) {
-			if (!player_mcbt.isDead) {
-				Cursor.lockState = CursorLockMode.Locked;
-				Cursor.visible = false;
-			}else{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-			}
+    protected virtual void Update() {
+        if (!GameOver() && !gameEnding) {
+            if (!player_mcbt.isDead) {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            } else {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
             ShowScorePanel(Input.GetKey(KeyCode.CapsLock));
-		}
+        }
 
-        if (Offline) return;//TODO : comment this
+        if (Offline) return;
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
-			Cursor.visible = true;
-			Cursor.lockState = CursorLockMode.None;
-			PhotonNetwork.LeaveRoom();
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            PhotonNetwork.LeaveRoom();
             SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
-			SceneManager.LoadScene("MainScenes");            
-		}
+            SceneManager.LoadScene("MainScenes");
+        }
 
         // Update time
         if (is_Time_init) {
             Timer.UpdateTime();
         } else {
-            //Send sync time request every second
-            if (!OnSyncTimeRequest)StartCoroutine(SyncTimeRequest(1f));
+            //Send sync time request
+            if (!OnSyncTimeRequest) StartCoroutine(SyncTimeRequest(1f));
         }
 
-		if (GameOver () && !gameEnding) {
-			if (PhotonNetwork.isMasterClient) {
-				photonView.RPC ("EndGame", PhotonTargets.All);
-			}
-		}
-		
+        if (GameOver() && !gameEnding) {
+            if (PhotonNetwork.isMasterClient) {
+                photonView.RPC("EndGame", PhotonTargets.All);
+            }
+        }
+
         //TODO : debug take out
         if (endGameImmediately) {
             Timer.EndGameImmediately();
         }
-	}
+    }
 
     protected abstract void ShowScorePanel(bool b);
 
-	void FixedUpdate(){
-        if (!GameIsBegin){
-			if(Timer.CheckIfGameBegin()){
-				SetGameBegin ();
-                GameMsgDisplayer.ShowWaitOtherPlayer (false);
-				Debug.Log ("Set game begin");
-			}
+    private void FixedUpdate() {
+        if (!gameIsBegin) {
+            if (Timer.CheckIfGameBegin()) {
+                SetGameBegin();
+                OnGameStart();
+                Debug.Log("Set game begin");
+            }
 
-			if(PhotonNetwork.isMasterClient && !callGameBegin){
-				if (!canStart) {
-					if (waitTimes <= 5) {// check if all player finish loading every 2 sec
-						if (Time.time - lastCheckCanStartTime >= 2f) {
-							waitTimes++;
-							lastCheckCanStartTime = Time.time;
-						}
-					} else {//wait too long
-						print ("start time :" + (Timer.GetCurrentTime() - 2)); 
-						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, Timer.GetCurrentTime() - 2);
-						callGameBegin = true;
-					}
-				}
-				else{//all player finish loading
-					if (is_Time_init) {
-						print ("start time :" + (Timer.GetCurrentTime() - 2)); 
-						photonView.RPC ("CallGameBeginAtTime", PhotonTargets.AllBuffered, Timer.GetCurrentTime() - 2);
-						callGameBegin = true;
-					}
-				}
-			}
-		}	
-	}
+            if (PhotonNetwork.isMasterClient && !calledGameBegin) {
+                if (!canStart) {
+                    if (waitTimes <= 5) {// check if all player finish loading every 2 sec
+                        if (Time.time - lastCheckCanStartTime >= 2f) {
+                            waitTimes++;
+                            lastCheckCanStartTime = Time.time;
+                        }
+                    } else {//wait too long
+                        print("start time :" + (Timer.GetCurrentTime() - 2));
+                        photonView.RPC("CallGameBeginAtTime", PhotonTargets.AllBuffered, Timer.GetCurrentTime() - 2);
+                        calledGameBegin = true;
+                    }
+                } else {//all player finish loading
+                    if (is_Time_init) {
+                        print("start time :" + (Timer.GetCurrentTime() - 2));
+                        photonView.RPC("CallGameBeginAtTime", PhotonTargets.AllBuffered, Timer.GetCurrentTime() - 2);
+                        calledGameBegin = true;
+                    }
+                }
+            }
+        }
+    }
 
-	IEnumerator SyncTimeRequest(float time){
-		OnSyncTimeRequest = true;
+    private IEnumerator SyncTimeRequest(float time) {
+        OnSyncTimeRequest = true;
         is_Time_init = Timer.SyncTime();
-		yield return new WaitForSeconds (time);
-		OnSyncTimeRequest = false;
-	}
+        yield return new WaitForSeconds(time);
+        OnSyncTimeRequest = false;
+    }
 
-	IEnumerator ExecuteAfterTime(float time)
-	{
-		yield return new WaitForSeconds(time);
+    protected virtual IEnumerator ExecuteAfterTime(float time) {
+        yield return new WaitForSeconds(time);
 
-        OnGameEndRelease();
+        ShowScorePanel(true);
 
-        if (PhotonNetwork.isMasterClient){
+        //Play final game scene
+        yield return StartCoroutine(PlayFinalGameScene());
+
+        //Destroy scene objects
+        OnGameEndRelease();        
+
+        //return to game lobby
+        if (PhotonNetwork.isMasterClient) {
             PhotonNetwork.LoadLevel("MainScenes");
             PhotonNetwork.room.IsOpen = true;
 
             ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
-                { "Status", 0 }
+                { "Status", (int)Status.Waiting }
             };
             PhotonNetwork.room.SetCustomProperties(h);
         }
         SceneStateController.SetSceneToLoadOnLoaded(GameLobbyManager._sceneName);
+    }
 
-        Cursor.visible = true;
-	}
+    protected abstract IEnumerator PlayFinalGameScene();
 
-    protected virtual void OnGameEndRelease() {}
+    protected virtual void OnGameStart() {
+    }
+
+    protected virtual void OnGameEndRelease() {
+    }
 
     public abstract void RegisterKill(int shooter_viewID, int victim_viewID);
 
     protected void DisplayKillMsg(string shooter, string target, string weapon) {
-        DisplayMsgOnRoomChat(shooter + " killed " + photonView.name + " by " + weapon);
+        DisplayMsgOnGameChat(shooter + " killed " + photonView.name + " by " + weapon);
     }
 
     public bool GameOver() {
         return CheckIfGameEnd();
-	}
-
-    protected abstract bool CheckIfGameEnd();
-
-	void OnPhotonPlayerConnected(PhotonPlayer newPlayer){
-		InGameChat.AddLine (newPlayer + " is connected.");
-	}
-
-	protected virtual void OnPhotonPlayerDisconnected(PhotonPlayer player){//TODO : test this
-		InGameChat.AddLine (player + " is disconnected.");
-        
     }
 
-	public abstract void SetRespawnPoint(int num);
-
-	public int GetRespawnPoint(){
-		return respawnPoint;
-	}
-
-    public abstract Vector3 GetRespawnPointPosition(int num) ;
-
-	public void CallRespawn(int mech_num){
-		SetRespawnPoint (respawnPoint);//set again to make sure not changed
-
-		CloseRespawnPanel();
-		player_mcbt.GetComponent<PhotonView> ().RPC ("EnablePlayer", PhotonTargets.All, respawnPoint, mech_num);
-	}
-
-	public void ShowRespawnPanel(){
-        RespawnPanel.ShowRespawnPanel(true);
+    protected virtual bool CheckIfGameEnd() {
+        return Timer.CheckIfGameEnd();
     }
 
-	public void CloseRespawnPanel(){
-        RespawnPanel.ShowRespawnPanel(false);
+    private void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
+        InGameChat.AddLine(newPlayer + " is connected.");
     }
 
-    private void ApplyOfflineSettings() {
+    protected virtual void OnPhotonPlayerDisconnected(PhotonPlayer player) {
+        InGameChat.AddLine(player + " is disconnected.");
+    }
+
+    public abstract void SetRespawnPoint(int num);
+
+    public int GetRespawnPoint() {
+        return respawnPointNum;
+    }
+
+    public abstract Vector3 GetRespawnPointPosition(int num);
+
+    public void CallRespawn(int mech_num) {
+        Debug.Log("Call respawn mech num : " + mech_num + " respoint : " + respawnPointNum);
+        SetRespawnPoint(respawnPointNum);//set again to make sure not changed
+
+        EnableRespawnPanel(false);
+        player_mcbt.GetComponent<PhotonView>().RPC("EnablePlayer", PhotonTargets.All, respawnPointNum, mech_num);
+    }
+
+    public void EnableRespawnPanel(bool b) {
+        RespawnPanel.ShowRespawnPanel(b);
+    }
+
+    //Return map prefab
+    public abstract GameObject GetMap() ;
+
+    protected virtual void ApplyOfflineSettings() {
         Debug.Log("Offline mode is on");
         PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.0");
         PhotonNetwork.player.NickName = "Player1";
         PhotonNetwork.offlineMode = true;
         PhotonNetwork.CreateRoom("offline");
-        GameInfo.MaxKills = 100;
         GameInfo.MaxTime = 1;
         InstantiatePlayer();
-        GameIsBegin = true;
-        GameMsgDisplayer.ShowWaitOtherPlayer(false);
-
-        isTeamMode = false;
+        gameIsBegin = true;        
     }
 
-	[PunRPC]
-    protected void EndGame(){
-		gameEnding = true;
-		Cursor.lockState = CursorLockMode.None;
-        GameMsgDisplayer.ShowGameOver();
-		ShowScorePanel(true);
-		StartCoroutine(ExecuteAfterTime(3));
-	}
+    [PunRPC]
+    protected void EndGame() {
+        EndGameProcess();
+    }
 
-	[PunRPC]
-	protected void PlayerFinishedLoading(){
-		playerfinishedloading++;//in case master switches
-		if(!PhotonNetwork.isMasterClient){
-			return;
-		}
+    protected virtual void EndGameProcess() {
+        gameEnding = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        StartCoroutine(ExecuteAfterTime(3));
+    }
 
-		if(playerfinishedloading >= PhotonNetwork.room.PlayerCount){
-			canStart = true;
-			print ("can start now.");
-		}
-	}
+    [PunRPC]
+    protected void PlayerFinishedLoading() {
+        NumOfPlayerfinishedloading++;//in case master switches
+        if (!PhotonNetwork.isMasterClient) {
+            return;
+        }
 
-	[PunRPC]
-    protected void CallGameBeginAtTime(int time){
+        if (NumOfPlayerfinishedloading >= PhotonNetwork.room.PlayerCount) {
+            canStart = true;
+            print("All player has connected. Set canStart to true.");
+        }
+    }
+
+    [PunRPC]
+    protected void CallGameBeginAtTime(int time) {
         Timer.SetGameBeginTime(time);
-	}
+    }
 
-	void SetGameBegin(){
-		GameIsBegin = true;
-	}
+    private void SetGameBegin() {
+        gameIsBegin = true;
+    }
 
-    public void DisplayMsgOnRoomChat(string str) {
+    public void DisplayMsgOnGameChat(string str) {
         InGameChat.AddLine(str);
     }
-
-	protected Vector3 RandomXZposition(Vector3 pos, float radius){
-		float x = Random.Range (pos.x - radius, pos.x + radius);
-		float z = Random.Range (pos.z - radius, pos.z + radius);
-		return new Vector3 (x, pos.y, z);
-	}
 }

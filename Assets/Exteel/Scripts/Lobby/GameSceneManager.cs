@@ -29,14 +29,16 @@ public class GameSceneManager : IScene {
         //base.StartScene();
         switch (PhotonNetwork.room.CustomProperties["GameMode"].ToString()) {
             case "DeathMode":
-            Debug.LogError("Not Implemented");
+                Debug.LogError("Not Implemented");
             break;
             case "TeamDeathMode":
                 Debug.LogError("Not Implemented");
             break;
             case "CaptureTheFlag":
-                Debug.Log("Add CTFManager.");
                 gameObject.AddComponent<CTFManager>();
+            break;
+            default:
+                Debug.LogError("No such mode : "+ PhotonNetwork.room.CustomProperties["GameMode"].ToString());
             break;
         }
 

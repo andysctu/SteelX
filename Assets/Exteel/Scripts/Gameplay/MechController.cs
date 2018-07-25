@@ -53,6 +53,7 @@ public class MechController : Photon.MonoBehaviour {
     private void Awake() {
         RegisterOnMechBuilt();
         RegisterOnSkill();
+        RegisterOnMechEnabled();
     }
 
     private void Start() {
@@ -173,7 +174,7 @@ public class MechController : Photon.MonoBehaviour {
             move.z = move.z * slowDownCoeff;
         }
 
-        if (!gm.GameIsBegin) {//player can't move but can rotate
+        if (!GameManager.gameIsBegin) {//player can't move but can rotate
             move.x = 0;
             move.z = 0;
         }

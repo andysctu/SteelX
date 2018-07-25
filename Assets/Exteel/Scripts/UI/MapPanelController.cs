@@ -15,7 +15,9 @@ public class MapPanelController : MonoBehaviour {
         for (int i = 0; i < RespawnPointButtons.Length; i++) {
             Territory_marks[i] = RespawnPointsOnMap[i].GetComponent<Image>();
             RespawnPointButtons[i] = RespawnPointsOnMap[i].GetComponent<Button>();
-            RespawnPointButtons[i].onClick.AddListener(() => gm.CallRespawn(i));
+
+            int index = i;            
+            RespawnPointButtons[i].onClick.AddListener(() => gm.SetRespawnPoint(index));
         }
     }
 

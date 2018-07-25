@@ -47,7 +47,7 @@ public class DisplayPlayerInfo : MonoBehaviour {
         thisPlayerName = (tag == "Drone") ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
         textMesh.text = thisPlayerName;
 
-        if (tag != "Drone" && GameManager.isTeamMode && PhotonNetwork.player.GetTeam() != pv.owner.GetTeam()) {
+        if (tag != "Drone" && GameManager.isTeamMode && PhotonNetwork.player.GetTeam() == pv.owner.GetTeam()) {
             bar.color = Color.white;
             textMesh.color = Color.white;
         } else {

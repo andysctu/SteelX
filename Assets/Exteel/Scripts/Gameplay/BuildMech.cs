@@ -207,11 +207,11 @@ public class BuildMech : Photon.MonoBehaviour {
             if (newPart.bones[i].name.Contains(newPart.name)) {
                 string boneName = newPart.bones[i].name.Remove(0, 6);
                 string boneToFind = "Bip01" + boneName;
-                MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone, boneToFind);
+                MyBones[i] = TransformExtension.FindDeepChild(RootBone, boneToFind);
             }
 
             if (MyBones[i] == null) {
-                MyBones[i] = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name, newPart.bones[i].parent.name);
+                MyBones[i] = TransformExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name, newPart.bones[i].parent.name);
             }
 
             if (MyBones[i] == null) {
@@ -227,7 +227,7 @@ public class BuildMech : Photon.MonoBehaviour {
                     newbone.transform.localScale = new Vector3(1, 1, 1);
                     MyBones[i] = newbone.transform;
                 } else {
-                    parent = TransformDeepChildExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
+                    parent = TransformExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
                     MyBones[i] = parent;
                 }
 

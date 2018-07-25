@@ -11,7 +11,6 @@ public class GameLobbyManager : IScene {
     [SerializeField] private PhotonView photonView;
     [SerializeField] private AudioClip gameLobbyMusic;
     private MusicManager MusicManager;
-    private const int Waiting = 0, inBattle = 1;
     private bool callStartgame = false;
     private string[] Maps = new string[1] { "Simulation" };
     private List<GameObject> players;
@@ -104,7 +103,7 @@ public class GameLobbyManager : IScene {
 
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("GameInit", false);
-        h.Add("Status", inBattle);
+        h.Add("Status", (int)GameManager.Status.InBattle);
         PhotonNetwork.room.SetCustomProperties(h);
 
         photonView.RPC("CallStartGame", PhotonTargets.All);

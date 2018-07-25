@@ -2,24 +2,27 @@
 using UnityEngine.UI;
 
 public class RespawnPanel : MonoBehaviour {
-    [SerializeField] private Transform MechButtons, Map;
+    [SerializeField] private Transform MechRespawnButtons, Map_transform;
     private GameManager gm;
 
     private void Start() {
         gm = FindObjectOfType<GameManager>();
 
-        //init respawn buttons
-        Button[] RespawnButtons = MechButtons.GetComponentsInChildren<Button>();
+        //Init respawn buttons
+        Button[] RespawnButtons = MechRespawnButtons.GetComponentsInChildren<Button>();
         for(int i = 0; i < RespawnButtons.Length; i++) {
-            RespawnButtons[i].onClick.AddListener(() => gm.CallRespawn(i));
+            int respawnIndex = i;
+            RespawnButtons[i].onClick.AddListener(() => gm.CallRespawn(respawnIndex));
         }
+
+        //Map panel
+        InitMap();
     }
 
-    public void InitMap() {
-        GameObject g = FindObjectOfType<MapPanelController>().gameObject;
-        GameObject map = Instantiate(g, Map);
+    private void InitMap() {
+        GameObject MapToInstantiate = gm.GetMap();
+        GameObject map = Instantiate(MapToInstantiate, Map_transform);
         map.transform.localPosition = Vector3.zero;
-        //map.GetComponent<MapPanelController>().InitButtons();
     }
 
     public void ShowRespawnPanel(bool b) {

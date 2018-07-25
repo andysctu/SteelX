@@ -3,7 +3,7 @@
 public class Flag : MonoBehaviour {
     [SerializeField] private ParticleSystem ps;
     [SerializeField] private GameObject flag_base;
-    private LayerMask Terrain = 10;
+    private LayerMask Terrain = 10, IgnoreRayCast = 2;
     private CTFManager gm;
     private PhotonView gmpv;
     public PunTeams.Team team = PunTeams.Team.none;
@@ -62,4 +62,20 @@ public class Flag : MonoBehaviour {
             gmpv.RPC("GetFlagRequest", PhotonTargets.MasterClient, pv.viewID, (team == PunTeams.Team.blue) ? 0 : 1);
         }
     }
+
+    public void OnParentToPlayerAction() {
+        isGrounded = false;
+        isOnBase = false;
+    }
+
+    public void OnDroppedAction() {
+        isGrounded = true;
+        isOnBase = false;
+        gameObject.layer = IgnoreRayCast;
+    }
+
+    public void OnBaseAction() {
+        isOnBase = true;
+    }
+
 }

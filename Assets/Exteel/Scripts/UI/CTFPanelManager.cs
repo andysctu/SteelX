@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CTFPanelManager : MonoBehaviour {
+    private GameManager gm;
     [SerializeField] private GameObject PlayerStat;
     [SerializeField] private GameObject Panel_RedTeam, Panel_BlueTeam;
     [SerializeField] private GameObject ScorePanel, RedScore, BlueScore;
@@ -11,16 +12,16 @@ public class CTFPanelManager : MonoBehaviour {
     private Dictionary<string, GameObject> playerScorePanels = new Dictionary<string, GameObject>();
     private Dictionary<string, Score> playerScores;
 
-    public void Init() {//this is called after master has init game
-        //map.transform.localPosition = Vector3.zero;
+    private void Start() {
+        gm = FindObjectOfType<GameManager>();
+
+        InitMap();
     }
 
-    public void InitMap() {
-        GameObject g = FindObjectOfType<MapPanelController>().gameObject;
-        GameObject map = Instantiate(g, Map);
+    private void InitMap() {
+        GameObject MapToInstantiate = gm.GetMap();
+        GameObject map = Instantiate(MapToInstantiate, Map);
         map.transform.localPosition = Vector3.zero;
-        //map.transform.localScale = new Vector3(1,1,1);
-        //map.GetComponent<MapPanelController>().InitButtons();
     }
 
     public void UpdateScoreText(int blueScore, int redScore) {
@@ -34,13 +35,13 @@ public class CTFPanelManager : MonoBehaviour {
 
         name = (pv.tag == "Drone") ? "Drone" + Random.Range(0, 9999) : pv.owner.NickName;
 
-        //TODO : consider remake this
-        if (pv.isMine) {
-            ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable();
-            h2.Add("Kills", 0);
-            h2.Add("Deaths", 0);
-            PhotonNetwork.player.SetCustomProperties(h2);
-        }
+        //TODO : remove this if no errors
+        //if (pv.isMine) {
+        //    ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable();
+        //    h2.Add("Kills", 0);
+        //    h2.Add("Deaths", 0);
+        //    PhotonNetwork.player.SetCustomProperties(h2);
+        //}
 
         if (playerScores == null) {
             playerScores = new Dictionary<string, Score>();
@@ -54,8 +55,8 @@ public class CTFPanelManager : MonoBehaviour {
         Score score = new Score();
         if (pv.tag != "Drone") {
             string kills, deaths;
-            kills = pv.owner.CustomProperties["Kills"].ToString();
-            deaths = pv.owner.CustomProperties["Deaths"].ToString();
+            kills = (pv.owner.CustomProperties["Kills"]==null)? "0" : pv.owner.CustomProperties["Kills"].ToString();
+            deaths = (pv.owner.CustomProperties["Deaths"] == null) ? "0" : pv.owner.CustomProperties["Deaths"].ToString();
             ps.transform.Find("Kills").GetComponent<Text>().text = kills;
             ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
 

@@ -5,18 +5,24 @@ public class HealthPool : Photon.MonoBehaviour {
     [SerializeField] private int healAmount = 250;
     [SerializeField] private float healDeltaTime = 2;
     [SerializeField] private GameObject barCanvas;
-    public GameObject player;
     private PlayerInZone PlayerInZone;
     private SyncHealthPoolBar syncHealthPoolBar;
     private Camera cam;
     private MechCombat mechCombat;
     private float LastCheckTime;
 
-    public void Init() {
-        cam = player.GetComponentInChildren<Camera>();
-        mechCombat = player.GetComponent<MechCombat>();
+    private void Awake() {
+        InitComponents();
+    }
+
+    private void InitComponents() {
         PlayerInZone = GetComponent<PlayerInZone>();
         syncHealthPoolBar = GetComponent<SyncHealthPoolBar>();
+    }
+
+    public void Init(GameObject player) {
+        cam = player.GetComponentInChildren<Camera>();
+        mechCombat = player.GetComponent<MechCombat>();
         PlayerInZone.SetPlayerID(player.GetPhotonView().viewID);
     }
 

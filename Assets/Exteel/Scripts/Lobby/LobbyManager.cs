@@ -8,7 +8,6 @@ public class LobbyManager : IScene {
     [SerializeField] private AudioClip lobbyMusic;
     [SerializeField] private ChatNewGui ChatNewGui;
     private MusicManager MusicManager;
-    private const int Waiting = 0, inBattle = 1;
     private GameObject[] rooms;
     private string selectedRoom = "";
     private float checkPlayerTime = 0;
@@ -57,7 +56,7 @@ public class LobbyManager : IScene {
         h.Add("GameMode", "DeathMatch");
         h.Add("MaxKills", 1);
         h.Add("MaxTime", 5);
-        h.Add("Status", Waiting);
+        h.Add("Status", (int)GameManager.Status.Waiting);
         RoomOptions ro = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
         ro.CustomRoomProperties = h;
         string[] str = { "Map", "GameMode", "Status" };
@@ -79,7 +78,7 @@ public class LobbyManager : IScene {
             info[3].text = roomsInfo[i].PlayerCount + "/" + roomsInfo[i].MaxPlayers;
 
             if(roomsInfo[i].CustomProperties["Status"] != null)
-                info[2].text = int.Parse(roomsInfo[i].CustomProperties["Status"].ToString()) == Waiting ? "Waiting" : "In Battle";
+                info[2].text = (int.Parse(roomsInfo[i].CustomProperties["Status"].ToString()) == (int)GameManager.Status.Waiting) ? "Waiting" : "In Battle";
             else
                 info[2].text = "";
 
