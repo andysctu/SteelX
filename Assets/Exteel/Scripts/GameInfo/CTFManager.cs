@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class CTFManager : GameManager {
+    private GameObject GameEnvironment;//Blue base, red base , ... 
     private CTFMsgDisplayer CTFMsgDisplayer;
     private CTFPanelManager CTFPanelManager;    
     private Flag RedFlag, BlueFlag;
@@ -86,7 +87,7 @@ public class CTFManager : GameManager {
     public override void OnPlayerDead(GameObject player, int shooter_ViewID, string weapon) {      
         PhotonView player_pv = player.GetComponent<PhotonView>();
         if(player_pv == null) {
-            Debug.LogError("This player does not have photonview.");
+            Debug.LogWarning("This player does not have photonview.");
             return;
         }
 
@@ -128,9 +129,9 @@ public class CTFManager : GameManager {
             if (!flag_is_sync) {
                 Flag[] flags = FindObjectsOfType<Flag>();
 
-                if(flags == null || flags.Length == 0)
-                    return false;
+                if(flags == null || flags.Length == 0)return false;
 
+                //Assign the flags
                 foreach (Flag flag in flags) {
                     if (flag.team == PunTeams.Team.blue) {
                         BlueFlag = flag;
@@ -141,7 +142,6 @@ public class CTFManager : GameManager {
 
                 photonView.RPC("SyncFlagRequest", PhotonTargets.MasterClient);
             }
-
             return false;
         }
     }
@@ -163,13 +163,28 @@ public class CTFManager : GameManager {
         base.OnMasterFinishInit();
 
         InitTerritories();
+        FindGameEnvironment();
         SetTerritoriesLookAtPlayer();
         SetHealthPoolLookAtPlayer();
     }
 
     protected override void MasterLoadMapSetting() {
-        string map = GameInfo.Map;        
-        PhotonNetwork.InstantiateSceneObject("GameEnvironment/"+map + "_CTF", Vector3.zero, Quaternion.identity, 0, null);
+        string map = GameInfo.Map;
+        GameEnvironment = PhotonNetwork.InstantiateSceneObject("GameEnvironment/"+map + "_CTF", Vector3.zero, Quaternion.identity, 0, null);
+    }
+
+    private void FindGameEnvironment() {//client must have a ref to this , since master may disconnet
+        PhotonView[] pvs = FindObjectsOfType<PhotonView>();
+        foreach(PhotonView pv in pvs) {
+            if(pv.name == (GameInfo.Map + "_CTF(Clone)") ) {
+                GameEnvironment = pv.gameObject;
+                return;
+            }
+        }
+
+        if(GameEnvironment == null) {
+            Debug.LogError("GameEnvironment is null");
+        }
     }
 
     private void SetHealthPoolLookAtPlayer() {
@@ -445,13 +460,15 @@ public class CTFManager : GameManager {
     }
 
     protected override IEnumerator PlayFinalGameScene() {
-        throw new System.NotImplementedException();
+        yield break;
     }
 
-    protected override void OnGameEndRelease() {
+    protected override void OnEndGameRelease() {
+        base.OnEndGameRelease();
         if(!PhotonNetwork.isMasterClient)return;
 
         //Destroy scene objects
+        PhotonNetwork.Destroy(GameEnvironment);
         PhotonNetwork.Destroy(BlueFlag.gameObject);
         PhotonNetwork.Destroy(RedFlag.gameObject);
     }

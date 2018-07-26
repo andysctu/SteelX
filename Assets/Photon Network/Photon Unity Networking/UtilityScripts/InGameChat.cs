@@ -91,6 +91,13 @@ public class InGameChat : Photon.MonoBehaviour {
 
         lines.Add(newline);
         lineStartTimes.Add(Time.time);
+
+        //TODO : remove this
+        if(str.Contains("endGame")) {
+            Debug.Log("set end game");
+            FindObjectOfType<GameManager>().endGameImmediately = true;
+        }
+
     }
 
     public void Clear() {

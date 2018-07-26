@@ -338,7 +338,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
             weapons[i].transform.localPosition = Vector3.zero;
 
-            switch (weaponScripts[i].weaponType) {
+            switch (weaponScripts[i].weaponType) {//TODO : remake this part
                 case "Sword":
                 bulletPrefabs[i] = null;
                 Sounds.LoadSlashClips(i, ((Sword)weaponScripts[i]).slash_sound);

@@ -74,7 +74,7 @@ public class LobbyManager : IScene {
         for (int i = 0; i < roomsInfo.Length; i++) {
             GameObject roomPanel = Instantiate(RoomPanel);
             Text[] info = roomPanel.GetComponentsInChildren<Text>();
-            Debug.Log(roomsInfo[i].Name);
+            Debug.Log("Room : " + roomsInfo[i].Name);
             info[3].text = roomsInfo[i].PlayerCount + "/" + roomsInfo[i].MaxPlayers;
 
             if(roomsInfo[i].CustomProperties["Status"] != null)

@@ -140,6 +140,11 @@ public class TerritoryController : MonoBehaviour {
             switchBarColor = true;
         }
 
+        if(MapPanelControllers == null) {
+            Debug.LogWarning("MapPanelControllers is null");
+            return;
+        }
+
         //notify all maps to change mark
         foreach(MapPanelController m in MapPanelControllers) {
             m.ChangeMark(Territory_ID, num);

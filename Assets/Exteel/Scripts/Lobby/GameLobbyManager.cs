@@ -122,12 +122,12 @@ public class GameLobbyManager : IScene {
     }
 
     public void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
-        Debug.Log("Player connected: " + newPlayer.NickName);
+        Debug.Log("GameLobby : "+ newPlayer.NickName + "is connected.");
         AddPlayer(newPlayer.NickName, newPlayer.GetTeam());
     }
 
     public void OnPhotonPlayerDisconnected(PhotonPlayer disconnectedPlayer) {
-        Debug.Log("Player disconnected: " + disconnectedPlayer.NickName);
+        Debug.Log("GameLobby : " + disconnectedPlayer.NickName + "is disconnected.");
         GameObject player = null;
         foreach (GameObject lobbyPlayer in players) {
             if (lobbyPlayer.name == disconnectedPlayer.NickName) {

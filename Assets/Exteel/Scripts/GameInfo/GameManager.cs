@@ -64,7 +64,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         GameInfo.MaxTime = int.Parse(PhotonNetwork.room.CustomProperties["MaxTime"].ToString());
         GameInfo.MaxPlayers = PhotonNetwork.room.MaxPlayers;
 
-        Debug.Log("Map : " + GameInfo.Map + "Gamemode :" + GameInfo.GameMode);
+        Debug.Log("Map : " + GameInfo.Map + " Gamemode :" + GameInfo.GameMode);
     }
 
     protected virtual void Start() {
@@ -183,19 +183,15 @@ public abstract class GameManager : Photon.MonoBehaviour {
         if (Offline) return;
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-            PhotonNetwork.LeaveRoom();
-            SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
-            SceneManager.LoadScene("MainScenes");
+            ExitGames();            
         }
 
         // Update time
-        if (is_Time_init) {
-            Timer.UpdateTime();
-        } else {
+        if (!is_Time_init) {
             //Send sync time request
             if (!OnSyncTimeRequest) StartCoroutine(SyncTimeRequest(1f));
+        } else if (gameIsBegin) {
+            Timer.UpdateTime();
         }
 
         if (GameOver() && !gameEnding) {
@@ -210,11 +206,20 @@ public abstract class GameManager : Photon.MonoBehaviour {
         }
     }
 
+
+    private void ExitGames() {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        PhotonNetwork.LeaveRoom();
+        SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
+        SceneManager.LoadScene("MainScenes");
+    }
+
     protected abstract void ShowScorePanel(bool b);
 
     private void FixedUpdate() {
         if (!gameIsBegin) {
-            if (Timer.CheckIfGameBegin()) {
+            if (is_Time_init && Timer.CheckIfGameBegin()) {
                 SetGameBegin();
                 OnGameStart();
                 Debug.Log("Set game begin");
@@ -228,14 +233,14 @@ public abstract class GameManager : Photon.MonoBehaviour {
                             lastCheckCanStartTime = Time.time;
                         }
                     } else {//wait too long
-                        print("start time :" + (Timer.GetCurrentTime() - 2));
-                        photonView.RPC("CallGameBeginAtTime", PhotonTargets.AllBuffered, Timer.GetCurrentTime() - 2);
+                        print("Wait too long , set start diff :" + (Timer.GetCurrentTimeDiff() + 2));
+                        photonView.RPC("CallGameBeginDiff", PhotonTargets.AllBuffered, Timer.GetCurrentTimeDiff() + 2);
                         calledGameBegin = true;
                     }
                 } else {//all player finish loading
                     if (is_Time_init) {
-                        print("start time :" + (Timer.GetCurrentTime() - 2));
-                        photonView.RPC("CallGameBeginAtTime", PhotonTargets.AllBuffered, Timer.GetCurrentTime() - 2);
+                        print("start time diff :" + (Timer.GetCurrentTimeDiff() + 2));
+                        photonView.RPC("CallGameBeginDiff", PhotonTargets.AllBuffered, Timer.GetCurrentTimeDiff() + 2);
                         calledGameBegin = true;
                     }
                 }
@@ -259,7 +264,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         yield return StartCoroutine(PlayFinalGameScene());
 
         //Destroy scene objects
-        OnGameEndRelease();        
+        OnEndGameRelease();        
 
         //return to game lobby
         if (PhotonNetwork.isMasterClient) {
@@ -279,7 +284,24 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected virtual void OnGameStart() {
     }
 
-    protected virtual void OnGameEndRelease() {
+    protected virtual void OnEndGameRelease() {
+        //Master remove his buffered rpc calls
+        if (PhotonNetwork.isMasterClient) {
+            PhotonNetwork.RemoveRPCs(PhotonNetwork.player);
+
+            //remove all build mech buffered rpcs
+            BuildMech[] bms = FindObjectsOfType<BuildMech>();
+            foreach(BuildMech bm in bms) {
+                PhotonNetwork.RemoveRPCs(bm.photonView);
+            }
+
+            //Master destroy his mech
+            if(player_mcbt.gameObject !=null)
+                PhotonNetwork.Destroy(player_mcbt.gameObject);
+
+            //remove buffered rpcs in GameManager
+            PhotonNetwork.RemoveRPCs(photonView);
+        }
     }
 
     public abstract void RegisterKill(int shooter_viewID, int victim_viewID);
@@ -364,8 +386,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    protected void CallGameBeginAtTime(int time) {
-        Timer.SetGameBeginTime(time);
+    protected void CallGameBeginDiff(int diff) {//diff : (serverTimeStamp - storedtime) / 1000
+        Timer.SetGameBeginTimeDiff(diff);
     }
 
     private void SetGameBegin() {
