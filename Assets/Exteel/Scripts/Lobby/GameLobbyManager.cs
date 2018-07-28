@@ -195,6 +195,7 @@ public class GameLobbyManager : IScene {
 
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("MaxTime", int.Parse(MaxTime.captionText.text));
+        h.Add("time", MaxTime.captionText.text + ":00");
         PhotonNetwork.room.SetCustomProperties(h);
     }
 

@@ -36,6 +36,8 @@ public class CTFManager : GameManager {
 
         TerrainLayerMask = LayerMask.GetMask("Terrain");
 
+        if(Offline)return;
+
         CTFMsgDisplayer.ShowWaitOtherPlayer(true);
     }
 
@@ -75,7 +77,7 @@ public class CTFManager : GameManager {
             StartRot = Quaternion.Euler(new Vector3(0, Random.Range(0, 180), 0));
         }
 
-        Mech m = (Offline)? new Mech() : UserData.myData.Mech[0];//Default 0
+        Mech m = (Offline)? new Mech() : UserData.myData.Mech[0];//Default 0  //TODO : remove offline check
 
         player = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
         BuildMech mechBuilder = player.GetComponent<BuildMech>();
@@ -164,8 +166,6 @@ public class CTFManager : GameManager {
 
         InitTerritories();
         FindGameEnvironment();
-        SetTerritoriesLookAtPlayer();
-        SetHealthPoolLookAtPlayer();
     }
 
     protected override void MasterLoadMapSetting() {
@@ -184,13 +184,6 @@ public class CTFManager : GameManager {
 
         if(GameEnvironment == null) {
             Debug.LogError("GameEnvironment is null");
-        }
-    }
-
-    private void SetHealthPoolLookAtPlayer() {
-        HealthPool[] healthpools = FindObjectsOfType<HealthPool>();
-        foreach (HealthPool h in healthpools) {
-            h.Init(player);
         }
     }
 
@@ -232,12 +225,6 @@ public class CTFManager : GameManager {
     protected override void OnGameStart() {
         base.OnGameStart();
         CTFMsgDisplayer.ShowWaitOtherPlayer(false);
-    }
-
-    private void SetTerritoriesLookAtPlayer() {
-        foreach (TerritoryController g in territories) {
-            g.SetPlayerToLookAt(player);
-        }
     }
 
     public override void RegisterPlayer(int player_viewID) {
@@ -513,5 +500,6 @@ public class CTFManager : GameManager {
     protected override void ApplyOfflineSettings() {
         base.ApplyOfflineSettings();
         CTFMsgDisplayer.ShowWaitOtherPlayer(false);
+        isTeamMode = false;
     }
 }

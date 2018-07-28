@@ -51,6 +51,18 @@ public class Timer {
         return (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
     }
 
+    public int GetCurrentTime() {
+        return currentTimer;
+    }
+
+    public string GetCurrentFormatTime(bool separateBySpaces) {
+        int seconds = currentTimer % 60;
+        int minutes = currentTimer / 60;
+        string finalStr = (separateBySpaces)? UIExtensionMethods.FillStringWithSpaces(minutes.ToString("D2") + ":" + seconds.ToString("D2")) : minutes.ToString("D2") + ":" + seconds.ToString("D2");
+
+        return finalStr;
+    }
+
     public void SetStoredTime(int newStoredStartTime, int newStoredDuration) {
         storedStartTime = newStoredStartTime;
         storedDuration = newStoredDuration;

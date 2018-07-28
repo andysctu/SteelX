@@ -33,6 +33,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
     private bool OnSyncTimeRequest = false, is_Time_init = false;
     private int waitTimes = 0, sendTimes = 0;
 
+    //Display time on lobby
+    private float lastUpdateRoomTime = 0;
+    private const float updateRoomTimeInterval = 3;
+
     //debug
     public bool Offline = false;
     public bool endGameImmediately = false;//debug use
@@ -43,7 +47,12 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     protected virtual void Awake() {
         Application.targetFrameRate = 40;//TODO : player can choose target frame rate
+
         InitComponents();
+
+        Offline = FindObjectOfType<GameSceneManager>().test;
+        if (Offline) {LoadOfflineInfo();return; }
+
         BuildGameScene();
         LoadGameInfo();
     }
@@ -68,11 +77,11 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected virtual void Start() {
-        Timer.Init();
+        InitRespawnPoints();
 
         if (Offline) { ApplyOfflineSettings(); return; }
 
-        InitRespawnPoints();
+        Timer.Init();
 
         //Master initializes room's properties ( team score, ... )
         if (PhotonNetwork.isMasterClient) MasterInitGame();
@@ -106,8 +115,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
                 InGameChat.AddLine("Failed to sync game properties. Is master disconnected ? ");
                 Debug.Log("master not connected");
 
-                //TODO : Exit the game
-
+                //Exit the game
+                ExitGames();
             } else {
                 InGameChat.AddLine("Game is sync.");
                 photonView.RPC("PlayerFinishedLoading", PhotonTargets.AllBuffered);
@@ -246,6 +255,19 @@ public abstract class GameManager : Photon.MonoBehaviour {
                 }
             }
         }
+
+        if (PhotonNetwork.isMasterClient) {
+            //Update display time in lobby
+            if(Time.time - lastUpdateRoomTime > updateRoomTimeInterval) {
+                lastUpdateRoomTime = Time.time;
+                ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
+                  { "time", Timer.GetCurrentFormatTime(false) }
+                };
+
+                PhotonNetwork.room.SetCustomProperties(h);
+            }
+        }
+
     }
 
     private IEnumerator SyncTimeRequest(float time) {
@@ -349,15 +371,26 @@ public abstract class GameManager : Photon.MonoBehaviour {
     //Return map prefab
     public abstract GameObject GetMap() ;
 
+    public GameObject GetThePlayer() {
+        return player_mcbt == null ? null : player_mcbt.gameObject;
+    }
+
+    private void LoadOfflineInfo() {
+        GameInfo.MaxTime = 1;
+        GameInfo.Map = "Offline";
+    }
+
     protected virtual void ApplyOfflineSettings() {
         Debug.Log("Offline mode is on");
-        PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.0");
+        InitComponents();
+        //PhotonNetwork.ConnectToRegion(CloudRegionCode.jp, "1.0");
         PhotonNetwork.player.NickName = "Player1";
         PhotonNetwork.offlineMode = true;
-        PhotonNetwork.CreateRoom("offline");
-        GameInfo.MaxTime = 1;
-        InstantiatePlayer();
+        PhotonNetwork.CreateRoom("offline");             
         gameIsBegin = true;        
+        RespawnPoints = new Vector3[1];
+        RespawnPoints[0] = Vector3.zero;
+        InstantiatePlayer();
     }
 
     [PunRPC]

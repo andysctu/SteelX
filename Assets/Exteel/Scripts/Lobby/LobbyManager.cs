@@ -10,8 +10,12 @@ public class LobbyManager : IScene {
     private MusicManager MusicManager;
     private GameObject[] rooms;
     private string selectedRoom = "";
-    private float checkPlayerTime = 0;
-    private const float checkPlayerDeltaTime = 6f;
+    private float lastCheckPlayerCountTime = 0;
+    private const float checkPlayerCountDeltaTime = 6f;
+
+    //Auto refresh
+    private float lastRefreshTime = 0;
+    private const float autoRefreshInterval = 5;
 
     public const string _sceneName = "Lobby";
 
@@ -41,9 +45,14 @@ public class LobbyManager : IScene {
     }
 
     private void FixedUpdate() {
-        if (Time.time - checkPlayerTime >= checkPlayerDeltaTime) {//update player count
-            checkPlayerTime = Time.time;
+        if (Time.time - lastCheckPlayerCountTime >= checkPlayerCountDeltaTime) {//update player count
+            lastCheckPlayerCountTime = Time.time;
             playerCountText.text = PhotonNetwork.countOfPlayers.ToString();
+        }
+
+        if(Time.time - lastRefreshTime > autoRefreshInterval) {
+            lastRefreshTime = Time.time;
+            Refresh();
         }
     }
 
@@ -54,18 +63,22 @@ public class LobbyManager : IScene {
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("Map", "Simulation");
         h.Add("GameMode", "DeathMatch");
-        h.Add("MaxKills", 1);
+        h.Add("MaxKills", 1);//TODO : remove this
         h.Add("MaxTime", 5);
         h.Add("Status", (int)GameManager.Status.Waiting);
+        h.Add("time", "05:00");
+
         RoomOptions ro = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
         ro.CustomRoomProperties = h;
-        string[] str = { "Map", "GameMode", "Status" };
+        string[] str = { "Map", "GameMode", "Status", "time"};
         ro.CustomRoomPropertiesForLobby = str;
         PhotonNetwork.CreateRoom(RoomName.text, ro, TypedLobby.Default);
         HideCreateRoomModel();
     }
 
     public void Refresh() {
+        lastRefreshTime = Time.time;
+
         if (rooms != null) for (int i = 0; i < rooms.Length; i++) Destroy(rooms[i]);
 
         RoomInfo[] roomsInfo = PhotonNetwork.GetRoomList();
@@ -77,9 +90,17 @@ public class LobbyManager : IScene {
             Debug.Log("Room : " + roomsInfo[i].Name);
             info[3].text = roomsInfo[i].PlayerCount + "/" + roomsInfo[i].MaxPlayers;
 
-            if(roomsInfo[i].CustomProperties["Status"] != null)
-                info[2].text = (int.Parse(roomsInfo[i].CustomProperties["Status"].ToString()) == (int)GameManager.Status.Waiting) ? "Waiting" : "In Battle";
-            else
+            if(roomsInfo[i].CustomProperties["Status"] != null) {
+                int status = int.Parse(roomsInfo[i].CustomProperties["Status"].ToString());
+
+                info[2].text = (status == (int)GameManager.Status.Waiting) ? "Waiting" : "In Battle";
+
+                //Display time
+                if(status == (int)GameManager.Status.InBattle && roomsInfo[i].CustomProperties["time"] != null) {                    
+                    info[2].text += "(" + roomsInfo[i].CustomProperties["time"].ToString() + ")";
+                }
+
+            } else//Just in case different version
                 info[2].text = "";
 
             info[1].text = roomsInfo[i].CustomProperties["GameMode"].ToString();
@@ -168,8 +189,8 @@ public class LobbyManager : IScene {
         Debug.Log("Disconnected from Photon.");
     }
 
-    public void OnReceivedRoomListUpdate() {
-        Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);
-        Refresh();
-    }
+    //public void OnReceivedRoomListUpdate() {
+        //Debug.Log("Received: " + PhotonNetwork.GetRoomList().Length);
+        //Refresh();
+    //}
 }

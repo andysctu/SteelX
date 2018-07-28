@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class DisplayPlayerInfo : MonoBehaviour {
     private TextMesh textMesh;
@@ -9,8 +10,6 @@ public class DisplayPlayerInfo : MonoBehaviour {
     private Camera cam;
     private GameObject targetPlayer;
     private string thisPlayerName; 
-
-    private float LastInitRequestTime;
 
     private void Awake() {
         InitComponents();
@@ -43,6 +42,8 @@ public class DisplayPlayerInfo : MonoBehaviour {
         //Do not show my name & hp bar
         gameObject.SetActive(!pv.isMine || tag=="Drone");
         
+        if(pv.isMine)return;
+
         //Init name
         thisPlayerName = (tag == "Drone") ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
         textMesh.text = thisPlayerName;
@@ -54,6 +55,30 @@ public class DisplayPlayerInfo : MonoBehaviour {
             bar.color = Color.red; //enemy
             textMesh.color = Color.red;
         }
+
+        GameManager gm = FindObjectOfType<GameManager>();
+        StartCoroutine(GetThePlayer(gm));
+    }
+
+    private IEnumerator GetThePlayer(GameManager gm) {
+        GameObject ThePlayer;
+        int request_times = 0;
+        while ((ThePlayer = gm.GetThePlayer()) == null && request_times < 10) {
+            request_times++;
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        if(request_times >= 10) {
+            Debug.LogError("Can't get the player");
+            yield break;
+        }
+
+        InitPlayerRelatedComponents(ThePlayer);
+        yield break;
+    }
+
+    private void InitPlayerRelatedComponents(GameObject player) {
+        cam = player.GetComponentInChildren<Camera>();
     }
 
     private Image FindBar() {
@@ -63,7 +88,6 @@ public class DisplayPlayerInfo : MonoBehaviour {
                 return i;
             }
         }
-
         Debug.LogError("Can't find hp bar");
         return null;
     }
@@ -79,13 +103,6 @@ public class DisplayPlayerInfo : MonoBehaviour {
             float distance = Vector3.Distance(transform.position, cam.transform.position);
             distance = Mathf.Clamp(distance, 0, 200f);
             transform.localScale = new Vector3(1 + distance / 100 * 1.5f, 1 + distance / 100 * 1.5f, 1);
-        } else {
-            if (Time.time - LastInitRequestTime > 0.5f) { //some other player's mechs may get built first , so they can't find the target player's cam
-                targetPlayer = GameObject.Find(PhotonNetwork.playerName);
-                if (targetPlayer != null)
-                    cam = targetPlayer.GetComponentInChildren<Camera>();
-                LastInitRequestTime = Time.time;
-            }
         }
 
         //update bar value

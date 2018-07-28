@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(PlayerInZone))]
 public class HealthPool : Photon.MonoBehaviour {
@@ -8,11 +9,33 @@ public class HealthPool : Photon.MonoBehaviour {
     private PlayerInZone PlayerInZone;
     private SyncHealthPoolBar syncHealthPoolBar;
     private Camera cam;
-    private MechCombat mechCombat;
+    private MechCombat mechCombat;    
     private float LastCheckTime;
 
     private void Awake() {
-        InitComponents();
+        InitComponents();        
+    }
+
+    private void Start() {
+        GameManager gm = FindObjectOfType<GameManager>();
+        StartCoroutine(GetThePlayer(gm));
+    }
+
+    private IEnumerator GetThePlayer(GameManager gm) {
+        GameObject ThePlayer;
+        int request_times = 0;
+        while((ThePlayer = gm.GetThePlayer()) == null && request_times < 10) {
+            request_times ++;
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        if(request_times >= 10) {
+            Debug.LogError("Can't get the player");
+            yield break;
+        }
+
+        InitPlayerRelatedComponents(ThePlayer);
+        yield break;
     }
 
     private void InitComponents() {
@@ -20,7 +43,7 @@ public class HealthPool : Photon.MonoBehaviour {
         syncHealthPoolBar = GetComponent<SyncHealthPoolBar>();
     }
 
-    public void Init(GameObject player) {
+    private void InitPlayerRelatedComponents(GameObject player) {
         cam = player.GetComponentInChildren<Camera>();
         mechCombat = player.GetComponent<MechCombat>();
         PlayerInZone.SetPlayerID(player.GetPhotonView().viewID);

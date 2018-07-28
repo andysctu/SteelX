@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 405268}
   - component: {fileID: 2087740}
   - component: {fileID: 12423242}
-  - component: {fileID: 9292408}
   - component: {fileID: 8174502}
   - component: {fileID: 11415780}
   - component: {fileID: 11418416}
@@ -182,7 +181,6 @@ GameObject:
   - component: {fileID: 431462}
   - component: {fileID: 2093468}
   - component: {fileID: 12494616}
-  - component: {fileID: 9283992}
   - component: {fileID: 114000010656035922}
   m_Layer: 8
   m_Name: Radar
@@ -190,7 +188,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &400212
 Transform:
   m_ObjectHideFlags: 1
@@ -333,7 +331,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294966783
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -391,20 +389,6 @@ Skybox:
   m_CustomSkybox: {fileID: 2100000, guid: d07d2172e76d3fa429e80a14d2ae3616, type: 2}
 --- !u!81 &8174502
 AudioListener:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 113264}
-  m_Enabled: 0
---- !u!92 &9283992
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 183748}
-  m_Enabled: 0
---- !u!92 &9292408
-Behaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -4648,6 +4632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bce7c1701e764a31a22450c94539299, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
 --- !u!114 &114000010976113334
 MonoBehaviour:
   m_ObjectHideFlags: 1

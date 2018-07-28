@@ -29,6 +29,12 @@ TextureImporter:
     21300044: heatbar
     21300046: heatbar_fill
     21300048: bar_green
+    21300050: radar
+    21300052: radarBorder
+    21300054: radarElement_player1
+    21300056: radarElement_player2
+    21300058: radarElement_self1
+    21300060: radarElement_self2
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -450,6 +456,90 @@ TextureImporter:
         height: 14
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radar
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 837
+        width: 162
+        height: 160
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radarBorder
+      rect:
+        serializedVersion: 2
+        x: 872
+        y: 932
+        width: 152
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radarElement_player1
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 861
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radarElement_player2
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 840
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radarElement_self1
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 946
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radarElement_self2
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 946
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

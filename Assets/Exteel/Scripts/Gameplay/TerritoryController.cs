@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class TerritoryController : MonoBehaviour {
     public int Territory_ID = 0;    
@@ -32,6 +33,26 @@ public class TerritoryController : MonoBehaviour {
         InitComponents();
     }
 
+    private void Start() {
+        GameManager gm = FindObjectOfType<GameManager>();
+        StartCoroutine(GetThePlayer(gm));
+    }
+
+    private IEnumerator GetThePlayer(GameManager gm) {
+        GameObject ThePlayer;
+        while ((ThePlayer = gm.GetThePlayer()) == null) {
+            yield return new WaitForSeconds(0.5f);
+        }
+        InitPlayerRelatedComponents(ThePlayer);
+        yield break;
+    }
+
+    private void InitPlayerRelatedComponents(GameObject player) {
+        playerToLookAt = player;
+        cam = playerToLookAt.GetComponentInChildren<Camera>();
+        if (interactable) PlayerInZone.SetPlayerID(playerToLookAt.GetPhotonView().viewID);
+    }
+
     private void InitComponents() {
         baseMesh = GetComponent<MeshRenderer>();
         PlayerInZone = GetComponent<PlayerInZone>();
@@ -46,12 +67,6 @@ public class TerritoryController : MonoBehaviour {
         }
         this.MapPanelControllers = new MapPanelController[MapPanelControllers.Length];
         MapPanelControllers.CopyTo(this.MapPanelControllers, 0);
-    }
-
-    public void SetPlayerToLookAt(GameObject player) {
-        playerToLookAt = player;
-        cam = playerToLookAt.GetComponentInChildren<Camera>();
-        if(interactable)PlayerInZone.SetPlayerID(playerToLookAt.GetPhotonView().viewID);
     }
 
     private void Update() {
