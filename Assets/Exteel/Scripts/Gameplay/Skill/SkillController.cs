@@ -9,7 +9,7 @@ public class SkillController : MonoBehaviour {
     [SerializeField] private MechCombat mechcombat;
     [SerializeField] private MechController mechController;
     [SerializeField] private Animator skillAnimator, mainAnimator, skillcamAnimator;
-    [SerializeField] private Camera cam, skillcam;
+    [SerializeField] private Camera mainCam, skillCam;
     [SerializeField] private SkillConfig[] skills = new SkillConfig[4];
     [SerializeField] private Sounds Sounds;
     [SerializeField] private AudioClip sorry;
@@ -301,11 +301,11 @@ public class SkillController : MonoBehaviour {
     }
 
     public Camera GetCamera() {
-        return cam;
+        return mainCam;
     }
 
     public Camera GetSkillCamera() {
-        return skillcam;
+        return skillCam;
     }
 
     public string GetSkillName(int skill_num) {
@@ -380,10 +380,10 @@ public class SkillController : MonoBehaviour {
         //override target on skill animation
         clipOverrides[Target_Animation_Name] = skill_target;
         animatorOverrideController.ApplyOverrides(clipOverrides);
-        if (skillcam != null) {
+        if (skillCam != null) {
             //rotate skill cam to face the target so the skill_cam animation is correct
-            skillcam.transform.localRotation = Quaternion.identity;
-            skillcam.transform.parent.LookAt(transform.position + (transform.position - skill_user_pos) * 9999);
+            skillCam.transform.localRotation = Quaternion.identity;
+            skillCam.transform.parent.LookAt(transform.position + (transform.position - skill_user_pos) * 9999);
 
             Debug.DrawRay(transform.position + new Vector3(0,5,0), (transform.position - skill_user_pos) * 9999);
             skillcam_clipOverrides[Target_Animation_Name] = skillcam_target;
@@ -472,19 +472,19 @@ public class SkillController : MonoBehaviour {
 
     private void SwitchToSkillCam(bool b) {
         if (!photonView.isMine) return;
-        skillcam.enabled = b;
-        cam.enabled = !b;
+        skillCam.gameObject.SetActive(b);
+        mainCam.enabled = !b;
     }
 
     private void PlaySkillCamAnimation(int skill_num) {//-1 : target animation
         if (!photonView.isMine) return;
 
         //Rotate to correct angle
-        skillcam.transform.localRotation = Quaternion.identity;
+        skillCam.transform.localRotation = Quaternion.identity;
 
         if (skill_num != -1) {
-            skillcam.transform.localRotation = Quaternion.identity;
-            skillcam.transform.parent.localRotation = Quaternion.identity;
+            skillCam.transform.localRotation = Quaternion.identity;
+            skillCam.transform.parent.localRotation = Quaternion.identity;
 
             skillcamAnimator.Play("sk" + skill_num);
         } else {

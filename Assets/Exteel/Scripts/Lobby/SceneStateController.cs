@@ -9,7 +9,7 @@ public class SceneStateController : MonoBehaviour {
 
     private void Awake() {
         if (FindObjectsOfType<SceneStateController>().Length > 1) {
-            Destroy(gameObject);
+            DestroyImmediate(gameObject);
             return;
         }
 
@@ -18,7 +18,7 @@ public class SceneStateController : MonoBehaviour {
     }
 
     private void SetDefaultScene() {
-        if (ActiveScene == "") {//this is for not start for login
+        if (ActiveScene == "") {//this is for not start from login
             if ((ActiveScene = FindActiveScene()) == "") {
                 Debug.LogError("AcitveScene empty and can't find active scene");
                 return;
@@ -28,6 +28,7 @@ public class SceneStateController : MonoBehaviour {
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         RegisterScenes();
+        curActiveScene = null;
         LoadScene(ActiveScene);
     }
 
@@ -55,7 +56,9 @@ public class SceneStateController : MonoBehaviour {
     }
 
     public void LoadScene(string sceneName) {
-        if (curActiveScene != null)curActiveScene.EndScene();
+        if (curActiveScene != null) 
+            curActiveScene.EndScene();
+
 
         SetCurrentScene(sceneName);
 

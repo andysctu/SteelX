@@ -78,7 +78,7 @@ public class InGameChat : Photon.MonoBehaviour {
         AddLine(senderName + " : " + str);
     }
 
-    public void AddLine(string str) {
+    public void AddLine(string str, Color color = default(Color)) {
         GameObject g = Instantiate(LinePrefab, Content.transform);
 
         Text newline = g.GetComponent<Text>();
@@ -86,7 +86,7 @@ public class InGameChat : Photon.MonoBehaviour {
         for(i = 0; i < maxLine && str.Length > maxLengthPerLine * (i + 1) ; i++);
 
         newline.rectTransform.sizeDelta = new Vector3(newline.rectTransform.sizeDelta.x, newline.rectTransform.sizeDelta.y * (i+1));
-
+        newline.color = (color == default(Color))? Color.white : color;
         newline.text = str;
 
         lines.Add(newline);
@@ -97,7 +97,6 @@ public class InGameChat : Photon.MonoBehaviour {
             Debug.Log("set end game");
             FindObjectOfType<GameManager>().endGameImmediately = true;
         }
-
     }
 
     public void Clear() {

@@ -1,58 +1,79 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 
 public class PlayerRadarElement : RadarElement {
-    [SerializeField]private MeshRenderer plane;
-    [SerializeField]private Material Enemy, Ally;
-    [SerializeField]private TextMesh nameTextMesh;
-    private GameObject ThePlayer;
+    [SerializeField] private Sprite Enemy, Ally, Self_blue, Self_red;
+    [SerializeField] private TextMesh nameTextMesh;
+    private PhotonView root_pv;
 
+    protected override void Awake() {
+        base.Awake();
+        root_pv = transform.root.GetComponent<PhotonView>();
+    }
     protected override void Start() {
         base.Start();
-        if (GameManager.isTeamMode) {
-            GameManager gm = FindObjectOfType<GameManager>();
-            StartCoroutine(GetThePlayer(gm));
-        } else {
-            plane.material = Enemy;
-        }
-
-        if(transform.root.GetComponent<PhotonView>() == null || transform.root.GetComponent<PhotonView>().owner == null) {
-            nameTextMesh.text = transform.root.name;
-        } else {
-            nameTextMesh.text = transform.root.GetComponent<PhotonView>().owner.NickName;
-        }        
     }
 
-    private IEnumerator GetThePlayer(GameManager gm) {
-        GameObject ThePlayer;
-        int request_times = 0;
-        while ((ThePlayer = gm.GetThePlayer()) == null && request_times < 10) {
-            request_times ++;
-            yield return new WaitForSeconds(0.5f);
-        }
+    protected override void OnGetPlayerAction() {
+        base.OnGetPlayerAction();
         
-        if(request_times >= 10) {
-            Debug.LogError("Can't get the player");
-            yield break;
-        } else {
-            if(ThePlayer.GetPhotonView()==null || ThePlayer.GetPhotonView().owner == null) {
-                plane.material = Enemy;
-                yield break;
-            }
+        UpdateNameText();
+        SwitchSprite();
+    }
 
-            //Check team
-            if(ThePlayer.GetPhotonView().owner.GetTeam() == PhotonNetwork.player.GetTeam()) {
-                plane.material = Ally;
+    private void UpdateNameText() {
+        if (root_pv == null || root_pv.owner == null) {
+            nameTextMesh.text = transform.root.name;
+        } else {
+            nameTextMesh.text = root_pv.owner.NickName;
+        }
+    }
+
+    private void SwitchSprite() {
+        //Check if this is me        
+        if (root_pv.isMine && root_pv.tag != "Drone") {
+            nameTextMesh.text = "";
+            if (GameManager.isTeamMode) {
+                if (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) {
+                    SpriteRenderer.sprite = Self_red;
+                } else {
+                    SpriteRenderer.sprite = Self_blue;
+                }
             } else {
-                plane.material = Enemy;
+                SpriteRenderer.sprite = Self_blue;
             }
+            return;
         }
 
-        yield break;
+        //Drone
+        if (root_pv.tag == "Drone") {
+            SpriteRenderer.sprite = Enemy;
+            nameTextMesh.color = Color.red;
+            return;
+        }
+
+        if (GameManager.isTeamMode) {
+            if (ThePlayer.GetPhotonView() == null || ThePlayer.GetPhotonView().owner == null) {
+                SpriteRenderer.sprite = Enemy;
+                nameTextMesh.color = Color.red;
+            } else {
+                //Check team
+                if (ThePlayer.GetPhotonView().owner.GetTeam() == root_pv.owner.GetTeam()) {
+                    SpriteRenderer.sprite = Ally;
+                    nameTextMesh.color = Color.green;
+                } else {
+                    SpriteRenderer.sprite = Enemy;
+                    nameTextMesh.color = Color.red;
+                }
+            }
+        } else {
+            SpriteRenderer.sprite = Enemy;
+            nameTextMesh.color = Color.red;
+        }
+    }
+
+    public void OnPlayerDead() {
     }
 
     public void OnPlayerBroadcast() {
-
     }
 }

@@ -3,12 +3,16 @@ using UnityEngine.UI;
 
 public class SyncHealthPoolBar : Photon.MonoBehaviour {
     [SerializeField] private Sprite bar_green, bar_grey;
-    [SerializeField] private Image bar;
-    [SerializeField] private PlayerInZone PlayerInZone;
+    [SerializeField] private Image bar;    
     [SerializeField] private float increaseAmount = 0.001f;
+    private PlayerInZone PlayerInZone;
     public bool isAvailable = true;
     private float trueAmount = 1;
     private const int GREEN = 0, GREY = 1;
+
+    private void Awake() {
+        PlayerInZone = GetComponentInChildren<PlayerInZone>();
+    }
 
     private void Start() {
         if (isAvailable) {//check state

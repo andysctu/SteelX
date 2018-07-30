@@ -14,9 +14,9 @@ TextureImporter:
     21300014: bar_red1
     21300016: bar_blue1
     21300018: bar_green1
-    21300020: map_bluezone
-    21300022: map_redzone
-    21300024: map_greyzone
+    21300020: map_blueTerritory_big
+    21300022: map_redTerritory_big
+    21300024: grey_Territory_big_1
     21300026: HUDcorner
     21300028: playerhpbar
     21300030: bar_yellow
@@ -35,6 +35,23 @@ TextureImporter:
     21300056: radarElement_player2
     21300058: radarElement_self1
     21300060: radarElement_self2
+    21300062: blue_Territory_small
+    21300064: red_Territory_small
+    21300066: map_blueTerritory_big_1
+    21300068: map_blueTerritory_big_2
+    21300070: map_redTerritory_big_1
+    21300072: map_redTerritory_big_2
+    21300074: blue_Territory_small_1
+    21300076: blue_Territory_small_2
+    21300078: red_Territory_small_1
+    21300080: red_Territory_small_2
+    21300082: grey_Territory_big
+    21300084: grey_Territory_small
+    21300086: grey_Territory_small_1
+    21300088: map_blueTerritory_big_3
+    21300090: map_blueTerritory_red_3
+    21300092: blue_Territory_small_3
+    21300094: red_Territory_small_3
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -53,7 +70,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -98,6 +115,16 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
   - buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -251,7 +278,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: map_bluezone
+      name: map_blueTerritory_big
       rect:
         serializedVersion: 2
         x: 513
@@ -265,13 +292,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: map_redzone
+      name: map_redTerritory_big
       rect:
         serializedVersion: 2
-        x: 534
-        y: 879
-        width: 19
-        height: 18
+        x: 533
+        y: 878
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -279,13 +306,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: map_greyzone
+      name: grey_Territory_big_1
       rect:
         serializedVersion: 2
-        x: 534
+        x: 533
         y: 818
-        width: 19
-        height: 19
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -525,7 +552,7 @@ TextureImporter:
         width: 11
         height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -539,7 +566,245 @@ TextureImporter:
         width: 11
         height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blue_Territory_small
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 884
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: red_Territory_small
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 884
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_blueTerritory_big_1
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 858
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_blueTerritory_big_2
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 838
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_redTerritory_big_1
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 858
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_redTerritory_big_2
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 838
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blue_Territory_small_1
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 870
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blue_Territory_small_2
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 856
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: red_Territory_small_1
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 870
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: red_Territory_small_2
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 856
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grey_Territory_big
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 818
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grey_Territory_small
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 842
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: grey_Territory_small_1
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 842
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_blueTerritory_big_3
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 798
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_blueTerritory_red_3
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 798
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blue_Territory_small_3
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 828
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: red_Territory_small_3
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 828
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

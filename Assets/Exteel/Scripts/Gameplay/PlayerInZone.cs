@@ -2,13 +2,18 @@
 using UnityEngine;
 
 public class PlayerInZone : MonoBehaviour {
-    private int player_viewID;
+    private int player_viewID = -1;
     private int playerCount = 0;
     private bool isThePlayerInside = false;
     private int blueTeamPlayerCount = 0, redTeamPlayerCount = 0;
     private float LastCheckTime = 0;
-    private float checkDeltaTime = 0.3f;
+    private float checkDeltaTime = 0.2f;
     private List<MechCombat> players = new List<MechCombat>();
+    private List<MechCombat> playersToRemove = new List<MechCombat>();
+
+    public void SetPlayer(GameObject player) {
+        player_viewID = player.GetComponent<PhotonView>().viewID;
+    }
 
     private void FixedUpdate() {
         if (Time.time - LastCheckTime >= checkDeltaTime) {
@@ -24,7 +29,7 @@ public class PlayerInZone : MonoBehaviour {
     private void OnTriggerEnter(Collider collider) {
         if (collider.tag == "Drone") return;
 
-        PhotonView pv = collider.transform.root.GetComponent<PhotonView>();
+        PhotonView pv = collider.transform.root.GetComponent<PhotonView>();//TODO : improve this
         if (pv.viewID == player_viewID) {
             isThePlayerInside = true;
         }
@@ -57,15 +62,27 @@ public class PlayerInZone : MonoBehaviour {
 
     public void CountPlayer() {
         int tempPlayerCount = 0, tempRTcount = 0, tempBTcount = 0;
-        foreach (MechCombat m in players) {
-            if (!m.isDead) {
+        foreach (MechCombat player in players) {
+            if (player == null) {//Remove player disconnected
+                playersToRemove.Add(player);
+                continue;
+            }
+
+            if (!player.isDead) {
                 tempPlayerCount++;
-                if (m.photonView.owner.GetTeam() == PunTeams.Team.red) {
+                if (player.photonView.owner.GetTeam() == PunTeams.Team.red) {
                     tempRTcount++;
                 } else {
                     tempBTcount++;
                 }
             }
+        }
+
+        if (playersToRemove.Count > 0) {
+            foreach(MechCombat m in playersToRemove) {
+                players.Remove(m);                
+            }
+            playersToRemove.Clear();
         }
 
         playerCount = tempPlayerCount;
@@ -76,10 +93,22 @@ public class PlayerInZone : MonoBehaviour {
     public int getNotFullHPPlayerCount() {
         int tempCount = 0;
         foreach (MechCombat player in players) {
+            if (player == null) {//Remove player disconnected
+                playersToRemove.Add(player);
+                continue;
+            }
+
             if (!(player.IsHpFull() || player.isDead)) { //ignore full hp & dead player
                 tempCount++;
             }
         }
+        if (playersToRemove.Count > 0) {
+            foreach (MechCombat m in playersToRemove) {
+                players.Remove(m);
+            }
+            playersToRemove.Clear();
+        }
+
         return tempCount;
     }
 
@@ -101,6 +130,6 @@ public class PlayerInZone : MonoBehaviour {
     }
 
     public bool IsThePlayerInside() {
-        return isThePlayerInside;
+        return (player_viewID != -1 && isThePlayerInside);//-1 : not init
     }
 }

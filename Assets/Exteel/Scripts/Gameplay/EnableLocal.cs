@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 
 public class EnableLocal : MonoBehaviour {
-    [SerializeField] private Camera mainCamera, radar;
+    [SerializeField] private GameObject mainCamera, radar;
 
-    private void Start() {
+    private void Awake() {
         EnableComponents(GetComponent<PhotonView>().isMine);
+        Destroy(this);
     }
 
     private void EnableComponents(bool b) {
-
-        radar.enabled = b;
+        mainCamera.SetActive(b);
+        radar.SetActive(b);
     }
 }

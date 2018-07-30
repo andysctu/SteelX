@@ -17,4 +17,8 @@ public abstract class IScene : MonoBehaviour{
     public virtual void EndScene() {
         gameObject.SetActive(false);
     }
+
+    public override string ToString() {
+        return GetSceneName();
+    }
 }

@@ -11,6 +11,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected Timer Timer = new Timer();
     protected GameObject player;
     protected MechCombat player_mcbt;
+    protected Camera[] thePlayerMainCameras;
     protected int respawnPointNum;//The current respawn point choosed , may be invalid
     public static bool isTeamMode;
 
@@ -112,13 +113,13 @@ public abstract class GameManager : Photon.MonoBehaviour {
             yield return StartCoroutine(LateStart());
         } else {
             if (sendTimes >= 15 && !IsMasterInitGame) {
-                InGameChat.AddLine("Failed to sync game properties. Is master disconnected ? ");
+                InGameChat.AddLine("Failed to sync game properties. Is master disconnected ? ", Color.red);
                 Debug.Log("master not connected");
 
                 //Exit the game
                 ExitGames();
             } else {
-                InGameChat.AddLine("Game is sync.");
+                InGameChat.AddLine("Game is sync.", Color.green);
                 photonView.RPC("PlayerFinishedLoading", PhotonTargets.AllBuffered);
             }
 
@@ -341,11 +342,11 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     private void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
-        InGameChat.AddLine(newPlayer + " is connected.");
+        InGameChat.AddLine(newPlayer + " is connected.", Color.green);
     }
 
     protected virtual void OnPhotonPlayerDisconnected(PhotonPlayer player) {
-        InGameChat.AddLine(player + " is disconnected.");
+        InGameChat.AddLine(player + " is disconnected.", Color.red);
     }
 
     public abstract void SetRespawnPoint(int num);
@@ -373,6 +374,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     public GameObject GetThePlayer() {
         return player_mcbt == null ? null : player_mcbt.gameObject;
+    }
+
+    public Camera[] GetThePlayerMainCameras() {
+        return thePlayerMainCameras;
     }
 
     private void LoadOfflineInfo() {

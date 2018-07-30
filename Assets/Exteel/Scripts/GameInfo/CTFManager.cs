@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CTFManager : GameManager {
     private GameObject GameEnvironment;//Blue base, red base , ... 
@@ -35,8 +36,9 @@ public class CTFManager : GameManager {
         base.Start();        
 
         TerrainLayerMask = LayerMask.GetMask("Terrain");
+        InitPlayerInZones();
 
-        if(Offline)return;
+        if (Offline)return;
 
         CTFMsgDisplayer.ShowWaitOtherPlayer(true);
     }
@@ -64,8 +66,8 @@ public class CTFManager : GameManager {
         Quaternion StartRot;
 
         if (PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none) {
-            if(PhotonNetwork.player.GetTeam() == PunTeams.Team.none) {
-                Debug.LogWarning("This player's team is null");
+            if(PhotonNetwork.player.GetTeam() == PunTeams.Team.none && !Offline) {
+                Debug.LogWarning("This player's team is none");
             }
             SetRespawnPoint(BlueBaseIndex);//set default
             
@@ -83,7 +85,20 @@ public class CTFManager : GameManager {
         BuildMech mechBuilder = player.GetComponent<BuildMech>();
         mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
-        player_mcbt = player.GetComponent<MechCombat>();        
+        player_mcbt = player.GetComponent<MechCombat>();
+        FindPlayerMainCameras(player);
+    }
+
+    private void FindPlayerMainCameras(GameObject player) {
+        Camera[] playerCameras = player.GetComponentsInChildren<Camera>(true);
+        List<Camera> mainCameras = new List<Camera>();
+
+        foreach(Camera cam in playerCameras) {
+            if (cam.tag == "MainCamera") 
+                mainCameras.Add(cam);
+        }
+
+        thePlayerMainCameras = mainCameras.ToArray();
     }
 
     public override void OnPlayerDead(GameObject player, int shooter_ViewID, string weapon) {      
@@ -164,7 +179,7 @@ public class CTFManager : GameManager {
     protected override void OnMasterFinishInit() {
         base.OnMasterFinishInit();
 
-        InitTerritories();
+        InitTerritories();        
         FindGameEnvironment();
     }
 
@@ -216,6 +231,13 @@ public class CTFManager : GameManager {
         }
     }
 
+    private void InitPlayerInZones() {
+        PlayerInZone[] playerInZones = FindObjectsOfType<PlayerInZone>();
+        foreach(PlayerInZone p in playerInZones) {
+            p.SetPlayer(player);
+        }
+    }
+
     public override GameObject GetMap() {
         GameObject map = (GameObject)Resources.Load("Map/" + GameInfo.Map + "_CTF_Map");
         if(map == null)Debug.LogError("Can't find : " + GameInfo.Map + "_CTF_Map" + " in Resources/Map/");
@@ -250,7 +272,7 @@ public class CTFManager : GameManager {
     public override void SetRespawnPoint(int num) {
         PunTeams.Team player_team = PhotonNetwork.player.GetTeam();
 
-        if (player_team == PunTeams.Team.none) { Debug.LogWarning("This player is team none"); }//debug use
+        if (player_team == PunTeams.Team.none && !Offline) { Debug.LogWarning("This player is team none"); }//debug use
 
         if (PhotonNetwork.room.CustomProperties["T_" + num] == null) {//Master has not init this
             respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;//Set to the base point

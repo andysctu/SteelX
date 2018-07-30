@@ -9,7 +9,6 @@ public class GameSceneManager : IScene {
 
     public bool test = false;//TODO : remove this
 
-
     protected override void Awake() {
         if (test) {
             StartTestScene();

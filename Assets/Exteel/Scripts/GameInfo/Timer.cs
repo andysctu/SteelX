@@ -34,8 +34,8 @@ public class Timer {
     }
 
     public bool SyncTime() {
-        storedStartTime = int.Parse(PhotonNetwork.room.CustomProperties["startTime"].ToString());
-        storedDuration = int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
+        storedStartTime = (PhotonNetwork.room.CustomProperties["startTime"] == null) ? 0 : int.Parse(PhotonNetwork.room.CustomProperties["startTime"].ToString());
+        storedDuration =(PhotonNetwork.room.CustomProperties["duration"] == null)? 0 : int.Parse(PhotonNetwork.room.CustomProperties["duration"].ToString());
         return storedDuration != 0;
     }
 

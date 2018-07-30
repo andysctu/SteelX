@@ -7,62 +7,54 @@ public class TerritoryController : MonoBehaviour {
     public bool interactable = true;//base : false 
     public GameManager.Team curTerritoryState = GameManager.Team.NONE;
     private MapPanelController[] MapPanelControllers;
+    private TerritoryRadarElement TerritoryRadarElement;
     private PlayerInZone PlayerInZone;
     private MeshRenderer baseMesh;
-    private Camera cam;
     private PhotonView pv;
+    private DisplayInfo DisplayInfo;
 
     private int curBarState = (int)GameManager.Team.NONE;
     private bool switchBarColor = true; // true : need to change color due to barstate change
     private float coeff = 0.005f;
     private float trueAmount = 0;
-    private GameObject playerToLookAt;
 
     //TODO : consider remake this part
     [SerializeField] private Image bar, mark;
     [SerializeField] private Sprite bar_blue, bar_blue1, bar_red, bar_red1; //bar_blue1 is the light color one
     [SerializeField] private Sprite mark_blue, mark_red;
     [SerializeField] private Material base_none, base_blue, base_red;
-    [SerializeField] private GameObject barCanvas;
+    [SerializeField] private GameObject Infos;
 
     private void Awake() {
         if (!interactable) {
             enabled = false;
+            if(DisplayInfo!=null)DisplayInfo.EnableDisplay(false);
             return;
         }
+
         InitComponents();
     }
 
     private void Start() {
-        GameManager gm = FindObjectOfType<GameManager>();
-        StartCoroutine(GetThePlayer(gm));
-    }
-
-    private IEnumerator GetThePlayer(GameManager gm) {
-        GameObject ThePlayer;
-        while ((ThePlayer = gm.GetThePlayer()) == null) {
-            yield return new WaitForSeconds(0.5f);
+        if (!interactable) {
+            return;
         }
-        InitPlayerRelatedComponents(ThePlayer);
-        yield break;
-    }
 
-    private void InitPlayerRelatedComponents(GameObject player) {
-        playerToLookAt = player;
-        cam = playerToLookAt.GetComponentInChildren<Camera>();
-        if (interactable) PlayerInZone.SetPlayerID(playerToLookAt.GetPhotonView().viewID);
+        DisplayInfo.SetHeight(20);
+        DisplayInfo.SetName("Territory " + Territory_ID + " Infos");
     }
 
     private void InitComponents() {
-        baseMesh = GetComponent<MeshRenderer>();
-        PlayerInZone = GetComponent<PlayerInZone>();
+        baseMesh = GetComponentInChildren<MeshRenderer>();
+        DisplayInfo = GetComponent<DisplayInfo>();
+        TerritoryRadarElement = GetComponentInChildren<TerritoryRadarElement>();
+        PlayerInZone = GetComponentInChildren<PlayerInZone>();
         pv = GetComponent<PhotonView>();
         mark.enabled = false;
     }
 
     public void FindMapPanels(MapPanelController[] MapPanelControllers) {
         if (!interactable) {
-            enabled = false;
             return;
         }
         this.MapPanelControllers = new MapPanelController[MapPanelControllers.Length];
@@ -70,18 +62,9 @@ public class TerritoryController : MonoBehaviour {
     }
 
     private void Update() {
-        if (cam != null) {
-            barCanvas.transform.LookAt(new Vector3(cam.transform.position.x, barCanvas.transform.position.y, cam.transform.position.z));
-
-            //update scale
-            float distance = Vector3.Distance(transform.position, cam.transform.position);
-            distance = Mathf.Clamp(distance, 0, 200f);
-            barCanvas.transform.localScale = new Vector3(0.02f + distance / 100 * 0.02f, 0.02f + distance / 100 * 0.02f, 1);
-        }
-
         bar.fillAmount = Mathf.Lerp(bar.fillAmount, trueAmount, Time.deltaTime * 10f);
 
-        if (curTerritoryState == GameManager.Team.NONE && switchBarColor) {
+        if (curTerritoryState == GameManager.Team.NONE && switchBarColor) {//TODO : remake this part
             if (curBarState == 0) {
                 bar.sprite = bar_blue1;
                 bar.color = new Color32(255, 255, 255, 255);
@@ -154,8 +137,9 @@ public class TerritoryController : MonoBehaviour {
             mark.enabled = false;
             switchBarColor = true;
         }
+        TerritoryRadarElement.SwitchSprite((GameManager.Team)num);
 
-        if(MapPanelControllers == null) {
+        if (MapPanelControllers == null) {
             Debug.LogWarning("MapPanelControllers is null");
             return;
         }

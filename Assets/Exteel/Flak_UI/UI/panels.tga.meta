@@ -65,6 +65,8 @@ TextureImporter:
     21300116: part_slot
     21300118: bluePlayerCard
     21300120: panels_5
+    21300122: radar_blueFlag
+    21300124: radar_redFlag
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -975,8 +977,36 @@ TextureImporter:
         width: 81
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 6, y: 5, z: 6, w: 5}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radar_blueFlag
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 981
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: radar_redFlag
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 981
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
