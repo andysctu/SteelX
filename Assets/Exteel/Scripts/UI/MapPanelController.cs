@@ -2,44 +2,42 @@
 using UnityEngine;
 
 public class MapPanelController : MonoBehaviour {
+    [SerializeField] private Camera MapCamera;
+    public int Width, Height;
+    public float scale = 1;
+
     [Tooltip("The order must match the IDs")]
+    [SerializeField] private GameObject ButtonsPanel;
     [SerializeField] private GameObject[] RespawnPointsOnMap;
-    [SerializeField] private Button[] RespawnPointButtons;
-    [SerializeField] private Sprite Panel_bluemark, Panel_redmark, Panel_greymark;
-    private Image[] Territory_marks;
+    private Button[] RespawnPointButtons;
 
     public void Awake() {
+        InitButtons();
+        InitRenderTexture();
+    }
+
+    private void InitButtons() {
         GameManager gm = FindObjectOfType<GameManager>();
         RespawnPointButtons = new Button[RespawnPointsOnMap.Length];
-        Territory_marks = new Image[RespawnPointsOnMap.Length];
         for (int i = 0; i < RespawnPointButtons.Length; i++) {
-            Territory_marks[i] = RespawnPointsOnMap[i].GetComponent<Image>();
+            if (RespawnPointsOnMap[i] == null)continue;
             RespawnPointButtons[i] = RespawnPointsOnMap[i].GetComponent<Button>();
 
-            int index = i;            
+            int index = i;
             RespawnPointButtons[i].onClick.AddListener(() => gm.SetRespawnPoint(index));
         }
     }
 
-    private void Update() {
-        UpdatePlayerPosOnMap();
+    private void InitRenderTexture() {
+        RenderTexture renderTexture = new RenderTexture(Width, Height, 0, RenderTextureFormat.ARGB32);
+        MapCamera.targetTexture = renderTexture;
     }
 
-    private void UpdatePlayerPosOnMap() {
-
+    public float GetScale() {
+        return scale;
     }
-
-    public void ChangeMark(int territory_id, int num) {
-        switch (num) {
-            case (int)GameManager.Team.BLUE:
-            Territory_marks[territory_id].sprite = Panel_bluemark;
-            break;
-            case (int)GameManager.Team.RED:
-            Territory_marks[territory_id].sprite = Panel_redmark;
-            break;
-            case (int)GameManager.Team.NONE:
-            Territory_marks[territory_id].sprite = Panel_greymark;
-            break;
-        }
+    
+    public GameObject GetButtonsPanel() {
+        return ButtonsPanel;
     }
 }

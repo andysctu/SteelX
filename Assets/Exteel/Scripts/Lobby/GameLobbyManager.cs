@@ -112,7 +112,7 @@ public class GameLobbyManager : IScene {
     }
 
     private void MasterLoadLevel() {
-        PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties["Map"].ToString());
+        PhotonNetwork.LoadLevel("Game");
     }
 
     public void LeaveGame() {

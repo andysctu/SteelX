@@ -97,7 +97,7 @@ public class BuildMech : Photon.MonoBehaviour {
     private void SetName(string name) {//TODO : consider not putting here
         gameObject.name = name;
         FindGameManager();
-        gm.RegisterPlayer(photonView.viewID);// blue & none team => set to blue
+        gm.RegisterPlayer(photonView.viewID);
     }
 
     public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {

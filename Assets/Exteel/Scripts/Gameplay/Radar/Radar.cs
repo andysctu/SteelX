@@ -14,7 +14,7 @@ public class Radar : MonoBehaviour {
 
     private Vector3 radarElemnet_proj, transform_proj;
     private RenderTexture RadarTexture;
-    private int RawImageSize = 300;
+    private int RawImageSize = 310;
 
     private void Awake() {
         pv = transform.root.GetComponent<PhotonView>();
@@ -46,7 +46,7 @@ public class Radar : MonoBehaviour {
         radarElements.Add(radarElement);
     }
 
-    private void Update() {
+    private void LateUpdate() {
         //Update radar elements position
         for(int i = 0; i < radarElements.Count; i++) {
             if (radarElements[i] == null) {

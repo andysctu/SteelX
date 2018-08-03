@@ -6,8 +6,10 @@ public class TerritoryController : MonoBehaviour {
     public int Territory_ID = 0;    
     public bool interactable = true;//base : false 
     public GameManager.Team curTerritoryState = GameManager.Team.NONE;
-    private MapPanelController[] MapPanelControllers;
+    private MapPanelController MapPanelController;
     private TerritoryRadarElement TerritoryRadarElement;
+    private TerritoryMapElement TerritoryMapElement;
+
     private PlayerInZone PlayerInZone;
     private MeshRenderer baseMesh;
     private PhotonView pv;
@@ -26,13 +28,13 @@ public class TerritoryController : MonoBehaviour {
     [SerializeField] private GameObject Infos;
 
     private void Awake() {
+        InitComponents();
+        TerritoryMapElement.SetNumText(Territory_ID);
+
         if (!interactable) {
             enabled = false;
             if(DisplayInfo!=null)DisplayInfo.EnableDisplay(false);
-            return;
         }
-
-        InitComponents();
     }
 
     private void Start() {
@@ -48,31 +50,38 @@ public class TerritoryController : MonoBehaviour {
         baseMesh = GetComponentInChildren<MeshRenderer>();
         DisplayInfo = GetComponent<DisplayInfo>();
         TerritoryRadarElement = GetComponentInChildren<TerritoryRadarElement>();
+        TerritoryMapElement = GetComponentInChildren<TerritoryMapElement>();
         PlayerInZone = GetComponentInChildren<PlayerInZone>();
         pv = GetComponent<PhotonView>();
-        mark.enabled = false;
+        if(mark!=null)mark.enabled = false;
     }
 
-    public void FindMapPanels(MapPanelController[] MapPanelControllers) {
+    public void AssignMapPanelController(MapPanelController MapPanelController) {
         if (!interactable) {
             return;
         }
-        this.MapPanelControllers = new MapPanelController[MapPanelControllers.Length];
-        MapPanelControllers.CopyTo(this.MapPanelControllers, 0);
+
+        this.MapPanelController = MapPanelController;
     }
 
     private void Update() {
         bar.fillAmount = Mathf.Lerp(bar.fillAmount, trueAmount, Time.deltaTime * 10f);
+        TerritoryMapElement.SetFillAmount(bar.fillAmount);
 
         if (curTerritoryState == GameManager.Team.NONE && switchBarColor) {//TODO : remake this part
             if (curBarState == 0) {
                 bar.sprite = bar_blue1;
                 bar.color = new Color32(255, 255, 255, 255);
+
+                TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE_LIGHT);
+
                 switchBarColor = false;
             } else {
                 bar.sprite = bar_red1;
                 bar.color = new Color32(255, 255, 255, 255);
                 switchBarColor = false;
+
+                TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.RED_LIGHT);
             }
         }
     }
@@ -126,28 +135,32 @@ public class TerritoryController : MonoBehaviour {
             bar.sprite = bar_blue;
             mark.enabled = true;
             mark.sprite = mark_blue;
+
+            TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE);
         } else if (num == (int)GameManager.Team.RED) {
             baseMesh.material = base_red;
             bar.sprite = bar_red;
             mark.enabled = true;
             mark.sprite = mark_red;
+
+            TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.RED);
         } else {
             baseMesh.material = base_none;
             mark.sprite = null;
             mark.enabled = false;
             switchBarColor = true;
+
+            TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.NONE);
         }
         TerritoryRadarElement.SwitchSprite((GameManager.Team)num);
 
-        if (MapPanelControllers == null) {
+        if (MapPanelController == null) {
             Debug.LogWarning("MapPanelControllers is null");
             return;
         }
 
-        //notify all maps to change mark
-        foreach(MapPanelController m in MapPanelControllers) {
-            m.ChangeMark(Territory_ID, num);
-        }
+        //notify the map to change mark
+        //MapPanelController.ChangeMark(Territory_ID, num);     
 
         //for new player to load
         if (PhotonNetwork.isMasterClient) {

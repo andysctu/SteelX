@@ -57,8 +57,6 @@ public class LobbyManager : IScene {
     }
 
     public void CreateRoom() {
-        Debug.Log("Creating room: " + RoomName.text);
-
         //Default settings
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("Map", "Simulation");
@@ -153,7 +151,6 @@ public class LobbyManager : IScene {
     }
 
     public void OnJoinedRoom() {
-        Debug.Log("OnJoinedRoom");
         SceneStateController.LoadScene(GameLobbyManager._sceneName);
     }
 

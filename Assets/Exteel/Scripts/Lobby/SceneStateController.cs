@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 public class SceneStateController : MonoBehaviour {
     private Dictionary<string, IScene> _Scenes;
@@ -59,9 +60,19 @@ public class SceneStateController : MonoBehaviour {
         if (curActiveScene != null) 
             curActiveScene.EndScene();
 
-
         SetCurrentScene(sceneName);
 
+        StartCoroutine(LoadSceneProcess(sceneName));
+        
+    }
+
+    IEnumerator LoadSceneProcess(string sceneName) {
+        while(curActiveScene == null) {//onSceneLoaded may not finish loading scene
+            Debug.LogWarning("curActiveScene is null.");
+            yield return new WaitForSeconds(0.1f);
+            RegisterScenes();
+            SetCurrentScene(sceneName);
+        }
         curActiveScene.StartScene();
     }
 

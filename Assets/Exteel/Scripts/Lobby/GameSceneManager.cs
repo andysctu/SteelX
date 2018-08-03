@@ -12,9 +12,6 @@ public class GameSceneManager : IScene {
     protected override void Awake() {
         if (test) {
             StartTestScene();
-        } else {
-            //base.Awake();
-            //StartScene();
         }
     }
 
@@ -25,20 +22,19 @@ public class GameSceneManager : IScene {
     }
 
     public override void StartScene() {
-        //base.StartScene();
         switch (PhotonNetwork.room.CustomProperties["GameMode"].ToString()) {
-            case "DeathMode":
-                Debug.LogError("Not Implemented");
-            break;
-            case "TeamDeathMode":
-                Debug.LogError("Not Implemented");
-            break;
-            case "CaptureTheFlag":
-                gameObject.AddComponent<CTFManager>();
-            break;
-            default:
-                Debug.LogError("No such mode : "+ PhotonNetwork.room.CustomProperties["GameMode"].ToString());
-            break;
+        case "DeathMatch":
+            gameObject.AddComponent<DMManager>();
+        break;
+        case "TeamDeathMode":
+            Debug.LogError("Not Implemented");
+        break;
+        case "CaptureTheFlag":
+            gameObject.AddComponent<CTFManager>();
+        break;
+        default:
+            Debug.LogError("No such mode : "+ PhotonNetwork.room.CustomProperties["GameMode"].ToString());
+        break;
         }
 
         if (MusicManager == null)

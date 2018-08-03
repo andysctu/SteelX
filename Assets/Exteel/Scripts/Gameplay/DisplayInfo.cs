@@ -14,6 +14,7 @@ public class DisplayInfo : MonoBehaviour{
 
     protected virtual void Awake() {
         ObjectTransform = ObjectToParentOnCanvas.transform;
+        ObjectToParentOnCanvas.SetActive(false);
     }
 
     protected virtual void Start() {
@@ -39,6 +40,7 @@ public class DisplayInfo : MonoBehaviour{
 
         thePlayerCameras = gm.GetThePlayerMainCameras();
         InitPlayerRelatedComponents(ThePlayer);
+        ObjectToParentOnCanvas.SetActive(true);
         yield break;
     }
 
@@ -47,13 +49,13 @@ public class DisplayInfo : MonoBehaviour{
 
         //get the player camera when the player is instantiated
         cam = thePlayerCameras[curIndex];
-        maxDistance = cam.farClipPlane;
+        maxDistance = cam.farClipPlane;        
     }
 
     private void ParentInfoToPanelCanvas() {
         Transform InfoCanvas = GameObject.Find("PanelCanvas/Infos").transform;
         ObjectToParentOnCanvas.transform.SetParent(InfoCanvas);
-        ObjectToParentOnCanvas.transform.localRotation = Quaternion.identity;
+        ObjectToParentOnCanvas.transform.localRotation = Quaternion.identity;        
     }
 
     public void SetHeight(int height) {
@@ -66,10 +68,12 @@ public class DisplayInfo : MonoBehaviour{
 
     public void EnableDisplay(bool b) {
         ObjectToParentOnCanvas.SetActive(b);
+        enabled = b;
+        isDisplaying = b;
     }
 
     private void LateUpdate() {
-        if (cam != null) {
+        if (cam != null && targetPlayer_transform != null) {//targetPlayer is null when get destroyed
             ObjectToParentOnCanvas.transform.position = cam.WorldToScreenPoint(transform.position + new Vector3(0, height, 0));
 
             if (isDisplaying && (ObjectTransform.position.z < 0 || Vector3.Distance(transform.position, targetPlayer_transform.position) > maxDistance)) {

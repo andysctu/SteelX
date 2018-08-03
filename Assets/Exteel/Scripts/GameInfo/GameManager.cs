@@ -19,7 +19,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     public enum Status { Waiting, InBattle};
 
     //end & start
-    private bool gameEnding = false, callEndGame = false;
+    private bool gameEnding = false, callEndGame = false, ExitingGame = false;
     public static bool gameIsBegin = false;
     public bool calledGameBegin = false;
 
@@ -117,7 +117,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
                 Debug.Log("master not connected");
 
                 //Exit the game
-                ExitGames();
+                ExitGame();
             } else {
                 InGameChat.AddLine("Game is sync.", Color.green);
                 photonView.RPC("PlayerFinishedLoading", PhotonTargets.AllBuffered);
@@ -139,6 +139,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             { "Deaths", 0 },
             { "weaponOffset", 0 }
         };
+        PhotonNetwork.player.SetCustomProperties(h2);
     }
 
     protected virtual void OnMasterFinishInit() {
@@ -179,7 +180,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected virtual void Update() {
-        if (!GameOver() && !gameEnding) {
+        if (!gameEnding && !ExitingGame) {
             if (!player_mcbt.isDead) {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
@@ -188,12 +189,16 @@ public abstract class GameManager : Photon.MonoBehaviour {
                 Cursor.visible = true;
             }
             ShowScorePanel(Input.GetKey(KeyCode.CapsLock));
+        } else {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         if (Offline) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            ExitGames();            
+        if (Input.GetKeyDown(KeyCode.Escape) && !ExitingGame) {
+            ExitGame();  
+            return;
         }
 
         // Update time
@@ -204,23 +209,28 @@ public abstract class GameManager : Photon.MonoBehaviour {
             Timer.UpdateTime();
         }
 
-        if (GameOver() && !gameEnding) {
-            if (PhotonNetwork.isMasterClient) {
+        if (PhotonNetwork.isMasterClient && !gameEnding) {
+            if (CheckIfGameOver()) {
+                gameEnding = true;
                 photonView.RPC("EndGame", PhotonTargets.All);
             }
         }
 
         //TODO : debug take out
         if (endGameImmediately) {
-            Timer.EndGameImmediately();
+            gameEnding = true;
+            photonView.RPC("EndGame", PhotonTargets.All);
         }
     }
 
+    private void ExitGame() {
+        ExitingGame = true;        
+        PhotonNetwork.LeaveRoom();//LeaveRoom() needs some time to process
+    }
 
-    private void ExitGames() {
+    protected virtual void OnLeftRoom() {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        PhotonNetwork.LeaveRoom();
         SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
         SceneManager.LoadScene("MainScenes");
     }
@@ -333,11 +343,11 @@ public abstract class GameManager : Photon.MonoBehaviour {
         DisplayMsgOnGameChat(shooter + " killed " + photonView.name + " by " + weapon);
     }
 
-    public bool GameOver() {
-        return CheckIfGameEnd();
+    public bool CheckIfGameOver() {//Called by master
+        return CheckEndGameCondition();        
     }
 
-    protected virtual bool CheckIfGameEnd() {
+    protected virtual bool CheckEndGameCondition() {
         return Timer.CheckIfGameEnd();
     }
 
@@ -369,8 +379,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
         RespawnPanel.ShowRespawnPanel(b);
     }
 
-    //Return map prefab
-    public abstract GameObject GetMap() ;
+    //Return map 
+    public abstract GameObject GetMap();
 
     public GameObject GetThePlayer() {
         return player_mcbt == null ? null : player_mcbt.gameObject;
@@ -400,6 +410,11 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     [PunRPC]
     protected void EndGame() {
+        if (endGameImmediately) {
+            InGameChat.AddLine("Master forced end game", Color.red);
+        }
+
+        gameEnding = true;
         EndGameProcess();
     }
 
@@ -419,7 +434,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
         if (NumOfPlayerfinishedloading >= PhotonNetwork.room.PlayerCount) {
             canStart = true;
-            print("All player has connected. Set canStart to true.");
+            print("All players has connected. Set canStart to true.");
         }
     }
 

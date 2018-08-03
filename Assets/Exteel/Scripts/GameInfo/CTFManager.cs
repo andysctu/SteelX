@@ -7,6 +7,7 @@ public class CTFManager : GameManager {
     private CTFMsgDisplayer CTFMsgDisplayer;
     private CTFPanelManager CTFPanelManager;    
     private Flag RedFlag, BlueFlag;
+    private GameObject Map;
     private TerritoryController[] territories;    
     private int TerrainLayerMask;
     private int blueScore = 0, redScore = 0;
@@ -204,11 +205,11 @@ public class CTFManager : GameManager {
 
     private void InitTerritories() {
         territories = FindObjectsOfType<TerritoryController>();
-        MapPanelController[] MapPanelControllers = FindObjectsOfType<MapPanelController>();
+        MapPanelController MapPanelController = GetMap().GetComponent<MapPanelController>();
 
         foreach (TerritoryController g in territories) {
             //Register territories to map panels            
-            g.FindMapPanels(MapPanelControllers);
+            g.AssignMapPanelController(MapPanelController);//TODO : consider remake this
 
             if (PhotonNetwork.isMasterClient) {
                 //Master init terrotory IDs
@@ -239,9 +240,16 @@ public class CTFManager : GameManager {
     }
 
     public override GameObject GetMap() {
-        GameObject map = (GameObject)Resources.Load("Map/" + GameInfo.Map + "_CTF_Map");
-        if(map == null)Debug.LogError("Can't find : " + GameInfo.Map + "_CTF_Map" + " in Resources/Map/");
-        return map;
+        if(Map != null) {
+            return Map;
+        } else {
+            //Instantiate one
+            GameObject mapPrefab = (GameObject)Resources.Load("Map/" + GameInfo.Map + "_CTF_Map");
+            if (mapPrefab == null) Debug.LogError("Can't find : " + GameInfo.Map + "_CTF_Map" + " in Resources/Map/");
+            Map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity, null);
+
+            return Map;
+        }        
     }
 
     protected override void OnGameStart() {
@@ -270,21 +278,26 @@ public class CTFManager : GameManager {
     }
 
     public override void SetRespawnPoint(int num) {
+        Debug.Log("Set respawn Point : "+num);
         PunTeams.Team player_team = PhotonNetwork.player.GetTeam();
 
         if (player_team == PunTeams.Team.none && !Offline) { Debug.LogWarning("This player is team none"); }//debug use
 
         if (PhotonNetwork.room.CustomProperties["T_" + num] == null) {//Master has not init this
             respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;//Set to the base point
+            Debug.Log("Call set respawn point :" + num + " but Master did not init this point.  Set to base : "+ respawnPointNum);
             return;
         }
 
         if (player_team == PunTeams.Team.red && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)Team.RED) {
-            respawnPointNum = num;            
+            respawnPointNum = num;
+            Debug.Log("Set successfully with respawn point : "+num);
         } else if( (player_team == PunTeams.Team.blue || player_team == PunTeams.Team.none)  && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)Team.BLUE)  {
             respawnPointNum = num;
+            Debug.Log("Set successfully with respawn point : " + num);
         } else {            
-            respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;            
+            respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;
+            Debug.Log("Set failed : " + num);
         }
     }
 
@@ -307,6 +320,12 @@ public class CTFManager : GameManager {
 
     [PunRPC]
     void DropFlag(int player_viewID, int flag, Vector3 pos) {//also call when disable player
+        PhotonView pv = PhotonView.Find(player_viewID);
+        if(pv != null) {
+            MechCombat mcbt = pv.GetComponent<MechCombat>();
+            mcbt.SetMaxEN((int)mcbt.MAX_EN * 2);
+        }
+
         if (flag == 0) {
             SetFlagProperties((int)Team.BLUE, null, pos, null);
 
@@ -401,6 +420,11 @@ public class CTFManager : GameManager {
             if(pv == null) {
                 Debug.LogWarning("SetFlag : This player is disconnected.");
                 return;
+            }
+
+            if (pv.isMine) {
+                MechCombat mcbt = pv.GetComponent<MechCombat>();
+                mcbt.SetMaxEN((int)mcbt.MAX_EN/2);
             }
 
             if (flag == (int)Team.BLUE) {

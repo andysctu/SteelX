@@ -52,6 +52,13 @@ TextureImporter:
     21300090: map_blueTerritory_red_3
     21300092: blue_Territory_small_3
     21300094: red_Territory_small_3
+    21300096: map_self_Red
+    21300098: map_self_Blue
+    21300100: map_Territory_bar
+    21300102: map_Territory_RedMark
+    21300104: map_Territory_BlueMark
+    21300106: map_Territory_RedBar
+    21300108: map_Territory_BlueBar
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -806,6 +813,104 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_self_Red
+      rect:
+        serializedVersion: 2
+        x: 919
+        y: 617
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_self_Blue
+      rect:
+        serializedVersion: 2
+        x: 889
+        y: 617
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_Territory_bar
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 747
+        width: 67
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_Territory_RedMark
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 739
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_Territory_BlueMark
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 739
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_Territory_RedBar
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 742
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 1, y: 0, z: 1, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: map_Territory_BlueBar
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 742
+        width: 3
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 1, y: 0, z: 1, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0

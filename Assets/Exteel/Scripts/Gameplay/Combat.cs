@@ -28,4 +28,11 @@ public class Combat : Photon.MonoBehaviour {
     public bool IsHpFull() {
         return (CurrentHP >= MAX_HP);
     }
+
+    public void SetMaxEN(int EN) {
+        MAX_EN = EN;
+        if (CurrentEN > MAX_EN) {
+            CurrentEN = MAX_EN;
+        }       
+    }
 }

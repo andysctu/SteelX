@@ -8,20 +8,22 @@ public class CTFPanelManager : MonoBehaviour {
     [SerializeField] private GameObject Panel_RedTeam, Panel_BlueTeam;
     [SerializeField] private GameObject ScorePanel, RedScore, BlueScore;
     [SerializeField] private Text RedScoreText, BlueScoreText;
-    [SerializeField] private Transform Map;
+    [SerializeField] private RawImage MapRawImage;
     private Dictionary<string, GameObject> playerScorePanels = new Dictionary<string, GameObject>();
     private Dictionary<string, Score> playerScores;
 
     private void Start() {
         gm = FindObjectOfType<GameManager>();
 
-        InitMap();
+        AssignMapRenderTexture();
     }
 
-    private void InitMap() {
-        GameObject MapToInstantiate = gm.GetMap();
-        GameObject map = Instantiate(MapToInstantiate, Map);
-        map.transform.localPosition = Vector3.zero;
+    private void AssignMapRenderTexture() {        
+        GameObject Map = gm.GetMap();
+        MapPanelController MapPanelController = Map.GetComponentInChildren< MapPanelController >();
+        Camera MapCamera = Map.GetComponentInChildren<Camera>();
+        MapRawImage.texture = MapCamera.targetTexture;
+        MapRawImage.rectTransform.sizeDelta = new Vector2(MapPanelController.Width, MapPanelController.Height);
     }
 
     public void UpdateScoreText(int blueScore, int redScore) {
@@ -34,14 +36,6 @@ public class CTFPanelManager : MonoBehaviour {
         string name;
 
         name = (pv.tag == "Drone") ? "Drone" + Random.Range(0, 9999) : pv.owner.NickName;
-
-        //TODO : remove this if no errors
-        //if (pv.isMine) {
-        //    ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable();
-        //    h2.Add("Kills", 0);
-        //    h2.Add("Deaths", 0);
-        //    PhotonNetwork.player.SetCustomProperties(h2);
-        //}
 
         if (playerScores == null) {
             playerScores = new Dictionary<string, Score>();
@@ -118,8 +112,6 @@ public class CTFPanelManager : MonoBehaviour {
 
         playerScorePanels[shooter_name].transform.Find("Kills").GetComponent<Text>().text = playerScores[shooter_name].Kills.ToString();
         playerScorePanels[victim_name].transform.Find("Deaths").GetComponent<Text>().text = playerScores[victim_name].Deaths.ToString();
-
-        //if (newShooterScore.Kills > CurrentMaxKills) CurrentMaxKills = newShooterScore.Kills;
     }
 
     public void ShowPanel(bool b) {
@@ -144,41 +136,3 @@ public class CTFPanelManager : MonoBehaviour {
         }
     }
 }
-
-/*
-if (PhotonNetwork.isMasterClient) {
-            ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable();
-            h2.Add("Kills", playerScores[shooter_name].Kills + 1);
-
-            ExitGames.Client.Photon.Hashtable h3 = new ExitGames.Client.Photon.Hashtable();
-            h3.Add("Deaths", playerScores[victim_name].Deaths + 1);
-            shooter_player.SetCustomProperties(h2);
-            victime_player.SetCustomProperties(h3);
-
-            if (GameInfo.GameMode == "Team Deathmatch") {
-                if (shooter_player.GetTeam() == PunTeams.Team.blue || shooter_player.GetTeam() == PunTeams.Team.none) {
-                    blueScore++;
-                    BlueScoreText.text = blueScore.ToString();
-                    ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-                    h.Add("BlueScore", blueScore);
-                    PhotonNetwork.room.SetCustomProperties(h);
-                } else {
-                    redScore++;
-                    RedScoreText.text = redScore.ToString();
-                    ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-                    h.Add("RedScore", redScore);
-                    PhotonNetwork.room.SetCustomProperties(h);
-                }
-            }
-        } else {
-            if (GameInfo.GameMode == "Team Deathmatch") {
-                if (shooter_player.GetTeam() == PunTeams.Team.blue || shooter_player.GetTeam() == PunTeams.Team.none) {
-                    blueScore++;
-                    BlueScoreText.text = blueScore.ToString();
-                } else {
-                    redScore++;
-                    RedScoreText.text = redScore.ToString();
-                }
-            }
-        }
-*/

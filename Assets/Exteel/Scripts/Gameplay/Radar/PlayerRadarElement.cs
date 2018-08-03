@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class PlayerRadarElement : RadarElement {
-    [SerializeField] private Sprite Enemy, Ally, Self_blue, Self_red;
+    [SerializeField] private Sprite Red, Blue, Self_blue, Self_red;
     [SerializeField] private TextMesh nameTextMesh;
     private PhotonView root_pv;
 
@@ -46,27 +46,27 @@ public class PlayerRadarElement : RadarElement {
 
         //Drone
         if (root_pv.tag == "Drone") {
-            SpriteRenderer.sprite = Enemy;
+            SpriteRenderer.sprite = Red;
             nameTextMesh.color = Color.red;
             return;
         }
 
         if (GameManager.isTeamMode) {
             if (ThePlayer.GetPhotonView() == null || ThePlayer.GetPhotonView().owner == null) {
-                SpriteRenderer.sprite = Enemy;
+                SpriteRenderer.sprite = Red;
                 nameTextMesh.color = Color.red;
             } else {
                 //Check team
                 if (ThePlayer.GetPhotonView().owner.GetTeam() == root_pv.owner.GetTeam()) {
-                    SpriteRenderer.sprite = Ally;
+                    SpriteRenderer.sprite = (root_pv.owner.GetTeam() == PunTeams.Team.red) ? Red : Blue;
                     nameTextMesh.color = Color.green;
                 } else {
-                    SpriteRenderer.sprite = Enemy;
+                    SpriteRenderer.sprite = (root_pv.owner.GetTeam() == PunTeams.Team.red) ? Red : Blue;
                     nameTextMesh.color = Color.red;
                 }
             }
         } else {
-            SpriteRenderer.sprite = Enemy;
+            SpriteRenderer.sprite = Red;
             nameTextMesh.color = Color.red;
         }
     }

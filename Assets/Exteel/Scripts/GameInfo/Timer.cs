@@ -6,7 +6,6 @@ public class Timer {
     private int timerDuration, MaxTimeInSeconds = 300;
     private bool OnSyncTimeRequest = false;
     private int storedStartTime = 0, storedDuration = 0, gameBeginTimeDiff = 999, currentTimer = 999;
-    private bool endGameImmediately = false;//debug use
 
     public void Init() {
         GameObject TimerPanel = GameObject.Find("PanelCanvas/TimerPanel");
@@ -21,12 +20,6 @@ public class Timer {
     public void UpdateTime() {
         timerDuration = (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000 - gameBeginTimeDiff;
         currentTimer = storedDuration - timerDuration;
-
-        //TODO : debug take out
-        if (endGameImmediately) {
-            endGameImmediately = false;
-            currentTimer = 0;
-        }
 
         int seconds = currentTimer % 60;
         int minutes = currentTimer / 60;
@@ -70,10 +63,6 @@ public class Timer {
 
     public void SetGameBeginTimeDiff(int gameBeginTimeDiff) {
         this.gameBeginTimeDiff = gameBeginTimeDiff;
-    }
-
-    public void EndGameImmediately() {//TODO : remove this
-        endGameImmediately = true;
     }
 
     public bool CheckIfGameEnd() {

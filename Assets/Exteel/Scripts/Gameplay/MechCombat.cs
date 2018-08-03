@@ -703,7 +703,7 @@ public class MechCombat : Combat {
 
     // Update is called once per frame
     private void Update() {
-        if (!photonView.isMine || gm.GameOver() || !GameManager.gameIsBegin) return;
+        if (!photonView.isMine || gm.CheckIfGameOver() || !GameManager.gameIsBegin) return;
 
         //TODO : remove this
         if (forceDead) {
