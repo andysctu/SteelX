@@ -96,7 +96,14 @@ public class InGameChat : Photon.MonoBehaviour {
         if(str.Contains("endGame")) {
             Debug.Log("set end game");
             FindObjectOfType<GameManager>().endGameImmediately = true;
+        }else if (str.Contains("testEvent")) {
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions();
+            raiseEventOptions.Receivers = ReceiverGroup.All;
+            PhotonNetwork.RaiseEvent(GameEventCode.SYNC, null, true, raiseEventOptions);
         }
+        
+
+
     }
 
     public void Clear() {

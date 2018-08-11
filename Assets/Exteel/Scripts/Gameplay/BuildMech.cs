@@ -32,11 +32,12 @@ public class BuildMech : Photon.MonoBehaviour {
     public Part[] curMechParts = new Part[5];
     private int weaponOffset = 0;
 
-    private bool buildLocally = false, isDataGetSaved = true, onPanel = false;
+    private bool buildLocally = false, isDataGetSaved = true;
     private int Total_Mech = 4;
     private const int BLUE = 0, RED = 1;
     public MechProperty MechProperty;
     public int Mech_Num = 0;
+    public bool onPanel = false;
 
     public delegate void BuildWeaponAction();
     public event BuildWeaponAction OnMechBuilt;
@@ -57,7 +58,7 @@ public class BuildMech : Photon.MonoBehaviour {
         CheckIsDataGetSaved();
 
         // If this is not me, don't build this mech. Someone else will RPC build it
-        if (!photonView.isMine && !buildLocally) return;
+        if (!buildLocally && !photonView.isMine) return;
 
         InitMechData();
         InitAnimatorControllers();
@@ -83,8 +84,8 @@ public class BuildMech : Photon.MonoBehaviour {
         animator = transform.Find("CurrentMech").GetComponent<Animator>();
     }
 
-    private void InitAnimatorControllers() {
-        if (!buildLocally) return;//do not call this in game otherwise mechcombat gets null parameter
+    private void InitAnimatorControllers() {//do not call this in game otherwise mechcombat gets null parameter
+        if (!buildLocally) return;
 
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;

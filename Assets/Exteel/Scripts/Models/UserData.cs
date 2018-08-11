@@ -4,6 +4,7 @@ using UnityEngine;
 public class UserData : MonoBehaviour {
     public static Dictionary<int, Data> data;
     public static Data myData;
+    public static int preferredFrameRate = 40;
 
     //Assigned when login
     public static string version = "0.0";

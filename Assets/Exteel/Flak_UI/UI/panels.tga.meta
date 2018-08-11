@@ -67,6 +67,8 @@ TextureImporter:
     21300120: panels_5
     21300122: radar_blueFlag
     21300124: radar_redFlag
+    21300126: blueTeam_mark
+    21300128: redTeam_panel
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -991,7 +993,7 @@ TextureImporter:
         width: 15
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1004,6 +1006,34 @@ TextureImporter:
         y: 981
         width: 15
         height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blueTeam_mark
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 977
+        width: 31
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: redTeam_panel
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 976
+        width: 37
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

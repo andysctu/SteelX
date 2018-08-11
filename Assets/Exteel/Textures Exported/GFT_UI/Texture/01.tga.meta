@@ -9,6 +9,9 @@ TextureImporter:
     21300004: standingZone
     21300006: Tab
     21300008: timepanel
+    21300010: blue_box
+    21300012: border_0
+    21300014: red_box
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -94,7 +97,7 @@ TextureImporter:
         height: 183
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 6, y: 8, z: 5, w: 10}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -149,8 +152,50 @@ TextureImporter:
         width: 56
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blue_box
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 720
+        width: 232
+        height: 73
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 7, y: 9, z: 7, w: 5}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: border_0
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 949
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 8, y: 3, z: 6, w: 4}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: red_box
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 793
+        width: 232
+        height: 71
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 5, z: 5, w: 4}
       outline: []
       physicsShape: []
       tessellationDetail: 0

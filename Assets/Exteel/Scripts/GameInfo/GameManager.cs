@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public abstract class GameManager : Photon.MonoBehaviour {
-    private InGameChat InGameChat;
     protected RespawnPanel RespawnPanel;    
     protected Vector3[] RespawnPoints;
     protected Transform PanelCanvas;
@@ -13,6 +12,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected MechCombat player_mcbt;
     protected Camera[] thePlayerMainCameras;
     protected int respawnPointNum;//The current respawn point choosed , may be invalid
+    private InGameChat InGameChat;
     public static bool isTeamMode;
 
     public enum Team { BLUE, RED, NONE };
@@ -47,15 +47,31 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected virtual void Awake() {
-        Application.targetFrameRate = 40;//TODO : player can choose target frame rate
+        Application.targetFrameRate = UserData.preferredFrameRate;//TODO : player can choose target frame rate
 
         InitComponents();
 
-        Offline = FindObjectOfType<GameSceneManager>().test;
-        if (Offline) {LoadOfflineInfo();return; }
+        if ((Offline = FindObjectOfType<GameSceneManager>().test)) {LoadOfflineInfo();return; }
+
+        RegisterOnPhotonEvent();
 
         BuildGameScene();
+
         LoadGameInfo();
+    }
+
+    private void InitComponents() {
+        PanelCanvas = GameObject.Find("PanelCanvas").transform;
+        MechPrefab = Resources.Load<GameObject>("MechFrame");
+        RespawnPanel = PanelCanvas.GetComponentInChildren<RespawnPanel>(true);
+        InGameChat = FindObjectOfType<InGameChat>();
+    }
+
+    protected virtual void RegisterOnPhotonEvent() {
+        PhotonNetwork.OnEventCall += this.OnEvent;
+    }
+
+    protected virtual void OnEvent(byte eventcode, object content, int senderid) {
     }
 
     protected virtual void BuildGameScene() {
@@ -91,15 +107,23 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
         InstantiatePlayer();
 
+        SetPlayerTagObject();
+
         StartCoroutine(LateStart());
     }
 
-    private void InitComponents() {
-        PanelCanvas = GameObject.Find("PanelCanvas").transform;
-        MechPrefab = Resources.Load<GameObject>("MechFrame");
-        RespawnPanel = PanelCanvas.GetComponentInChildren<RespawnPanel>(true);
-        InGameChat = FindObjectOfType<InGameChat>();
+    protected virtual void ClientInitSelf() {
+        ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable {
+            { "Kills", 0 },
+            { "Deaths", 0 },
+            { "weaponOffset", 0 }
+        };
+        PhotonNetwork.player.SetCustomProperties(h2);
     }
+
+    public abstract void InstantiatePlayer();
+
+    protected abstract void SetPlayerTagObject();
 
     protected abstract void InitRespawnPoints();
 
@@ -133,18 +157,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
         }
     }
 
-    protected virtual void ClientInitSelf() {
-        ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable {
-            { "Kills", 0 },
-            { "Deaths", 0 },
-            { "weaponOffset", 0 }
-        };
-        PhotonNetwork.player.SetCustomProperties(h2);
-    }
-
     protected virtual void OnMasterFinishInit() {
         SyncPanel();
     }
+
     protected virtual void SyncPanel() {
     }
 
@@ -152,7 +168,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     protected abstract bool CheckIfGameSync();
 
-    public abstract void InstantiatePlayer();
 
     public abstract void RegisterPlayer(int player_viewID);
 
@@ -217,14 +232,18 @@ public abstract class GameManager : Photon.MonoBehaviour {
         }
 
         //TODO : debug take out
-        if (endGameImmediately) {
+        if (endGameImmediately && !gameEnding) {
             gameEnding = true;
             photonView.RPC("EndGame", PhotonTargets.All);
         }
     }
 
     private void ExitGame() {
-        ExitingGame = true;        
+        ExitingGame = true;
+
+        //Player remove his tag object
+        PhotonNetwork.player.TagObject = null;
+
         PhotonNetwork.LeaveRoom();//LeaveRoom() needs some time to process
     }
 
@@ -335,6 +354,9 @@ public abstract class GameManager : Photon.MonoBehaviour {
             //remove buffered rpcs in GameManager
             PhotonNetwork.RemoveRPCs(photonView);
         }
+
+        //Player remove his tag object
+        PhotonNetwork.player.TagObject = null;
     }
 
     public abstract void RegisterKill(int shooter_viewID, int victim_viewID);
@@ -381,10 +403,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     //Return map 
     public abstract GameObject GetMap();
-
-    public GameObject GetThePlayer() {
-        return player_mcbt == null ? null : player_mcbt.gameObject;
-    }
 
     public Camera[] GetThePlayerMainCameras() {
         return thePlayerMainCameras;

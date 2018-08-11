@@ -75,7 +75,12 @@ public class DMManager : GameManager {
         mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
         player_mcbt = player.GetComponent<MechCombat>();
+
         FindPlayerMainCameras(player);
+    }
+
+    protected override void SetPlayerTagObject() {
+        PhotonNetwork.player.TagObject = player;
     }
 
     private void FindPlayerMainCameras(GameObject player) {

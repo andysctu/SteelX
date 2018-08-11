@@ -28,4 +28,20 @@ public class CTFMsgDisplayer : MonoBehaviour {
     public void ShowGameOver() {
 
     }
+
+    public void PlayerGetFlag(PhotonPlayer player) {
+
+    }
+
+    public void PlayerReturnFlag(PhotonPlayer player) {
+
+    }
+
+    public void PlayerDroppedFlag(PhotonPlayer player) {
+
+    }
+
+    public void PlayerGetScore(PhotonPlayer player) {
+
+    }
 }

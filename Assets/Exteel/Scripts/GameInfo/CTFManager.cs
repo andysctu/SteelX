@@ -1,22 +1,24 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class CTFManager : GameManager {
-    private GameObject GameEnvironment;//Blue base, red base , ... 
+    private GameObject GameEnvironment;//Blue base, red base , ...
     private CTFMsgDisplayer CTFMsgDisplayer;
-    private CTFPanelManager CTFPanelManager;    
+    private CTFPanelManager CTFPanelManager;
     private Flag RedFlag, BlueFlag;
     private GameObject Map;
-    private TerritoryController[] territories;    
+    private TerritoryController[] territories;
     private int TerrainLayerMask;
     private int blueScore = 0, redScore = 0;
     private int BlueBaseIndex, RedBaseIndex;
     private bool flag_is_sync = false, game_environment_is_built = false;
-    
+
+    private enum SYNCEVENT { Flag };
+
     public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 
-    CTFManager() {
+    private CTFManager() {
         isTeamMode = true;
     }
 
@@ -28,18 +30,45 @@ public class CTFManager : GameManager {
     private void InitComponents() {
         CTFPanelManager g = Resources.Load<CTFPanelManager>("CTFPanel");
         CTFPanelManager = Instantiate(g, PanelCanvas);
-        TransformExtension.SetLocalTransform(CTFPanelManager.transform, Vector3.zero, Quaternion.identity, new Vector3(1,1,1));
+        TransformExtension.SetLocalTransform(CTFPanelManager.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
 
         CTFMsgDisplayer = CTFPanelManager.GetComponentInChildren<CTFMsgDisplayer>();
     }
 
+    protected override void OnEvent(byte eventcode, object content, int senderid) {
+        switch (eventcode) {
+            case GameEventCode.SYNC:
+            SyncEvent(content, senderid);
+            break;
+            case GameEventCode.MSG:
+            break;
+        }
+    }
+
+    private void SyncEvent(object content, int senderid) {
+        ExitGames.Client.Photon.Hashtable contentHashTable = content as ExitGames.Client.Photon.Hashtable;
+        if (contentHashTable != null) {
+            int Code = (int)contentHashTable["Code"];
+            switch (Code) {
+                case (int)SYNCEVENT.Flag:
+                SetFlag((bool)contentHashTable["Grounded"], (int)contentHashTable["PVID"], (int)contentHashTable["Team"], (Vector3)contentHashTable["Pos"]);
+                break;
+                default:
+                Debug.LogError("This event code does not exist : " + Code);
+                break;
+            }
+        } else {
+            Debug.LogWarning("Content can't be casted to Hashtable");
+        }
+    }
+
     protected override void Start() {
-        base.Start();        
+        base.Start();
 
         TerrainLayerMask = LayerMask.GetMask("Terrain");
         InitPlayerInZones();
 
-        if (Offline)return;
+        if (Offline) return;
 
         CTFMsgDisplayer.ShowWaitOtherPlayer(true);
     }
@@ -47,10 +76,10 @@ public class CTFManager : GameManager {
     protected override void InitRespawnPoints() {
         string map = GameInfo.Map;
         GameObject g = (GameObject)Resources.Load("GameEnvironment/" + map + "_CTF");
-        
+
         TerritoryController[] territoryControllers = g.GetComponentsInChildren<TerritoryController>();
         RespawnPoints = new Vector3[territoryControllers.Length];
-        for(int i=0;i< territoryControllers.Length; i++) {            
+        for (int i = 0; i < territoryControllers.Length; i++) {
             RespawnPoints[territoryControllers[i].Territory_ID] = territoryControllers[i].transform.position;
         }
 
@@ -67,44 +96,49 @@ public class CTFManager : GameManager {
         Quaternion StartRot;
 
         if (PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none) {
-            if(PhotonNetwork.player.GetTeam() == PunTeams.Team.none && !Offline) {
+            if (PhotonNetwork.player.GetTeam() == PunTeams.Team.none && !Offline) {
                 Debug.LogWarning("This player's team is none");
             }
             SetRespawnPoint(BlueBaseIndex);//set default
-            
+
             StartPos = TransformExtension.RandomXZposition(RespawnPoints[BlueBaseIndex], 20);
-            StartRot = Quaternion.Euler(new Vector3(0, Random.Range(0,180), 0));
+            StartRot = Quaternion.Euler(new Vector3(0, Random.Range(0, 180), 0));
         } else {
             SetRespawnPoint(RedBaseIndex);
             StartPos = TransformExtension.RandomXZposition(RespawnPoints[RedBaseIndex], 20);
             StartRot = Quaternion.Euler(new Vector3(0, Random.Range(0, 180), 0));
         }
 
-        Mech m = (Offline)? new Mech() : UserData.myData.Mech[0];//Default 0  //TODO : remove offline check
+        Mech m = (Offline) ? new Mech() : UserData.myData.Mech[0];//Default 0  //TODO : remove offline check
 
         player = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
         BuildMech mechBuilder = player.GetComponent<BuildMech>();
         mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
         player_mcbt = player.GetComponent<MechCombat>();
+
         FindPlayerMainCameras(player);
+    }
+
+    protected override void SetPlayerTagObject() {
+        PhotonNetwork.player.TagObject = player;
     }
 
     private void FindPlayerMainCameras(GameObject player) {
         Camera[] playerCameras = player.GetComponentsInChildren<Camera>(true);
         List<Camera> mainCameras = new List<Camera>();
 
-        foreach(Camera cam in playerCameras) {
-            if (cam.tag == "MainCamera") 
+        foreach (Camera cam in playerCameras) {
+            if (cam.tag == "MainCamera")
                 mainCameras.Add(cam);
         }
 
         thePlayerMainCameras = mainCameras.ToArray();
     }
 
-    public override void OnPlayerDead(GameObject player, int shooter_ViewID, string weapon) {      
+    public override void OnPlayerDead(GameObject player, int shooter_ViewID, string weapon) {
         PhotonView player_pv = player.GetComponent<PhotonView>();
-        if(player_pv == null) {
+        if (player_pv == null) {
             Debug.LogWarning("This player does not have photonview.");
             return;
         }
@@ -117,7 +151,7 @@ public class CTFManager : GameManager {
         //Master check if this player has the flag
         if (PhotonNetwork.isMasterClient) {
             RaycastHit hit;
-            if (BlueFlagHolder != null && player_pv.owner ==  BlueFlagHolder) {
+            if (BlueFlagHolder != null && player_pv.owner == BlueFlagHolder) {
                 //Teleport the flag to ground
                 Physics.Raycast(player.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
                 photonView.RPC("DropFlag", PhotonTargets.All, player_pv.viewID, (int)Team.BLUE, hit.point);
@@ -138,7 +172,7 @@ public class CTFManager : GameManager {
         if (flag_is_sync && game_environment_is_built) {//sync condition
             return true;
         } else {
-            if (!game_environment_is_built) {                
+            if (!game_environment_is_built) {
                 if (FindObjectOfType<TerritoryController>() != null) {
                     game_environment_is_built = true;
                 }
@@ -147,11 +181,11 @@ public class CTFManager : GameManager {
             if (!flag_is_sync) {
                 Flag[] flags = FindObjectsOfType<Flag>();
 
-                if(flags == null || flags.Length == 0)return false;
+                if (flags == null || flags.Length == 0) return false;
 
                 //Assign the flags
                 foreach (Flag flag in flags) {
-                    if (flag.team == PunTeams.Team.blue) {
+                    if (flag.flag_team == PunTeams.Team.blue) {
                         BlueFlag = flag;
                     } else {
                         RedFlag = flag;
@@ -180,25 +214,25 @@ public class CTFManager : GameManager {
     protected override void OnMasterFinishInit() {
         base.OnMasterFinishInit();
 
-        InitTerritories();        
+        InitTerritories();
         FindGameEnvironment();
     }
 
     protected override void MasterLoadMapSetting() {
         string map = GameInfo.Map;
-        GameEnvironment = PhotonNetwork.InstantiateSceneObject("GameEnvironment/"+map + "_CTF", Vector3.zero, Quaternion.identity, 0, null);
+        GameEnvironment = PhotonNetwork.InstantiateSceneObject("GameEnvironment/" + map + "_CTF", Vector3.zero, Quaternion.identity, 0, null);
     }
 
     private void FindGameEnvironment() {//client must have a ref to this , since master may disconnet
         PhotonView[] pvs = FindObjectsOfType<PhotonView>();
-        foreach(PhotonView pv in pvs) {
-            if(pv.name == (GameInfo.Map + "_CTF(Clone)") ) {
+        foreach (PhotonView pv in pvs) {
+            if (pv.name == (GameInfo.Map + "_CTF(Clone)")) {
                 GameEnvironment = pv.gameObject;
                 return;
             }
         }
 
-        if(GameEnvironment == null) {
+        if (GameEnvironment == null) {
             Debug.LogError("GameEnvironment is null");
         }
     }
@@ -208,7 +242,7 @@ public class CTFManager : GameManager {
         MapPanelController MapPanelController = GetMap().GetComponent<MapPanelController>();
 
         foreach (TerritoryController g in territories) {
-            //Register territories to map panels            
+            //Register territories to map panels
             g.AssignMapPanelController(MapPanelController);//TODO : consider remake this
 
             if (PhotonNetwork.isMasterClient) {
@@ -234,13 +268,13 @@ public class CTFManager : GameManager {
 
     private void InitPlayerInZones() {
         PlayerInZone[] playerInZones = FindObjectsOfType<PlayerInZone>();
-        foreach(PlayerInZone p in playerInZones) {
+        foreach (PlayerInZone p in playerInZones) {
             p.SetPlayer(player);
         }
     }
 
     public override GameObject GetMap() {
-        if(Map != null) {
+        if (Map != null) {
             return Map;
         } else {
             //Instantiate one
@@ -249,7 +283,7 @@ public class CTFManager : GameManager {
             Map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity, null);
 
             return Map;
-        }        
+        }
     }
 
     protected override void OnGameStart() {
@@ -266,10 +300,10 @@ public class CTFManager : GameManager {
     }
 
     public override void RegisterKill(int shooter_viewID, int victim_viewID) {
-        CTFPanelManager.RegisterKill(shooter_viewID, victim_viewID);        
+        CTFPanelManager.RegisterKill(shooter_viewID, victim_viewID);
     }
 
-    void InstantiateFlags() {//Called by master
+    private void InstantiateFlags() {//Called by master
         GameObject blueflag = PhotonNetwork.InstantiateSceneObject("BlueFlag", new Vector3(RespawnPoints[BlueBaseIndex].x, 0, RespawnPoints[BlueBaseIndex].z), Quaternion.Euler(Vector3.zero), 0, null),
         redFlag = PhotonNetwork.InstantiateSceneObject("RedFlag", new Vector3(RespawnPoints[RedBaseIndex].x, 0, RespawnPoints[RedBaseIndex].z), Quaternion.Euler(Vector3.zero), 0, null);
 
@@ -278,55 +312,86 @@ public class CTFManager : GameManager {
     }
 
     public override void SetRespawnPoint(int num) {
-        Debug.Log("Set respawn Point : "+num);
+        Debug.Log("Set respawn Point : " + num);
         PunTeams.Team player_team = PhotonNetwork.player.GetTeam();
 
         if (player_team == PunTeams.Team.none && !Offline) { Debug.LogWarning("This player is team none"); }//debug use
 
         if (PhotonNetwork.room.CustomProperties["T_" + num] == null) {//Master has not init this
             respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;//Set to the base point
-            Debug.Log("Call set respawn point :" + num + " but Master did not init this point.  Set to base : "+ respawnPointNum);
+            Debug.Log("Call set respawn point :" + num + " but Master did not init this point.  Set to base : " + respawnPointNum);
             return;
         }
 
         if (player_team == PunTeams.Team.red && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)Team.RED) {
             respawnPointNum = num;
-            Debug.Log("Set successfully with respawn point : "+num);
-        } else if( (player_team == PunTeams.Team.blue || player_team == PunTeams.Team.none)  && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)Team.BLUE)  {
+            Debug.Log("Set successfully with respawn point : " + num);
+        } else if ((player_team == PunTeams.Team.blue || player_team == PunTeams.Team.none) && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)Team.BLUE) {
             respawnPointNum = num;
             Debug.Log("Set successfully with respawn point : " + num);
-        } else {            
+        } else {
             respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;
             Debug.Log("Set failed : " + num);
         }
     }
 
     [PunRPC]
-    void SyncFlagRequest() {
-        //Always received by master
+    private void SyncFlagRequest(PhotonMessageInfo info) {//Always received by master
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions();
+        int[] targetActors = { info.sender.ID };
+        raiseEventOptions.TargetActors = targetActors;
+        int PVID = 0;
+        Vector3 Pos = new Vector3(0, 0, 0);
 
+        //Sync blue flag
+        PVID = (BlueFlagHolder == null) ? -1 : (BlueFlag.transform.root).GetComponent<PhotonView>().viewID;
         if (BlueFlagHolder == null) {//set to the current position
-            photonView.RPC("SetFlag", PhotonTargets.All, -1, (int)Team.BLUE, BlueFlag.transform.position);//TODO : remake this so that only send to player who request
-        } else {//set to the player who is holding this
-            photonView.RPC("SetFlag", PhotonTargets.All, (BlueFlag.transform.root).GetComponent<PhotonView>().viewID, (int)Team.BLUE, Vector3.zero);
+            Pos = BlueFlag.transform.position;
+        } else {
+            Pos = Vector3.zero;
         }
 
+        ExitGames.Client.Photon.Hashtable contentHashTable = new ExitGames.Client.Photon.Hashtable {
+            { "Code", SYNCEVENT.Flag },
+            { "Grounded", (BlueFlagHolder==null)? true : false },
+            { "PVID", PVID },
+            { "Team", (int)Team.BLUE},
+            { "Pos", Pos}
+        };
+
+        PhotonNetwork.RaiseEvent(GameEventCode.SYNC, contentHashTable, true, raiseEventOptions);
+
+        //Sync red flag
+        PVID = (RedFlagHolder == null) ? -1 : (RedFlag.transform.root).GetComponent<PhotonView>().viewID;
         if (RedFlagHolder == null) {
-            photonView.RPC("SetFlag", PhotonTargets.All, -1, (int)Team.RED, RedFlag.transform.position);
+            Pos = RedFlag.transform.position;
         } else {
-            photonView.RPC("SetFlag", PhotonTargets.All, (RedFlag.transform.root).GetComponent<PhotonView>().viewID, (int)Team.RED, Vector3.zero);
+            Pos = Vector3.zero;
         }
+
+        contentHashTable = new ExitGames.Client.Photon.Hashtable {
+            { "Code", SYNCEVENT.Flag },
+            { "Grounded", (RedFlagHolder==null)? true : false },
+            { "PVID", PVID },
+            { "Team", (int)Team.RED},
+            { "Pos", Pos}
+        };
+
+        PhotonNetwork.RaiseEvent(GameEventCode.SYNC, contentHashTable, true, raiseEventOptions);
     }
 
     [PunRPC]
-    void DropFlag(int player_viewID, int flag, Vector3 pos) {//also call when disable player
-        PhotonView pv = PhotonView.Find(player_viewID);
-        if(pv != null) {
+    private void DropFlag(int player_viewID, int flag, Vector3 pos) {
+        PhotonView pv = (player_viewID == -1)? null : PhotonView.Find(player_viewID);
+
+        //TODO : Consider remake this
+        //Set EN.
+        if (pv != null && pv.isMine) {
             MechCombat mcbt = pv.GetComponent<MechCombat>();
             mcbt.SetMaxEN((int)mcbt.MAX_EN * 2);
         }
 
-        if (flag == 0) {
+        if (flag == (int)Team.BLUE) {            
             SetFlagProperties((int)Team.BLUE, null, pos, null);
 
             //when disabling player , flag's renderer gets turn off
@@ -334,182 +399,166 @@ public class CTFManager : GameManager {
             foreach (Renderer renderer in renderers) {
                 renderer.enabled = true;
             }
-        } else {
+            BlueFlag.OnDroppedAction();
+        } else {            
             SetFlagProperties((int)Team.RED, null, pos, null);
 
             Renderer[] renderers = RedFlag.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers) {
                 renderer.enabled = true;
             }
+            RedFlag.OnDroppedAction();
         }
+        
+        //Broadcast msg
+        if(pv != null)CTFMsgDisplayer.PlayerDroppedFlag(pv.owner);
     }
 
     [PunRPC]
-    void GetFlagRequest(int player_viewID, int flag) {//Always received by master
-        PhotonPlayer player = PhotonView.Find(player_viewID).owner;
+    private void GetFlagRequest(int player_viewID, int flag, PhotonMessageInfo info) {//Always received by master
+        PhotonPlayer player = info.sender;
+        PunTeams.Team player_team = player.GetTeam();
 
-        //check the current holder
         if (flag == (int)Team.BLUE) {
-            if (BlueFlagHolder != null) {//someone has taken it first
+            //Check the current holder
+            if (BlueFlagHolder != null) {
                 return;
-            } else {//RPC all to give this flag to the player
-                photonView.RPC("SetFlag", PhotonTargets.All, player_viewID, flag, Vector3.zero);
-                Debug.Log(player + " has the blue flag.");
+            } else {
+                if(player_team == PunTeams.Team.red) {//give the flag to the player
+                    photonView.RPC("SetFlag", PhotonTargets.All, false, player_viewID, flag, Vector3.zero);
+                    Debug.Log(player + " has the blue flag.");
+                } else {//return to base
+                    photonView.RPC("SetFlag", PhotonTargets.All, true, player_viewID, flag, RespawnPoints[BlueBaseIndex]);
+                }
             }
         } else {
             if (RedFlagHolder != null) {
                 return;
             } else {
-                photonView.RPC("SetFlag", PhotonTargets.All, player_viewID, flag, Vector3.zero);
-                Debug.Log(player + " has the red flag.");
+                if (player_team == PunTeams.Team.red) {
+                    photonView.RPC("SetFlag", PhotonTargets.All, true, player_viewID, flag, RespawnPoints[RedBaseIndex]);
+                } else {
+                    photonView.RPC("SetFlag", PhotonTargets.All, false, player_viewID, flag, Vector3.zero);
+                    Debug.Log(player + " has the red flag.");
+                }                
             }
         }
     }
 
-    void SetFlagProperties(int flag, Transform parent, Vector3 pos, PhotonPlayer holder) {
+    private void SetFlagProperties(int flag, Transform parent, Vector3 pos, PhotonPlayer holder) {
         if (flag == (int)Team.BLUE) {
             if (parent != null) {
                 //parent to the player
                 BlueFlag.transform.parent = parent;
                 TransformExtension.SetLocalTransform(BlueFlag.transform, Vector3.zero, Quaternion.Euler(new Vector3(225, -180, 180)));
                 BlueFlagHolder = holder;
-                BlueFlag.OnParentToPlayerAction();
             } else {
                 //drop the flag to the pos
                 BlueFlag.transform.parent = null;
                 TransformExtension.SetLocalTransform(BlueFlag.transform, pos, Quaternion.identity);
                 BlueFlagHolder = null;
-                BlueFlag.OnDroppedAction();
             }
         } else {
             if (parent != null) {
                 RedFlag.transform.parent = parent;
                 TransformExtension.SetLocalTransform(RedFlag.transform, Vector3.zero, Quaternion.Euler(new Vector3(225, -180, 180)));
                 RedFlagHolder = holder;
-                RedFlag.OnParentToPlayerAction();
             } else {
                 RedFlag.transform.parent = null;
                 TransformExtension.SetLocalTransform(RedFlag.transform, pos, Quaternion.identity);
                 RedFlagHolder = null;
-                RedFlag.OnDroppedAction();
             }
         }
     }
 
     [PunRPC]
-    void SetFlag(int player_viewID, int flag, Vector3 pos) {
-        if (BlueFlag == null || RedFlag == null)return;
+    private void SetFlag(bool grounded, int player_viewID, int flag, Vector3 pos) {
+        if (BlueFlag == null || RedFlag == null) return;
 
+        PhotonView pv = PhotonView.Find(player_viewID);
+        PhotonPlayer pvOwner = (pv == null) ? null : pv.owner;
         flag_is_sync = true;
-        if (player_viewID == -1) {//put the flag to the pos 
+
+        if (grounded) {//put the flag to the pos
             if (flag == (int)Team.BLUE) {
                 SetFlagProperties((int)Team.BLUE, null, pos, null);
 
-                if (BlueFlag.transform.position.x == RespawnPoints[BlueBaseIndex].x && BlueFlag.transform.position.z == RespawnPoints[BlueBaseIndex].z) {
+                if (pos.x == RespawnPoints[BlueBaseIndex].x && pos.z == RespawnPoints[BlueBaseIndex].z) {
                     BlueFlag.OnBaseAction();
                 }
             } else {
                 SetFlagProperties((int)Team.RED, null, pos, null);
 
-                if (RedFlag.transform.position.x == RespawnPoints[RedBaseIndex].x && RedFlag.transform.position.z == RespawnPoints[RedBaseIndex].z) {
+                if (pos.x == RespawnPoints[RedBaseIndex].x && pos.z == RespawnPoints[RedBaseIndex].z) {
                     RedFlag.OnBaseAction();
                 }
             }
+
+            if(pvOwner != null) {//Broadcast msg
+                CTFMsgDisplayer.PlayerReturnFlag(pvOwner);
+            }
+
         } else {
-            PhotonView pv = PhotonView.Find(player_viewID);
-            if(pv == null) {
+            if (pv == null) {
                 Debug.LogWarning("SetFlag : This player is disconnected.");
                 return;
             }
 
             if (pv.isMine) {
                 MechCombat mcbt = pv.GetComponent<MechCombat>();
-                mcbt.SetMaxEN((int)mcbt.MAX_EN/2);
+                mcbt.SetMaxEN((int)mcbt.MAX_EN / 2);
             }
 
-            if (flag == (int)Team.BLUE) {
+            if (flag == (int)Team.BLUE) {//TODO : improve this
                 SetFlagProperties((int)Team.BLUE, pv.transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone"), Vector3.zero, pv.owner);
+                BlueFlag.OnParentToPlayerAction();
             } else {
                 SetFlagProperties((int)Team.RED, pv.transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone"), Vector3.zero, pv.owner);
+                RedFlag.OnParentToPlayerAction();
             }
+
+            //Broadcast msg
+            CTFMsgDisplayer.PlayerGetFlag(pvOwner);
         }
     }
 
     [PunRPC]
-    void GetScoreRequest(int player_viewID) {
-        //Always received by master
-
-        PhotonView pv = PhotonView.Find(player_viewID);
-        if (pv == null) {
-            Debug.LogWarning("GetScoreRequest : Can't find pv");
+    private void GetScoreRequest(PhotonMessageInfo info) {//Always received by master        
+        PhotonPlayer sender = info.sender;
+        if (sender == null) {
+            Debug.LogWarning("GetScoreRequest : sender is null");
             return;
         }
 
         //check if no one is taking the another flag
-        if (pv.owner.GetTeam() == PunTeams.Team.blue || pv.owner.GetTeam() == PunTeams.Team.none) {
-            if (BlueFlagHolder != null || RedFlagHolder == null)return;
+        if (sender.GetTeam() == PunTeams.Team.blue || sender.GetTeam() == PunTeams.Team.none) {
+            if (BlueFlagHolder != null || RedFlagHolder == null) return;
 
+            if (sender == PhotonNetwork.player && sender.TagObject != null) {//if this is me
+                MechCombat mcbt = ((GameObject)PhotonNetwork.player.TagObject).GetComponent<MechCombat>();
+                mcbt.SetMaxEN((int)mcbt.MAX_EN * 2);
+            }
 
-            photonView.RPC("RegisterScore", PhotonTargets.All, player_viewID);
+            photonView.RPC("RegisterScore", PhotonTargets.All, sender);
 
-            //send back the flag
-            photonView.RPC("SetFlag", PhotonTargets.All, -1, (int)Team.RED, new Vector3(RespawnPoints[RedBaseIndex].x, 0, RespawnPoints[RedBaseIndex].z));
-            
-        } else {//Redteam : blue flag holder
-            if (BlueFlagHolder == null || RedFlagHolder != null)return;
-            
-            photonView.RPC("RegisterScore", PhotonTargets.All, player_viewID);
+            //Send back the flag
+            photonView.RPC("SetFlag", PhotonTargets.All, true, -1, (int)Team.RED, new Vector3(RespawnPoints[RedBaseIndex].x, 0, RespawnPoints[RedBaseIndex].z));
+        } else {//Redteam : blue flag holderz
+            if (BlueFlagHolder == null || RedFlagHolder != null) return;
 
-            photonView.RPC("SetFlag", PhotonTargets.All, -1, (int)Team.BLUE, new Vector3(RespawnPoints[BlueBaseIndex].x, 0, RespawnPoints[BlueBaseIndex].z));
+            if (sender == PhotonNetwork.player && sender.TagObject != null) {
+                MechCombat mcbt = ((GameObject)PhotonNetwork.player.TagObject).GetComponent<MechCombat>();
+                mcbt.SetMaxEN((int)mcbt.MAX_EN * 2);
+            }
+
+            photonView.RPC("RegisterScore", PhotonTargets.All, sender);
+
+            photonView.RPC("SetFlag", PhotonTargets.All, true, -1, (int)Team.BLUE, new Vector3(RespawnPoints[BlueBaseIndex].x, 0, RespawnPoints[BlueBaseIndex].z));
         }
-    }
-
-    protected override void OnPhotonPlayerDisconnected(PhotonPlayer player) {
-        base.OnPhotonPlayerDisconnected(player);
-
-        if(!PhotonNetwork.isMasterClient)return;
-
-        //Check if this player has the flag
-        if (player.NickName == ((BlueFlagHolder == null) ? "" : BlueFlagHolder.NickName)) {
-            //teleport the flag to ground
-            RaycastHit hit;
-            Physics.Raycast(BlueFlag.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
-            photonView.RPC("DropFlag", PhotonTargets.All, -1, (int)Team.BLUE, hit.point);
-
-        } else if (player.NickName == ((RedFlagHolder == null) ? "" : RedFlagHolder.NickName)) {
-            RaycastHit hit;
-            Physics.Raycast(RedFlag.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
-            photonView.RPC("DropFlag", PhotonTargets.All, -1, (int)Team.RED, hit.point);
-        }
-    }
-
-    protected override void EndGameProcess() {
-        base.EndGameProcess();
-
-        //Check the condition and display win & lose
-
-
-        CTFMsgDisplayer.ShowGameOver();
-    }
-
-    protected override IEnumerator PlayFinalGameScene() {
-        yield break;
-    }
-
-    protected override void OnEndGameRelease() {
-        base.OnEndGameRelease();
-        if(!PhotonNetwork.isMasterClient)return;
-
-        //Destroy scene objects
-        PhotonNetwork.Destroy(GameEnvironment);
-        PhotonNetwork.Destroy(BlueFlag.gameObject);
-        PhotonNetwork.Destroy(RedFlag.gameObject);
     }
 
     [PunRPC]
-    void RegisterScore(int player_viewID) {
-        PhotonPlayer player = PhotonView.Find(player_viewID).owner;
-
+    private void RegisterScore(PhotonPlayer player) {
         if (player.GetTeam() == PunTeams.Team.blue || player.GetTeam() == PunTeams.Team.none) {
             blueScore++;
         } else {
@@ -529,6 +578,49 @@ public class CTFManager : GameManager {
                 PhotonNetwork.room.SetCustomProperties(h);
             }
         }
+
+        //Broadcast msg
+        CTFMsgDisplayer.PlayerGetScore(player);
+    }
+
+    protected override void OnPhotonPlayerDisconnected(PhotonPlayer player) {
+        base.OnPhotonPlayerDisconnected(player);
+
+        if (!PhotonNetwork.isMasterClient) return;
+
+        //Check if this player has the flag
+        if (player.NickName == ((BlueFlagHolder == null) ? "" : BlueFlagHolder.NickName)) {
+            //teleport the flag to ground
+            RaycastHit hit;
+            Physics.Raycast(BlueFlag.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
+            photonView.RPC("DropFlag", PhotonTargets.All, -1, (int)Team.BLUE, hit.point);
+        } else if (player.NickName == ((RedFlagHolder == null) ? "" : RedFlagHolder.NickName)) {
+            RaycastHit hit;
+            Physics.Raycast(RedFlag.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
+            photonView.RPC("DropFlag", PhotonTargets.All, -1, (int)Team.RED, hit.point);
+        }
+    }
+
+    protected override void EndGameProcess() {
+        base.EndGameProcess();
+
+        //Check the condition and display win & lose
+
+        CTFMsgDisplayer.ShowGameOver();
+    }
+
+    protected override IEnumerator PlayFinalGameScene() {
+        yield break;
+    }
+
+    protected override void OnEndGameRelease() {
+        base.OnEndGameRelease();
+        if (!PhotonNetwork.isMasterClient) return;
+
+        //Destroy scene objects
+        PhotonNetwork.Destroy(GameEnvironment);
+        PhotonNetwork.Destroy(BlueFlag.gameObject);
+        PhotonNetwork.Destroy(RedFlag.gameObject);
     }
 
     public override Vector3 GetRespawnPointPosition(int num) {
