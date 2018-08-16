@@ -36,7 +36,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if (Input.GetKeyUp(KeyCode.Space)) {
+		if (!gm.BlockInput && Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
 
@@ -50,7 +50,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			mctrl.JumpMoveInAir ();
 		}
 
-		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
+		if (!gm.BlockInput && Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
 			mctrl.SetCanVerticalBoost (false);
 			jumpReleased = false;
 			animator.SetBool(boost_id, true);

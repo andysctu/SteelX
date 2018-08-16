@@ -17,11 +17,8 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 
-		float speed = Input.GetAxis("Vertical");
-		float direction = Input.GetAxis("Horizontal");
-
-		animator.SetFloat(speed_id, speed);
-		animator.SetFloat(direction_id, direction);
+		animator.SetFloat(speed_id, mctrl.speed);
+		animator.SetFloat(direction_id, mctrl.direction);
 
 		if(animator.GetBool(jump_id)){
 			mctrl.Run ();//not lose speed in air
@@ -35,7 +32,7 @@ public class GroundedState : MechStateMachineBehaviour {
 			return;
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onMelee_id) ) {
+		if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onMelee_id) ) {
 			mctrl.SetCanVerticalBoost (true);
 			mctrl.grounded = false;
 			animator.SetBool(grounded_id, false);
@@ -43,8 +40,8 @@ public class GroundedState : MechStateMachineBehaviour {
 			return;
 		}
 
-		if (Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughENToBoost()) {
-			if (speed > 0 || speed < 0 || direction > 0 || direction < 0) {	
+		if (!gm.BlockInput && Input.GetKey(KeyCode.LeftShift) && mcbt.EnoughENToBoost()) {
+			if (mctrl.speed > 0 || mctrl.speed < 0 || mctrl.direction > 0 || mctrl.direction < 0) {	
 				animator.SetBool (boost_id, true);
 				mctrl.Boost (true);
 			}else{

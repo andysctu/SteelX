@@ -37,8 +37,8 @@ public class MechController : Photon.MonoBehaviour {
     private float slashTeleportMinDistance = 3f;
 
     // Animation
-    private float speed;
-    private float direction;
+    public float speed { get;private set;}
+    public float direction { get;private set;}
 
     private float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
     public float Gravity = 4;
@@ -429,8 +429,13 @@ public class MechController : Photon.MonoBehaviour {
             h = 0;
         }
 
-        speed = v;
-        direction = h;
+        if (gm.BlockInput) {
+            speed = 0;
+            direction = 0;
+        } else {
+            speed = v;
+            direction = h;
+        }        
 
         xzDir = new Vector2(direction, speed).normalized;
     }

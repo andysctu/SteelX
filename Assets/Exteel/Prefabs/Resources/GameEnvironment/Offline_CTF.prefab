@@ -1140,7 +1140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Territory_ID: 0
   interactable: 0
-  curTerritoryState: 0
+  curTerritoryState: 2
   bar: {fileID: 0}
   mark: {fileID: 0}
   bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
@@ -1152,7 +1152,7 @@ MonoBehaviour:
   base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
   base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
   base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  barCanvas: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114129659732272202
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1256,7 +1256,7 @@ MonoBehaviour:
   base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
   base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
   base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  barCanvas: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114362861649847632
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1308,7 +1308,6 @@ MonoBehaviour:
   bar_green: {fileID: 21300048, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   bar_grey: {fileID: 21300008, guid: 00429edee359949d9955d2393313fad6, type: 3}
   bar: {fileID: 114775038158501968}
-  PlayerInZone: {fileID: 114996322474426056}
   increaseAmount: 0.001
   isAvailable: 1
 --- !u!114 &114394904437217348
@@ -1362,7 +1361,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Territory_ID: 2
   interactable: 1
-  curTerritoryState: 2
+  curTerritoryState: 0
   bar: {fileID: 114020491070423488}
   mark: {fileID: 114923980734854810}
   bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
@@ -1374,7 +1373,7 @@ MonoBehaviour:
   base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
   base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
   base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  barCanvas: {fileID: 1717872225425880}
+  Infos: {fileID: 0}
 --- !u!114 &114551379579855242
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1499,7 +1498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Territory_ID: 1
   interactable: 1
-  curTerritoryState: 2
+  curTerritoryState: 0
   bar: {fileID: 114998108292764006}
   mark: {fileID: 114661948379682148}
   bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
@@ -1511,7 +1510,7 @@ MonoBehaviour:
   base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
   base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
   base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  barCanvas: {fileID: 1509980216646204}
+  Infos: {fileID: 0}
 --- !u!114 &114775038158501968
 MonoBehaviour:
   m_ObjectHideFlags: 1

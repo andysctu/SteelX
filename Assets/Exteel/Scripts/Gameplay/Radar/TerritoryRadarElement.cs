@@ -27,15 +27,15 @@ public class TerritoryRadarElement : RadarElement {
 
     }
 
-    public void SwitchSprite(GameManager.Team team) {
+    public void SwitchSprite(PunTeams.Team team) {
         switch (team) {
-            case GameManager.Team.BLUE:
+            case PunTeams.Team.blue:
                 SpriteRenderer.sprite = blueTerritory;
             break;
-            case GameManager.Team.RED:
+            case PunTeams.Team.red:
                 SpriteRenderer.sprite = redTerritory;
             break;
-            case GameManager.Team.NONE:
+            case PunTeams.Team.none:
                 SpriteRenderer.sprite = greyTerritory;
             break;
         }

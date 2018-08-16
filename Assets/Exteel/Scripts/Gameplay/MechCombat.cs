@@ -647,6 +647,9 @@ public class MechCombat : Combat {
         gm.OnPlayerDead(gameObject, shooter_viewID, weapon);
 
         isDead = true;//TODO : check this again
+        if (photonView.isMine) {
+            gm.SetBlockInput(BlockInputSet.Elements.PlayerIsDead , true);
+        }
 
         CurrentHP = 0;
 
@@ -683,6 +686,8 @@ public class MechCombat : Combat {
         if (photonView.isMine) { // build mech also init MechCombat
             Mech m = UserData.myData.Mech[mech_num];
             bm.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+
+            gm.SetBlockInput(BlockInputSet.Elements.PlayerIsDead, false);
         }
 
         initMechStats();
@@ -696,14 +701,13 @@ public class MechCombat : Combat {
         GetComponent<CharacterController>().enabled = true;
         gameObject.layer = playerlayer;
 
-
         isDead = false;
         EffectController.RespawnEffect();
     }
 
     // Update is called once per frame
     private void Update() {
-        if (!photonView.isMine || gm.CheckIfGameOver() || !GameManager.gameIsBegin) return;
+        if (!photonView.isMine || gm.IsGameEnding() || !GameManager.gameIsBegin) return;
 
         //TODO : remove this
         if (forceDead) {
@@ -711,7 +715,7 @@ public class MechCombat : Combat {
             photonView.RPC("OnHit", PhotonTargets.All, 10000, photonView.viewID, "ForceDead", true);
         }
 
-        if (onSkill || isDead) return;
+        if (onSkill || gm.BlockInput) return;
 
         // Animate left and right combat
         handleCombat(LEFT_HAND);

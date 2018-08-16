@@ -6,20 +6,24 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected RespawnPanel RespawnPanel;    
     protected Vector3[] RespawnPoints;
     protected Transform PanelCanvas;
-    protected GameObject MechPrefab;
+    protected EscPanel EscPanel;
+    protected GameObject MechPrefab, player;
     protected Timer Timer = new Timer();
-    protected GameObject player;
     protected MechCombat player_mcbt;
     protected Camera[] thePlayerMainCameras;
     protected int respawnPointNum;//The current respawn point choosed , may be invalid
     private InGameChat InGameChat;
     public static bool isTeamMode;
 
-    public enum Team { BLUE, RED, NONE };
     public enum Status { Waiting, InBattle};
 
+    //Block input
+    private BlockInputSet BlockInputSet = new BlockInputSet();
+    public bool BlockInput { get { return blockInput; } }//Set by BlockInputController method
+    private bool blockInput = false;
+
     //end & start
-    private bool gameEnding = false, callEndGame = false, ExitingGame = false;
+    protected bool gameEnding = false, callEndGame = false, ExitingGame = false;
     public static bool gameIsBegin = false;
     public bool calledGameBegin = false;
 
@@ -65,6 +69,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         MechPrefab = Resources.Load<GameObject>("MechFrame");
         RespawnPanel = PanelCanvas.GetComponentInChildren<RespawnPanel>(true);
         InGameChat = FindObjectOfType<InGameChat>();
+        EscPanel = PanelCanvas.Find("EscPanel").GetComponent<EscPanel>();
     }
 
     protected virtual void RegisterOnPhotonEvent() {
@@ -107,8 +112,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
         InstantiatePlayer();
 
-        SetPlayerTagObject();
-
         StartCoroutine(LateStart());
     }
 
@@ -122,8 +125,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     public abstract void InstantiatePlayer();
-
-    protected abstract void SetPlayerTagObject();
 
     protected abstract void InitRespawnPoints();
 
@@ -195,26 +196,21 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected virtual void Update() {
-        if (!gameEnding && !ExitingGame) {
-            if (!player_mcbt.isDead) {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            } else {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-            ShowScorePanel(Input.GetKey(KeyCode.CapsLock));
+        if (!BlockInput) {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;            
         } else {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
 
-        if (Offline) return;
+        ShowScorePanel(Input.GetKey(KeyCode.CapsLock));
 
         if (Input.GetKeyDown(KeyCode.Escape) && !ExitingGame) {
-            ExitGame();  
-            return;
+            EscPanel.EnableEscPanel();            
         }
+
+        if (Offline) return;
 
         // Update time
         if (!is_Time_init) {
@@ -224,27 +220,31 @@ public abstract class GameManager : Photon.MonoBehaviour {
             Timer.UpdateTime();
         }
 
+        //Master check end game condition
         if (PhotonNetwork.isMasterClient && !gameEnding) {
-            if (CheckIfGameOver()) {
+            if (CheckEndGameCondition()) {
                 gameEnding = true;
-                photonView.RPC("EndGame", PhotonTargets.All);
+                SetBlockInput(BlockInputSet.Elements.GameEnding, true);
+                MasterOnGameOverAction();
             }
         }
 
         //TODO : debug take out
         if (endGameImmediately && !gameEnding) {
             gameEnding = true;
+            SetBlockInput(BlockInputSet.Elements.GameEnding, true);
             photonView.RPC("EndGame", PhotonTargets.All);
         }
     }
 
-    private void ExitGame() {
+    public void ExitGame() {
         ExitingGame = true;
-
-        //Player remove his tag object
-        PhotonNetwork.player.TagObject = null;
-
+        SetBlockInput(BlockInputSet.Elements.ExitingGame, true);
         PhotonNetwork.LeaveRoom();//LeaveRoom() needs some time to process
+    }
+
+    protected virtual void MasterOnGameOverAction() {        
+        photonView.RPC("EndGame", PhotonTargets.All);
     }
 
     protected virtual void OnLeftRoom() {
@@ -307,30 +307,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
         OnSyncTimeRequest = false;
     }
 
-    protected virtual IEnumerator ExecuteAfterTime(float time) {
-        yield return new WaitForSeconds(time);
-
-        ShowScorePanel(true);
-
-        //Play final game scene
-        yield return StartCoroutine(PlayFinalGameScene());
-
-        //Destroy scene objects
-        OnEndGameRelease();        
-
-        //return to game lobby
-        if (PhotonNetwork.isMasterClient) {
-            PhotonNetwork.LoadLevel("MainScenes");
-            PhotonNetwork.room.IsOpen = true;
-
-            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
-                { "Status", (int)Status.Waiting }
-            };
-            PhotonNetwork.room.SetCustomProperties(h);
-        }
-        SceneStateController.SetSceneToLoadOnLoaded(GameLobbyManager._sceneName);
-    }
-
     protected abstract IEnumerator PlayFinalGameScene();
 
     protected virtual void OnGameStart() {
@@ -354,9 +330,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
             //remove buffered rpcs in GameManager
             PhotonNetwork.RemoveRPCs(photonView);
         }
-
-        //Player remove his tag object
-        PhotonNetwork.player.TagObject = null;
     }
 
     public abstract void RegisterKill(int shooter_viewID, int victim_viewID);
@@ -365,15 +338,21 @@ public abstract class GameManager : Photon.MonoBehaviour {
         DisplayMsgOnGameChat(shooter + " killed " + photonView.name + " by " + weapon);
     }
 
-    public bool CheckIfGameOver() {//Called by master
-        return CheckEndGameCondition();        
+    public bool IsGameEnding() {
+        return gameEnding;
     }
 
-    protected virtual bool CheckEndGameCondition() {
+    public void SetBlockInput(BlockInputSet.Elements element, bool b) {
+        BlockInputSet.SetElement(element, b);
+        blockInput = BlockInputSet.IsInputBlocked();
+        Debug.Log("Set blockInput : "+element.ToString() + " , "+b);
+    }
+
+    protected virtual bool CheckEndGameCondition() {//Called by master
         return Timer.CheckIfGameEnd();
     }
 
-    private void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
+    protected virtual void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
         InGameChat.AddLine(newPlayer + " is connected.", Color.green);
     }
 
@@ -404,6 +383,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
     //Return map 
     public abstract GameObject GetMap();
 
+    public virtual GameObject GetThePlayerMech() {
+        return player;
+    }
+
     public Camera[] GetThePlayerMainCameras() {
         return thePlayerMainCameras;
     }
@@ -433,14 +416,38 @@ public abstract class GameManager : Photon.MonoBehaviour {
         }
 
         gameEnding = true;
+        SetBlockInput(BlockInputSet.Elements.GameEnding, true);
         EndGameProcess();
     }
 
     protected virtual void EndGameProcess() {
-        gameEnding = true;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         StartCoroutine(ExecuteAfterTime(3));
+    }
+
+    protected virtual IEnumerator ExecuteAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+
+        ShowScorePanel(true);
+
+        //Play final game scene
+        yield return StartCoroutine(PlayFinalGameScene());
+
+        //Destroy scene objects
+        OnEndGameRelease();
+
+        //return to game lobby
+        if (PhotonNetwork.isMasterClient) {
+            PhotonNetwork.LoadLevel("MainScenes");
+            PhotonNetwork.room.IsOpen = true;
+
+            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
+                { "Status", (int)Status.Waiting }
+            };
+            PhotonNetwork.room.SetCustomProperties(h);
+        }
+        SceneStateController.SetSceneToLoadOnLoaded(GameLobbyManager._sceneName);
     }
 
     [PunRPC]

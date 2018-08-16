@@ -17,7 +17,7 @@ public class RadarElement : MonoBehaviour {
 
     private IEnumerator GetThePlayer(GameManager gm) {
         int request_times = 0;
-        while ((ThePlayer = (GameObject)PhotonNetwork.player.TagObject) == null && request_times < 10) {
+        while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 10) {
             request_times++;
             yield return new WaitForSeconds(0.5f);
         }

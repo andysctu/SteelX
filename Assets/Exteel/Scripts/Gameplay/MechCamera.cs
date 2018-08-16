@@ -6,7 +6,8 @@ public class MechCamera : MonoBehaviour {
     [SerializeField] private Animator animator;
     [SerializeField] private SkillController SkillController;
 
-    private Transform fakeTransform, player;
+    private GameManager gm;
+    private Transform fakeTransform, player;//camera rotates around fakeTransform , and fakeTransform follows smoothly to the player
     private MechController mctrl;
     private Vector3 m_TargetAngles, m_FollowAngles;
     private Quaternion m_OriginalRotation, tempCurrentMechRot;
@@ -14,10 +15,12 @@ public class MechCamera : MonoBehaviour {
     private float idealLocalAngle = 0, orbitAngle = 0;//this is cam local angle
     private CharacterController parentCtrl;
     private float playerlerpspeed = 50f, orbitlerpspeed = 50f;
-    private float upamount = 1;
+    private float upAmount = 1;
 
     private Vector2 rotationRange = new Vector2(70, 200);
-    public float rotationSpeed = 5, dampingTime = 0.2f;
+
+    //[Range(1.0f,8.0f)]
+    //public float rotationSpeed = 5; //UserData.cameraRotationSpeed
     public bool lockPlayerRot = false, lockCamRotation = false;
     public float orbitRadius = 19, lerpFakePosSpeed = 12, angleOffset = 33;
 
@@ -45,6 +48,7 @@ public class MechCamera : MonoBehaviour {
         orbitAngle = Vector3.SignedAngle(transform.parent.forward + transform.parent.up, transform.position - transform.parent.position - Vector3.up * 5, -transform.parent.right);
         mctrl = transform.root.GetComponent<MechController>();
         player = transform.root;
+        gm = FindObjectOfType<GameManager>();
 
         GameObject g = new GameObject();
         g.name = "PlayerCam";
@@ -58,6 +62,11 @@ public class MechCamera : MonoBehaviour {
         inputH = CrossPlatformInputManager.GetAxis("Mouse X");
         inputV = CrossPlatformInputManager.GetAxis("Mouse Y");
 
+        if (gm.BlockInput) {
+            inputH = 0;
+            inputV = 0;
+        }
+
         float scrollwheel;
         if ((scrollwheel = Input.GetAxis("Mouse ScrollWheel")) > 0) {
             orbitRadius = Mathf.Clamp(--orbitRadius, 16, 23);
@@ -67,7 +76,7 @@ public class MechCamera : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        fakeTransform.position = Vector3.Lerp(fakeTransform.position, player.position + new Vector3(0, upamount, 0), Time.fixedDeltaTime * lerpFakePosSpeed);
+        fakeTransform.position = Vector3.Lerp(fakeTransform.position, player.position + new Vector3(0, upAmount, 0), Time.fixedDeltaTime * lerpFakePosSpeed);
 
         transform.localRotation = m_OriginalRotation;
 
@@ -82,7 +91,7 @@ public class MechCamera : MonoBehaviour {
         if (lockCamRotation)
             return;
         // with mouse input, we have direct control with no springback required.
-        m_TargetAngles.y += inputH * rotationSpeed;
+        m_TargetAngles.y += inputH * UserData.cameraRotationSpeed;
 
         // wrap values to avoid springing quickly the wrong way from positive to negative
         if (m_TargetAngles.y > 180) {
@@ -103,7 +112,7 @@ public class MechCamera : MonoBehaviour {
 
         //lerp cam rotation
         //orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 70, 220), Time.deltaTime * orbitlerpspeed);
-        orbitAngle = Mathf.Clamp(orbitAngle + inputV * rotationSpeed, rotationRange.x, rotationRange.y);
+        orbitAngle = Mathf.Clamp(orbitAngle + inputV * UserData.cameraRotationSpeed, rotationRange.x, rotationRange.y);
 
         idealLocalAngle = -1.0322f * (orbitAngle - 119.64f);
         transform.localRotation = Quaternion.Euler(idealLocalAngle + angleOffset, 0, 0);

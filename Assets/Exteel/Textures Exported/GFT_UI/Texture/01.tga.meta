@@ -12,6 +12,7 @@ TextureImporter:
     21300010: blue_box
     21300012: border_0
     21300014: red_box
+    21300016: MsgBox
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -196,6 +197,20 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 5, y: 5, z: 5, w: 4}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: MsgBox
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 457
+        width: 278
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 21, y: 11, z: 22, w: 22}
       outline: []
       physicsShape: []
       tessellationDetail: 0

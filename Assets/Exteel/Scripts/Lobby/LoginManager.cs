@@ -15,7 +15,7 @@ public class LoginManager : IScene {
 
     public const string _sceneName = "Login";
     public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
-    public string gameVersion = "2.8";
+    public string gameVersion = "3.0";
 
     public override void StartScene() {
         base.StartScene();

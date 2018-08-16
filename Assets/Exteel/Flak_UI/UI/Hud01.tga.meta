@@ -3,7 +3,12 @@ guid: 953bc6df7ddf03e43b6c895400a47c3b
 timeCreated: 1521200837
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: waitingForOther
+    21300002: victory_0
+    21300004: victory_1
+    21300006: Defeat_0
+    21300008: Defeat_1
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -78,7 +83,77 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: waitingForOther
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 869
+        width: 613
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: victory_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 421
+        width: 395
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: victory_1
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 362
+        width: 394
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Defeat_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 302
+        width: 351
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Defeat_1
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 243
+        width: 350
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
     outline: []
     physicsShape: []
   spritePackingTag: 

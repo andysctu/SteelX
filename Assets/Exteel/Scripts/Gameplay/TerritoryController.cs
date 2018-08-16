@@ -5,7 +5,7 @@ using System.Collections;
 public class TerritoryController : MonoBehaviour {
     public int Territory_ID = 0;    
     public bool interactable = true;//base : false 
-    public GameManager.Team curTerritoryState = GameManager.Team.NONE;
+    public PunTeams.Team curTerritoryState = PunTeams.Team.none;
     private MapPanelController MapPanelController;
     private TerritoryRadarElement TerritoryRadarElement;
     private TerritoryMapElement TerritoryMapElement;
@@ -15,7 +15,7 @@ public class TerritoryController : MonoBehaviour {
     private PhotonView pv;
     private DisplayInfo DisplayInfo;
 
-    private int curBarState = (int)GameManager.Team.NONE;
+    private int curBarState = (int)PunTeams.Team.none;
     private bool switchBarColor = true; // true : need to change color due to barstate change
     private float coeff = 0.005f;
     private float trueAmount = 0;
@@ -68,7 +68,7 @@ public class TerritoryController : MonoBehaviour {
         bar.fillAmount = Mathf.Lerp(bar.fillAmount, trueAmount, Time.deltaTime * 10f);
         TerritoryMapElement.SetFillAmount(bar.fillAmount);
 
-        if (curTerritoryState == GameManager.Team.NONE && switchBarColor) {//TODO : remake this part
+        if (curTerritoryState == PunTeams.Team.none && switchBarColor) {//TODO : remake this part
             if (curBarState == 0) {
                 bar.sprite = bar_blue1;
                 bar.color = new Color32(255, 255, 255, 255);
@@ -97,7 +97,7 @@ public class TerritoryController : MonoBehaviour {
                 if(!GameManager.gameIsBegin)
                     return;
 
-                if (PlayerInZone.whichTeamDominate() != (int)GameManager.Team.NONE) {
+                if (PlayerInZone.whichTeamDominate() != (int)PunTeams.Team.none) {
                     if (curBarState == PlayerInZone.whichTeamDominate()) {
                         if (bar.fillAmount + PlayerInZone.PlayerCountDiff() * coeff >= 1) {
                             bar.fillAmount = 1;
@@ -111,7 +111,7 @@ public class TerritoryController : MonoBehaviour {
                         if (bar.fillAmount - PlayerInZone.PlayerCountDiff() * coeff <= 0) {
                             bar.fillAmount = 0;
                             curBarState = PlayerInZone.whichTeamDominate();
-                            pv.RPC("ChangeTerritory", PhotonTargets.All, (int)GameManager.Team.NONE);//change to grey zone
+                            pv.RPC("ChangeTerritory", PhotonTargets.All, (int)PunTeams.Team.none);//change to grey zone
                         } else {
                             bar.fillAmount -= PlayerInZone.PlayerCountDiff() * coeff;
                         }
@@ -129,15 +129,15 @@ public class TerritoryController : MonoBehaviour {
 
     [PunRPC]
     public void ChangeTerritory(int num) {
-        curTerritoryState = (GameManager.Team)num;
-        if (num == (int)GameManager.Team.BLUE) {
+        curTerritoryState = (PunTeams.Team)num;
+        if (num == (int)PunTeams.Team.blue) {
             baseMesh.material = base_blue;
             bar.sprite = bar_blue;
             mark.enabled = true;
             mark.sprite = mark_blue;
 
             TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE);
-        } else if (num == (int)GameManager.Team.RED) {
+        } else if (num == (int)PunTeams.Team.red) {
             baseMesh.material = base_red;
             bar.sprite = bar_red;
             mark.enabled = true;
@@ -152,7 +152,7 @@ public class TerritoryController : MonoBehaviour {
 
             TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.NONE);
         }
-        TerritoryRadarElement.SwitchSprite((GameManager.Team)num);
+        TerritoryRadarElement.SwitchSprite((PunTeams.Team)num);
 
         if (MapPanelController == null) {
             Debug.LogWarning("MapPanelControllers is null");

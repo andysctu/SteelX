@@ -14,6 +14,8 @@ public class Flag : MonoBehaviour {
 
     private enum ColliderSize { SMALL, BIG };
 
+    public bool Debug_sendBack = false;
+
     private void Awake() {
         ps.Play();
     }
@@ -28,7 +30,7 @@ public class Flag : MonoBehaviour {
             if(Time.time - remainUntouchedStartTime > MaxUntouchedDuration) {
                 //Send back the flag
                 if (PhotonNetwork.isMasterClient)
-                    gmpv.RPC("SetFlag", PhotonTargets.All, true, -1, (flag_team == PunTeams.Team.red) ? (int)GameManager.Team.RED : (int)GameManager.Team.BLUE,
+                    gmpv.RPC("SetFlag", PhotonTargets.All, true, -1, (flag_team == PunTeams.Team.red) ? (int)PunTeams.Team.red : (int)PunTeams.Team.blue,
                         (flag_team == PunTeams.Team.red) ? CTFManager.GetRedBasePosition() : CTFManager.GetBlueBasePosition() );
 
                 //also reset time
@@ -37,6 +39,11 @@ public class Flag : MonoBehaviour {
         } else {
             //reset time
             remainUntouchedStartTime = Time.time;
+        }
+
+        if (Debug_sendBack) {
+            Debug_sendBack = false;
+            remainUntouchedStartTime = 0;
         }
     }
 
@@ -54,21 +61,23 @@ public class Flag : MonoBehaviour {
         PhotonPlayer player = pv.owner;
 
         if (CTFManager == null) {
-            Debug.Log("Flag is triggered bug CTFManager is not init.");
+            Debug.Log("Flag is triggered but CTFManager is not init.");
             return;
         }
-     
+
+        PhotonMessageInfo info = new PhotonMessageInfo(PhotonNetwork.player, PhotonNetwork.ServerTimestamp, pv);
+
         if (player.GetTeam() == flag_team) {
             //Do I hold the other team's flag ?
             if (isOnBase && player == ((flag_team == PunTeams.Team.red) ? CTFManager.BlueFlagHolder : CTFManager.RedFlagHolder)) {
-                gmpv.RPC("GetScoreRequest", PhotonTargets.MasterClient);
+                gmpv.RPC("GetScoreRequest", PhotonTargets.MasterClient, info);
             } else if (!isOnBase) {
                 //Send back the flag
-                gmpv.RPC("GetFlagRequest", PhotonTargets.MasterClient, pv.viewID, (flag_team == PunTeams.Team.red) ? (int)GameManager.Team.RED : (int)GameManager.Team.BLUE);                
+                gmpv.RPC("GetFlagRequest", PhotonTargets.MasterClient, (flag_team == PunTeams.Team.red) ? (int)PunTeams.Team.red : (int)PunTeams.Team.blue, info);                
             }
         } else {
             //send get flag request to master
-            gmpv.RPC("GetFlagRequest", PhotonTargets.MasterClient, pv.viewID, (flag_team == PunTeams.Team.red) ? (int)GameManager.Team.RED : (int)GameManager.Team.BLUE);
+            gmpv.RPC("GetFlagRequest", PhotonTargets.MasterClient, (flag_team == PunTeams.Team.red) ? (int)PunTeams.Team.red : (int)PunTeams.Team.blue, info);
         }
     }
 
@@ -91,6 +100,7 @@ public class Flag : MonoBehaviour {
     public void OnBaseAction() {
         SetFlagCollidorSize(ColliderSize.BIG);
         isOnBase = true;
+        isGrounded = true;
 
         EnableEffects(true);
     }

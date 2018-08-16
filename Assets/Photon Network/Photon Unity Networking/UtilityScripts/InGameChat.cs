@@ -7,16 +7,22 @@ public class InGameChat : Photon.MonoBehaviour {
     [SerializeField] private GameObject Content;
     [SerializeField] private InputField InputFieldChat;
     [SerializeField] private GameObject LinePrefab;
+    private GameManager gm;
     private Image chat_image;
     private List<Text> lines = new List<Text>();
     private List<float> lineStartTimes = new List<float>();
     private List<int> removeIndexs = new List<int>();
 
-    public float Duration = 7, decreaseAmount = 0.03f;
+    public float Duration = 8, decreaseAmount = 0.03f;
     public int maxLine = 3, maxLengthPerLine = 45;
+        
 
     private void Awake() {
         chat_image = InputFieldChat.GetComponent<Image>();
+    }
+
+    private void Start() {
+        gm = FindObjectOfType<GameManager>();
     }
 
     public void OnEnterSend() {
@@ -36,8 +42,19 @@ public class InGameChat : Photon.MonoBehaviour {
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Return)) {
             chat_image.enabled = !chat_image.enabled;
-            if(chat_image.enabled)
-                InputFieldChat.Select();
+
+            gm.SetBlockInput(BlockInputSet.Elements.OnTyping, chat_image.enabled);
+
+            if (chat_image.enabled) {
+                InputFieldChat.Select();//this is not focused in the same frame
+                return;
+            }
+        }
+
+        //close this if not selected
+        if (chat_image.enabled && !InputFieldChat.isFocused) {
+            chat_image.enabled = false;
+            gm.SetBlockInput(BlockInputSet.Elements.OnTyping, false);            
         }
     }
 

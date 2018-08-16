@@ -68,7 +68,9 @@ TextureImporter:
     21300122: radar_blueFlag
     21300124: radar_redFlag
     21300126: blueTeam_mark
-    21300128: redTeam_panel
+    21300128: redTeam_mark
+    21300130: blueScore_background
+    21300132: redScore_background
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -1017,9 +1019,37 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 448
-        y: 977
+        y: 976
         width: 31
-        height: 47
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: redTeam_mark
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 976
+        width: 37
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: blueScore_background
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 961
+        width: 140
+        height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1027,13 +1057,13 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: redTeam_panel
+      name: redScore_background
       rect:
         serializedVersion: 2
-        x: 479
-        y: 976
-        width: 37
-        height: 48
+        x: 523
+        y: 898
+        width: 140
+        height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -372,9 +372,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ps: {fileID: 198737810783881566}
   flag_base: {fileID: 1470949449457358}
+  BoxCollider: {fileID: 65747445042976842}
   flag_team: 1
-  isGrounded: 1
-  isOnBase: 1
+  Debug_sendBack: 0
 --- !u!114 &114625854826091490
 MonoBehaviour:
   m_ObjectHideFlags: 1

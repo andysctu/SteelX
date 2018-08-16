@@ -10,12 +10,21 @@ public class UserData : MonoBehaviour {
     public static string version = "0.0";
     public static CloudRegionCode region = CloudRegionCode.jp;
 
+    public static float cameraRotationSpeed = 5;//mouse sensitivity in game    
+    public static float generalVolume = 0.5f;
+
     private void Awake() {
         PhotonNetwork.sendRate = 60;
         PhotonNetwork.sendRateOnSerialize = 30;
 
         if (FindObjectsOfType<UserData>().Length > 1)//already exist
             Destroy(transform.parent.gameObject);
+
+        SetVolume();
+    }
+
+    private void SetVolume() {
+        AudioListener.volume = generalVolume;
     }
 
     private void Start() {

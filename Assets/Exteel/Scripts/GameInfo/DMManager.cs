@@ -79,10 +79,6 @@ public class DMManager : GameManager {
         FindPlayerMainCameras(player);
     }
 
-    protected override void SetPlayerTagObject() {
-        PhotonNetwork.player.TagObject = player;
-    }
-
     private void FindPlayerMainCameras(GameObject player) {
         Camera[] playerCameras = player.GetComponentsInChildren<Camera>(true);
         List<Camera> mainCameras = new List<Camera>();

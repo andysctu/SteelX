@@ -10,6 +10,7 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected Sounds Sounds;
 	protected MechIK mechIK;
 	protected EffectController EffectController;
+    protected GameManager gm;
 
 	protected int boost_id;
 	protected int grounded_id;
@@ -47,7 +48,9 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 		if (mctrl != null)//already init ( every state need to be assigned only one time )  ; cc is null if it's not mine
 			return;
 
-		cc = animatorVars.cc;
+        gm = FindObjectOfType<GameManager>();
+
+        cc = animatorVars.cc;
 		mctrl = animatorVars.mctrl;
 		mcbt = animatorVars.mcbt;
 		Sounds = animatorVars.Sounds;

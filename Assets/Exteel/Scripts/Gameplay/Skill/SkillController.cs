@@ -288,9 +288,12 @@ public class SkillController : MonoBehaviour {
     }
 
     private bool CheckIfSkillUsable(int skill_num) {
-        bool requiredGrounded = (skills[skill_num].GetPlayerAniamtion() != null);
+        if(skills[skill_num] == null)
+            return false;
 
-        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!requiredGrounded || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
+        bool hasPlayerAnimation = (skills[skill_num].GetPlayerAniamtion() != null);
+
+        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
     }
 
     private bool CheckIfEnergyEnough(int energyCost) {
