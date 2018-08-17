@@ -36,7 +36,7 @@ public class CTFManager : GameManager {
         CTFMsgDisplayer = CTFPanelManager.GetComponentInChildren<CTFMsgDisplayer>();
     }
 
-    protected override void OnEvent(byte eventcode, object content, int senderid) {
+    protected override void OnPhotonEvent(byte eventcode, object content, int senderid) {
         switch (eventcode) {
             case GameEventCode.SYNC:
             SyncEvent(content, senderid);
@@ -166,33 +166,29 @@ public class CTFManager : GameManager {
     }
 
     protected override bool CheckIfGameSync() {
-        if (flag_is_sync && game_environment_is_built) {//sync condition
-            return true;
-        } else {
-            if (!game_environment_is_built) {
-                if (FindObjectOfType<TerritoryController>() != null) {
-                    game_environment_is_built = true;
+        if (!flag_is_sync) {
+            Flag[] flags = FindObjectsOfType<Flag>();
+
+            if (flags == null || flags.Length == 0) return false;
+
+            //Assign the flags
+            foreach (Flag flag in flags) {
+                if (flag.flag_team == PunTeams.Team.blue) {
+                    BlueFlag = flag;
+                } else {
+                    RedFlag = flag;
                 }
             }
-
-            if (!flag_is_sync) {
-                Flag[] flags = FindObjectsOfType<Flag>();
-
-                if (flags == null || flags.Length == 0) return false;
-
-                //Assign the flags
-                foreach (Flag flag in flags) {
-                    if (flag.flag_team == PunTeams.Team.blue) {
-                        BlueFlag = flag;
-                    } else {
-                        RedFlag = flag;
-                    }
-                }
-
-                photonView.RPC("SyncFlagRequest", PhotonTargets.MasterClient);
-            }
-            return false;
+            photonView.RPC("SyncFlagRequest", PhotonTargets.MasterClient);
         }
+
+        if (!game_environment_is_built) {
+            if (FindObjectOfType<TerritoryController>() != null) {
+                game_environment_is_built = true;
+            }
+        }
+
+        return base.CheckIfGameSync() && flag_is_sync && game_environment_is_built;
     }
 
     protected override void MasterInitGame() {

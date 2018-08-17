@@ -6,6 +6,7 @@ public class GameLobbyManager : IScene {
     [SerializeField] private GameObject LobbyPlayer;
     [SerializeField] private GameObject Team1, Team2, MenuBar, MapInfo;
     [SerializeField] private Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;
+    [SerializeField] private Toggle JoinMidGameToggle;
     [SerializeField] private InRoomChat InRoomChat;
     [SerializeField] private Button startButton;
     [SerializeField] private PhotonView photonView;
@@ -23,6 +24,10 @@ public class GameLobbyManager : IScene {
         if (!PhotonNetwork.connected) {
             SceneStateController.LoadScene(LobbyManager._sceneName);
             return;
+        }
+
+        if (PhotonNetwork.isMasterClient) {//The room is open after game
+            PhotonNetwork.room.IsOpen = true;
         }
 
         //check if previous players are not destroyed
@@ -45,7 +50,7 @@ public class GameLobbyManager : IScene {
         PhotonNetwork.automaticallySyncScene = true;
 
         bool isMasterClient = PhotonNetwork.isMasterClient;
-        startButton.interactable = Map.interactable = GameMode.interactable = MaxKills.interactable = MaxPlayers.interactable = MaxTime.interactable = isMasterClient;
+        startButton.interactable = Map.interactable = GameMode.interactable = MaxKills.interactable = MaxPlayers.interactable = MaxTime.interactable = JoinMidGameToggle.interactable = isMasterClient;
         //Reset options
         MaxTime.value = MaxPlayers.value = MaxKills.value = GameMode.value = Map.value = 0;
 
@@ -96,10 +101,10 @@ public class GameLobbyManager : IScene {
         }
     }
 
-    public void StartGame() {
+    public void StartGame() {//called by master
         if (callStartgame) return;
 
-        PhotonNetwork.room.IsOpen = false;//join mid game
+        PhotonNetwork.room.IsOpen = JoinMidGameToggle.isOn;
 
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("GameInit", false);
@@ -151,8 +156,10 @@ public class GameLobbyManager : IScene {
             MaxKills.interactable = true;
             MaxPlayers.interactable = true;
             MaxTime.interactable = true;
+            JoinMidGameToggle.interactable = true;
         }
     }
+
     public void LoadRoomInfo() {
         Map.captionText.text = PhotonNetwork.room.CustomProperties["Map"].ToString();
         MaxTime.captionText.text = PhotonNetwork.room.CustomProperties["MaxTime"].ToString();
@@ -199,6 +206,11 @@ public class GameLobbyManager : IScene {
         PhotonNetwork.room.SetCustomProperties(h);
     }
 
+    public void JoinMidGame() {
+        bool b = JoinMidGameToggle.isOn;
+        photonView.RPC("ChangeJoinMidGame", PhotonTargets.All, b);
+    }
+
     // RPCs
     [PunRPC]
     public void ChangeMap(string map) {
@@ -223,6 +235,11 @@ public class GameLobbyManager : IScene {
     [PunRPC]
     public void ChangeMaxPlayers(string maxPlayers) {
         MaxPlayers.captionText.text = maxPlayers;
+    }
+
+    [PunRPC]
+    public void ChangeJoinMidGame(bool b) {
+        JoinMidGameToggle.isOn = b;
     }
 
     [PunRPC]

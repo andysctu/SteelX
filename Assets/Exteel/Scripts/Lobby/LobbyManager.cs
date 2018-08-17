@@ -109,7 +109,13 @@ public class LobbyManager : IScene {
             rt.localPosition = new Vector3(0, 0, 0);
             rt.localScale = new Vector3(1, 1, 1);
             int index = i;
-            roomPanel.GetComponent<Button>().onClick.AddListener(() => { selectedRoom = roomsInfo[index].Name; });
+
+            if (roomsInfo[i].IsOpen) {
+                roomPanel.GetComponent<Button>().onClick.AddListener(() => { selectedRoom = roomsInfo[index].Name; });
+            } else {
+                roomPanel.GetComponent<Button>().interactable = false;
+            }
+
             rooms[i] = roomPanel;
         }
     }

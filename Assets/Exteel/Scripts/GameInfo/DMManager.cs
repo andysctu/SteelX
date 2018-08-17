@@ -109,16 +109,13 @@ public class DMManager : GameManager {
     }
 
     protected override bool CheckIfGameSync() {
-        if (game_environment_is_built) {//sync condition
-            return true;
-        } else {
-            if (!game_environment_is_built) {
-                if (FindObjectOfType<TerritoryController>() != null) {
-                    game_environment_is_built = true;
-                }
+        if (!game_environment_is_built) {//sync condition
+            if (FindObjectOfType<TerritoryController>() != null) {
+                game_environment_is_built = true;
             }
-            return false;
         }
+
+        return base.CheckIfGameSync() && game_environment_is_built;        
     }
 
     protected override void MasterInitGame() {

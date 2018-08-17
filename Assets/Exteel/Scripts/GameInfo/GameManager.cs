@@ -73,10 +73,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected virtual void RegisterOnPhotonEvent() {
-        PhotonNetwork.OnEventCall += this.OnEvent;
+        PhotonNetwork.OnEventCall += this.OnPhotonEvent;
     }
 
-    protected virtual void OnEvent(byte eventcode, object content, int senderid) {
+    protected virtual void OnPhotonEvent(byte eventcode, object content, int senderid) {
     }
 
     protected virtual void BuildGameScene() {
@@ -112,6 +112,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
         InstantiatePlayer();
 
+        RegisterTimerEvents();
+
         StartCoroutine(LateStart());
     }
 
@@ -128,6 +130,22 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     protected abstract void InitRespawnPoints();
 
+    public virtual void RegisterTimerEvent(int time_in_sec, System.Action action) {
+        Timer.RegisterTimeEvent(time_in_sec, action);
+    }
+
+    protected virtual void RegisterTimerEvents() {        
+        RegisterCloseRoomEvent();        
+    }
+
+    protected void RegisterCloseRoomEvent() {
+        Timer.RegisterTimeEvent(GameInfo.MaxTime * 60 / 2, () => {
+            if (PhotonNetwork.isMasterClient) {
+                PhotonNetwork.room.IsOpen = false;
+            }
+        });
+    }
+
     private IEnumerator LateStart() {
         //Send sync request
         if (!IsMasterInitGame && sendTimes < 15) {//sometime master connects very slow
@@ -141,7 +159,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
                 InGameChat.AddLine("Failed to sync game properties. Is master disconnected ? ", Color.red);
                 Debug.Log("master not connected");
 
-                //Exit the game
+                //Game not init => exit the game
                 ExitGame();
             } else {
                 InGameChat.AddLine("Game is sync.", Color.green);
@@ -165,10 +183,13 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected virtual void SyncPanel() {
     }
 
-    public abstract void OnPlayerDead(GameObject player, int shooter_id, string weapon);
+    protected virtual bool CheckIfGameSync() {
+        if (!is_Time_init) {
+            if (!OnSyncTimeRequest) StartCoroutine(SyncTimeRequest(1f));
+        }
 
-    protected abstract bool CheckIfGameSync();
-
+        return is_Time_init;
+    }
 
     public abstract void RegisterPlayer(int player_viewID);
 
@@ -213,10 +234,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         if (Offline) return;
 
         // Update time
-        if (!is_Time_init) {
-            //Send sync time request
-            if (!OnSyncTimeRequest) StartCoroutine(SyncTimeRequest(1f));
-        } else if (gameIsBegin) {
+        if (is_Time_init && gameIsBegin) {
             Timer.UpdateTime();
         }
 
@@ -255,6 +273,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected abstract void ShowScorePanel(bool b);
+
+    public abstract void OnPlayerDead(GameObject player, int shooter_id, string weapon);
 
     private void FixedUpdate() {
         if (!gameIsBegin) {

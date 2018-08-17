@@ -1,11 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class Timer {
     private Text time_Text;
     private int timerDuration, MaxTimeInSeconds = 300;
     private bool OnSyncTimeRequest = false;
     private int storedStartTime = 0, storedDuration = 0, gameBeginTimeDiff = 999, currentTimer = 999;
+
+    private List<int> EventTimes = new List<int>();//sec
+    private List<System.Action> EventActions = new List<System.Action>();
+    private List<int> EventIndexToExecute = new List<int>();
 
     public void Init() {
         GameObject TimerPanel = GameObject.Find("PanelCanvas/TimerPanel");
@@ -24,6 +29,32 @@ public class Timer {
         int seconds = currentTimer % 60;
         int minutes = currentTimer / 60;
         time_Text.text = UIExtensionMethods.FillStringWithSpaces(minutes.ToString("D2") + ":" + seconds.ToString("D2"));
+
+        ProcessTimeEventCheck();
+    }
+
+    private void ProcessTimeEventCheck() {
+        if(EventTimes.Count > 0) {
+            for(int i = 0; i < EventTimes.Count; i++) {
+                if(currentTimer < EventTimes[i]) {
+                    int index = i;
+                    EventIndexToExecute.Add(index);
+                }
+            }
+
+            if(EventIndexToExecute.Count > 0) {                
+                for(int i = 0; i < EventIndexToExecute.Count; i++) {
+                    Debug.Log("execute event : "+i);
+                    //Execute event
+                    EventActions[i]();
+
+                    //Remove the event
+                    EventTimes.RemoveAt(i);
+                    EventActions.RemoveAt(i);
+                }           
+                EventIndexToExecute.Clear();
+            }
+        }
     }
 
     public bool SyncTime() {
@@ -63,6 +94,11 @@ public class Timer {
 
     public void SetGameBeginTimeDiff(int gameBeginTimeDiff) {
         this.gameBeginTimeDiff = gameBeginTimeDiff;
+    }
+
+    public void RegisterTimeEvent(int time_in_sec, System.Action action) {
+        EventTimes.Insert(EventTimes.Count, time_in_sec);
+        EventActions.Insert(EventActions.Count, action);
     }
 
     public bool CheckIfGameEnd() {
