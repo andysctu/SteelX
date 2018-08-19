@@ -8,7 +8,7 @@ public class HeatBar : MonoBehaviour {
     [SerializeField] private MechCombat mcbt;
     [SerializeField] private PhotonView pv;//mech combat's pv
 
-    private Weapon[] weaponScripts;
+    private WeaponData[] weaponScripts;
     private float[] curValue = new float[4];
     private const float CooldownCoeffWhenNotOverHeat = 0.2f;
     private int cooldownRate, weaponOffset;

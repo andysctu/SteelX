@@ -63,6 +63,13 @@ public class EscPanel : MonoBehaviour {
 
         ms_text.text = (UserData.cameraRotationSpeed / 10f).ToString();
         MS_scrollbar.value = (UserData.cameraRotationSpeed / 10f);
+
+        for(int i = 0; i < FPS_dropdown.options.Count; i++) {
+            if(int.Parse(FPS_dropdown.options[i].text) == UserData.preferredFrameRate) {
+                FPS_dropdown.value = i;
+                break;
+            }
+        }
     }
 
     private void GetQualityLevel() {

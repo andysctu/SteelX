@@ -10,14 +10,14 @@ public class BuildMech : Photon.MonoBehaviour {
     [SerializeField] private MechController MechController;
     [SerializeField] private Sounds Sounds;
     [SerializeField] private MechIK MechIK;
-    [SerializeField] private WeaponManager WeaponManager;
+    [SerializeField] private WeaponDataManager WeaponManager;
     [SerializeField] private SkillManager SkillManager;
     [SerializeField] private MechPartManager MechPartManager;
     [SerializeField] private MovementClips defaultMovementClips, TwoHandedMovementClips;
     [SerializeField] private SkillController SkillController;
 
     [HideInInspector] public AudioClip[] ShotSounds, ReloadSounds;
-    [HideInInspector] public Weapon[] weaponScripts;
+    [HideInInspector] public WeaponData[] weaponScripts;
     [HideInInspector] public string[] curWeaponNames = new string[4];
     [HideInInspector] public GameObject[] weapons;
     [HideInInspector] public GameObject[] bulletPrefabs;
@@ -184,8 +184,6 @@ public class BuildMech : Photon.MonoBehaviour {
         // Replace weapons
         buildWeapons(new string[4] { parts[5], parts[6], parts[7], parts[8] });
 
-        LoadMechProperties();
-
         if (!buildLocally) {
             UpdateMechCombatVars();//this will turn trail on ( enable all renderer)
             for (int i = 0; i < 4; i++)//turn off trail
@@ -308,7 +306,7 @@ public class BuildMech : Photon.MonoBehaviour {
     private void buildWeapons(string[] weaponNames) {
         if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
         weapons = new GameObject[4];
-        weaponScripts = new Weapon[4];
+        weaponScripts = new WeaponData[4];
         bulletPrefabs = new GameObject[4];
         ShotSounds = new AudioClip[4];
         ReloadSounds = new AudioClip[4];
@@ -418,7 +416,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     public void EquipWeapon(string weapon, int weapPos) {
-        Weapon newWeapon = WeaponManager.FindData(weapon);
+        WeaponData newWeapon = WeaponManager.FindData(weapon);
         if (newWeapon == null) {
             Debug.LogError("Can't find weapon data : " + weapon);
             return;
@@ -514,7 +512,6 @@ public class BuildMech : Photon.MonoBehaviour {
         if (buildLocally) {
             MechIK.UpdateMechIK(weaponOffset);
         } else {
-            //LoadMechProperties();
             UpdateMechCombatVars();
         }
         ShutDownTrail(weapons[weapPos]);
@@ -624,11 +621,6 @@ public class BuildMech : Photon.MonoBehaviour {
 
         MechCombat.EnableAllRenderers(true);
         MechCombat.EnableAllColliders(true);
-    }
-
-    private void LoadMechProperties() {//TODO : improve this
-        if (MechCombat != null) MechCombat.LoadMechProperties();
-        if (SkillController != null) SkillController.LoadMechProperties();
     }
 
     private void CheckIfBuildLocally() {

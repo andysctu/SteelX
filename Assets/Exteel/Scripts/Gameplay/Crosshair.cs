@@ -16,7 +16,7 @@ public class Crosshair : MonoBehaviour {
     private List<GameObject> TargetsToRemove = new List<GameObject>();
     public List<GameObject> Targets = new List<GameObject>();//control by checkisrendered.cs
 
-    private Weapon[] weaponScripts;
+    private WeaponData[] weaponScripts;
     private Transform targetL, targetR;
     private Camera cam;
     private Coroutine coroutine = null;

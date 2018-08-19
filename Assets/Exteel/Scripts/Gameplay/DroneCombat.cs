@@ -16,14 +16,15 @@ public class DroneCombat : Combat {
     
     public Transform Shield;
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
         if (SkillController != null) SkillController.OnSkill += OnSkill;
     }
 
-    private void Start() {
+    protected override void Start() {
+        base.Start();
         CurrentHP = MAX_HP;
         EffectController = GetComponent<EffectController>();
-        findGameManager();
         EffectController.RespawnEffect();
         CharacterController = GetComponent<CharacterController>();
         gm.RegisterPlayer(photonView.viewID);

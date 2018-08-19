@@ -16907,6 +16907,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4b58b60ddf4c435e8c179e69bfc4dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  energyProperties:
+    jumpENDrain: 0
+    dashENDrain: 0
+    energyOutput: 0
+    minENRequired: 0
+  isDead: 0
+  forceDead: 0
   Hands:
   - {fileID: 542338302}
   - {fileID: 1290136267}

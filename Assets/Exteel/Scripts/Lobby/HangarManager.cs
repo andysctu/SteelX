@@ -7,7 +7,7 @@ public class HangarManager : IScene {
     [SerializeField] private GameObject Mech;
     [SerializeField] private Button displaybutton1, displaybutton2;
     [SerializeField] private Image[] skill_slots;
-    [SerializeField] private WeaponManager WeaponManager;
+    [SerializeField] private WeaponDataManager WeaponManager;
     [SerializeField] private SkillManager SkillManager;
     [SerializeField] private MechPartManager MechPartManager;
     [SerializeField] private OperatorStatsUI OperatorStatsUI;
@@ -113,7 +113,7 @@ public class HangarManager : IScene {
     }
 
     private void LoadWeapons() {
-        foreach (Weapon weapon in WeaponManager.GetAllWeaponss()) {
+        foreach (WeaponData weapon in WeaponManager.GetAllWeaponss()) {
             string weaponName = weapon.GetWeaponName();
             GameObject uiPart = Instantiate(UIWeap, new Vector3(0, 0, transform.position.z), Quaternion.identity) as GameObject;
             uiPart.transform.SetParent(contents[5]);

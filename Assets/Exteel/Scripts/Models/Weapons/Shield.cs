@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/Shield", order = 3)]
-public class Shield : Weapon {
+public class Shield : WeaponData {
 
     [Range(0, 1)]
     public float defend_melee_efficiency;//final dmg = dmg * efficiency

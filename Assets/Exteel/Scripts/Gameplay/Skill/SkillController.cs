@@ -43,24 +43,38 @@ public class SkillController : MonoBehaviour {
 
     private void Awake() {
         InitSkillAnimatorControllers();
-        RegisterOnSkill();
+        RegisterOnSkill();//TODO : remake this
+        RegisterOnMechBuilt();
         RegisterOnWeaponBuilt();
         RegisterOnWeaponSwitched();
         InitSkillHUD();
     }
 
+    private void RegisterOnMechBuilt() {
+        if (bm == null) return;
+
+        bm.OnMechBuilt += OnMechBuilt;
+    }
+
+    private void OnMechBuilt() {
+        if(bm == null)return;
+
+        LoadMechProperties();
+    }
+
     private void RegisterOnWeaponSwitched() {
-        if (mechcombat != null) {
-            mechcombat.OnWeaponSwitched += OnWeaponSwitched;
-        }
+        if(mechcombat == null)return;
+
+        mechcombat.OnWeaponSwitched += OnWeaponSwitched;        
     }
 
     private void RegisterOnWeaponBuilt() {
-        if (bm != null) {
-            bm.OnMechBuilt += OnWeaponBuilt;
-            bm.OnMechBuilt += LoadPlayerSkillAnimations;
-            bm.OnMechBuilt += LoadSkillCamAnimations;
-        }
+        if (bm == null) return;
+
+        bm.OnMechBuilt += OnWeaponBuilt;
+        bm.OnMechBuilt += LoadPlayerSkillAnimations;
+        bm.OnMechBuilt += LoadSkillCamAnimations;
+        
     }
 
     private void OnWeaponSwitched() {
@@ -293,7 +307,7 @@ public class SkillController : MonoBehaviour {
 
         bool hasPlayerAnimation = (skills[skill_num].GetPlayerAniamtion() != null);
 
-        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
+        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.isSwitchingWeapon && (!hasPlayerAnimation || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
     }
 
     private bool CheckIfEnergyEnough(int energyCost) {

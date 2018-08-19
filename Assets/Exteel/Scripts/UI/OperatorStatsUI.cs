@@ -5,12 +5,12 @@ public class OperatorStatsUI : MonoBehaviour {
     [SerializeField] private Transform MechInfoStats;
     [SerializeField] private BuildMech Mech;
     [SerializeField] private MechPartManager MechPartManager;
-    [SerializeField] private WeaponManager WeaponManager;
+    [SerializeField] private WeaponDataManager WeaponManager;
     [SerializeField] private Text playerName;
 
     private MechProperty curMechProperty;
     private Part[] MechParts = new Part[5];
-    private Weapon[] MechWeapons = new Weapon[4];
+    private WeaponData[] MechWeapons = new WeaponData[4];
     private Text[] stat_texts = null, stat_labels = null, stat_differences = null;
     private Color32 BLUE = new Color32(39, 67, 253, 255), RED = new Color32(248, 84, 84, 255);
     private string[] STAT_LABELS = new string[18] {
@@ -53,7 +53,7 @@ public class OperatorStatsUI : MonoBehaviour {
         Part[] tmpParts = (Part[])MechParts.Clone();
 
         if (isWeapon) {
-            Weapon newWeap = WeaponManager.FindData(part);
+            WeaponData newWeap = WeaponManager.FindData(part);
         } else {
             Part newPart = MechPartManager.FindData(part);
 
@@ -127,7 +127,7 @@ public class OperatorStatsUI : MonoBehaviour {
         return partsWeight;
     }
 
-    private int CalculateWeaponWeight(Weapon[] weapons) {
+    private int CalculateWeaponWeight(WeaponData[] weapons) {
         int weight_1 = (weapons[Mech.GetWeaponOffset()] == null) ? 0 : weapons[Mech.GetWeaponOffset()].weight,
             weight_2 = (weapons[Mech.GetWeaponOffset() + 1] == null) ? 0 : weapons[Mech.GetWeaponOffset() + 1].weight;
         return weight_1 + weight_2;

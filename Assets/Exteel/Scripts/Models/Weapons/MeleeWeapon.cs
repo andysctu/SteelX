@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
 
-public abstract class MeleeWeapon : Weapon {
+public abstract class MeleeWeapon : WeaponData {
     public ParticleSystem hitEffect;
 }
