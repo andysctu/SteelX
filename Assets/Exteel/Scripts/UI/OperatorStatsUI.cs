@@ -42,7 +42,7 @@ public class OperatorStatsUI : MonoBehaviour {
         curMechProperty = Mech.MechProperty;
         MechParts = Mech.curMechParts;
 
-        int[] MechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculatePartsWeight(MechParts), CalculateWeaponWeight(Mech.weaponScripts));
+        int[] MechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculatePartsWeight(MechParts), CalculateWeaponWeight(Mech.WeaponDatas));
         for (int i = 0; i < MechPropertiesArray.Length; i++) {
             stat_texts[i].text = MechPropertiesArray[i].ToString();
         }
@@ -53,9 +53,9 @@ public class OperatorStatsUI : MonoBehaviour {
         Part[] tmpParts = (Part[])MechParts.Clone();
 
         if (isWeapon) {
-            WeaponData newWeap = WeaponManager.FindData(part);
+            //WeaponData newWeap = WeaponManager.FindData(part);
         } else {
-            Part newPart = MechPartManager.FindData(part);
+            //Part newPart = MechPartManager.FindData(part);
 
             System.Type[] partTypes = new System.Type[5] { typeof(Head), typeof(Core), typeof(Arm), typeof(Leg), typeof(Booster) };
 
@@ -79,8 +79,8 @@ public class OperatorStatsUI : MonoBehaviour {
             }
 
             //show diff
-            int[] curMechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculatePartsWeight(MechParts), CalculateWeaponWeight(Mech.weaponScripts));
-            int[] newMechPropertiesArray = TransformMechPropertiesToArray(newMechProperty, CalculatePartsWeight(tmpParts), CalculateWeaponWeight(Mech.weaponScripts));
+            int[] curMechPropertiesArray = TransformMechPropertiesToArray(curMechProperty, CalculatePartsWeight(MechParts), CalculateWeaponWeight(Mech.WeaponDatas));
+            int[] newMechPropertiesArray = TransformMechPropertiesToArray(newMechProperty, CalculatePartsWeight(tmpParts), CalculateWeaponWeight(Mech.WeaponDatas));
 
             for (int j = 0; j < 18; j++) {
                 if (j == 4 || j == 5 || j == 9 || j == 10 || j == 11) {

@@ -1,29 +1,30 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/Spear", order = 0)]
 public class Spear : MeleeWeapon {
-    [SerializeField] private AnimationClip Atk;
-    public AudioClip smash_sound = new AudioClip();
-    public AudioClip smash_hit_sound = new AudioClip();
+    private AudioClip smashSound, smashOnHitSound;
 
-    Spear() {
-        weaponType = "Spear";
-        slowDown = true;
-        twoHanded = false;
+    public override void AttackTarget(GameObject target, bool isShield) {
+        throw new System.NotImplementedException();
     }
 
-    public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        AnimatorOverrideController animatorOverrideController = (AnimatorOverrideController)weaponAniamtor.runtimeAnimatorController;
+    public override void HandleAnimation() {
+        throw new System.NotImplementedException();
+    }
 
-        AnimationClipOverrides clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
-        animatorOverrideController.GetOverrides(clipOverrides);
-
-        clipOverrides["Atk"] = Atk;
-        if (Atk == null) {
-            Debug.Log("You need to assign spear animation clip : Atk . Ignore this if use empty animation");
+    public override void HandleCombat() {
+        if (!Input.GetKeyDown(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || IsOverHeat()) {
+            return;
         }
 
-        animatorOverrideController.ApplyOverrides(clipOverrides);
-    }
-}
 
+
+
+    }
+
+    protected override void LoadSoundClips() {
+        smashSound = ((SpearData)data).smash_sound;
+        smashOnHitSound = ((SpearData)data).smash_hit_sound;
+    }
+
+
+}

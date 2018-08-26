@@ -24129,13 +24129,6 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 0
   m_Events:
-  - time: 0
-    functionName: PlaySlashR
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 4
-    messageOptions: 0
   - time: 0.06666667
     functionName: CallMoving
     data: 
@@ -24143,15 +24136,8 @@ AnimationClip:
     floatParameter: 8
     intParameter: 0
     messageOptions: 0
-  - time: 0.13333334
+  - time: 0.16666667
     functionName: CallShowTrailR
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 1
-    messageOptions: 0
-  - time: 0.13333334
-    functionName: CallShowTrailL
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -24164,7 +24150,14 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.6
+  - time: 0.56666666
+    functionName: CallShowTrailL
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 1
+    messageOptions: 0
+  - time: 0.7
     functionName: CallShowTrailL
     data: 
     objectReferenceParameter: {fileID: 0}

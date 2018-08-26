@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 
 public class AnimatorVars : MonoBehaviour {
-    private AnimationEventController AnimationEventController;
-
     [HideInInspector] public CharacterController cc = null;
     [HideInInspector] public MechController mctrl = null;
     [HideInInspector] public MechCombat mcbt = null;
@@ -20,15 +18,7 @@ public class AnimatorVars : MonoBehaviour {
     [HideInInspector] public int blockL_id;
     [HideInInspector] public int blockR_id;
 
-    [HideInInspector] public int slashL_id;
-    [HideInInspector] public int slashL2_id;
-    [HideInInspector] public int slashL3_id;
-    [HideInInspector] public int slashL4_id;
-
-    [HideInInspector] public int slashR_id;
-    [HideInInspector] public int slashR2_id;
-    [HideInInspector] public int slashR3_id;
-    [HideInInspector] public int slashR4_id;
+    [HideInInspector] public int slash_id, finalSlash_id;
 
     [HideInInspector] public int BCNPose_id;
     [HideInInspector] public int OnBCN_id;
@@ -51,7 +41,6 @@ public class AnimatorVars : MonoBehaviour {
         Sounds = GetComponent<Sounds>();
         mechIK = GetComponent<MechIK>();
         EffectController = transform.root.GetComponentInChildren<EffectController>();
-        AnimationEventController = GetComponent<AnimationEventController>();
     }
 
     private void HashAnimatorVars() {
@@ -68,15 +57,8 @@ public class AnimatorVars : MonoBehaviour {
         blockL_id = Animator.StringToHash("BlockL");
         blockR_id = Animator.StringToHash("BlockR");
 
-        slashL_id = Animator.StringToHash("SlashL");
-        slashL2_id = Animator.StringToHash("SlashL2");
-        slashL3_id = Animator.StringToHash("SlashL3");
-        slashL4_id = Animator.StringToHash("SlashL4");
-
-        slashR_id = Animator.StringToHash("SlashR");
-        slashR2_id = Animator.StringToHash("SlashR2");
-        slashR3_id = Animator.StringToHash("SlashR3");
-        slashR4_id = Animator.StringToHash("SlashR4");
+        slash_id = Animator.StringToHash("Slash");
+        finalSlash_id = Animator.StringToHash("finalSlash");
 
         BCNPose_id = Animator.StringToHash("BCNPose");
         OnBCN_id = Animator.StringToHash("OnBCN");

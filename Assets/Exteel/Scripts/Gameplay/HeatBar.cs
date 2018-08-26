@@ -10,6 +10,7 @@ public class HeatBar : MonoBehaviour {
 
     private WeaponData[] weaponScripts;
     private float[] curValue = new float[4];
+    private bool[] isOverHeat = new bool[4];
     private const float CooldownCoeffWhenNotOverHeat = 0.2f;
     private int cooldownRate, weaponOffset;
     private int MaxHeat;
@@ -35,7 +36,7 @@ public class HeatBar : MonoBehaviour {
     }
 
     private void InitVars() {//called when finished buildmech
-        weaponScripts = bm.weaponScripts;
+        weaponScripts = bm.WeaponDatas;
         cooldownRate = bm.MechProperty.CooldownRate;
         MaxHeat = bm.MechProperty.MaxHeat;
     }
@@ -46,17 +47,17 @@ public class HeatBar : MonoBehaviour {
 
     private void FixedUpdate() {
         for (int i = 0; i < 4; i++) {
-            curValue[i] -= ((mcbt.is_overheat[i]) ? cooldownRate : cooldownRate * CooldownCoeffWhenNotOverHeat) * Time.fixedDeltaTime;// cooldown faster when overheat
+            curValue[i] -= ((isOverHeat[i]) ? cooldownRate : cooldownRate * CooldownCoeffWhenNotOverHeat) * Time.fixedDeltaTime;// cooldown faster when overheat
 
             if (curValue[i] <= 0) {
-                if (mcbt.is_overheat[i]) { // if previous is overheated => change color
+                if (isOverHeat[i]) { // if previous is overheated => change color
                     if (i == weaponOffset) {
                         barL_fill.color = YELLOW;
                     } else if (i == weaponOffset + 1) {
                         barR_fill.color = YELLOW;
                     }
                 }
-                mcbt.is_overheat[i] = false;
+                isOverHeat[i] = false;
                 curValue[i] = 0;
             }
         }
@@ -68,21 +69,21 @@ public class HeatBar : MonoBehaviour {
     private void UpdateHeatBar() {
         weaponOffset = mcbt.GetCurrentWeaponOffset();
 
-        if (bm.weaponScripts[weaponOffset].twoHanded) {
+        if (bm.WeaponDatas[weaponOffset].twoHanded) {
             EnableHeatBar(weaponOffset, true);
             EnableHeatBar(weaponOffset + 1, false);
         } else {
-            EnableHeatBar(weaponOffset, bm.weaponScripts[weaponOffset] != null);
-            EnableHeatBar(weaponOffset + 1, bm.weaponScripts[weaponOffset + 1] != null);
+            EnableHeatBar(weaponOffset, bm.WeaponDatas[weaponOffset] != null);
+            EnableHeatBar(weaponOffset + 1, bm.WeaponDatas[weaponOffset + 1] != null);
         }
 
-        if (mcbt.is_overheat[weaponOffset]) {//update color
+        if (isOverHeat[weaponOffset]) {//update color
             barL_fill.color = RED;
         } else {
             barL_fill.color = YELLOW;
         }
 
-        if (mcbt.is_overheat[weaponOffset + 1]) {
+        if (isOverHeat[weaponOffset + 1]) {
             barR_fill.color = RED;
         } else {
             barR_fill.color = YELLOW;
@@ -94,26 +95,22 @@ public class HeatBar : MonoBehaviour {
         barR_fill.fillAmount = 0;
 
         for (int i = 0; i < 4; i++) {
-            mcbt.is_overheat[i] = false;
+            isOverHeat[i] = false;
             curValue[i] = 0;
         }
     }
 
-    public void IncreaseHeatBarL(float value) { //value : [0,100]
-        curValue[weaponOffset] += value;
-        if (curValue[weaponOffset] >= MaxHeat) {
-            curValue[weaponOffset] = MaxHeat;
-            mcbt.is_overheat[weaponOffset] = true;
-            barL_fill.color = RED;
-        }
-    }
-
-    public void IncreaseHeatBarR(float value) {
-        curValue[weaponOffset + 1] += value;
-        if (curValue[weaponOffset + 1] >= MaxHeat) {
-            curValue[weaponOffset + 1] = MaxHeat;
-            mcbt.is_overheat[weaponOffset + 1] = true;
-            barR_fill.color = RED;
+    //TODO : check this
+    public void IncreaseHeatBar(int pos, float value) { //value : [0,100]
+        curValue[pos] += value;
+        if (curValue[pos] >= MaxHeat) {
+            curValue[pos] = MaxHeat;
+            isOverHeat[pos] = true;
+            if(pos % 2 == 0) {
+                barL_fill.color = RED;
+            } else {
+                barR_fill.color = RED;
+            }            
         }
     }
 
@@ -139,5 +136,9 @@ public class HeatBar : MonoBehaviour {
 
     private void DrawBarR() {
         barR_fill.fillAmount = curValue[weaponOffset + 1] / MaxHeat;
+    }
+
+    public bool IsOverHeat(int pos) {
+        return isOverHeat[pos];
     }
 }

@@ -2,10 +2,10 @@
 using UnityEngine.UI;
 
 public class TerritoryMapElement : MapElement {
-    [SerializeField] private Image Base, Bar, Mark;    
-    [SerializeField] private Sprite RedBase, BlueBase, GreyBase;
-    [SerializeField] private Sprite bar_blue, bar_red;
-    [SerializeField] private Sprite mark_blue, mark_red;
+    [SerializeField] private Image Base = null, Bar = null, Mark = null;    
+    [SerializeField] private Sprite RedBase = null, BlueBase = null, GreyBase = null;
+    [SerializeField] private Sprite bar_blue = null, bar_red = null;
+    [SerializeField] private Sprite mark_blue = null, mark_red = null;
     private int territory_ID;
     private Text NumText;
     public enum State { BLUE, BLUE_LIGHT, RED, RED_LIGHT, NONE};

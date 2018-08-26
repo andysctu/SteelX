@@ -21,11 +21,11 @@ public class TerritoryController : MonoBehaviour {
     private float trueAmount = 0;
 
     //TODO : consider remake this part
-    [SerializeField] private Image bar, mark;
-    [SerializeField] private Sprite bar_blue, bar_blue1, bar_red, bar_red1; //bar_blue1 is the light color one
-    [SerializeField] private Sprite mark_blue, mark_red;
-    [SerializeField] private Material base_none, base_blue, base_red;
-    [SerializeField] private GameObject Infos;
+    [SerializeField] private Image bar, mark = null;
+    [SerializeField] private Sprite bar_blue = null, bar_blue1 = null, bar_red = null, bar_red1 = null; //bar_blue1 is the light color one
+    [SerializeField] private Sprite mark_blue = null, mark_red = null;
+    [SerializeField] private Material base_none = null, base_blue = null, base_red = null;
+    [SerializeField] private GameObject Infos = null;
 
     private void Awake() {
         InitComponents();

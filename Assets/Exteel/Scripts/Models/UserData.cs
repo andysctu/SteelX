@@ -21,13 +21,14 @@ public class UserData : MonoBehaviour {
             Destroy(transform.parent.gameObject);
 
         SetVolume();
+        InitMechs();
     }
 
     private void SetVolume() {
         AudioListener.volume = generalVolume;
     }
 
-    private void Start() {
+    private void InitMechs() {
         myData.Mech0 = new Mech();
         myData.Mech = new Mech[4];
         data = new Dictionary<int, Data>();

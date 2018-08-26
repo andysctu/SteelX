@@ -126,7 +126,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void initComponents() {
-        Transform currentMech = transform.Find("CurrentMech");
+        //Transform currentMech = transform.Find("CurrentMech");
         CharacterController = GetComponent<CharacterController>();
         SkillController = GetComponent<SkillController>();
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();

@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 263ed7253479dd94a92e8dd6bbafde33, type: 3}
+  m_Script: {fileID: 11500000, guid: 2b6f73b9b48b0d8488971956298457d8, type: 3}
   m_Name: ADR000
   m_EditorClassIdentifier: 
   weaponPrefab_lft: {fileID: 1134705389196492, guid: 1f16e29851900d147b2d204be13cca7f,
@@ -18,8 +18,8 @@ MonoBehaviour:
   weaponName: ADR000
   displayName: 
   Grip:
-  - {fileID: 1096434313937498, guid: 8fa33346c45fa9b4a83651136d903e0f, type: 2}
-  - {fileID: 1096434313937498, guid: 94c0a2720dfed1740b469b3854b96949, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
   damage: 350
   weight: 1600
   Range: 0
@@ -34,5 +34,5 @@ MonoBehaviour:
   hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}
   Atk: {fileID: 7400002, guid: 197ab111b6ad3704e993dcec748e0585, type: 3}
-  smash_sound: {fileID: 8300000, guid: 5650034b756d1fb41b1149b0096f4f8a, type: 3}
+  smash_sound: {fileID: 8300000, guid: 40eb2b923855066499b4dc9e045a4d76, type: 3}
   smash_hit_sound: {fileID: 0}

@@ -31,8 +31,8 @@ public class HangarManager : IScene {
 
     private void Start() {
         //Mech m = UserData.myData.Mech[0];
-        displaybutton1.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplayFirstWeapons());
-        displaybutton2.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplaySecondWeapons());
+        displaybutton1.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplayWeapons(0));
+        displaybutton2.onClick.AddListener(() => Mech.GetComponent<BuildMech>().DisplayWeapons(2));
 
         contents = new Transform[Tabs.Length];
         for (int i = 0; i < Tabs.Length; i++) {
@@ -328,8 +328,8 @@ public class HangarManager : IScene {
         bm.Mech_Num = Num;
         Debug.Log("weapon R : " + m.Weapon1R + " , " + m.Weapon1L);
         bm.buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
-        bm.DisplayFirstWeapons();
-        bm.CheckAnimatorState();
+        bm.DisplayWeapons(0);
+        bm.UpdateAnimatorState();
 
         DisplayPlayerSkills();
     }

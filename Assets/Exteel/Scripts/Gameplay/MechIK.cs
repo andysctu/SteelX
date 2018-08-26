@@ -157,15 +157,15 @@ public class MechIK : MonoBehaviour {
     public void UpdateMechIK() {
         weaponOffset = mechCombat.GetCurrentWeaponOffset();
 
-        if (bm.weaponScripts[weaponOffset].twoHanded) {
-            Knob = FindKnob(bm.weapons[weaponOffset].transform);
-            AimTransform = bm.weapons[weaponOffset].transform.Find("AimTransform");//TODO : update when switchweapon
+        if (bm.WeaponDatas[weaponOffset].twoHanded) {
+            Knob = FindKnob(bm.Weapons[weaponOffset].GetWeapon().transform);
+            AimTransform = bm.Weapons[weaponOffset].GetWeapon().transform.Find("AimTransform");//TODO : update when switchweapon
             if (AimTransform == null)
                 Debug.LogError("null aim Transform");
             else
                 AimIK.solver.transform = AimTransform;
 
-            PoleTarget = bm.weapons[weaponOffset].transform.Find("End");
+            PoleTarget = bm.Weapons[weaponOffset].GetWeapon().transform.Find("End");
             if (PoleTarget == null)
                 Debug.Log("null PoleTarget");
             else
@@ -184,15 +184,15 @@ public class MechIK : MonoBehaviour {
     public void UpdateMechIK(int weaponOffset) {//called by buildMech
         this.weaponOffset = weaponOffset;
 
-        if (bm.weaponScripts[weaponOffset]!= null &&  bm.weaponScripts[weaponOffset].twoHanded) {
-            Knob = FindKnob(bm.weapons[weaponOffset].transform);
-            AimTransform = bm.weapons[weaponOffset].transform.Find("AimTransform");//TODO : update when switchweapon
+        if (bm.WeaponDatas[weaponOffset]!= null &&  bm.WeaponDatas[weaponOffset].twoHanded) {
+            Knob = FindKnob(bm.Weapons[weaponOffset].GetWeapon().transform);
+            AimTransform = bm.Weapons[weaponOffset].GetWeapon().transform.Find("AimTransform");//TODO : update when switchweapon
             if (AimTransform == null)
                 Debug.LogError("null aim Transform");
             else
                 AimIK.solver.transform = AimTransform;
 
-            PoleTarget = bm.weapons[weaponOffset].transform.Find("End");
+            PoleTarget = bm.Weapons[weaponOffset].GetWeapon().transform.Find("End");
             if (PoleTarget == null)
                 Debug.Log("null PoleTarget");
             else

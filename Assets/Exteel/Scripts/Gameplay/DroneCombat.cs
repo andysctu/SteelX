@@ -6,10 +6,9 @@ public class DroneCombat : Combat {
 
     [SerializeField] private SkillController SkillController;
     [SerializeField] private LayerMask Terrain;
-    private int default_layer = 0, player_layer = 8;
     private EffectController EffectController;
     private bool onSkill = false, onSkillMoving = false;
-    private float instantMoveSpeed, curInstantMoveSpeed;
+    private float instantMoveSpeed;
     private Vector3 instantMoveDir;
     private CharacterController CharacterController;
     private float TeleportMinDistance = 3f;
@@ -60,7 +59,8 @@ public class DroneCombat : Combat {
         }
     }
 
-    private void Update() {
+    protected override void Update() {
+        base.Update();
         if (onSkillMoving) {
             InstantMove();
         }
@@ -70,7 +70,7 @@ public class DroneCombat : Combat {
         onSkillMoving = true;
         instantMoveSpeed = v.magnitude;
         instantMoveDir = v;
-        curInstantMoveSpeed = instantMoveSpeed;
+        //curInstantMoveSpeed = instantMoveSpeed;
     }
 
     private void InstantMove() {
@@ -116,7 +116,7 @@ public class DroneCombat : Combat {
     private void EnableDrone() {
         OnMechEnabled(true);
         EffectController.RespawnEffect();
-        gameObject.layer = player_layer;
+        gameObject.layer = playerlayer;
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
         foreach (Renderer renderer in renderers) {
             renderer.enabled = true;

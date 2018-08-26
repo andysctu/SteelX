@@ -151,14 +151,14 @@ public class ChatNewGui : MonoBehaviour, IChatClientListener
 		if (string.IsNullOrEmpty(inputLine))return;
 
 		bool doingPrivateChat = this.chatClient.PrivateChannels.ContainsKey(this.selectedChannelName);
-		string privateChatTarget = string.Empty;
+		//string privateChatTarget = string.Empty;
 		if (doingPrivateChat)
 		{
 			// the channel name for a private conversation is (on the client!!) always composed of both user's IDs: "this:remote"
 			// so the remote ID is simple to figure out
 			
 			string[] splitNames = this.selectedChannelName.Split(new char[] { ':' });
-			privateChatTarget = splitNames[1];
+			//privateChatTarget = splitNames[1];
 		}
         //UnityEngine.Debug.Log("selectedChannelName: " + selectedChannelName + " doingPrivateChat: " + doingPrivateChat + " privateChatTarget: " + privateChatTarget);
 

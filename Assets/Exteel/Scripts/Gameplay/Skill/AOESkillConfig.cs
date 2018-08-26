@@ -21,13 +21,13 @@ public class AOESkillConfig : SkillConfig {
             g.transform.localPosition = Vector3.zero;
         }
 
-        if ((weaponTypeL == "" || (bm.weaponScripts[0] != null && weaponTypeL == bm.weaponScripts[0].GetType().ToString())) &&
-            (weaponTypeR == "" || (bm.weaponScripts[1] != null && weaponTypeR == bm.weaponScripts[1].GetType().ToString()))) {
+        if ((weaponTypeL == "" || (bm.WeaponDatas[0] != null && weaponTypeL == bm.WeaponDatas[0].GetType().ToString())) &&
+            (weaponTypeR == "" || (bm.WeaponDatas[1] != null && weaponTypeR == bm.WeaponDatas[1].GetType().ToString()))) {
             AttachEffectsOnWeapons(player, 0, 1, skill_num);
         }
 
-        if ((weaponTypeL == "" || (bm.weaponScripts[2] != null && weaponTypeL == bm.weaponScripts[2].GetType().ToString())) &&
-            (weaponTypeR == "" || (bm.weaponScripts[3] != null && weaponTypeR == bm.weaponScripts[3].GetType().ToString()))) {
+        if ((weaponTypeL == "" || (bm.WeaponDatas[2] != null && weaponTypeL == bm.WeaponDatas[2].GetType().ToString())) &&
+            (weaponTypeR == "" || (bm.WeaponDatas[3] != null && weaponTypeR == bm.WeaponDatas[3].GetType().ToString()))) {
             AttachEffectsOnWeapons(player, 2, 3, skill_num);
         }
     }
@@ -39,8 +39,8 @@ public class AOESkillConfig : SkillConfig {
         foreach (GameObject effect in weaponLEffects) {
             GameObject g;
 
-            if ((g = FindDuplicatedEffect(bm.weapons[L].transform, effect.name)) == null) {
-                g = Instantiate(effect, bm.weapons[L].transform);
+            if ((g = FindDuplicatedEffect(bm.Weapons[L].GetWeapon().transform, effect.name)) == null) {
+                g = Instantiate(effect, bm.Weapons[L].GetWeapon().transform);
                 g.transform.localPosition = Vector3.zero;
                 g.name = effect.name;//name must match when playing animation
             }
@@ -56,8 +56,8 @@ public class AOESkillConfig : SkillConfig {
         foreach (GameObject effect in weaponREffects) {
             GameObject g;
 
-            if ((g = FindDuplicatedEffect(bm.weapons[R].transform, effect.name)) == null) {
-                g = Instantiate(effect, bm.weapons[R].transform);
+            if ((g = FindDuplicatedEffect(bm.Weapons[R].GetWeapon().transform, effect.name)) == null) {
+                g = Instantiate(effect, bm.Weapons[R].GetWeapon().transform);
                 g.transform.localPosition = Vector3.zero;
                 g.name = effect.name;//name must match when playing animation
             }

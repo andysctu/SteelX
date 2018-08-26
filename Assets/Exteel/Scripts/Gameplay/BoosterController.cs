@@ -1,17 +1,27 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class BoosterController : MonoBehaviour {
-    [SerializeField] private AudioClip BoostOpen, BoostLoop, BoostClose;
+    [SerializeField] private AudioClip BoostOpen = null, BoostLoop = null, BoostClose = null;
     [SerializeField] private ParticleSystem[] PSs;
     [SerializeField] private Animator animator;
 
     private AudioSource audioSource;
-    private float volume = 1f;
 
     private void Start() {
+        InitAudioSource();
+    }
+
+    private void InitAudioSource() {
         audioSource = GetComponent<AudioSource>();
-        //audioSource.volume = volume;
+
+        audioSource.volume = 1;
+        audioSource.dopplerLevel = 0;
+        audioSource.spatialBlend = 1;
         audioSource.clip = BoostLoop;
+        audioSource.playOnAwake = false;
+        audioSource.minDistance = 50;
+        audioSource.maxDistance = 350;
     }
 
     public void StartBoost() {

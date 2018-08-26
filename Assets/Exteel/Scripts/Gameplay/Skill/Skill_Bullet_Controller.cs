@@ -47,7 +47,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
         mechCombat = transform.root.GetComponent<MechCombat>();
         Transform CurrentMech = transform.root.Find("CurrentMech");
         Sounds = CurrentMech.GetComponent<Sounds>();
-        Effect_End = mechCombat.GetEffectEnd(weaponOffset + hand);
+        Effect_End = (bm.Weapons[weaponOffset+hand] == null) ? null : TransformExtension.FindDeepChild(bm.Weapons[weaponOffset + hand].GetWeapon().transform, "EffectEnd");
 
         if (onBooster) {
             booster_bulletStartTranforms = new List<Transform>();
@@ -84,7 +84,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     }
 
     private void FindBulletPrefab() {
-        Bullet = ((RangedWeapon)bm.weaponScripts[weaponOffset + hand]).bulletPrefab;
+        Bullet = ((RangedWeaponData)bm.WeaponDatas[weaponOffset + hand]).bulletPrefab;
     }
 
     private void OnEnable() {
@@ -149,7 +149,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
             //only impact
             if (multiTarget) {
                 foreach (Transform t in targets) {
-                    GameObject g = Instantiate(Bullet, t.position + new Vector3(0, 5, 0), Quaternion.identity, t);
+                    Instantiate(Bullet, t.position + new Vector3(0, 5, 0), Quaternion.identity, t);
 
                     ShowHitMsg(t);
                 }

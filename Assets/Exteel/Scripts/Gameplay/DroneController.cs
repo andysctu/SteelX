@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class DroneController : MonoBehaviour {
 
-    [SerializeField]private int hor_boostingSpeed = 60, ver_boostingSpeed = 30;
-    [SerializeField]private int Moving_mode = 0;
+    //[SerializeField]private int hor_boostingSpeed = 60, ver_boostingSpeed = 30;
+    //[SerializeField]private int Moving_mode = 0;
 
 
-    public float Gravity = 4.5f;
-    public float maxDownSpeed = -140f;
+    //public float Gravity = 4.5f;
+    //public float maxDownSpeed = -140f;
 
     // Use this for initialization
     void Start () {

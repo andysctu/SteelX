@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 890afb3303b655443be0005c550e8859, type: 3}
+  m_Script: {fileID: 11500000, guid: 00551e588bdf89042b6cb7d07951cc32, type: 3}
   m_Name: RCL034
   m_EditorClassIdentifier: 
   weaponPrefab_lft: {fileID: 1088236672148428, guid: 4324dd40bb697ba43a8322fae7edeab8,
@@ -29,12 +29,12 @@ MonoBehaviour:
   heat_increase_amount: 20
   slowDown: 1
   twoHanded: 1
-  SPincreaseAmount: 100
+  SPincreaseAmount: 0
   skillAnimations:
   - {fileID: 7400000, guid: bde7d16dbdef71a4cb5cb061079a813e, type: 2}
   bulletPrefab: {fileID: 1346241026468800, guid: 45a2af6408f32d2469f4db65ae68552e,
     type: 2}
-  shoot_sound: {fileID: 8300000, guid: 0562b950c3f24cd499f3b76e97102e29, type: 3}
+  shoot_sound: {fileID: 8300000, guid: 6618481c1a17b4cfd8ab5c9f5477d947, type: 3}
   reload_sound: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
   Atk: {fileID: 7400004, guid: 942f89d9154223c4497d80148382823b, type: 3}
   Reload: {fileID: 7400006, guid: 942f89d9154223c4497d80148382823b, type: 3}

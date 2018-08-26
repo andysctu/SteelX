@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/SMG", order = 3)]
-public class SMG : RangedWeapon {
-    [SerializeField]private AnimationClip Atk, Reload;
+[CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Shotgun", order = 3)]
+public class ShotgunData : RangedWeaponData {
+    [SerializeField] private AnimationClip Atk, Reload;
 
-    SMG() {
-        slowDown = false;
+    ShotgunData() {
+        WeaponType = typeof(Shotgun);
+        slowDown = true;
         twoHanded = false;
     }
 
@@ -18,8 +19,12 @@ public class SMG : RangedWeapon {
         clipOverrides["Atk"] = Atk;
         clipOverrides["Reload"] = Reload;
         if (Atk == null || Reload == null) {
-            Debug.Log("You need to assign SMG animation clip : Atk && Reload . Ignore this if use empty clips.");
+            Debug.Log("You need to assign Shotgun animation clip : Atk || Reload . Ignore this if use empty clips.");
         }
         animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    public override object GetWeaponObject() {
+        return new Shotgun();
     }
 }

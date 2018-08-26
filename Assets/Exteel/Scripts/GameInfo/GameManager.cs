@@ -86,7 +86,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             Debug.LogError("Can't find : " + mapName + " in GameScene/");
             return;
         }
-        GameObject map = Instantiate(map_res);
+        Instantiate(map_res);
     }
 
     protected virtual void LoadGameInfo() {
@@ -372,7 +372,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         return Timer.CheckIfGameEnd();
     }
 
-    protected virtual void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
+    protected virtual void OnPhotonPlayerConnfected(PhotonPlayer newPlayer) {
         InGameChat.AddLine(newPlayer + " is connected.", Color.green);
     }
 

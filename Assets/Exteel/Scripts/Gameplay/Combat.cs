@@ -17,7 +17,7 @@ public class Combat : Photon.MonoBehaviour {
     [HideInInspector]public bool isDead;
 
     //Game variables
-    protected const int playerlayer = 8, default_layer = 0;
+    protected const int playerlayer = 8, ignoreRayCastLayer = 2, default_layer = 0;
     protected int TerrainLayerMask, PlayerLayerMask;
 
     //Mech action

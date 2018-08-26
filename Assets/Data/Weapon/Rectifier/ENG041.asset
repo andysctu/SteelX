@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc6eb7a02e93cca4bbb2b834e66a5c28, type: 3}
+  m_Script: {fileID: 11500000, guid: 1d481ec9333c20e46909855947341d8a, type: 3}
   m_Name: ENG041
   m_EditorClassIdentifier: 
   weaponPrefab_lft: {fileID: 1041980411709434, guid: 3dacf733236a76f499e5528fe56a1b7b,
@@ -23,7 +23,7 @@ MonoBehaviour:
   damage: 150
   weight: 10000
   Range: 120
-  minRange: 10
+  minRange: 12
   Rate: 0.6
   radius: 8
   heat_increase_amount: 20
@@ -33,5 +33,5 @@ MonoBehaviour:
   skillAnimations: []
   bulletPrefab: {fileID: 1667889749490334, guid: a1f4322b38872b84785dd0057aedea95,
     type: 2}
-  shoot_sound: {fileID: 8300000, guid: 644cc743a2c965e4daafc3783805c627, type: 3}
+  shoot_sound: {fileID: 8300000, guid: 3c08c93e1cd4a4df89b4187ad4707e30, type: 3}
   reload_sound: {fileID: 0}

@@ -25,7 +25,7 @@ public class StoreManager : IScene {
     public static readonly string _sceneName = "Store";
 
     void Start () {
-		Mech m = UserData.myData.Mech[Mech_Num];
+		//Mech m = UserData.myData.Mech[Mech_Num];
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
 		foreach (Button b in buttons) {
@@ -115,7 +115,7 @@ public class StoreManager : IScene {
 			Debug.Log ("rotating");
 
 			//create the rotation we need to be in to look at the target
-			Quaternion newRot = Quaternion.Euler(new Vector3(Mech.transform.rotation.eulerAngles.x, Mech.transform.rotation.eulerAngles.y + 180, Mech.transform.rotation.eulerAngles.z));
+			//Quaternion newRot = Quaternion.Euler(new Vector3(Mech.transform.rotation.eulerAngles.x, Mech.transform.rotation.eulerAngles.y + 180, Mech.transform.rotation.eulerAngles.z));
 
 			Vector3 rot = Mech.transform.rotation.eulerAngles;
 			rot = new Vector3(rot.x,rot.y+180,rot.z);

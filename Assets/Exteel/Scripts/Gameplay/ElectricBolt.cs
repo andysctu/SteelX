@@ -46,7 +46,9 @@ public class ElectricBolt : MonoBehaviour {
         }
         CalculateMiddle();
         lRend.SetPositions(points);
-        lRend.SetWidth(RandomWidthOffset(), RandomWidthOffset());
+        lRend.startWidth = RandomWidthOffset();
+        lRend.endWidth = RandomWidthOffset();
+        //lRend.SetWidth(RandomWidthOffset(), RandomWidthOffset());
         StartCoroutine(Beam());
     }
 

@@ -3,8 +3,7 @@
 public abstract class WeaponData : ScriptableObject {
     [SerializeField] private GameObject weaponPrefab_lft, weaponPrefab_rt;
 
-    [Tooltip("Special weapon types")]
-    public string weaponType;//APS , LMG , Rocket , Cannon , Shotgun , ...
+    protected System.Type WeaponType;
     public string weaponName, displayName;//this will be displayed in hangar    
     public GameObject[] Grip = new GameObject[2];//L&R , only set the rotation , the position is adjusted by hand offset
     public int damage = 0, weight = 0;
@@ -50,6 +49,12 @@ public abstract class WeaponData : ScriptableObject {
             }
         }
         return null;
+    }
+
+    public abstract object GetWeaponObject();
+
+    public System.Type GetWeaponType() {
+        return WeaponType;
     }
 }
 

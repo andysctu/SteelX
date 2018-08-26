@@ -7944,28 +7944,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootBone: {fileID: 1241530503}
-  MechCombat: {fileID: 0}
-  MechController: {fileID: 0}
-  Sounds: {fileID: 2143493335}
-  MechIK: {fileID: 2143493330}
-  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
-  SkillManager: {fileID: 11400000, guid: 37e42b9dcbadee14d82b5f933f9cec7f, type: 2}
-  MechPartManager: {fileID: 11400000, guid: 301bd37785ab46a41b20270b6977193c, type: 2}
-  defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
-    type: 2}
-  TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
-    type: 2}
-  SkillController: {fileID: 0}
-  ShotSounds: []
-  ReloadSounds: []
-  weaponScripts: []
-  curWeaponNames:
-  - 
-  - 
-  - 
-  - 
-  weapons: []
-  bulletPrefabs: []
+  WeaponDatas:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   curMechParts:
   - {fileID: 0}
   - {fileID: 0}
@@ -27192,14 +27175,8 @@ MonoBehaviour:
   onMelee_id: 0
   blockL_id: 0
   blockR_id: 0
-  slashL_id: 0
-  slashL2_id: 0
-  slashL3_id: 0
-  slashL4_id: 0
-  slashR_id: 0
-  slashR2_id: 0
-  slashR3_id: 0
-  slashR4_id: 0
+  slash_id: 0
+  finalSlash_id: 0
   BCNPose_id: 0
   OnBCN_id: 0
   BCNShoot_id: 0
@@ -27817,12 +27794,6 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114131259029437960, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_FontData.m_Font
-      value: 
-      objectReference: {fileID: 12800000, guid: d853fa7d5f479434e8c272b2dfa71983,
-        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   m_IsPrefabParent: 0
@@ -38479,11 +38450,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16acca2bf9716644e8b82fca46fee958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hor_boostingSpeed: 60
-  ver_boostingSpeed: 30
-  Moving_mode: 0
-  Gravity: 4.5
-  maxDownSpeed: -140
 --- !u!114 &1765542090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38565,6 +38531,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4b58b60ddf4c435e8c179e69bfc4dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  energyProperties:
+    jumpENDrain: 0
+    dashENDrain: 0
+    energyOutput: 0
+    minENRequired: 0
+  isDead: 0
+  forceDead: 0
   Hands:
   - {fileID: 1236850791}
   - {fileID: 1725993606}

@@ -1,15 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Animations;
 
 public class HorizontalBoostingState : MechStateMachineBehaviour {
 	
-	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+    private bool isBoostingUsingShift, doubleButtonDown;
+    private float lastInputDownTime;
+    private KeyCode lastInput = KeyCode.None;
+    private const float DetectButtonDownInterval = 0.4f;
+
+    public override void OnStateMachineEnter(Animator animator, int stateMachinePathHash) {
+        base.Init(animator);
+        if (cc == null || !cc.enabled) return;
+        isBoostingUsingShift = Input.GetKey(KeyCode.LeftShift);
+        doubleButtonDown = !isBoostingUsingShift;
+    }
+
+    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.Init(animator);
 		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
 
-		mcbt.CanMeleeAttack = true;
-		mcbt.SetReceiveNextSlash (1);
+        mcbt.CanMeleeAttack = true;
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -33,13 +43,27 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			mctrl.Boost (false);
 			return;
 		}
-        
-		if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space)) {
+
+        if (Input.GetKeyUp(KeyCode.LeftShift)) {
+            isBoostingUsingShift = false;
+        } else if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            isBoostingUsingShift = true;
+        }
+
+        if (doubleButtonDown) {
+            if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D)) {
+                doubleButtonDown = false;
+            }
+        } else{
+            CheckDoubleButtonDown();
+        }               
+
+        if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space)) {
 			mctrl.SetCanVerticalBoost(true);
 			animator.SetBool(jump_id, true);
 		}
 
-		if (gm.BlockInput || !Input.GetKey (KeyCode.LeftShift) || !mcbt.IsENAvailable ()) {
+		if (gm.BlockInput || (!isBoostingUsingShift && !doubleButtonDown) || !mcbt.IsENAvailable ()) {
 			mctrl.Run ();
 			animator.SetBool (boost_id, false);
 			mctrl.Boost (false);
@@ -50,8 +74,32 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		}
 	}
 
-	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-		if ( cc == null || !cc.enabled || !cc.isGrounded) return;
-
-	}
+    //When in state transition , the update gets called 2 times in the same frame , thus the check (Time.time - lastInputDownTime) > 0.05f
+    private void CheckDoubleButtonDown() {
+        if (Input.GetKeyDown(KeyCode.W)) {
+            if (Time.time - lastInputDownTime < DetectButtonDownInterval && Time.time - lastInputDownTime > 0.05f && lastInput == KeyCode.W) {
+                doubleButtonDown = true;
+            }
+            lastInput = KeyCode.W;
+            lastInputDownTime = Time.time;
+        } else if (Input.GetKeyDown(KeyCode.A)) {
+            if (Time.time - lastInputDownTime < DetectButtonDownInterval  && Time.time - lastInputDownTime > 0.05f && lastInput == KeyCode.A) {
+                doubleButtonDown = true;
+            }
+            lastInput = KeyCode.A;
+            lastInputDownTime = Time.time;            
+        } else if (Input.GetKeyDown(KeyCode.S)) {
+            if (Time.time - lastInputDownTime < DetectButtonDownInterval && Time.time - lastInputDownTime > 0.05f && lastInput == KeyCode.S) {
+                doubleButtonDown = true;
+            }
+            lastInput = KeyCode.S;
+            lastInputDownTime = Time.time;            
+        } else if (Input.GetKeyDown(KeyCode.D)) {
+            if (Time.time - lastInputDownTime < DetectButtonDownInterval && Time.time - lastInputDownTime > 0.05f && lastInput == KeyCode.D) {
+                doubleButtonDown = true;
+            }
+            lastInput = KeyCode.D;
+            lastInputDownTime = Time.time;            
+        }
+    }
 }

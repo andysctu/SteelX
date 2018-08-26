@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class Timer {
     private Text time_Text;
-    private int timerDuration, MaxTimeInSeconds = 300;
-    private bool OnSyncTimeRequest = false;
+    private int timerDuration;
+    //private bool OnSyncTimeRequest = false;
     private int storedStartTime = 0, storedDuration = 0, gameBeginTimeDiff = 999, currentTimer = 999;
 
     private List<int> EventTimes = new List<int>();//sec

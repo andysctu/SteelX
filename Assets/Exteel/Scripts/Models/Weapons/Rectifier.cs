@@ -1,14 +1,36 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "Weapons/Rectifier", order = 4)]
 public class Rectifier : RangedWeapon {
-    Rectifier() {
-        weaponType = "Rectifier";
-        slowDown = false;
-        twoHanded = false;
+    public override void AttackTarget(GameObject target, bool isShield) {
+        throw new System.NotImplementedException();
     }
 
-    public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        
+    protected override void LoadSoundClips() {
+        throw new System.NotImplementedException();
     }
 }
+
+//        case (int)GeneralWeaponTypes.Rectifier:
+//        if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || is_overheat[weaponOffset + hand]) {
+//            if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.WeaponDatas[weaponOffset + hand].Rate)
+//                setIsFiring(hand, false);
+//            return;
+//        }
+//        break;
+
+
+//        case (int)GeneralWeaponTypes.Rectifier:
+//        if (Time.time - ((hand == 1) ? timeOfLastShotR : timeOfLastShotL) >= 1 / bm.WeaponDatas[weaponOffset + hand].Rate) {
+//            setIsFiring(hand, true);
+//            FireRaycast(MainCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MainCam.transform.forward, hand);
+//            if (hand == 1) {
+//                HeatBar.IncreaseHeatBarR(30);
+//                timeOfLastShotR = Time.time;
+//            } else {
+//                HeatBar.IncreaseHeatBarL(30);
+//                timeOfLastShotL = Time.time;
+//            }
+//        }
+//        break;
+//    }
+//}

@@ -36,11 +36,11 @@ public class UIManager : MonoBehaviour {
 		for (int i = 0; i < roomsInfo.Length; i++) {
 			GameObject roomPanel = Instantiate (RoomPanel);
 			Text[] info = roomPanel.GetComponentsInChildren<Text> ();
-			Debug.Log (roomsInfo [i].name);
-			info [3].text = "Players: " + roomsInfo [i].playerCount + "/" + roomsInfo [i].MaxPlayers;
+			Debug.Log (roomsInfo [i].Name);
+			info [3].text = "Players: " + roomsInfo [i].PlayerCount + "/" + roomsInfo [i].MaxPlayers;
 			info [2].text = "GameMode: " + roomsInfo [i].CustomProperties ["GameMode"];
 			info [1].text = "Map: "+roomsInfo [i].CustomProperties ["Map"];
-			info [0].text = "Room Name: " + roomsInfo [i].name;
+			info [0].text = "Room Name: " + roomsInfo [i].Name;
 
 			roomPanel.transform.SetParent(RoomsWrapper);
 			RectTransform rt = roomPanel.GetComponent<RectTransform> ();
@@ -48,7 +48,7 @@ public class UIManager : MonoBehaviour {
 			rt.localScale = new Vector3 (1, 1, 1);
 			int index = i;
 			roomPanel.GetComponent<Button> ().onClick.AddListener (() => {
-				selectedRoom = roomsInfo[index].name;
+				selectedRoom = roomsInfo[index].Name;
 			});
 			rooms [i] = roomPanel;
 		}

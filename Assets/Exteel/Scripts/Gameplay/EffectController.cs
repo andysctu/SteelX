@@ -107,7 +107,7 @@ public class EffectController : MonoBehaviour {
         respawnEffect.Stop();
     }
 
-    public void SlashOnHitEffect(bool isShield, int hand) {
+    public void SlashOnHitEffect(bool isShield, int hand) {//TODO : remake this
         if (Hands == null) {
             Debug.Log("Hands is null");
             return;
@@ -115,7 +115,7 @@ public class EffectController : MonoBehaviour {
 
         if (isShield) {
             if (transform.root.tag != "Drone") {
-                transform.root.GetComponent<BuildMech>().weapons[mcbt.GetCurrentWeaponOffset() + hand].GetComponent<ParticleSystem>().Play();
+                transform.root.GetComponent<BuildMech>().Weapons[mcbt.GetCurrentWeaponOffset() + hand].GetWeapon().GetComponent<ParticleSystem>().Play();
             }else
                 transform.root.GetComponent<DroneCombat>().Shield.GetComponent<ParticleSystem>().Play();
             //GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);

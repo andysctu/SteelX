@@ -14,13 +14,13 @@ public class BCNPoseState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (mcbt == null)return;
 
-		if(!animator.IsInTransition(0))
-			mcbt.isOnBCNPose = true;
+		//if(!animator.IsInTransition(0))
+			//mcbt.isOnBCNPose = true;
 	}
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		if (mcbt == null)return;
-		mcbt.isOnBCNPose = false;
+		//mcbt.isOnBCNPose = false;
         animator.SetBool("BCNPose", false);
 		mechIK.SetIK (false, 1, 0);
 	}

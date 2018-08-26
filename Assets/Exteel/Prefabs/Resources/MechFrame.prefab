@@ -207,8 +207,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 254.2, y: 0, z: -62.2}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 194.8, y: 18.4, z: 193.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 405268}
@@ -500,12 +500,6 @@ MonoBehaviour:
     Name: BlockL
   - Type: 4
     SynchronizeType: 1
-    Name: SlashR
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL
-  - Type: 4
-    SynchronizeType: 1
     Name: BCNPose
   - Type: 4
     SynchronizeType: 0
@@ -517,29 +511,11 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: ENGShootR
   - Type: 4
-    SynchronizeType: 1
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR3
-  - Type: 4
     SynchronizeType: 0
     Name: OnMelee
   - Type: 4
     SynchronizeType: 1
     Name: BCNLoad
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL4
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR4
   - Type: 1
     SynchronizeType: 0
     Name: slashTime
@@ -558,6 +534,12 @@ MonoBehaviour:
   - Type: 1
     SynchronizeType: 0
     Name: rateR
+  - Type: 4
+    SynchronizeType: 2
+    Name: Slash
+  - Type: 4
+    SynchronizeType: 2
+    Name: finalSlash
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -602,28 +584,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootBone: {fileID: 4659955808738792}
-  MechCombat: {fileID: 11445986}
-  MechController: {fileID: 11462782}
-  Sounds: {fileID: 114000010976113334}
-  MechIK: {fileID: 114093068494878398}
-  WeaponManager: {fileID: 11400000, guid: c66f494b5c7edaa4ebef4395bbc06c9a, type: 2}
-  SkillManager: {fileID: 11400000, guid: 37e42b9dcbadee14d82b5f933f9cec7f, type: 2}
-  MechPartManager: {fileID: 11400000, guid: 301bd37785ab46a41b20270b6977193c, type: 2}
-  defaultMovementClips: {fileID: 11400000, guid: 0b3ace1400f442948a1aaa18f41d696d,
-    type: 2}
-  TwoHandedMovementClips: {fileID: 11400000, guid: 13228950639938b45a5e978f41c97be2,
-    type: 2}
-  SkillController: {fileID: 114715354567852064}
-  ShotSounds: []
-  ReloadSounds: []
-  weaponScripts: []
-  curWeaponNames:
-  - 
-  - 
-  - 
-  - 
-  weapons: []
-  bulletPrefabs: []
+  WeaponDatas:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   curMechParts:
   - {fileID: 0}
   - {fileID: 0}
@@ -668,20 +633,13 @@ MonoBehaviour:
     minENRequired: 450
   isDead: 0
   forceDead: 0
-  HeatBar: {fileID: 114328570908798246}
   EffectController: {fileID: 114512345716719972}
   MainCam: {fileID: 2087740}
   SkillController: {fileID: 114715354567852064}
-  is_overheat: 00000000
+  CanMeleeAttack: 1
   scanRange: 0
   MechSize: 0
   TotalWeight: 0
-  BCNbulletNum: 2
-  isOnBCNPose: 0
-  onSkill: 0
-  CanMeleeAttack: 1
-  slashL_threshold: 0
-  slashR_threshold: 0
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5057,7 +5015,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: d853fa7d5f479434e8c272b2dfa71983, type: 3}
     m_FontSize: 52
     m_FontStyle: 0
     m_BestFit: 0
@@ -5095,14 +5053,8 @@ MonoBehaviour:
   onMelee_id: 0
   blockL_id: 0
   blockR_id: 0
-  slashL_id: 0
-  slashL2_id: 0
-  slashL3_id: 0
-  slashL4_id: 0
-  slashR_id: 0
-  slashR2_id: 0
-  slashR3_id: 0
-  slashR4_id: 0
+  slash_id: 0
+  finalSlash_id: 0
   BCNPose_id: 0
   OnBCN_id: 0
   BCNShoot_id: 0

@@ -51,7 +51,7 @@ public class InRoomTime : MonoBehaviour
     /// <remarks>When IsoomTimeSet is false, RoomTimestamp and RoomTime will both be zero.</remarks>
     public bool IsRoomTimeSet
     {
-        get { return PhotonNetwork.inRoom && PhotonNetwork.room.customProperties.ContainsKey(StartTimeKey); }
+        get { return PhotonNetwork.inRoom && PhotonNetwork.room.CustomProperties.ContainsKey(StartTimeKey); }
     }
 
 

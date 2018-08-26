@@ -88,7 +88,7 @@ public class SkillController : MonoBehaviour {
         InitSkillsCooldown();
 
         UpdateBoosterAnimator();
-        UpdateWeaponAnimators();
+        //UpdateWeaponAnimators();
         LoadWeaponSkillAnimations();
         LoadBoosterSkillAnimations();
         InitHUD();
@@ -200,8 +200,8 @@ public class SkillController : MonoBehaviour {
                 if (skills[j] == null || !skills[j].hasWeaponAnimation)
                     continue;
 
-                string weaponTypeL = (bm.weaponScripts[(i >= 2) ? 2 : 0] == null) ? "" : bm.weaponScripts[(i >= 2) ? 2 : 0].GetType().ToString(),
-                    weaponTypeR = (bm.weaponScripts[(i >= 2) ? 3 : 1] == null) ? "" : bm.weaponScripts[(i >= 2) ? 3 : 1].GetType().ToString();
+                string weaponTypeL = (bm.WeaponDatas[(i >= 2) ? 2 : 0] == null) ? "" : bm.WeaponDatas[(i >= 2) ? 2 : 0].GetType().ToString(),
+                    weaponTypeR = (bm.WeaponDatas[(i >= 2) ? 3 : 1] == null) ? "" : bm.WeaponDatas[(i >= 2) ? 3 : 1].GetType().ToString();
                 if (!CheckIfWeaponMatch(skills[j], weaponTypeL, weaponTypeR)) {
                     continue;
                 }
@@ -214,10 +214,10 @@ public class SkillController : MonoBehaviour {
                     if (clip != null) {
                         clipOverrides["sk" + j] = clip;
                     } else {
-                        clipOverrides["sk" + j] = bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name);
+                        clipOverrides["sk" + j] = bm.WeaponDatas[i].FindSkillAnimationClip(bm.WeaponDatas[i].name + "_" + skills[j].name);
 
-                        if (bm.weaponScripts[i].FindSkillAnimationClip(bm.weaponScripts[i].name + "_" + skills[j].name) == null)
-                            Debug.Log("Can't find the skill animation : " + bm.weaponScripts[i].name + "_" + skills[j].name + " on weapon and there is no default animation.");
+                        if (bm.WeaponDatas[i].FindSkillAnimationClip(bm.WeaponDatas[i].name + "_" + skills[j].name) == null)
+                            Debug.Log("Can't find the skill animation : " + bm.WeaponDatas[i].name + "_" + skills[j].name + " on weapon and there is no default animation.");
                     }
                 }
             }
@@ -307,7 +307,7 @@ public class SkillController : MonoBehaviour {
 
         bool hasPlayerAnimation = (skills[skill_num].GetPlayerAniamtion() != null);
 
-        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.isSwitchingWeapon && (!hasPlayerAnimation || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
+        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
     }
 
     private bool CheckIfEnergyEnough(int energyCost) {
@@ -354,12 +354,12 @@ public class SkillController : MonoBehaviour {
         mainAnimator.Play("Idle", 2);
     }
 
-    private void UpdateWeaponAnimators() {
-        for (int i = 0; i < 4; i++) {
-            if (bm.weapons[i] == null) WeaponAnimators[i] = null;
-            else WeaponAnimators[i] = bm.weapons[i].GetComponent<Animator>();
-        }
-    }
+    //private void UpdateWeaponAnimators() {
+    //    for (int i = 0; i < 4; i++) {
+    //        if (bm.weapons[i] == null) WeaponAnimators[i] = null;
+    //        else WeaponAnimators[i] = bm.weapons[i].GetComponent<Animator>();
+    //    }
+    //}
 
     private void UpdateBoosterAnimator() {
         Transform CurrentMech = transform.Find("CurrentMech");
@@ -433,7 +433,7 @@ public class SkillController : MonoBehaviour {
                 skill_isMatchRequirements[i] = false;
                 continue;
             }
-            bool req_1 = CheckIfWeaponMatch(skills[i], (bm.weaponScripts[weaponOffset] == null) ? "" : bm.weaponScripts[weaponOffset].GetType().ToString(), (bm.weaponScripts[weaponOffset + 1] == null) ? "" : bm.weaponScripts[weaponOffset + 1].GetType().ToString()),
+            bool req_1 = CheckIfWeaponMatch(skills[i], (bm.WeaponDatas[weaponOffset] == null) ? "" : bm.WeaponDatas[weaponOffset].GetType().ToString(), (bm.WeaponDatas[weaponOffset + 1] == null) ? "" : bm.WeaponDatas[weaponOffset + 1].GetType().ToString()),
                 req_2 = CheckIfBoosterMatch(skills[i], boosterName);
 
             skill_isMatchRequirements[i] = req_1 && req_2;

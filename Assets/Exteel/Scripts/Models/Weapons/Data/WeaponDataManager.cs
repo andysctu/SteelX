@@ -3,15 +3,15 @@ using System.Collections.Generic;
 [CreateAssetMenu]
 public class WeaponDataManager : ScriptableObject {
 
-    public Sword[] Swords;
-    public Spear[] Spears;
-    public Shield[] Shields;
-    public SMG[] SMGs;
-    public Rifle[] Rifles;
-    public Shotgun[] Shotguns;
-    public Rectifier[] Rectifiers;
-    public Rocket[] Rockets;
-    public Cannon[] Cannons;
+    public SwordData[] Swords;
+    public SpearData[] Spears;
+    public ShieldData[] Shields;
+    public SMGData[] SMGs;
+    public RifleData[] Rifles;
+    public ShotgunData[] Shotguns;
+    public RectifierData[] Rectifiers;
+    public RocketData[] Rockets;
+    public CannonData[] Cannons;
     
     public WeaponData FindData(string name) {
         if (name.Contains("APS") || name.Contains("LMG")) {

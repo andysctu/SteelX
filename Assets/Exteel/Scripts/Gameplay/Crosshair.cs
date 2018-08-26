@@ -20,7 +20,7 @@ public class Crosshair : MonoBehaviour {
     private Transform targetL, targetR;
     private Camera cam;
     private Coroutine coroutine = null;
-    private Vector2 CamMidpoint = new Vector2(0.5f, 0.5f);
+    //private Vector2 CamMidpoint = new Vector2(0.5f, 0.5f);
 
     private const float SendMsgDeltaTime = 0.3f; //If the target is the same, this is the time between two msgs.
     private float screenCoeff;
@@ -83,7 +83,7 @@ public class Crosshair : MonoBehaviour {
     }
 
     private void OnMechBuilt() {
-        weaponScripts = bm.weaponScripts;
+        weaponScripts = bm.WeaponDatas;
         Marksmanship = bm.MechProperty.Marksmanship;
     }
 
@@ -110,9 +110,9 @@ public class Crosshair : MonoBehaviour {
             MinDistanceR = weaponScripts[weaponOffset + 1].minRange;
         }
 
-        isRectifier_L = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].weaponType == "Rectifier");
-        isRectifier_R = (weaponScripts[weaponOffset + 1] != null && weaponScripts[weaponOffset + 1].weaponType == "Rectifier");
-        isRocket = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].weaponType == "Rocket");
+        isRectifier_L = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].GetWeaponType() == typeof(Rectifier));
+        isRectifier_R = (weaponScripts[weaponOffset + 1] != null && weaponScripts[weaponOffset + 1].GetWeaponType() == typeof(Rectifier));
+        isRocket = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].GetWeaponType() == typeof(Rocket));
 
         isTargetAllyL = isRectifier_L;
         isTargetAllyR = isRectifier_R;
