@@ -4,7 +4,6 @@ using XftWeapon;
 public class Sword : MeleeWeapon {
     private XWeaponTrail WeaponTrail;
     private AudioClip[] slashSounds = new AudioClip[4];
-    private AudioClip slashOnHitSound;
 
     private bool receiveNextSlash, isAnotherWeaponSword;
     private const int slashMaxDistance = 30;
@@ -20,6 +19,8 @@ public class Sword : MeleeWeapon {
         threshold = ((SwordData)data).threshold;
 
         CheckIsAnotherWeaponSword();
+
+        UpdateSlashAnimationThreshold();
     }
 
     protected override void InitComponents() {
@@ -33,7 +34,6 @@ public class Sword : MeleeWeapon {
 
     protected override void LoadSoundClips() {
         slashSounds = ((SwordData)data).slash_sound;
-        slashOnHitSound = ((SwordData)data).slash_hit_sound;
     }
 
     private void FindTrail(GameObject weapon) {
@@ -42,7 +42,7 @@ public class Sword : MeleeWeapon {
     }
 
     public override void HandleCombat() {
-        if (!Input.GetKeyDown(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || IsOverHeat()) {
+        if (!Input.GetKeyDown(BUTTON) || IsOverHeat()) {
             return;
         }
 
@@ -51,7 +51,7 @@ public class Sword : MeleeWeapon {
 
             if (curCombo == 3 && !isAnotherWeaponSword)return;
 
-            if (!anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring)return;
+            if (anotherWeapon!=null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring)return;
 
             mcbt.CanMeleeAttack = false;
             receiveNextSlash = false;
@@ -94,9 +94,10 @@ public class Sword : MeleeWeapon {
         base.OnSkillAction(enter);
 
         if (enter) {
-            receiveNextSlash = false;
+            receiveNextSlash = false;            
         } else {
             receiveNextSlash = true;
+            mcbt.CanMeleeAttack = true;
         }
     }
 
@@ -107,16 +108,16 @@ public class Sword : MeleeWeapon {
         if(slashSounds!=null && slashSounds[curCombo] != null)
             AudioSource.PlayClipAtPoint(slashSounds[curCombo], weapon.transform.position);
 
-        //If not final slash
-        if (!MechAnimator.GetBool(AnimatorVars.finalSlash_id))
-            receiveNextSlash = true;
-
-
         if(photonView != null && photonView.isMine) {//TODO : master check this
-            SlashDetect(hand);
+            isFiring = true;
+
+            //If not final slash
+            if (!MechAnimator.GetBool(AnimatorVars.finalSlash_id))
+                receiveNextSlash = true;
+
+            MeleeAttack(hand);
         }
 
-        isFiring = true;
         curCombo++;
     }
 
@@ -138,7 +139,22 @@ public class Sword : MeleeWeapon {
        threshold = ((SwordData)data).threshold;
     }
 
-    public override void AttackTarget(GameObject target, bool isShield) {
-        throw new System.NotImplementedException();
+    public override void OnTargetEffect(GameObject target, bool isShield) {
+        
+        if (isShield) {
+
+        } else {
+            //Apply slowing down effect
+            if (data.slowDown) {
+                MechController mctrl = target.GetComponent<MechController>();
+                if(mctrl != null) {
+                    mctrl.SlowDown();
+                }
+            }
+
+            ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
+            TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
+        }
+        
     }
 }

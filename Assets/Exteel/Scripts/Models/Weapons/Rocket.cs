@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Rocket : RangedWeapon {
-    public override void AttackTarget(GameObject target, bool isShield) {
+    public override void OnTargetEffect(GameObject target, bool isShield) {
         throw new System.NotImplementedException();
     }
 

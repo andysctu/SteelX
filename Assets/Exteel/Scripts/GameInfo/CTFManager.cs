@@ -133,28 +133,24 @@ public class CTFManager : GameManager {
         thePlayerMainCameras = mainCameras.ToArray();
     }
 
-    public override void OnPlayerDead(GameObject player, int shooter_ViewID, string weapon) {
-        PhotonView player_pv = player.GetComponent<PhotonView>();
-        if (player_pv == null) {
-            Debug.LogWarning("This player does not have photonview.");
-            return;
-        }
+    public override void OnPlayerDead(PhotonPlayer victim, PhotonPlayer shooter, string weapon) {
+        GameObject playerMech = (GameObject)victim.TagObject;
+        if (playerMech == null) { Debug.LogWarning("Player mech is null"); return; }
 
         // Update scoreboard
-        RegisterKill(shooter_ViewID, player_pv.viewID);
-        PhotonView shooterpv = PhotonView.Find(shooter_ViewID);
-        DisplayKillMsg(shooterpv.owner.NickName, player_pv.owner.NickName, weapon);
+        RegisterKill(shooter, victim);
+        DisplayKillMsg(shooter.NickName, victim.NickName, weapon);
 
         //Master check if this player has the flag
         if (PhotonNetwork.isMasterClient) {
             RaycastHit hit;
-            if (BlueFlagHolder != null && player_pv.owner == BlueFlagHolder) {
+            if (BlueFlagHolder != null && victim == BlueFlagHolder) {
                 //Teleport the flag to ground
-                Physics.Raycast(player.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
-                photonView.RPC("DropFlag", PhotonTargets.All, player_pv.viewID, (int)PunTeams.Team.blue, hit.point);
-            } else if (RedFlagHolder != null && player_pv.owner == RedFlagHolder) {
-                Physics.Raycast(player.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
-                photonView.RPC("DropFlag", PhotonTargets.All, player_pv.viewID, (int)PunTeams.Team.red, hit.point);
+                Physics.Raycast(playerMech.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
+                photonView.RPC("DropFlag", PhotonTargets.All, victim, (int)PunTeams.Team.blue, hit.point);
+            } else if (RedFlagHolder != null && victim == RedFlagHolder) {
+                Physics.Raycast(playerMech.transform.position, -Vector3.up, out hit, 1000, TerrainLayerMask);
+                photonView.RPC("DropFlag", PhotonTargets.All, victim, (int)PunTeams.Team.red, hit.point);
             }
         }
     }
@@ -284,16 +280,16 @@ public class CTFManager : GameManager {
         CTFMsgDisplayer.OnGameStart();
     }
 
-    public override void RegisterPlayer(int player_viewID) {
-        CTFPanelManager.RegisterPlayer(player_viewID);
+    public override void RegisterPlayer(PhotonPlayer player) {
+        CTFPanelManager.RegisterPlayer(player);
     }
 
     protected override void ShowScorePanel(bool b) {
         CTFPanelManager.ShowPanel(b);
     }
 
-    public override void RegisterKill(int shooter_viewID, int victim_viewID) {
-        CTFPanelManager.RegisterKill(shooter_viewID, victim_viewID);
+    public override void RegisterKill(PhotonPlayer victim, PhotonPlayer shooter) {
+        CTFPanelManager.RegisterKill(victim, shooter);
     }
 
     private void InstantiateFlags() {//Called by master
@@ -374,15 +370,23 @@ public class CTFManager : GameManager {
     }
 
     [PunRPC]
-    private void DropFlag(int player_viewID, int flag, Vector3 pos) {
-        PhotonView pv = (player_viewID == -1)? null : PhotonView.Find(player_viewID);
+    private void DropFlag(PhotonPlayer player, int flag, Vector3 pos) {
+        if(player != null) {
+            GameObject playerMech = (GameObject)player.TagObject;
 
-        //TODO : Consider remake this
-        //Set EN.
-        if (pv != null && pv.isMine) {
-            MechCombat mcbt = pv.GetComponent<MechCombat>();
-            mcbt.SetMaxEN((int)mcbt.MAX_EN * 2);
+            //TODO : Consider remake this
+            //Set EN.
+            if (playerMech != null && player.IsLocal) {
+                MechCombat mcbt = playerMech.GetComponent<MechCombat>();
+                mcbt.SetMaxEN((int)mcbt.MAX_EN * 2);
+            }
+
+            //Broadcast msg
+            CTFMsgDisplayer.PlayerDroppedFlag(player);
+        } else {
+            Debug.LogWarning("Drop flag : player is null.");
         }
+        
 
         if (flag == (int)PunTeams.Team.blue) {            
             SetFlagProperties((int)PunTeams.Team.blue, null, pos, null);
@@ -402,9 +406,6 @@ public class CTFManager : GameManager {
             }
             RedFlag.OnDroppedAction();
         }
-        
-        //Broadcast msg
-        if(pv != null)CTFMsgDisplayer.PlayerDroppedFlag(pv.owner);
     }
 
     [PunRPC]

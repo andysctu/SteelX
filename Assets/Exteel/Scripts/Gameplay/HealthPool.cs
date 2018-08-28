@@ -50,16 +50,16 @@ public class HealthPool : Photon.MonoBehaviour {
         mechCombat = player.GetComponent<MechCombat>();
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate() {//TODO :　improve anti-hack
         if (PlayerInZone.IsThePlayerInside()) {
             if (Time.time - LastCheckTime >= healDeltaTime) {
                 if (!mechCombat.IsHpFull() && syncHealthPoolBar.isAvailable) {
-                    if (mechCombat.GetMaxHp() - mechCombat.CurrentHP >= healAmount) {
+                    if (mechCombat.MAX_HP - mechCombat.CurrentHP >= healAmount) {
                         LastCheckTime = Time.time;
-                        mechCombat.photonView.RPC("OnHeal", PhotonTargets.All, 0, healAmount);
+                        mechCombat.photonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -healAmount);
                     } else {
                         LastCheckTime = Time.time;
-                        mechCombat.photonView.RPC("OnHeal", PhotonTargets.All, 0, (mechCombat.GetMaxHp() - mechCombat.CurrentHP));
+                        mechCombat.photonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -(mechCombat.MAX_HP - mechCombat.CurrentHP));
                     }
                 } else {
                     LastCheckTime = Time.time;

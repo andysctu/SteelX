@@ -32,7 +32,7 @@ public class Cannon : RangedWeapon {
         throw new System.NotImplementedException();
     }
 
-    public override void AttackTarget(GameObject target, bool isShield) {
+    public override void OnTargetEffect(GameObject target, bool isShield) {
         throw new System.NotImplementedException();
     }
 

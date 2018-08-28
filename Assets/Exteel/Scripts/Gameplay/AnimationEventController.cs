@@ -12,7 +12,7 @@ public class AnimationEventController : MonoBehaviour {
     [SerializeField] private Sounds Sounds;
     private Animator[] weaponAnimators = new Animator[4];
     private PhotonView pv;
-    private int minCallMoveDistance = 10, weaponOffset = 0;
+    private int minCallMoveDistance = 6, weaponOffset = 0;
 
     private void Awake() {
         if (MechCombat != null) MechCombat.OnWeaponSwitched += UpdateAnimationEventController;

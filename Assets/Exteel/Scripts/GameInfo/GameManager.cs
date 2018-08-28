@@ -191,7 +191,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         return is_Time_init;
     }
 
-    public abstract void RegisterPlayer(int player_viewID);
+    public abstract void RegisterPlayer(PhotonPlayer player);
 
     protected virtual void MasterInitGame() {
         SyncTime();
@@ -274,7 +274,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     protected abstract void ShowScorePanel(bool b);
 
-    public abstract void OnPlayerDead(GameObject player, int shooter_id, string weapon);
+    public abstract void OnPlayerDead(PhotonPlayer player, PhotonPlayer shooter, string weapon);
 
     private void FixedUpdate() {
         if (!gameIsBegin) {
@@ -352,10 +352,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
         }
     }
 
-    public abstract void RegisterKill(int shooter_viewID, int victim_viewID);
+    public abstract void RegisterKill(PhotonPlayer victim, PhotonPlayer shooter);
 
-    protected void DisplayKillMsg(string shooter, string target, string weapon) {
-        DisplayMsgOnGameChat(shooter + " killed " + photonView.name + " by " + weapon);
+    protected void DisplayKillMsg(string shooter, string victim, string weapon) {
+        DisplayMsgOnGameChat(shooter + " killed " + victim + " by " + weapon);
     }
 
     public bool IsGameEnding() {

@@ -5,6 +5,7 @@ using System.Linq;
 public abstract class MeleeWeapon : Weapon {
     protected SlashDetector SlashDetector;    
     protected List<Transform> targets_in_collider;
+    protected ParticleSystem HitEffectPrefab;
 
     private const int DetectShieldMaxDistance = 30;//the ray which checks if hitting shield max distance
     public float threshold;
@@ -20,6 +21,7 @@ public abstract class MeleeWeapon : Weapon {
     protected override void InitComponents() {
         base.InitComponents();
         SlashDetector = mcbt.GetComponentInChildren<SlashDetector>();
+        HitEffectPrefab = ((MeleeWeaponData)data).hitEffect;
     }
 
     protected virtual void ResetMeleeVars() {
@@ -49,7 +51,7 @@ public abstract class MeleeWeapon : Weapon {
         ResetMeleeVars();
     }
 
-    public void SlashDetect(int hand) {//TODO : improve this
+    public virtual void MeleeAttack(int hand) {
         if ((targets_in_collider = SlashDetector.getCurrentTargets()).Count != 0) {
             int damage = data.damage;
             string weaponName = data.weaponName;
@@ -58,11 +60,11 @@ public abstract class MeleeWeapon : Weapon {
                 if (target == null) {continue;}
 
                 //cast a ray to check if hitting shield
-                bool isHitShield = false;
+                bool isHitShield = false, isTerrainBlocksTheWay = false;
                 RaycastHit[] hitpoints;
                 Transform t = target;
 
-                hitpoints = Physics.RaycastAll(mcbt.transform.position + new Vector3(0, 5, 0), (target.transform.root.position + new Vector3(0, 5, 0)) - mcbt.transform.position - new Vector3(0, 5, 0), DetectShieldMaxDistance, PlayerLayerMask).OrderBy(h => h.distance).ToArray();
+                hitpoints = Physics.RaycastAll(mcbt.transform.position + new Vector3(0, 5, 0), target.transform.root.position - mcbt.transform.position, DetectShieldMaxDistance, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
                 foreach (RaycastHit hit in hitpoints) {
                     if (hit.transform.root == target) {
                         if (hit.collider.transform.tag == "Shield") {
@@ -70,15 +72,22 @@ public abstract class MeleeWeapon : Weapon {
                             t = hit.collider.transform;
                         }
                         break;
+                    }else if(hit.transform.gameObject.layer == TerrainLayer) {//Terrain blocks the way
+                        isTerrainBlocksTheWay = true;
+                        break;
                     }
                 }
 
+                if (isTerrainBlocksTheWay) {
+                    continue;
+                }
+
                 if (isHitShield) {
-                    ShieldUpdater shieldUpdater = t.transform.parent.GetComponent<ShieldUpdater>();
+                    ShieldActionReceiver shieldUpdater = t.transform.parent.GetComponent<ShieldActionReceiver>();
                     int target_handOnShield = shieldUpdater.GetHand();//which hand holds the shield?
-                    target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, (int)(damage * shieldUpdater.GetDefendEfficiency(true)), mcbt.photonView.viewID, target_handOnShield, weaponName);
+                    target.GetComponent<PhotonView>().RPC("ShieldOnHit", PhotonTargets.All, damage, PhotonNetwork.player, target_handOnShield, weaponName);
                 } else {
-                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, mcbt.photonView.viewID, weaponName, true);
+                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PhotonNetwork.player, pos);
                 }
 
                 if (target.GetComponent<Combat>().CurrentHP <= 0) {

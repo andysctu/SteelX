@@ -91,17 +91,10 @@ public class DMManager : GameManager {
         thePlayerMainCameras = mainCameras.ToArray();
     }
 
-    public override void OnPlayerDead(GameObject player, int shooter_ViewID, string weapon) {
-        PhotonView player_pv = player.GetComponent<PhotonView>();
-        if (player_pv == null) {
-            Debug.LogWarning("This player does not have photonview.");
-            return;
-        }
+    public override void OnPlayerDead(PhotonPlayer victim, PhotonPlayer shooter, string weapon) {
+        if(PhotonNetwork.isMasterClient)RegisterKill(victim, shooter);
 
-        if(PhotonNetwork.isMasterClient)RegisterKill(shooter_ViewID, player_pv.viewID);
-
-        PhotonView shooterpv = PhotonView.Find(shooter_ViewID);
-        DisplayKillMsg(shooterpv.owner.NickName, player_pv.owner.NickName, weapon);
+        DisplayKillMsg(shooter.NickName, victim.NickName, weapon);
     }
 
     protected override void SyncPanel() {//TODO : check if this sync well
@@ -190,23 +183,16 @@ public class DMManager : GameManager {
         DMMsgDisplayer.ShowWaitOtherPlayer(false);
     }
 
-    public override void RegisterPlayer(int player_viewID) {
-        DMPanelManager.RegisterPlayer(player_viewID);
+    public override void RegisterPlayer(PhotonPlayer player) {
+        DMPanelManager.RegisterPlayer(player);
     }
 
     protected override void ShowScorePanel(bool b) {
         DMPanelManager.ShowPanel(b);
     }
 
-    public override void RegisterKill(int shooter_viewID, int victim_viewID) {
-        PhotonView shooter_pv = PhotonView.Find(shooter_viewID), victime_pv = PhotonView.Find(victim_viewID);
-
-        if (shooter_pv == null || victime_pv == null || victime_pv.tag == "Drone") return;
-
-        PhotonPlayer shooter_player = shooter_pv.owner, victime_player = victime_pv.owner;
-        string shooter_name = shooter_player.NickName, victim_name = victime_player.NickName;
-
-        int shooter_newKills = DMPanelManager.GetPlayerKillCount(shooter_name) + 1, victime_newDeaths = DMPanelManager.GetPlayerDeathCount(victim_name) + 1;
+    public override void RegisterKill(PhotonPlayer victim, PhotonPlayer shooter) {
+        int shooter_newKills = DMPanelManager.GetPlayerKillCount(shooter.NickName) + 1, victime_newDeaths = DMPanelManager.GetPlayerDeathCount(victim.NickName) + 1;
 
         //only master update the player properties
         if (PhotonNetwork.isMasterClient) {
@@ -216,8 +202,8 @@ public class DMManager : GameManager {
             ExitGames.Client.Photon.Hashtable h3 = new ExitGames.Client.Photon.Hashtable();
             h3.Add("Deaths", victime_newDeaths);
 
-            shooter_player.SetCustomProperties(h2);
-            victime_player.SetCustomProperties(h3);
+            shooter.SetCustomProperties(h2);
+            victim.SetCustomProperties(h3);
         }
 
         //Update max kills
@@ -225,21 +211,17 @@ public class DMManager : GameManager {
             CurrentMaxKills = shooter_newKills;
         }
 
-        photonView.RPC("UpdateScores", PhotonTargets.All, shooter_viewID, shooter_newKills, victim_viewID, victime_newDeaths);
+        photonView.RPC("UpdateScores", PhotonTargets.All, shooter, shooter_newKills, victim, victime_newDeaths);
     }
 
     [PunRPC]
-    private void UpdateScores(int shooter_viewID, int shooter_kills, int victim_viewID, int victim_deaths) {
-        PhotonView shooter_pv = PhotonView.Find(shooter_viewID), victime_pv = PhotonView.Find(victim_viewID);
-
-        if(shooter_pv != null) {
-            string shooter_name = shooter_pv.owner.NickName;
-            DMPanelManager.RegisterKill(shooter_name, shooter_kills);
+    private void UpdateScores(PhotonPlayer shooter, int shooter_kills, PhotonPlayer victim, int victim_deaths) {
+        if(shooter != null) {
+            DMPanelManager.RegisterKill(shooter.NickName, shooter_kills);
         }
 
-        if(victime_pv != null) {
-            string victime_name = victime_pv.owner.NickName;
-            DMPanelManager.RegisterDeath(victime_name, victim_deaths);
+        if(victim != null) {
+            DMPanelManager.RegisterDeath(victim.NickName, victim_deaths);
         }
     }
 

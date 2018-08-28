@@ -100,7 +100,7 @@ public class BuildMech : Photon.MonoBehaviour {
         if (buildLocally) {
             if(!onPanel)OperatorStatsUI = FindObjectOfType< OperatorStatsUI >();
             buildMech(UserData.myData.Mech[0]);
-        } else { // Register my name on all clients
+        } else if (tag != "Drone") { // Register my name on all clients
             photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
         }
     }
@@ -128,7 +128,7 @@ public class BuildMech : Photon.MonoBehaviour {
     [PunRPC]
     private void SetName(string name) {//TODO : consider not putting here
         gameObject.name = name;
-        gm.RegisterPlayer(photonView.viewID);
+        gm.RegisterPlayer(PhotonNetwork.player);
     }
 
     public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
@@ -149,7 +149,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //set weapons if null (in offline)
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[15];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
 

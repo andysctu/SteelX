@@ -12,8 +12,8 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled) return;
 		animator.SetBool (grounded_id, true);
 		animator.SetBool (onMelee_id, false);
-		mcbt.CanMeleeAttack = true;//CanMeleeAttack is to avoid multi-slash in air 
 		mctrl.grounded = true;
+        mcbt.CanMeleeAttack = true;
         doubleButtonDown = false;
         isBoosting = false;
     }

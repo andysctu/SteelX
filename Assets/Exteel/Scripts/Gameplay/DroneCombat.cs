@@ -26,37 +26,29 @@ public class DroneCombat : Combat {
         EffectController = GetComponent<EffectController>();
         EffectController.RespawnEffect();
         CharacterController = GetComponent<CharacterController>();
-        gm.RegisterPlayer(photonView.viewID);
+        //gm.RegisterPlayer(photonView.viewID);
     }
 
     [PunRPC]
-    public override void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown = false) {
-        CurrentHP -= d;
+    private void ShieldOnHit(int damage, PhotonPlayer shooter, int shieldPos, string weaponName) {
+        if (isDead) { return; }
 
-        if (CheckIsSwordByStr(weapon)) {
-            EffectController.SlashOnHitEffect(false, 0);
-        }
+        //Shield shield = bm.Weapons[shieldPos] as Shield;
+        //if (shield == null) { Debug.LogWarning("shield is null."); return; }
 
-        if (CurrentHP <= 0) {
+        //TODO : shield on hit effect
+
+        //TODO : shield decrease dmg
+        CurrentHP -= damage;
+
+        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {
             DisableDrone();
-            //gm.RegisterKill(shooter_viewID, photonView.viewID);
         }
     }
 
     [PunRPC]
-    public void ShieldOnHit(int d, int shooter_viewID, int hand, string weapon) {
-        CurrentHP -= d;
-
-        if (CheckIsSwordByStr(weapon)) {
-            EffectController.SlashOnHitEffect(true, hand);
-        } else if (CheckIsSpearByStr(weapon)) {
-            EffectController.SmashOnHitEffect(true, hand);
-        }
-
-        if (CurrentHP <= 0) {
-            DisableDrone();
-            gm.RegisterKill(shooter_viewID, photonView.viewID);
-        }
+    protected override void DisablePlayer(PhotonPlayer shooter, string weapon) {
+        DisableDrone();
     }
 
     protected override void Update() {

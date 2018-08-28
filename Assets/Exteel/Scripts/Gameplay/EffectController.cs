@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+//TODO :　remove this class
 public class EffectController : MonoBehaviour {
     [SerializeField] private SkillController SkillController;
     [SerializeField] private ParticleSystem switchWeaponEffectL, switchWeaponEffectR;
     [SerializeField] private ParticleSystem boostingDust, respawnEffect, damageless;
-    [SerializeField] private GameObject shieldOnHit, slashOnHitEffect, smashOnHitEffect;
     [SerializeField] private Sounds Sounds;
     [SerializeField] private Animator Animator;
     [SerializeField] private AnimatorVars AnimatorVars;
@@ -105,35 +105,6 @@ public class EffectController : MonoBehaviour {
         yield return new WaitForSeconds(2);
         respawnEffect.Clear();
         respawnEffect.Stop();
-    }
-
-    public void SlashOnHitEffect(bool isShield, int hand) {//TODO : remake this
-        if (Hands == null) {
-            Debug.Log("Hands is null");
-            return;
-        }
-
-        if (isShield) {
-            if (transform.root.tag != "Drone") {
-                transform.root.GetComponent<BuildMech>().Weapons[mcbt.GetCurrentWeaponOffset() + hand].GetWeapon().GetComponent<ParticleSystem>().Play();
-            }else
-                transform.root.GetComponent<DroneCombat>().Shield.GetComponent<ParticleSystem>().Play();
-            //GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
-            //g.GetComponent<ParticleSystem>().Play();
-        } else {
-            GameObject g = Instantiate(slashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
-            g.GetComponent<ParticleSystem>().Play();
-        }
-    }
-
-    public void SmashOnHitEffect(bool isShield, int hand) {
-        if (isShield) {
-            GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
-            g.GetComponent<ParticleSystem>().Play();
-        } else {
-            GameObject g = Instantiate(smashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
-            g.GetComponent<ParticleSystem>().Play();
-        }
     }
 
     private void OnSkill(bool b) {

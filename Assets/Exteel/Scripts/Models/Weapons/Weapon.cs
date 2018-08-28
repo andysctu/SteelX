@@ -18,13 +18,15 @@ public abstract class Weapon{
     protected WeaponData anotherWeaponData;
 
     //Weapon infos
+    public string WeaponName;
     protected Transform WeapPos;
     protected int hand, pos;//Two-handed -> 0
+    protected KeyCode BUTTON;
     protected const int LEFT_HAND = 0, RIGHT_HAND = 1;    
     protected float timeOfLastUse;
     public bool allowBothWeaponUsing = true, isFiring = false;
 
-    protected int TerrainLayerMask, PlayerLayerMask;
+    protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
 
     public virtual void Init(WeaponData data, int pos, Transform WeapPos, MechCombat mcbt, Animator MechAnimator) {        
         this.data = data;
@@ -33,6 +35,9 @@ public abstract class Weapon{
         this.WeapPos = WeapPos;
         this.hand = pos%2;
         this.pos = pos;
+        BUTTON = (hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
+
+        WeaponName = data.weaponName;
 
         InstantiateWeapon(data);
         InitComponents();
@@ -67,7 +72,8 @@ public abstract class Weapon{
 
     private void InitLayerMask() {
         TerrainLayerMask = LayerMask.GetMask("Terrain");
-        PlayerLayerMask = LayerMask.GetMask("PlayerLayer");        
+        PlayerLayerMask = LayerMask.GetMask("PlayerLayer"); 
+        PlayerAndTerrainMask = TerrainLayerMask | PlayerLayerMask;
     }
 
     protected virtual void AddAudioSource(GameObject weapon) {
@@ -96,7 +102,7 @@ public abstract class Weapon{
     public abstract void HandleCombat();//Process Input
     public abstract void HandleAnimation();
 
-    public abstract void AttackTarget(GameObject target, bool isShield);
+    public abstract void OnTargetEffect(GameObject target, bool isShield);
 
     public virtual void OnSkillAction(bool enter) {
     }

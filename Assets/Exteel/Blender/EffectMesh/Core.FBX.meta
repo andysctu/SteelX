@@ -11,7 +11,12 @@ ModelImporter:
     2300000: //RootNode
     3300000: //RootNode
     4300000: Core
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lighteningSpear_a00
+    second: {fileID: 2100000, guid: 644d1cd08ebc4a744a454c04aced08e2, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

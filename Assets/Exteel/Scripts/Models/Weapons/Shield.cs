@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 
-
 public class Shield : Weapon {
+    private ShieldActionReceiver ShieldActionReceiver;
+    private AudioClip OnHitSound;
+    private ParticleSystem shieldOnHitEffect;
+    private int block_id;
 
     public Shield() {
         allowBothWeaponUsing = false;
@@ -10,17 +13,23 @@ public class Shield : Weapon {
     public override void Init(WeaponData data, int hand, Transform handTransform, MechCombat mcbt, Animator Animator) {
         base.Init(data, hand, handTransform, mcbt, Animator);
         InitComponents();
-        ResetAnimationVars();
+        AddShieldActionReceiver();
+        ResetAnimationVars();        
     }
 
     protected override void InitComponents() {
+        //shieldOnHitEffect
+        block_id = (hand == 0)? AnimatorVars.blockL_id : AnimatorVars.blockR_id;
+    }
 
+    private void AddShieldActionReceiver() {
+        ShieldActionReceiver = weapon.AddComponent<ShieldActionReceiver>();
+        ShieldActionReceiver.SetHand(hand);
     }
 
     private void ResetAnimationVars() {
         isFiring = false;
-        MechAnimator.SetBool("BlockL", false);
-        MechAnimator.SetBool("BlockR", false);
+        MechAnimator.SetBool(block_id, false);
     }
 
     public override void OnSkillAction(bool enter) {
@@ -28,54 +37,69 @@ public class Shield : Weapon {
         ResetAnimationVars();
     }
 
-    public override void OnDestroy() {
-        base.OnDestroy();
-    }
-
     public override void OnSwitchedWeaponAction() {
-        throw new System.NotImplementedException();
-    }
-
-    public override void HandleAnimation() {
-        //does not process input if
-        //animator.GetBool("OnMelee")
-
-        throw new System.NotImplementedException();
+        ResetAnimationVars();
     }
 
     public override void HandleCombat() {
-        //Shield updater's update
-        //    bulletPrefabs[i] = null;
-        //    ShieldUpdater shieldUpdater = weapons[i].GetComponentInChildren<ShieldUpdater>();
-        //    shieldUpdater.SetDefendEfficiency(((ShieldData)weaponDatas[i]).defend_melee_efficiency, ((ShieldData)weaponDatas[i]).defend_ranged_efficiency);
-        //    shieldUpdater.SetHand(i % 2);
+        if (!Input.GetKey(BUTTON) || IsOverHeat()) {
+            isFiring = false;
+            return;
+        }
+
+        if(anotherWeapon != null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring) return;
+
+        isFiring = true;
+    }
+
+    public override void HandleAnimation() {
+        if (isFiring) {
+            if (!MechAnimator.GetBool(block_id)) {
+                MechAnimator.SetBool(block_id, true);
+            }
+        } else {
+            if(MechAnimator.GetBool(block_id)) {
+                MechAnimator.SetBool(block_id, false);
+            }
+        }
     }
 
     protected override void LoadSoundClips() {
-        throw new System.NotImplementedException();
+        //OnHitSound = ((ShieldData)data)
     }
 
-    public override void AttackTarget(GameObject target, bool isShield) {
-        throw new System.NotImplementedException();
+    public override void OnTargetEffect(GameObject target, bool isShield) {
+        Debug.LogError("This should not get called.");
+    }
+
+    public void OnHitEffect() {
+        //Play Onhit sound
+
+
+    }
+
+    public override void OnDestroy() {
+        base.OnDestroy();
     }
 }
 
-//        case (int)GeneralWeaponTypes.Shield:
-//        if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || getIsFiring((hand + 1) % 2)) {
-//            setIsFiring(hand, false);
-//            return;
-//        }
-//        break;
+/*
+     public void SlashOnHitEffect(bool isShield, int hand) {//TODO : remake this
+        if (Hands == null) {
+            Debug.Log("Hands is null");
+            return;
+        }
 
-
-//        case (int)GeneralWeaponTypes.Shield:
-//        if (!getIsFiring((hand + 1) % 2))
-//            setIsFiring(hand, true);
-//        break;
-
-//            case (int)GeneralWeaponTypes.Shield:
-//            animator.SetBool((hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id, true);
-//            break;
-//ELSE 
-//        if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Shield)
-//            animator.SetBool((hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id, false);
+        if (isShield) {
+            if (transform.root.tag != "Drone") {
+                transform.root.GetComponent<BuildMech>().Weapons[mcbt.GetCurrentWeaponOffset() + hand].GetWeapon().GetComponent<ParticleSystem>().Play();
+            }else
+                transform.root.GetComponent<DroneCombat>().Shield.GetComponent<ParticleSystem>().Play();
+            //GameObject g = Instantiate(shieldOnHit, Hands[hand].position - Hands[hand].transform.forward * 2, Quaternion.identity, Hands[hand]);
+            //g.GetComponent<ParticleSystem>().Play();
+        } else {
+            GameObject g = Instantiate(slashOnHitEffect, transform.position + MECH_MID_POINT, Quaternion.identity, transform);
+            g.GetComponent<ParticleSystem>().Play();
+        }
+    }
+     */

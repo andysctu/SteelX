@@ -24,11 +24,7 @@ public class DMPanelManager : MonoBehaviour {
         MapRawImage.rectTransform.sizeDelta = new Vector2(MapPanelController.Width, MapPanelController.Height);
     }
 
-    public void RegisterPlayer(int player_viewID) {
-        PhotonView pv = PhotonView.Find(player_viewID);
-        string name;
-        name = (pv.tag == "Drone") ? "Drone" + Random.Range(0, 9999) : pv.owner.NickName;
-
+    public void RegisterPlayer(PhotonPlayer player) {
         if (playerScores == null) {
             playerScores = new Dictionary<string, Score>();
         }
@@ -39,16 +35,15 @@ public class DMPanelManager : MonoBehaviour {
         ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
 
         Score score = new Score();
-        if (pv.tag != "Drone") {
-            string kills, deaths;
-            kills = (pv.owner.CustomProperties["Kills"] == null) ? "0" : pv.owner.CustomProperties["Kills"].ToString();
-            deaths = (pv.owner.CustomProperties["Deaths"] == null) ? "0" : pv.owner.CustomProperties["Deaths"].ToString();
-            ps.transform.Find("Kills").GetComponent<Text>().text = kills;
-            ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
+        string kills, deaths;
+        kills = (player.CustomProperties["Kills"] == null) ? "0" : player.CustomProperties["Kills"].ToString();
+        deaths = (player.CustomProperties["Deaths"] == null) ? "0" : player.CustomProperties["Deaths"].ToString();
+        ps.transform.Find("Kills").GetComponent<Text>().text = kills;
+        ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
 
-            score.Kills = int.Parse(kills);
-            score.Deaths = int.Parse(deaths);
-        }
+        score.Kills = int.Parse(kills);
+        score.Deaths = int.Parse(deaths);
+        
         playerScores.Add(name, score);
 
         //Parent player stat to scorepanel

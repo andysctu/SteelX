@@ -52,6 +52,7 @@ public class MechController : Photon.MonoBehaviour {
 
     private void Awake() {
         RegisterOnMechBuilt();
+        RegisterOnWeaponSwithed();
         RegisterOnSkill();
         RegisterOnMechEnabled();
     }
@@ -68,6 +69,10 @@ public class MechController : Photon.MonoBehaviour {
             bm.OnMechBuilt += FindBoosterController;
             bm.OnMechBuilt += initControllerVar;
         }
+    }
+
+    private void RegisterOnWeaponSwithed() {
+        mechCombat.OnWeaponSwitched += UpdateWeightRelatedVars;
     }
 
     private void RegisterOnMechEnabled() {
@@ -112,7 +117,10 @@ public class MechController : Photon.MonoBehaviour {
         BoosterController = boosterBone.GetComponentInChildren<BoosterController>();
     }
 
-    public void UpdateWeightRelatedVars(int partWeight, int weaponWeight) {
+    public void UpdateWeightRelatedVars() {
+        int partWeight = bm.MechProperty.Weight, weaponOffset = mechCombat.GetCurrentWeaponOffset();
+        int weaponWeight = ((bm.WeaponDatas[weaponOffset] == null) ? 0 : bm.WeaponDatas[weaponOffset].weight) + ((bm.WeaponDatas[weaponOffset + 1] == null) ? 0 : bm.WeaponDatas[weaponOffset + 1].weight);
+
         movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(partWeight, weaponWeight) * 0.08f;
         movementVariables.maxHorizontalBoostSpeed = bm.MechProperty.GetDashSpeed(partWeight + weaponWeight) * 0.1f;
         movementVariables.minBoostSpeed = (movementVariables.moveSpeed + movementVariables.maxHorizontalBoostSpeed) / 2f;

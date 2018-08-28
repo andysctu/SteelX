@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Combat : Photon.MonoBehaviour {    
+public class Combat : Photon.MonoBehaviour {
     protected GameManager gm;
 
     //Combat variable
@@ -14,7 +14,7 @@ public class Combat : Photon.MonoBehaviour {
     private float max_EN = 2000;
     protected bool isENAvailable = true;
 
-    [HideInInspector]public bool isDead;
+    [HideInInspector] public bool isDead;
 
     //Game variables
     protected const int playerlayer = 8, ignoreRayCastLayer = 2, default_layer = 0;
@@ -35,6 +35,15 @@ public class Combat : Photon.MonoBehaviour {
         InitGameVariables();
     }
 
+    protected void FindGameManager() {
+        gm = FindObjectOfType<GameManager>();
+    }
+
+    protected void InitGameVariables() {
+        TerrainLayerMask = LayerMask.GetMask("Terrain");
+        PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
+    }
+
     protected virtual void Update() {
         if (forceDead) {//Debug use
             forceDead = false;
@@ -43,19 +52,48 @@ public class Combat : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    public virtual void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown) { }
+    public virtual void OnHit(int damage, PhotonPlayer shooter, int weapPos) {//If weapon has some effects
+        if (isDead || shooter == null) { return; }
 
-    protected void FindGameManager() {
-        gm = FindObjectOfType<GameManager>();     
+        GameObject shooterMech = ((GameObject)shooter.TagObject);
+        BuildMech bm = (shooterMech == null) ? null : shooterMech.GetComponent<BuildMech>();
+        if (bm == null) { Debug.LogWarning("OnHit bm null : tag Object is not init."); return; }
+
+        Weapon shooterWeapon = bm.Weapons[weapPos];
+        if (shooterWeapon == null) { Debug.LogWarning("shooterWeapon is null."); return; }
+
+        shooterWeapon.OnTargetEffect(gameObject, false);
+
+        if (CurrentHP - damage >= MAX_HP) {
+            CurrentHP = MAX_HP;
+        } else {
+            CurrentHP -= damage;
+        }
+
+        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {//sync disable player
+            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, shooterWeapon.WeaponName);
+        }
     }
 
-    protected void InitGameVariables() {
-        TerrainLayerMask = LayerMask.GetMask("Terrain");
-        PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
+    [PunRPC]
+    public virtual void OnHit(int damage, PhotonPlayer shooter, string weaponName) {
+        if (isDead || shooter == null) { return; }
+
+        CurrentHP -= damage;
+
+        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {//sync disable player
+            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, weaponName);
+        }
     }
 
-    public int GetMaxHp() {
-        return MAX_HP;
+    [PunRPC]
+    protected virtual void EnablePlayer() {
+        OnMechEnabled(true);
+    }
+
+    [PunRPC]
+    protected virtual void DisablePlayer(PhotonPlayer shooter, string weapon) {
+        OnMechEnabled(false);
     }
 
     public bool IsHpFull() {
@@ -66,7 +104,7 @@ public class Combat : Photon.MonoBehaviour {
         MAX_EN = EN;
         if (CurrentEN > MAX_EN) {
             CurrentEN = MAX_EN;
-        }       
+        }
     }
 
     [System.Serializable]

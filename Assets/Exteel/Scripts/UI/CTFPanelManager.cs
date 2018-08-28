@@ -31,12 +31,7 @@ public class CTFPanelManager : MonoBehaviour {
         RedScoreText.text = redScore.ToString();
     }
 
-    public void RegisterPlayer(int player_viewID) {
-        PhotonView pv = PhotonView.Find(player_viewID);
-        string name;
-
-        name = (pv.tag == "Drone") ? "Drone" + Random.Range(0, 9999) : pv.owner.NickName;
-
+    public void RegisterPlayer(PhotonPlayer player) {
         if (playerScores == null) {
             playerScores = new Dictionary<string, Score>();
         }
@@ -47,27 +42,22 @@ public class CTFPanelManager : MonoBehaviour {
         ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
 
         Score score = new Score();
-        if (pv.tag != "Drone") {
-            string kills, deaths;
-            kills = (pv.owner.CustomProperties["Kills"]==null)? "0" : pv.owner.CustomProperties["Kills"].ToString();
-            deaths = (pv.owner.CustomProperties["Deaths"] == null) ? "0" : pv.owner.CustomProperties["Deaths"].ToString();
-            ps.transform.Find("Kills").GetComponent<Text>().text = kills;
-            ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
+        string kills, deaths;
+        kills = (player.CustomProperties["Kills"]==null)? "0" : player.CustomProperties["Kills"].ToString();
+        deaths = (player.CustomProperties["Deaths"] == null) ? "0" : player.CustomProperties["Deaths"].ToString();
+        ps.transform.Find("Kills").GetComponent<Text>().text = kills;
+        ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
 
-            score.Kills = int.Parse(kills);
-            score.Deaths = int.Parse(deaths);
-        }
+        score.Kills = int.Parse(kills);
+        score.Deaths = int.Parse(deaths);
+        
         playerScores.Add(name, score);
 
         //Parent player stat to scorepanel
-        if (pv.tag != "Drone") {
-            if (pv.owner.GetTeam() == PunTeams.Team.blue || pv.owner.GetTeam() == PunTeams.Team.none) {
-                ps.transform.SetParent(Panel_BlueTeam.transform);
-            } else {
-                ps.transform.SetParent(Panel_RedTeam.transform);
-            }
-        } else {
+        if (player.GetTeam() == PunTeams.Team.blue || player.GetTeam() == PunTeams.Team.none) {
             ps.transform.SetParent(Panel_BlueTeam.transform);
+        } else {
+            ps.transform.SetParent(Panel_RedTeam.transform);
         }
 
         ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
@@ -77,17 +67,10 @@ public class CTFPanelManager : MonoBehaviour {
         playerScorePanels.Add(name, ps);
     }
 
-    public void RegisterKill(int shooter_viewID, int victim_viewID) {
-        PhotonView shooter_pv = PhotonView.Find(shooter_viewID),
-            victime_pv = PhotonView.Find(victim_viewID);
+    public void RegisterKill(PhotonPlayer victim, PhotonPlayer shooter) {
+        if (victim==null || shooter==null || victim.TagObject == null) return;
 
-        if (shooter_pv == null || victime_pv == null || victime_pv.tag == "Drone") return;
-
-        PhotonPlayer shooter_player = null, victime_player = null;
-        shooter_player = shooter_pv.owner;
-        victime_player = victime_pv.owner;
-
-        string shooter_name = shooter_player.NickName, victim_name = victime_player.NickName;
+        string shooter_name = shooter.NickName, victim_name = victim.NickName;
 
         //only master update the room properties
         if (PhotonNetwork.isMasterClient) {
@@ -96,8 +79,8 @@ public class CTFPanelManager : MonoBehaviour {
 
             ExitGames.Client.Photon.Hashtable h3 = new ExitGames.Client.Photon.Hashtable();
             h3.Add("Deaths", playerScores[victim_name].Deaths + 1);
-            shooter_player.SetCustomProperties(h2);
-            victime_player.SetCustomProperties(h3);
+            shooter.SetCustomProperties(h2);
+            victim.SetCustomProperties(h3);
         }
 
         Score newShooterScore = new Score();

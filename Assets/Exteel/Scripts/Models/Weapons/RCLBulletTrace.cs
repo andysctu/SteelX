@@ -105,9 +105,9 @@ public class RCLBulletTrace : MonoBehaviour {
 				} else {
                     colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
                 }
-                ShieldUpdater shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldUpdater>();
+                ShieldActionReceiver shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldActionReceiver>();
                 int hand = shieldUpdater.GetHand();
-                colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, (int)(bulletdmg * shieldUpdater.GetDefendEfficiency(false)), shooter_viewID, hand, "RCL");
+                //colliderPV.RPC ("ShieldOnHit", PhotonTargets.All, (int)(bulletdmg * shieldUpdater.GetDefendEfficiency(false)), shooter_viewID, hand, "RCL");
 
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position,cam.transform.position, true);
 			} else {
