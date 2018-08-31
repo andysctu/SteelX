@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
 
-public class ShieldActionReceiver : MonoBehaviour {
-    private AnimatorVars AnimatorVars;
+public class ShieldActionReceiver : MonoBehaviour { 
     private Animator Animator;
     private GameObject boxcollider;
     private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
     private float rotOffset = 10;//make
-    private int hand;//which hand holds this?
+    private int hand, pos;//which hand holds this?
+    private int block_id = 0;
 
     private void Start() {
         InitComponents();
     }
 
-    private void InitComponents() {
+    private void InitComponents() {//TODO : improve this
         Transform CurrentMech = transform.root.Find("CurrentMech");
 
         boxcollider = GetComponentInChildren<BoxCollider>().gameObject;
@@ -21,22 +21,24 @@ public class ShieldActionReceiver : MonoBehaviour {
         if (CurrentMech == null) {
             enabled = false;
         } else {
-            Animator = CurrentMech.GetComponent<Animator>();
-            AnimatorVars = CurrentMech.GetComponent<AnimatorVars>();
+            Animator = CurrentMech.GetComponent<Animator>();            
         }
     }
 
-    public void SetHand(int hand) {
-        this.hand = hand;
+    public void SetPos(int pos) {
+        this.hand = pos%2;
+        this.pos = pos;
+
+        block_id = Animator.StringToHash((hand==0)? "BlockL" : "BlockR");
     }
 
-    public int GetHand() {
-        return hand;
+    public int GetPos() {
+        return pos;
     }
 
-    private void LateUpdate() {//TODO : get bool
-        if(Animator != null) //this happens when shield get destroyed
-            if (Animator.GetBool((hand == 0) ? "BlockL" : "BlockR")) {//TODO : no reference
+    private void LateUpdate() {
+        if(Animator != null && block_id != 0)
+            if (Animator.GetBool(block_id)) {
                 boxcollider.transform.LookAt(transform.root.position + MECH_MID_POINT);
                 boxcollider.transform.rotation = Quaternion.Euler(new Vector3(0, boxcollider.transform.rotation.eulerAngles.y + ((hand == 0) ? rotOffset : -rotOffset), 0));
             } else {

@@ -5,7 +5,8 @@ public abstract class RangedWeapon : Weapon {
     protected GameObject BulletPrefab;
     protected ParticleSystem Muz;
     protected Transform Effect_End;
-    protected Camera MechCam;    
+    protected Camera MechCam;
+    protected Crosshair Crosshair;
     //protected bool isFiring = false;
 
     private List<Transform> targets_in_collider;
@@ -19,12 +20,15 @@ public abstract class RangedWeapon : Weapon {
         BulletPrefab = ((RangedWeaponData)data).bulletPrefab;
 
         InitTargetProperties();
+    }
 
-        FindEffectEnd();
+    protected override void InitComponents() {
+        base.InitComponents();
+
+        MechCam = mcbt.GetCamera();
         FindMuz(Effect_End);
-        //MechCam = mcbt.GetCamera();
-
-        //Get Reload & Shot sound
+        FindEffectEnd();
+        Crosshair = MechCam.GetComponent<Crosshair>();
     }
 
     private void FindMuz(Transform Effect_End) {
@@ -51,11 +55,11 @@ public abstract class RangedWeapon : Weapon {
 
     public override void HandleCombat() {
         if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || !isUsable()) {
-            //isFiring = false;
+            isFiring = false;
             return;
         }
-        //does not process input if
-        //animator.GetBool("OnMelee")
+
+        if(anotherWeapon != null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring)return;
 
         //FireRaycast(MainCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MainCam.transform.forward, hand);
 
@@ -72,7 +76,7 @@ public abstract class RangedWeapon : Weapon {
     }
 
     public override void OnDestroy() {
-        throw new System.NotImplementedException();
+        
     }
 
 

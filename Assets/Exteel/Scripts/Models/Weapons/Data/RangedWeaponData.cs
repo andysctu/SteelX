@@ -2,5 +2,5 @@
 
 public abstract class RangedWeaponData : WeaponData {
     public GameObject bulletPrefab;
-    public AudioClip shoot_sound, reload_sound;
+    public AudioClip shotSound, reload_sound;
 }

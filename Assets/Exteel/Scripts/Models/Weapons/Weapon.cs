@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public abstract class Weapon{
+public abstract class Weapon {
     protected GameObject weapon;
     protected WeaponData data;
 
@@ -22,18 +22,18 @@ public abstract class Weapon{
     protected Transform WeapPos;
     protected int hand, pos;//Two-handed -> 0
     protected KeyCode BUTTON;
-    protected const int LEFT_HAND = 0, RIGHT_HAND = 1;    
+    protected const int LEFT_HAND = 0, RIGHT_HAND = 1;
     protected float timeOfLastUse;
     public bool allowBothWeaponUsing = true, isFiring = false;
 
     protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
 
-    public virtual void Init(WeaponData data, int pos, Transform WeapPos, MechCombat mcbt, Animator MechAnimator) {        
+    public virtual void Init(WeaponData data, int pos, Transform WeapPos, MechCombat mcbt, Animator MechAnimator) {
         this.data = data;
         this.mcbt = mcbt;
         this.MechAnimator = MechAnimator;
         this.WeapPos = WeapPos;
-        this.hand = pos%2;
+        this.hand = pos % 2;
         this.pos = pos;
         BUTTON = (hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
 
@@ -55,24 +55,24 @@ public abstract class Weapon{
         SetWeaponParent(weapon);
     }
 
-    protected virtual void InitComponents() {        
+    protected virtual void InitComponents() {
         photonView = mcbt.GetComponent<PhotonView>();
-        HeatBar = mcbt.GetComponentInChildren< HeatBar >();
-        AnimationEventController = MechAnimator.GetComponent< AnimationEventController >();
-        AnimatorVars = mcbt.GetComponentInChildren< AnimatorVars >();
+        HeatBar = mcbt.GetComponentInChildren<HeatBar>(true);
+        AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
+        AnimatorVars = mcbt.GetComponentInChildren<AnimatorVars>();
         AddAudioSource(weapon);
     }
 
     private void InitAnotherWeaponInfo() {
-        int weaponOffset = pos-2 >= 0 ? 2 : 0;
+        int weaponOffset = pos - 2 >= 0 ? 2 : 0;
         BuildMech bm = mcbt.GetComponent<BuildMech>();
-        anotherWeapon = bm.Weapons[weaponOffset + (hand +1) % 2];
+        anotherWeapon = bm.Weapons[weaponOffset + (hand + 1) % 2];
         anotherWeaponData = bm.WeaponDatas[weaponOffset + (hand + 1) % 2];
     }
 
     private void InitLayerMask() {
         TerrainLayerMask = LayerMask.GetMask("Terrain");
-        PlayerLayerMask = LayerMask.GetMask("PlayerLayer"); 
+        PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
         PlayerAndTerrainMask = TerrainLayerMask | PlayerLayerMask;
     }
 
@@ -91,7 +91,7 @@ public abstract class Weapon{
     protected abstract void LoadSoundClips();
 
     protected virtual void SwitchWeaponAnimationClips(Animator WeaponAnimator) {
-        if(WeaponAnimator == null || WeaponAnimator.runtimeAnimatorController == null) return;
+        if (WeaponAnimator == null || WeaponAnimator.runtimeAnimatorController == null) return;
 
         AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(WeaponAnimator.runtimeAnimatorController);
         WeaponAnimator.runtimeAnimatorController = animatorOverrideController;
@@ -111,17 +111,28 @@ public abstract class Weapon{
         ResetArmAnimatorState();
     }
 
+    public virtual void OnOverHeatAction(bool b) {
+    }
+
     private void ResetArmAnimatorState() {
         MechAnimator.Play("Idle", 1 + LEFT_HAND);
         MechAnimator.Play("Idle", 1 + RIGHT_HAND);
     }
 
     public virtual bool IsOverHeat() {
-        return HeatBar.IsOverHeat(mcbt.GetCurrentWeaponOffset() + hand);
+        return HeatBar.IsOverHeat(pos);
+    }
+
+    public virtual void SetOverHeat(bool b) {
+        HeatBar.SetOverHeat(pos, b);
+
+        if (b) {
+            OnOverHeatAction(b);
+        }
     }
 
     public virtual void IncreaseHeat() {
-        HeatBar.IncreaseHeatBar(mcbt.GetCurrentWeaponOffset() + hand, data.heat_increase_amount);
+        HeatBar.IncreaseHeat(pos, data.heat_increase_amount);
     }
 
     public virtual void OnAttackStateEnter(MechStateMachineBehaviour state) {//Some weapon logics are animation-dependent
@@ -153,7 +164,7 @@ public abstract class Weapon{
     }
 
     public virtual void OnDestroy() {
-        if(weapon != null)Object.Destroy(weapon);
+        if (weapon != null) Object.Destroy(weapon);
     }
 
     private bool CheckTargetIsDead(GameObject target) {

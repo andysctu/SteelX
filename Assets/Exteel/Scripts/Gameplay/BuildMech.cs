@@ -101,7 +101,7 @@ public class BuildMech : Photon.MonoBehaviour {
             if(!onPanel)OperatorStatsUI = FindObjectOfType< OperatorStatsUI >();
             buildMech(UserData.myData.Mech[0]);
         } else if (tag != "Drone") { // Register my name on all clients
-            photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
+            photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player);
         }
     }
 
@@ -126,9 +126,9 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    private void SetName(string name) {//TODO : consider not putting here
-        gameObject.name = name;
-        gm.RegisterPlayer(PhotonNetwork.player);
+    private void SetName(PhotonPlayer player) {//TODO : consider not putting here
+        gameObject.name = player.NickName;
+        gm.RegisterPlayer(player);
     }
 
     public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
@@ -414,6 +414,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //Init
         WeaponDatas[pos] = data;
+        Weapons[pos] = (Weapon)(WeaponDatas[pos].GetWeaponObject());
         Transform weapPos = (WeaponDatas[pos].twoHanded) ? hands[(pos + 1) % 2] : hands[pos % 2];
         Weapons[pos].Init(WeaponDatas[pos], pos % 2, weapPos, MechCombat, animator);
 

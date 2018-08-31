@@ -13913,7 +13913,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 2.9639225, y: 0}
+  m_AnchoredPosition: {x: 2.9639225, y: 0.6335601}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &588889697
@@ -23841,7 +23841,7 @@ MonoBehaviour:
   - {fileID: 906676772}
   - {fileID: 1611434733}
   - {fileID: 1273420905}
-  WeaponManager: {fileID: 0}
+  WeaponDataManager: {fileID: 11400000, guid: d591d77223c4c8c4f837fda8fd127b86, type: 2}
   SkillManager: {fileID: 11400000, guid: 37e42b9dcbadee14d82b5f933f9cec7f, type: 2}
   MechPartManager: {fileID: 11400000, guid: 301bd37785ab46a41b20270b6977193c, type: 2}
   OperatorStatsUI: {fileID: 746641305}
@@ -32690,7 +32690,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1533102527}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.89333344
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -34093,8 +34093,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 201130506}
   m_HandleRect: {fileID: 201130505}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.9964046
+  m_Value: 1
+  m_Size: 0.9964192
   m_NumberOfSteps: 1
   m_OnValueChanged:
     m_PersistentCalls:
@@ -35013,7 +35013,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000019073486}
+  m_AnchoredPosition: {x: 0, y: -0.000002861023}
   m_SizeDelta: {x: 0, y: 16}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1514220800

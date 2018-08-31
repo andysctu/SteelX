@@ -47,7 +47,7 @@ public class Combat : Photon.MonoBehaviour {
     protected virtual void Update() {
         if (forceDead) {//Debug use
             forceDead = false;
-            photonView.RPC("OnHit", PhotonTargets.All, 10000, photonView.viewID, "ForceDead", true);
+            photonView.RPC("OnHit", PhotonTargets.All, 10000, PhotonNetwork.player, "ForceDead");
         }
     }
 

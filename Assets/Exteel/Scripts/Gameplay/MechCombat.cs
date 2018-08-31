@@ -179,40 +179,21 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    private void ShieldOnHit(int damage, PhotonPlayer shooter, int shieldPos, string weaponName) {
-        if (isDead) { return; }
-
-        Shield shield = bm.Weapons[shieldPos] as Shield;
-        if (shield == null) { Debug.LogWarning("Called shield on hit but shield is null."); return; }
-
-        shield.OnHitEffect();
-
-        //TODO : shield decrease dmg
-        CurrentHP -= damage;
-
-        if (photonView.isMine) {//TODO :　improve anti-hack
-            if (bm.Weapons[shieldPos] != null && !bm.Weapons[shieldPos].IsOverHeat()) {
-                bm.Weapons[shieldPos].IncreaseHeat();
-            }
-            SkillController.IncreaseSP(damage / 2);
-        }
-
-        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {
-            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, weaponName);
-        }
-    }
-
-    [PunRPC]
-    private void ShieldOnHit(int damage, PhotonPlayer shooter, int weapPos, int shieldPos) {
+    private void ShieldOnHit(int damage, PhotonPlayer shooter, int weapPos, int shieldPos, int attackType) {//attackType :　Shield.defendtype
         if (isDead) { return; }
 
         Shield shield = bm.Weapons[shieldPos] as Shield;
         if (shield == null) { Debug.LogWarning("shield is null."); return; }
 
-        shield.OnHitEffect();
+        CurrentHP -= shield.DecreaseDmg(damage, attackType);
 
-        //TODO : shield decrease dmg
-        CurrentHP -= damage;
+        //if (shield.IsOverHeat()) {
+        //    //do nothing
+        //} else {
+        //    shield.IncreaseHeat();
+        //}
+
+        SkillController.IncreaseSP(damage / 2);
 
         GameObject shooterMech = ((GameObject)shooter.TagObject);
         BuildMech shooterBM = (shooterMech == null) ? null : shooterMech.GetComponent<BuildMech>();
@@ -223,17 +204,25 @@ public class MechCombat : Combat {
 
         shooterWeapon.OnTargetEffect(gameObject, true);
 
-        if (photonView.isMine) {//TODO :　improve anti-hack
-            if (shooterBM.Weapons[shieldPos] != null && !shooterBM.Weapons[shieldPos].IsOverHeat()) {
-                shooterBM.Weapons[shieldPos].IncreaseHeat();
-            }
-            SkillController.IncreaseSP(damage / 2);
-        }
+        //if (photonView.isMine) {//TODO :　improve anti-hack
+        //    if (shooterBM.Weapons[shieldPos] != null && !shooterBM.Weapons[shieldPos].IsOverHeat()) {
+        //        shooterBM.Weapons[shieldPos].IncreaseHeat();
+        //    }
+        //    SkillController.IncreaseSP(damage / 2);
+        //}   
 
         if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {
             photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, shooterWeapon.WeaponName);
         }
     }
+
+    //[PunRPC]
+    //private void WeaponOverHeat(int pos, bool b) {
+    //    Debug.Log("Set WeaponOverHeat : " + pos + " b : " + b);
+
+    //    if (bm.Weapons[pos] == null) { Debug.LogError("WeaponOverHeat : weapon is null");return;}
+    //    bm.Weapons[pos].SetOverHeat(b);
+    //}
 
     [PunRPC]
     private void OnLocked() {//TODO : remake this (using raise event)

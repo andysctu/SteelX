@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class EnableLocal : MonoBehaviour {
-    [SerializeField] private GameObject mainCamera, radar;
+    [SerializeField] private GameObject mainCamera, crosshairImage,radar;
 
     private void Awake() {
         EnableComponents(GetComponent<PhotonView>().isMine);
@@ -9,7 +9,12 @@ public class EnableLocal : MonoBehaviour {
     }
 
     private void EnableComponents(bool b) {
-        mainCamera.SetActive(b);
+        crosshairImage.SetActive(b);
+        mainCamera.GetComponent<Camera>().enabled = false;
+        mainCamera.GetComponent<MechCamera>().enabled = b;
+        mainCamera.GetComponentInChildren<Canvas>().enabled = b;
+        mainCamera.GetComponent<Crosshair>().enabled = false;
+
         radar.SetActive(b);
     }
 }

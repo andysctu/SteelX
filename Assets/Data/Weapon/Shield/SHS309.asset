@@ -15,7 +15,6 @@ MonoBehaviour:
     type: 2}
   weaponPrefab_rt: {fileID: 1104480446687680, guid: 5d277719c4b911348bdd44fcb8f8036f,
     type: 2}
-  weaponType: Shield
   weaponName: SHS309
   displayName: 
   Grip:
@@ -32,5 +31,10 @@ MonoBehaviour:
   twoHanded: 0
   SPincreaseAmount: 0
   skillAnimations: []
+  OnHitEffect: {fileID: 198083256526380310, guid: 8f645cb3acdaa234ba0eb582358d0ff7,
+    type: 2}
+  OverheatEffect: {fileID: 198636949724833354, guid: 226e969f7aa03d34b949fefe3742baf0,
+    type: 2}
+  OnHitSound: {fileID: 0}
   defend_melee_efficiency: 0.5
   defend_ranged_efficiency: 0.5

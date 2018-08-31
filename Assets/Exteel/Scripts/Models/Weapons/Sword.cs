@@ -142,7 +142,7 @@ public class Sword : MeleeWeapon {
     public override void OnTargetEffect(GameObject target, bool isShield) {
         
         if (isShield) {
-
+            Debug.Log("target : "+ target.name);
         } else {
             //Apply slowing down effect
             if (data.slowDown) {

@@ -53,7 +53,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &119610
 GameObject:
   m_ObjectHideFlags: 1
@@ -635,11 +635,7 @@ MonoBehaviour:
   forceDead: 0
   EffectController: {fileID: 114512345716719972}
   MainCam: {fileID: 2087740}
-  SkillController: {fileID: 114715354567852064}
   CanMeleeAttack: 1
-  scanRange: 0
-  MechSize: 0
-  TotalWeight: 0
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5510,12 +5506,6 @@ MonoBehaviour:
   boostingDust: {fileID: 198040932698162666}
   respawnEffect: {fileID: 198733366336531302}
   damageless: {fileID: 198420398624275908}
-  shieldOnHit: {fileID: 1761321348719524, guid: a24d5b63ce4027a4d9f6a244126c5b1c,
-    type: 2}
-  slashOnHitEffect: {fileID: 1308042831187524, guid: 27062e9c680405643b487a299c5c04a4,
-    type: 2}
-  smashOnHitEffect: {fileID: 1308042831187524, guid: 27062e9c680405643b487a299c5c04a4,
-    type: 2}
   Sounds: {fileID: 114000010976113334}
   Animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
@@ -5961,6 +5951,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 113264}
+  crosshairImage: {fileID: 106124}
   radar: {fileID: 1984927614146684}
 --- !u!114 &114895722533198232
 MonoBehaviour:

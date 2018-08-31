@@ -30,7 +30,7 @@ public class DMPanelManager : MonoBehaviour {
         }
 
         GameObject ps = Instantiate(PlayerStat, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-        ps.transform.Find("Pilot Name").GetComponent<Text>().text = name;
+        ps.transform.Find("Pilot Name").GetComponent<Text>().text = player.NickName;
         ps.transform.Find("Kills").GetComponent<Text>().text = "0";
         ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
 
@@ -44,7 +44,7 @@ public class DMPanelManager : MonoBehaviour {
         score.Kills = int.Parse(kills);
         score.Deaths = int.Parse(deaths);
         
-        playerScores.Add(name, score);
+        playerScores.Add(player.NickName, score);
 
         //Parent player stat to scorepanel
         ps.transform.SetParent(Panel.transform);
@@ -53,7 +53,7 @@ public class DMPanelManager : MonoBehaviour {
         ps.transform.localPosition = Vector3.zero;
         ps.transform.localRotation = Quaternion.identity;
 
-        playerScorePanels.Add(name, ps);
+        playerScorePanels.Add(player.NickName, ps);
     }
 
     public void RegisterKill(string shooter_name, int newKills) {

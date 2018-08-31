@@ -9,13 +9,14 @@ public class HeatBar : MonoBehaviour {
     [SerializeField] private PhotonView pv;//mech combat's pv
 
     private WeaponData[] weaponScripts;
-    private float[] curValue = new float[4];
+    private float[] curValue = new float[4] ;
+    private float[] cacheValues = new float[4], cacheTime = new float[4];
     private bool[] isOverHeat = new bool[4];
     private const float CooldownCoeffWhenNotOverHeat = 0.2f;
     private int cooldownRate, weaponOffset;
     private int MaxHeat;
     private Color32 RED = new Color32(255, 0, 0, 200), YELLOW = new Color32(255, 255, 85, 200);
-
+    
     private void Awake() {
         RegisterOnMechBuilt();
         RegisterOnWeaponSwitched();
@@ -61,7 +62,7 @@ public class HeatBar : MonoBehaviour {
                 curValue[i] = 0;
             }
         }
-
+        
         DrawBarL();
         DrawBarR();
     }
@@ -97,20 +98,28 @@ public class HeatBar : MonoBehaviour {
         for (int i = 0; i < 4; i++) {
             isOverHeat[i] = false;
             curValue[i] = 0;
+            cacheValues[i] = 0;
         }
     }
 
-    //TODO : check this
-    public void IncreaseHeatBar(int pos, float value) { //value : [0,100]
+    public void IncreaseHeat(int pos, float value) { //value : [0,100]
+        //if (!pv.isMine) { IncreaseCacheValue(pos, value); return; } else {
+        //    //TODO: test remove
+        //    IncreaseCacheValue(pos, value);
+        //}
+
+
         curValue[pos] += value;
+
         if (curValue[pos] >= MaxHeat) {
             curValue[pos] = MaxHeat;
             isOverHeat[pos] = true;
-            if(pos % 2 == 0) {
+
+            if (pos % 2 == 0) {
                 barL_fill.color = RED;
             } else {
                 barR_fill.color = RED;
-            }            
+            }
         }
     }
 
@@ -139,6 +148,60 @@ public class HeatBar : MonoBehaviour {
     }
 
     public bool IsOverHeat(int pos) {
+        //UpdateCacheValue(pos);
+        //Debug.Log("is over heat : "+isOverHeat[pos]);
         return isOverHeat[pos];
+    }
+
+    //private void IncreaseCacheValue(int pos, float value) {
+    //    Debug.Log("IncreaseCacheValue : "+ pos + " , value : "+value);
+
+    //    UpdateCacheValue(pos);
+
+    //    if (isOverHeat[pos]) {
+    //        //do nothing    
+    //    } else {
+    //        if (cacheValues[pos] + value >= MaxHeat) {
+    //            if (PhotonNetwork.isMasterClient) {
+    //                Debug.Log("master rpc overheat true : " + pos);
+    //                pv.RPC("WeaponOverHeat", PhotonTargets.All, pos, true);
+    //            }
+
+    //            cacheValues[pos] = MaxHeat;
+    //        } else {
+    //            cacheValues[pos] += value;
+    //        }
+    //    }
+    //}
+
+    //public void UpdateCacheValue(int pos) {
+    //    if (isOverHeat[pos]) {
+    //        if (cacheValues[pos] - (Time.time - cacheTime[pos]) * cooldownRate < 0) {
+    //            cacheValues[pos] = 0;
+
+    //            if (PhotonNetwork.isMasterClient) {
+    //                pv.RPC("WeaponOverHeat", PhotonTargets.All, pos, false);
+    //            }
+    //        } else {
+    //            cacheValues[pos] -= (Time.time - cacheTime[pos]) * cooldownRate;
+    //        }
+    //    } else {
+    //        if (cacheValues[pos] - (Time.time - cacheTime[pos]) * cooldownRate * CooldownCoeffWhenNotOverHeat < 0) {
+    //            cacheValues[pos] = 0;
+    //        } else {
+    //            cacheValues[pos] -= (Time.time - cacheTime[pos]) * cooldownRate * CooldownCoeffWhenNotOverHeat;
+    //        }
+    //    }
+
+    //    cacheTime[pos] = Time.time;
+    //    Debug.Log("cache value : " + cacheValues[pos] + " , curValue : " + curValue[pos]);
+    //}
+
+    public void SetOverHeat(int pos , bool b) {
+        isOverHeat[pos] = b;
+    }
+
+    public float GetCooldownLength(int pos) {
+        return MaxHeat/cooldownRate;
     }
 }
