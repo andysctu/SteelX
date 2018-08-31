@@ -14,7 +14,6 @@ MonoBehaviour:
   weaponPrefab_lft: {fileID: 1651160528419118, guid: 94cca59dc89f66f4aabcd2cfb29552e2,
     type: 2}
   weaponPrefab_rt: {fileID: 0}
-  weaponType: Cannon
   weaponName: BCN029
   displayName: 
   Grip:
@@ -33,7 +32,7 @@ MonoBehaviour:
   skillAnimations: []
   bulletPrefab: {fileID: 1089007466238554, guid: 4dc398f818ee4cd48b534a7bff5a72d1,
     type: 2}
-  shoot_sound: {fileID: 8300000, guid: 7e7c3404adab746a581da5465e70349c, type: 3}
+  shotSound: {fileID: 8300000, guid: 7e7c3404adab746a581da5465e70349c, type: 3}
   reload_sound: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
   Reload: {fileID: 7400002, guid: d674ab0e2f8211e498b277358c034076, type: 3}
   maxBullet: 2

@@ -14,7 +14,6 @@ MonoBehaviour:
   weaponPrefab_lft: {fileID: 1316237739393798, guid: a056fdeacf902ca449e3d6b3cfd6b916,
     type: 2}
   weaponPrefab_rt: {fileID: 0}
-  weaponType: SMG
   weaponName: LMG012
   displayName: 
   Grip:
@@ -33,7 +32,7 @@ MonoBehaviour:
   skillAnimations: []
   bulletPrefab: {fileID: 1447274583941618, guid: 7d5466a4f2e6ad84f93549dc21836832,
     type: 2}
-  shoot_sound: {fileID: 8300000, guid: a306b29fffc5e1b40b00efcf96bf9665, type: 3}
+  shotSound: {fileID: 8300000, guid: a306b29fffc5e1b40b00efcf96bf9665, type: 3}
   reload_sound: {fileID: 8300000, guid: f2e324f22f7f044d79a903cd2c96a372, type: 3}
   Atk: {fileID: 0}
   Reload: {fileID: 7400000, guid: 94226cc518ddf05469278303e2c1d059, type: 2}

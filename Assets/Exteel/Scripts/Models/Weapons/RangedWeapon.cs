@@ -1,25 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 public abstract class RangedWeapon : Weapon {
     protected GameObject BulletPrefab;
     protected ParticleSystem Muz;
+
     protected Transform Effect_End;
     protected Camera MechCam;
     protected Crosshair Crosshair;
-    //protected bool isFiring = false;
-
-    private List<Transform> targets_in_collider;
-    private GameObject[] Targets;
-    private bool[] isTargetShield;
-    private int[] target_HandOnShield;
-    private Vector3[] bullet_directions;
 
     public override void Init(WeaponData data, int hand, Transform handTransform, MechCombat mcbt, Animator Animator) {
         base.Init(data, hand, handTransform, mcbt, Animator);
+
         BulletPrefab = ((RangedWeaponData)data).bulletPrefab;
 
-        InitTargetProperties();
     }
 
     protected override void InitComponents() {
@@ -44,13 +37,6 @@ public abstract class RangedWeapon : Weapon {
 
     private void FindEffectEnd() {
         Effect_End = TransformExtension.FindDeepChild(weapon.transform, "EffectEnd");        
-    }
-
-    private void InitTargetProperties() {
-        Targets = new GameObject[2];
-        isTargetShield = new bool[2];
-        target_HandOnShield = new int[2];
-        bullet_directions = new Vector3[2];
     }
 
     public override void HandleCombat() {

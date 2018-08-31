@@ -229,7 +229,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1396204061408492}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 256.33, y: 19.08, z: -62.2}
+  m_LocalPosition: {x: 255.77, y: 19.08, z: -62.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4031004334932116}
@@ -315,7 +315,7 @@ MonoBehaviour:
   Granularity: 65
   Fps: 70
   MyColor: {r: 1, g: 1, b: 1, a: 1}
-  MyMaterial: {fileID: 2100000, guid: 75d4c004ae7742f49be8709ec6b64db6, type: 2}
+  MyMaterial: {fileID: 2100000, guid: df6824c830605f14dbb2163a12036b7c, type: 2}
 --- !u!137 &137241544305149568
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -423,7 +423,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1147280803
+  randomSeed: 1826924326
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3788,7 +3788,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1722091047
+  randomSeed: 162343654
   InitialModule:
     serializedVersion: 3
     enabled: 1

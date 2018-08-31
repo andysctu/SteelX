@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-
 public class SMG : RangedWeapon {
     private AudioClip shotSound, reloadSound;
 
