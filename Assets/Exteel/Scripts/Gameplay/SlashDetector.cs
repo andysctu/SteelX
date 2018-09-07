@@ -39,11 +39,12 @@ public class SlashDetector : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider target) {
+        Debug.Log("target enter : "+target);
         if (target.gameObject != User && target.tag[0] != 'S') {//in player layer but not shield => player
             if (GameManager.isTeamMode) {
-                if (target.tag == "Drone" || target.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
-                    return;
-            }
+                PhotonView pv = target.GetComponent<PhotonView>();
+                if (pv.owner.GetTeam() == PhotonNetwork.player.GetTeam() && pv.owner != PhotonNetwork.player) {return; }
+            } 
             Target.Add(target.transform);
         }
     }
@@ -51,7 +52,8 @@ public class SlashDetector : MonoBehaviour {
     private void OnTriggerExit(Collider target) {
         if (target.gameObject != User && target.tag[0] != 'S') {
             if (GameManager.isTeamMode) {
-                if (target.tag == "Drone" || target.GetComponent<PhotonView>().owner.GetTeam() == PhotonNetwork.player.GetTeam())
+                PhotonView pv = target.GetComponent<PhotonView>();
+                if (pv.owner.GetTeam() == PhotonNetwork.player.GetTeam() && pv.owner != PhotonNetwork.player)
                     return;
             }
             Target.Remove(target.transform);

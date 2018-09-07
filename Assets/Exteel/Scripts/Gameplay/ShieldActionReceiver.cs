@@ -28,7 +28,6 @@ public class ShieldActionReceiver : MonoBehaviour {
     public void SetPos(int pos) {
         this.hand = pos%2;
         this.pos = pos;
-
         block_id = Animator.StringToHash((hand==0)? "BlockL" : "BlockR");
     }
 

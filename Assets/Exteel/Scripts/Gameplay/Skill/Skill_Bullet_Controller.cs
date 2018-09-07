@@ -106,7 +106,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 if (!onTarget) {
                     GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
                     BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
-                    bulletTrace.SetStartDirection(-Effect_End.transform.right);
+                    //bulletTrace.SetStartDirection(-Effect_End.transform.right);
                 }
 
                 int i = 0;
@@ -123,8 +123,8 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
 
                         BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
 
-                        bulletTrace.SetTarget(t, false);
-                        bulletTrace.interactWithTerrainWhenOnTarget = false;
+                        //bulletTrace.SetTarget(t, false);
+                        //bulletTrace.interactWithTerrainWhenOnTarget = false;
                         if (showHit)
                             ShowHitMsg(t, bulletTrace);
                     } else {
@@ -136,11 +136,11 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 //not multi-Target
                 GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
                 BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
-                bulletTrace.interactWithTerrainWhenOnTarget = false;
+                //bulletTrace.interactWithTerrainWhenOnTarget = false;
                 if (onTarget) {
-                    bulletTrace.SetTarget(target, false);
+                    //bulletTrace.SetTarget(target, false);
                 } else {
-                    bulletTrace.SetStartDirection(Effect_End.forward);
+                    //bulletTrace.SetStartDirection(Effect_End.forward);
                 }
 
                 ShowHitMsg(target, bulletTrace);
@@ -215,9 +215,9 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
             }
         } else {
-            bulletTrace.SetShooter(player_pv);
-            bulletTrace.ShowHitOnBulletCollision(displayKill);
-            bulletTrace.SetCamera(cam);
+            //bulletTrace.SetShooter(player_pv);
+            //bulletTrace.ShowHitOnBulletCollision(displayKill);
+            //bulletTrace.SetCamera(cam);
         }
     }
 }

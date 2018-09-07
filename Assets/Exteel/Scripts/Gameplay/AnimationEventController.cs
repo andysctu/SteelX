@@ -233,13 +233,4 @@ public class AnimationEventController : MonoBehaviour {
             weaponAnimators[weaponOffset + hand].SetTrigger("Atk");
         }
     }
-    public void CallShoot(int hand) {//TODO : remake this
-        //MechCombat.InstantiateBulletTrace(hand);
-    }
-
-    public void CallReload(int hand) {//TODO : remake this
-        if (weaponAnimators[weaponOffset + hand] != null) {
-            weaponAnimators[weaponOffset + hand].SetTrigger("Reload");
-        }
-    }
 }

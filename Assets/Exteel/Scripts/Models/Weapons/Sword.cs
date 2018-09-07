@@ -13,9 +13,9 @@ public class Sword : MeleeWeapon {
         allowBothWeaponUsing = false;
     }
 
-    public override void Init(WeaponData data, int hand, Transform handTransform, MechCombat mcbt, Animator Animator) {
-        base.Init(data, hand, handTransform, mcbt, Animator);
-
+    public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
+        base.Init(data, pos, handTransform, Cbt, Animator);
+        InitComponents();
         threshold = ((SwordData)data).threshold;
 
         CheckIsAnotherWeaponSword();
@@ -23,8 +23,7 @@ public class Sword : MeleeWeapon {
         UpdateSlashAnimationThreshold();
     }
 
-    protected override void InitComponents() {
-        base.InitComponents();
+    private void InitComponents() {
         FindTrail(weapon);
     }
 
@@ -46,18 +45,18 @@ public class Sword : MeleeWeapon {
             return;
         }
 
-        if (Time.time - timeOfLastUse >= 1 / data.Rate) {
-            if (!receiveNextSlash || !mcbt.CanMeleeAttack) {return;}
+        if (Time.time - timeOfLastUse >= 1 / rate) {
+            if (!receiveNextSlash || !Cbt.CanMeleeAttack) {return;}
 
             if (curCombo == 3 && !isAnotherWeaponSword)return;
 
             if (anotherWeapon!=null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring)return;
 
-            mcbt.CanMeleeAttack = false;
+            Cbt.CanMeleeAttack = false;
             receiveNextSlash = false;
             timeOfLastUse = Time.time;
 
-            IncreaseHeat();
+            IncreaseHeat(data.heat_increase_amount);
 
             //Play Animation
             AnimationEventController.Slash(hand, curCombo);            
@@ -71,12 +70,12 @@ public class Sword : MeleeWeapon {
         base.ResetMeleeVars();
         curCombo = 0;
 
-        if (!mcbt.photonView.isMine) return;
+        if (!Cbt.photonView.isMine) return;
 
         receiveNextSlash = true;
 
-        mcbt.CanMeleeAttack = true;
-        mcbt.SetMeleePlaying(false);
+        Cbt.CanMeleeAttack = true;
+        Cbt.SetMeleePlaying(false);
         MechAnimator.SetBool("Slash", false);
     }
 
@@ -97,11 +96,11 @@ public class Sword : MeleeWeapon {
             receiveNextSlash = false;            
         } else {
             receiveNextSlash = true;
-            mcbt.CanMeleeAttack = true;
+            Cbt.CanMeleeAttack = true;
         }
     }
 
-    public override void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
+    protected override void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
         ((SlashState)state).SetThreshold(threshold);//the state is confirmed SlashState in mechCombat        
 
         //Play slash sound
@@ -121,13 +120,13 @@ public class Sword : MeleeWeapon {
         curCombo++;
     }
 
-    public override void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
+    protected override void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
         isFiring = false;
         receiveNextSlash = true;
         curCombo = 0;
     }
 
-    public override void OnAttackStateExit(MechStateMachineBehaviour state) {
+    protected override void OnAttackStateExit(MechStateMachineBehaviour state) {
         if (((SlashState)state).IsInAir()) {
             isFiring = false;
             receiveNextSlash = true;
@@ -139,10 +138,12 @@ public class Sword : MeleeWeapon {
        threshold = ((SwordData)data).threshold;
     }
 
-    public override void OnTargetEffect(GameObject target, bool isShield) {
+    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
         
         if (isShield) {
-            Debug.Log("target : "+ target.name);
+            if(targetWeapon != null) {
+                targetWeapon.PlayOnHitEffect();
+            }
         } else {
             //Apply slowing down effect
             if (data.slowDown) {
@@ -155,6 +156,9 @@ public class Sword : MeleeWeapon {
             ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
             TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
         }
-        
+    }
+
+    protected override void InitAttackType() {
+        attackType = AttackType.Melee;
     }
 }

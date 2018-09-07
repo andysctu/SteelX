@@ -56,7 +56,13 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
         }               
 
         if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space)) {
-			mctrl.SetCanVerticalBoost(true);
+            if (mctrl.grounded) {
+                Debug.Log("Jump action");
+            }
+            mctrl.grounded = false;
+            animator.SetBool(grounded_id, false);
+
+            mctrl.SetCanVerticalBoost(true);
 			animator.SetBool(jump_id, true);
 		}
 

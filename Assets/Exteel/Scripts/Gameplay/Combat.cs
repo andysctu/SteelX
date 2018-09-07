@@ -14,6 +14,9 @@ public class Combat : Photon.MonoBehaviour {
     private float max_EN = 2000;
     protected bool isENAvailable = true;
 
+    protected bool isMeleePlaying = false;
+    public bool IsSwitchingWeapon { get; protected set; }
+    public bool CanMeleeAttack = true;//This is false after melee attack in air
     [HideInInspector] public bool isDead;
 
     //Game variables
@@ -47,43 +50,24 @@ public class Combat : Photon.MonoBehaviour {
     protected virtual void Update() {
         if (forceDead) {//Debug use
             forceDead = false;
-            photonView.RPC("OnHit", PhotonTargets.All, 10000, PhotonNetwork.player, "ForceDead");
+            photonView.RPC("OnHit", PhotonTargets.All, 10000, PhotonNetwork.player, -1, -1, -1);
         }
     }
 
-    [PunRPC]
-    public virtual void OnHit(int damage, PhotonPlayer shooter, int weapPos) {//If weapon has some effects
-        if (isDead || shooter == null) { return; }
+    public virtual float GetAnimationLength(string name) {//TODO : improve this.
+        return 1;
+    }
 
-        GameObject shooterMech = ((GameObject)shooter.TagObject);
-        BuildMech bm = (shooterMech == null) ? null : shooterMech.GetComponent<BuildMech>();
-        if (bm == null) { Debug.LogWarning("OnHit bm null : tag Object is not init."); return; }
+    public virtual Weapon GetWeapon(int weapPos) {
+        return null;
+    }
 
-        Weapon shooterWeapon = bm.Weapons[weapPos];
-        if (shooterWeapon == null) { Debug.LogWarning("shooterWeapon is null."); return; }
-
-        shooterWeapon.OnTargetEffect(gameObject, false);
-
-        if (CurrentHP - damage >= MAX_HP) {
-            CurrentHP = MAX_HP;
-        } else {
-            CurrentHP -= damage;
-        }
-
-        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {//sync disable player
-            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, shooterWeapon.WeaponName);
-        }
+    public virtual WeaponData GetWeaponData(int weaponPos) {
+        return null;
     }
 
     [PunRPC]
-    public virtual void OnHit(int damage, PhotonPlayer shooter, string weaponName) {
-        if (isDead || shooter == null) { return; }
-
-        CurrentHP -= damage;
-
-        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {//sync disable player
-            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, weaponName);
-        }
+    public virtual void OnHit(int damage, PhotonPlayer shooter, int shooter_pvID, int weapPos, int targetWeapPos) {
     }
 
     [PunRPC]
@@ -105,6 +89,17 @@ public class Combat : Photon.MonoBehaviour {
         if (CurrentEN > MAX_EN) {
             CurrentEN = MAX_EN;
         }
+    }
+
+    public virtual Camera GetCamera() {
+        return null;
+    }
+
+    public virtual void IncreaseSP(int amount) {
+    }
+
+    public virtual void SetMeleePlaying(bool b) {
+        isMeleePlaying = b;
     }
 
     [System.Serializable]

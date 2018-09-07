@@ -171,9 +171,6 @@ public class Crosshair : MonoBehaviour {
                     continue;
 
                 if (isTeamMode) {
-                    if (target.GetComponent<Collider>().tag == "Drone") {
-                        continue;
-                    }
                     if (!isTargetAlly) {
                         if (targetpv.owner.GetTeam() == pv.owner.GetTeam()) {
                             continue;
@@ -194,7 +191,7 @@ public class Crosshair : MonoBehaviour {
                     continue;
 
                 Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
-                Vector3 rayStartPoint = transform.root.position + new Vector3(0, 10, 0); //rayStartpoint should not inside terrain => not detect
+                Vector3 rayStartPoint = transform.root.position + new Vector3(0, 5, 0); //rayStartpoint should not inside terrain => not detect
                 Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
                 if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
                     //check if Terrain block the way

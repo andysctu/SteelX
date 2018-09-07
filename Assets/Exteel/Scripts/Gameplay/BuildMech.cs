@@ -92,15 +92,15 @@ public class BuildMech : Photon.MonoBehaviour {
         CheckIsDataGetSaved();
 
         // If this is not me, don't build this mech. Someone else will RPC build it
-        if (!buildLocally && !photonView.isMine) return;
+        if (!buildLocally && !photonView.isMine && tag!="Drone") return;
 
         InitMechData();
         InitAnimatorControllers();
 
-        if (buildLocally) {
+        if (buildLocally || tag == "Drone") {//TODO : Drone build mech 
             if(!onPanel)OperatorStatsUI = FindObjectOfType< OperatorStatsUI >();
             buildMech(UserData.myData.Mech[0]);
-        } else if (tag != "Drone") { // Register my name on all clients
+        } else{ // Register my name on all clients
             photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player);
         }
     }
@@ -150,8 +150,8 @@ public class BuildMech : Photon.MonoBehaviour {
         //set weapons if null (in offline)
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[6];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[15];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[13];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[7];
 
         if (skill_IDs == null) {//TODO : remake this
             Debug.Log("skill_ids is null. Set defualt skills");
@@ -202,7 +202,7 @@ public class BuildMech : Photon.MonoBehaviour {
         buildSkills(skill_IDs);
 
         // Replace weapons
-        BuildWeapons(new string[4] { parts[5], parts[6], parts[7], parts[8] });
+        if(tag!="Drone")BuildWeapons(new string[4] { parts[5], parts[6], parts[7], parts[8] });
 
         if (!buildLocally) {
             UpdateMechCombatVars();

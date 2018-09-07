@@ -36,13 +36,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012364431528}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.053703, y: 12.86, z: -143.01}
+  m_LocalRotation: {x: 0.11132569, y: -0.20796882, z: -0.023831777, w: 0.97148734}
+  m_LocalPosition: {x: -15.228, y: 12.86, z: -143.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 11.911, y: -24.733002, z: -5.431}
 --- !u!54 &54618469836763750
 Rigidbody:
   m_ObjectHideFlags: 1
@@ -64,21 +64,16 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012364431528}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5cb4bb06fb89a42daa1f25bfbcd1a824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletImpact_onShield: {fileID: 1761321348719524, guid: a24d5b63ce4027a4d9f6a244126c5b1c,
-    type: 2}
   bulletImpact: {fileID: 1000011334909706, guid: ca90bef2e1958284eaff81fcf9315827,
     type: 2}
   Terrain:
     serializedVersion: 2
     m_Bits: 10
-  go_straight: 1
-  bulletSpeed: 350
-  otherDirSpeed: 80
   interactWithTerrainWhenOnTarget: 1
 --- !u!198 &198000011201848454
 ParticleSystem:
@@ -147,7 +142,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 0.6
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -292,7 +287,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3.49
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -333,7 +328,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.8
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -415,8 +410,8 @@ ParticleSystem:
     startRotationX:
       serializedVersion: 2
       minMaxState: 3
-      scalar: -1.5707963
-      minScalar: 1.5707963
+      scalar: 0
+      minScalar: 0
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -456,7 +451,7 @@ ParticleSystem:
     startRotationY:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1.3089969
+      scalar: 1.5707963
       minScalar: 1.5707963
       maxCurve:
         serializedVersion: 2
@@ -536,7 +531,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 200
+    maxNumParticles: 1
     size3D: 1
     rotation3D: 1
     gravityModifier:
@@ -582,7 +577,7 @@ ParticleSystem:
         m_RotationOrder: 4
   ShapeModule:
     serializedVersion: 5
-    enabled: 1
+    enabled: 0
     type: 4
     angle: 0
     length: 5
@@ -700,7 +695,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 5
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -912,7 +907,7 @@ ParticleSystem:
     x:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.5707963
+      scalar: 0
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3477,7 +3472,7 @@ ParticleSystemRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_RenderMode: 0
+  m_RenderMode: 4
   m_SortMode: 0
   m_MinParticleSize: 0
   m_MaxParticleSize: 0.5
@@ -3490,7 +3485,7 @@ ParticleSystemRenderer:
   m_Pivot: {x: 0, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
   m_VertexStreams: 0001030405
-  m_Mesh: {fileID: 4300000, guid: 906698a666efcfc49bdbf671efb528b8, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 259478838a2e4ad4a96014747d657ec5, type: 3}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}

@@ -1,159 +1,152 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletTrace : MonoBehaviour {
-    [SerializeField] private GameObject bulletImpact_onShield, bulletImpact;
-    [SerializeField] private LayerMask Terrain;
-
-    [Tooltip("Does this bullet go straight?")]
-    [SerializeField] private bool go_straight = true;
-
-    private ParticleSystem ps;
+    [SerializeField] private GameObject ImpactPrefab;
     private Camera cam;
-    private Rigidbody rb;
-    private PhotonView shooter_pv;
+    private PhotonView shooter_pv;    
+
+    private ParticleSystem bullet_ps;
+    private BulletImpact bulletImpact;
+    private ParticleSystem.Particle[] particles;
+    private List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>();
+
+    //Targets components
+    private DisplayHitMsg displayHitMsg;
+    private Combat cbt;
     private Transform target;
-    private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0), startDirection, dir, destination;
+    private Weapon targetWeapon;
+    private bool isTargetShield, isfollow = false;
 
-    private bool isTargetShield;
-    private bool isfollow = false;
-    [SerializeField]private float bulletSpeed = 350, otherDirSpeed = 80;
-    private bool isCollided = false;
-    private bool showHitOnBulletCollision = false, displayKill = false;
+    //Bullet variables
+    private float interval = 1, timeOfLastSpawn, bulletSpeed;
+    private int maxBulletNum, numParticlesAlive, totalSpawnedBulletNum;
+    private Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
 
-    [HideInInspector]public bool interactWithTerrainWhenOnTarget = true;
-
-    void Start() {
-        initComponents();
-        initVelocity();
-        if(ps!=null)ps.Play();
-        Destroy(gameObject, 2f);
+    private void Awake() {
+        InitComponents();
     }
 
-    void initComponents() {
-        ps = GetComponent<ParticleSystem>();
-        rb = GetComponent<Rigidbody>();
+    private void InitComponents() {
+        bullet_ps = GetComponent<ParticleSystem>();
+        bulletImpact = Instantiate(ImpactPrefab).GetComponent<BulletImpact>();
+        bulletSpeed = bullet_ps.main.startSpeed.constant;
     }
 
-    void initVelocity() {
-        if (target == null) {//no target => move directly
-            GetComponent<Rigidbody>().velocity = startDirection * bulletSpeed;
-            transform.LookAt(startDirection * 9999);
-        } else {//target exists
-            transform.LookAt(target);
-        }
-    }
-
-    public void SetStartDirection(Vector3 startDirection) {
-        this.startDirection = startDirection.normalized;
-    }
-
-    public void SetShooter(PhotonView shooter_pv) {
+    public void InitBulletTrace(Camera cam, PhotonView shooter_pv) {
+        this.cam = cam;
         this.shooter_pv = shooter_pv;
     }
 
-    public void SetTarget(Transform target, bool isTargetShield) {
-        this.target = target;
-        this.isTargetShield = isTargetShield;
-        isfollow = (target != null);
+    public void SetParticleSystem(int maxBulletNum, float interval) {
+        this.interval = interval;
+        this.maxBulletNum = maxBulletNum;
+        particles = new ParticleSystem.Particle[maxBulletNum];
     }
 
-    public void SetCamera(Camera cam) {
-        this.cam = cam;
-    }
+    public void SetTarget(Transform TargetPlayer, Weapon TargetWeapon) {
+        this.targetWeapon = TargetWeapon;
 
-    public void ShowHitOnBulletCollision(bool displayKill) {
-        showHitOnBulletCollision = true;
-        this.displayKill = displayKill;
-    }
+        isTargetShield = (TargetWeapon != null && TargetWeapon.IsShield());
+        isfollow = (TargetPlayer != null);
 
-    void Update() {
-        if (!isfollow) {
-            return;
+        if (TargetPlayer != null) {
+            displayHitMsg = TargetPlayer.GetComponent<DisplayHitMsg>();
+            cbt = TargetPlayer.GetComponent<Combat>();
+        }
+
+        if (isTargetShield) {
+            this.target = TargetWeapon.GetWeapon().transform;
         } else {
-            if(target == null) {//target exit game
-                Destroy(this);
-                return;
+            this.target = TargetPlayer;
+        }
+    }
+
+    private void LateUpdate() {
+        if (isfollow) {
+            if (target == null) { Stop(); return; }
+        }
+
+        if (totalSpawnedBulletNum >= maxBulletNum) {
+            if (numParticlesAlive == 0) Stop();
+        } else {
+            if (Time.time - timeOfLastSpawn > interval) {
+                transform.LookAt(cam.transform.forward * 9999);
+                timeOfLastSpawn = Time.time;
+                totalSpawnedBulletNum++;
+                bullet_ps.Emit(1);
+
+                //Show hit when the bullet is spawned
+                if (isfollow) ShowHitMsg(target);
             }
+        }
 
+        numParticlesAlive = bullet_ps.GetParticles(particles);
 
-            if (!isCollided) {
-                if (isTargetShield) {
-                    dir = (target.position - transform.position).normalized;
-                    transform.LookAt(target.position);
-                    destination = target.position;
+        if (isfollow) {
+            for (int i = 0; i < numParticlesAlive; i++) {
+                if (Vector3.Distance(particles[i].position, target.position) <= bulletSpeed * Time.deltaTime) {
+                    PlayImpact(particles[i].position);
+                    particles[i].remainingLifetime = 0;
                 } else {
-                    dir = (target.position + MECH_MID_POINT - transform.position).normalized;
-                    transform.LookAt(target.position + MECH_MID_POINT);
-                    destination = target.position + MECH_MID_POINT;
+                    particles[i].velocity = ((isTargetShield) ? (target.position - particles[i].position) : (target.position + MECH_MID_POINT - particles[i].position)).normalized * bulletSpeed;
                 }
+            }
+        }
 
-                if (go_straight)
-                    rb.velocity = bulletSpeed * dir;
-                else {
-                    //TODO : improve this
-                    rb.velocity = bulletSpeed * dir + Vector3.up * otherDirSpeed;
-                    otherDirSpeed -= Time.deltaTime * 100;
-                }
+        bullet_ps.SetParticles(particles, numParticlesAlive);
+    }
 
-                if (Vector3.Distance(transform.position, destination) < bulletSpeed * Time.deltaTime) {
-                    isCollided = true;
-                    PlayImpact(transform.position);
-                    if (ps != null) {
-                        ps.Stop();
-                        ps.Clear();
-                    }
-                    rb.velocity = Vector3.zero;
-                    //show hit msg
-                    ShowHitMsg(target);
+    public void Play() {
+        totalSpawnedBulletNum = 0;
+        enabled = true;
+    }
+
+    public void Stop() {
+        enabled = false;
+        Destroy(gameObject, 2);
+    }
+
+    private void ShowHitMsg(Transform target) {
+        if (shooter_pv.isMine) {
+            if (displayHitMsg == null || cbt == null) return;
+
+            if (cbt.CurrentHP <= 0)
+                displayHitMsg.Display(DisplayHitMsg.HitMsg.KILL, cam);
+            else {
+                if (isTargetShield) {
+                    displayHitMsg.Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
+                } else {
+                    displayHitMsg.Display(DisplayHitMsg.HitMsg.HIT, cam);
                 }
-                
             }
         }
     }
 
-    void ShowHitMsg(Transform target) {
-        //show hit msg
-        if (showHitOnBulletCollision && shooter_pv.isMine) {
-            MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
-            if (mcbt == null) {
-                //drone
-                if (target.transform.root.GetComponent<DroneCombat>().CurrentHP <= 0)
-                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
-                else
-                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
-            } else {
-                if (mcbt.CurrentHP <= 0)
-                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
-                else
-                    target.transform.root.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
-            }
+    private void OnParticleCollision(GameObject other) {
+        int numCollisionEvents = bullet_ps.GetCollisionEvents(other, collisionEvents);
+        int i = 0;
+        while (i < numCollisionEvents) {
+            Vector3 collisionHitLoc = collisionEvents[i].intersection;
+            bulletImpact.Play(collisionHitLoc);
+            i++;
         }
     }
 
-    void OnParticleCollision(GameObject other) {
-        if (isCollided || !interactWithTerrainWhenOnTarget)
-            return;
+    private void PlayImpact(Vector3 impactPoint) {
+        if (target == null) return;
 
-        isCollided = true;
-        PlayImpact(transform.position);
-        Destroy(gameObject);
-    }
-
-    void PlayImpact(Vector3 impactPoint) {
-        GameObject impact = null;
-        Transform bulletCollector = transform.parent;
         if (!isTargetShield) {
-            impact = Instantiate(bulletImpact, impactPoint, Quaternion.identity, bulletCollector);
-
-            impact.GetComponent<ParticleSystem>().Play();
+            bulletImpact.Play(impactPoint);
         } else {
-            if(target == null)return;
+            if (isTargetShield) targetWeapon.PlayOnHitEffect();
+            else Debug.LogError("targetWeapon is null");
+        }
+    }
 
-            ParticleSystem ps_onShield = target.GetComponent<ParticleSystem>();            
-            if (ps_onShield != null)//ps_onShield sometimes is null ( target respawn too fast so the shield get destroyed first )
-                ps_onShield.Play();
+    private void OnDestroy() {
+        if (bulletImpact != null) {
+            Destroy(bulletImpact.gameObject);
         }
     }
 }

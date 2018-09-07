@@ -1,11 +1,37 @@
 ﻿using UnityEngine;
 
 public class Rectifier : RangedWeapon {
-    public override void OnTargetEffect(GameObject target, bool isShield) {
+    public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
+        throw new System.NotImplementedException();
+    }
+
+    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void UpdateAnimationSpeed() {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void InitAttackType() {
+        throw new System.NotImplementedException();
+    }
+
+
+
+    protected override void UpdateMuzzleEffect() {
         throw new System.NotImplementedException();
     }
 
     protected override void LoadSoundClips() {
+        throw new System.NotImplementedException();
+    }
+
+    protected override void UpdateMechArmState() {
         throw new System.NotImplementedException();
     }
 }
@@ -34,3 +60,12 @@ public class Rectifier : RangedWeapon {
 //        break;
 //    }
 //}
+
+
+//    } else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Rectifier) {
+//        GameObject bullet = Instantiate(bullets[weaponOffset + hand], Effect_Ends[weaponOffset + hand].position, Quaternion.LookRotation(bullet_directions[hand])) as GameObject;
+//        ElectricBolt eb = bullet.GetComponent<ElectricBolt>();
+//        bullet.transform.SetParent(Effect_Ends[weaponOffset + hand]);
+//        bullet.transform.localPosition = Vector3.zero;
+//        eb.SetCamera(MainCam);
+//        eb.SetTarget((Targets[hand] == null) ? null : Targets[hand].transform);

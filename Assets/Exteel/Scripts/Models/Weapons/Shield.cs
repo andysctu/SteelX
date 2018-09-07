@@ -1,41 +1,38 @@
 ﻿using UnityEngine;
 
 public class Shield : Weapon {
+    private Transform EffectEnd;
     private ShieldActionReceiver ShieldActionReceiver;
     private AudioClip OnHitSound;
     private ParticleSystem OnHitEffect, OverheatEffect;
 
     private int block_id = 0;
 
-    public enum DefendType { Melee, Ranged, Cannon, Rocket, Skill, Debuff, None }
-
     public Shield() {
         allowBothWeaponUsing = false;
     }
     
-    public override void Init(WeaponData data, int hand, Transform handTransform, MechCombat mcbt, Animator Animator) {
-        base.Init(data, hand, handTransform, mcbt, Animator);
+    public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
+        base.Init(data, pos, handTransform, Cbt, Animator);
         InitComponents();
         AddShieldActionReceiver();
         AttachEffects();
         ResetAnimationVars();
     }
 
-    protected override void InitComponents() {
-        base.InitComponents();
-
-        if (AnimatorVars != null)
-            block_id = (hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id;
+    private void InitComponents() {
+        EffectEnd = weapon.transform.Find("EffectEnd");
+        if (AnimatorVars != null)block_id = (hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id;
     }
 
     private void AddShieldActionReceiver() {
         ShieldActionReceiver = weapon.AddComponent<ShieldActionReceiver>();
-        ShieldActionReceiver.SetPos(hand);
+        ShieldActionReceiver.SetPos(weapPos);        
     }
 
     private void AttachEffects() {
         //OnHitEffect
-        OnHitEffect = Object.Instantiate(((ShieldData)data).OnHitEffect, weapon.transform);
+        OnHitEffect = Object.Instantiate(((ShieldData)data).OnHitEffect, EffectEnd);
         TransformExtension.SetLocalTransform(OnHitEffect.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
 
         //OverheatEffect
@@ -53,7 +50,7 @@ public class Shield : Weapon {
         ResetAnimationVars();
     }
 
-    public override void OnSwitchedWeaponAction() {
+    public override void OnSwitchedWeaponAction(bool b) {
         ResetAnimationVars();
     }
 
@@ -84,11 +81,14 @@ public class Shield : Weapon {
         OnHitSound = ((ShieldData)data).OnHitSound;
     }
 
-    public override void OnTargetEffect(GameObject target, bool isShield) {
-        Debug.LogError("This should not get called.");
+    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
     }
 
-    public void OnHitAction() {
+    public override void OnHitAction(Combat shooter, Weapon shooterWeapon) {
+        IncreaseHeat(shooterWeapon.GetRawDamage() / 10);//TODO : improve this
+    }
+
+    public override void PlayOnHitEffect() {
         AudioSource.PlayOneShot(OnHitSound);
 
         OnHitEffect.Play();
@@ -99,7 +99,7 @@ public class Shield : Weapon {
 
         if (b) {
             var main = OverheatEffect.main;
-            main.duration = HeatBar.GetCooldownLength(pos);
+            main.duration = HeatBar.GetCooldownLength(weapPos);
 
             OverheatEffect.Play();
         } else {
@@ -107,20 +107,22 @@ public class Shield : Weapon {
         }        
     }
 
-    public int DecreaseDmg(int damage, int attackType) {
+    public override int ProcessDamage(int damage, AttackType attackType) {
         int newDmg = damage;
-        float efficiencyCoeff = (IsOverHeat())? 1.5f : 1;
+        float efficiencyCoeff = (IsOverHeat())? 1.5f : 1, efficiency = 1;
 
-        switch ((DefendType)attackType) {
-            case DefendType.Melee:
-            newDmg = (int)(newDmg * (((ShieldData)data).defend_melee_efficiency * efficiencyCoeff));
+        switch (attackType) {
+            case AttackType.Melee:
+            efficiency = Mathf.Clamp(((ShieldData)data).defend_melee_efficiency * efficiencyCoeff, 0, 1);
+            newDmg = (int)(newDmg * efficiency);
             break;
-            case DefendType.Ranged:
-            case DefendType.Cannon:
-            case DefendType.Rocket:
-            newDmg = (int)(newDmg * (((ShieldData)data).defend_ranged_efficiency * efficiencyCoeff));
+            case AttackType.Ranged:
+            case AttackType.Cannon:
+            case AttackType.Rocket:
+            efficiency = Mathf.Clamp(((ShieldData)data).defend_ranged_efficiency * efficiencyCoeff, 0, 1);
+            newDmg = (int)(newDmg * efficiency);
             break;
-            case DefendType.None:
+            case AttackType.None:
             break;
             default:
             break;
@@ -129,7 +131,19 @@ public class Shield : Weapon {
         return newDmg;
     }
 
+    public override bool IsShield() {
+        return true;
+    }
+
     public override void OnDestroy() {
         base.OnDestroy();
+    }
+
+    protected override void InitAttackType() {
+        attackType = AttackType.None;
+    }
+
+    public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
+        throw new System.NotImplementedException();
     }
 }

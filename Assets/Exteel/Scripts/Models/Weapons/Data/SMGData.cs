@@ -3,6 +3,7 @@
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/SMG", order = 3)]
 public class SMGData : RangedWeaponData {
     [SerializeField]private AnimationClip Atk, Reload;
+    public int bulletNum = 6;
 
     SMGData() {
         WeaponType = typeof(SMG);

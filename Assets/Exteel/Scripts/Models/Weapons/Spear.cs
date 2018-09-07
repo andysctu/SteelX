@@ -7,16 +7,15 @@ public class Spear : MeleeWeapon {
         allowBothWeaponUsing = false;
     }
 
-    public override void Init(WeaponData data, int hand, Transform handTransform, MechCombat mcbt, Animator Animator) {
-        base.Init(data, hand, handTransform, mcbt, Animator);
-
+    public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
+        base.Init(data, pos, handTransform, Cbt, Animator);
+        InitComponents();
         //threshold = ((SpearData)data).threshold;
 
         //UpdateSmashAnimationThreshold();
     }
 
-    protected override void InitComponents() {
-        base.InitComponents();
+    private void InitComponents() {
         //FindTrail(weapon);
     }
 
@@ -34,15 +33,15 @@ public class Spear : MeleeWeapon {
             return;
         }
 
-        if (Time.time - timeOfLastUse >= 1 / data.Rate) {
-            if (!mcbt.CanMeleeAttack) { return; }
+        if (Time.time - timeOfLastUse >= 1 / rate) {
+            if (!Cbt.CanMeleeAttack) { return; }
 
             if (anotherWeapon != null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring) return;
 
-            mcbt.CanMeleeAttack = false;
+            Cbt.CanMeleeAttack = false;
             timeOfLastUse = Time.time;
 
-            IncreaseHeat();
+            IncreaseHeat(data.heat_increase_amount);
 
             //Play Animation
             AnimationEventController.Smash(hand);
@@ -55,10 +54,10 @@ public class Spear : MeleeWeapon {
     protected override void ResetMeleeVars() {//this is called when on skill or init
         base.ResetMeleeVars();
 
-        if (!mcbt.photonView.isMine) return;
+        if (!Cbt.photonView.isMine) return;
 
-        mcbt.CanMeleeAttack = true;
-        mcbt.SetMeleePlaying(false);
+        Cbt.CanMeleeAttack = true;
+        Cbt.SetMeleePlaying(false);
     }
 
     //public void EnableWeaponTrail(bool b) {
@@ -76,11 +75,11 @@ public class Spear : MeleeWeapon {
 
         if (enter) {
         } else {
-            mcbt.CanMeleeAttack = true;
+            Cbt.CanMeleeAttack = true;
         }
     }
 
-    public override void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
+    protected override void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
         //((SmashState)state).SetThreshold(threshold);//the state is confirmed SmashState in mechCombat      
         
         WeaponAnimator.SetTrigger("Atk");
@@ -96,11 +95,11 @@ public class Spear : MeleeWeapon {
         }
     }
 
-    public override void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
+    protected override void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
         isFiring = false;
     }
 
-    public override void OnAttackStateExit(MechStateMachineBehaviour state) {
+    protected override void OnAttackStateExit(MechStateMachineBehaviour state) {
         if (((SmashState)state).IsInAir()) {
             isFiring = false;
         }
@@ -110,10 +109,11 @@ public class Spear : MeleeWeapon {
         //threshold = ((SpearData)data).threshold;
     }
 
-    public override void OnTargetEffect(GameObject target, bool isShield) {
+    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
 
         if (isShield) {
-
+            if(targetWeapon != null)
+                targetWeapon.PlayOnHitEffect();
         } else {
             //Apply slowing down effect
             if (data.slowDown) {
@@ -129,4 +129,7 @@ public class Spear : MeleeWeapon {
 
     }
 
+    protected override void InitAttackType() {
+        attackType = AttackType.Melee;
+    }
 }

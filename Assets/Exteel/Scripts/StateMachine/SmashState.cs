@@ -10,7 +10,7 @@ public class SmashState : MechStateMachineBehaviour {
 		base.Init(animator);
 
         hand = (stateInfo.IsTag("L")) ? 0 : 1;
-        mcbt.OnAttackStateEnter<Spear>(hand, this);//threshold is set in this
+        mcbt.OnWeaponStateCallBack<Spear>(hand, this, (int)MeleeWeapon.StateCallBackType.AttackStateEnter);//threshold is set in this
 
         if ( cc == null || !cc.enabled ) return;
 
@@ -33,7 +33,7 @@ public class SmashState : MechStateMachineBehaviour {
 
 	// OnStateMachineExit is called when exiting a statemachine via its Exit Node
 	override public void OnStateMachineExit(Animator animator, int stateMachinePathHash) {
-        mcbt.OnAttackStateMachineExit<Spear>(hand, this);
+        mcbt.OnWeaponStateCallBack<Spear>(hand, this, (int)MeleeWeapon.StateCallBackType.AttackStateMachineExit);
 
         if (cc == null || !cc.enabled) return;
         mcbt.CanMeleeAttack = true;
@@ -72,7 +72,7 @@ public class SmashState : MechStateMachineBehaviour {
     }
 
 	override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-        mcbt.OnAttackStateExit<Spear>(hand, this);
+        mcbt.OnWeaponStateCallBack<Spear>(hand, this, (int)MeleeWeapon.StateCallBackType.AttackStateExit);
 
         if (cc == null || !cc.enabled) return;
 

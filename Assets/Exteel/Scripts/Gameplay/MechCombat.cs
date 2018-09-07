@@ -12,11 +12,8 @@ public class MechCombat : Combat {
 
     // Combat variables
     private bool isWeaponOffsetSynced = false, onSkill;
-    private int weaponOffset = 0;
-    private bool isMeleePlaying = false;
-    private int scanRange, MechSize;
-    public bool IsSwitchingWeapon { get; private set; }
-    public bool CanMeleeAttack = true;//This is false after melee attack in air
+    private int weaponOffset = 0;    
+    private int scanRange, MechSize;    
 
     //Switching weapon action
     private Coroutine SwitchWeaponCoroutine;
@@ -62,6 +59,8 @@ public class MechCombat : Combat {
     }
 
     private void InitAnimatorControllers() {
+        if(animatorOverrideController != null) return;
+
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
 
@@ -152,67 +151,74 @@ public class MechCombat : Combat {
         }
     }
 
-    [PunRPC]
-    private void Shoot(int hand, Vector3 direction, int target_pvID, bool isShield, int target_handOnShield) {
-        RangedWeapon rangedWeapon = bm.Weapons[weaponOffset + hand] as RangedWeapon;
+    [PunRPC]//Pass PhotonPlayer is for efficiency (Drone doesn't have PhotonPlayer, so we need to use photonView ID to search the object) 
+    private void Shoot(int weapPos, Vector3 direction, PhotonPlayer TargetPlayer, int target_pvID, int targetWeapPos) {//targetWeapPos : if hit on this weapon , play onHitEffect
+        RangedWeapon rangedWeapon = bm.Weapons[weapPos] as RangedWeapon;
         if (rangedWeapon == null) { Debug.LogWarning("Cannot cast from source type to RangedWeapon."); return; }
-
-        rangedWeapon.Shoot(hand, direction, target_pvID, isShield, target_handOnShield);
+        rangedWeapon.Shoot(direction, TargetPlayer, target_pvID, targetWeapPos);
     }
 
     [PunRPC]
-    public override void OnHit(int damage, PhotonPlayer shooter, string weaponName) {//simple on hit
-        base.OnHit(damage, shooter, weaponName);
+    public override void OnHit(int damage, PhotonPlayer shooter, int shooter_pvID, int shooterWeapPos, int targetWeapPos) {
+        if (isDead || shooter == null) { return; }
 
-        if (photonView.isMine) {//TODO : improve anti hack
-            SkillController.IncreaseSP(damage / 2);
+        GameObject shooterMech = null;
+
+        //If shooter is null, use photonView id to search
+        if (shooter == null || shooter.TagObject == null) {
+            PhotonView shooter_pv = PhotonView.Find(shooter_pvID);
+            if(shooter_pv == null) {
+                Debug.LogWarning("shooter_pv is null. Is the shooter not existed?");
+                return;
+            } else {
+                shooterMech = shooter_pv.gameObject;
+            }
+        } else {
+            shooterMech = ((GameObject)shooter.TagObject);
         }
-    }
 
-    [PunRPC]
-    public override void OnHit(int damage, PhotonPlayer shooter, int weapPos) {//If weapon has some effects like slowing mech down
-        base.OnHit(damage, shooter, weapPos);
+        //Get shooter weapon
+        Combat shooter_cbt = (shooterMech == null) ? null : shooterMech.GetComponent<Combat>();
+        if (shooter_cbt == null) { Debug.LogWarning("cbt null."); return; }
 
-        if (photonView.isMine) {//TODO : improve anti hack
-            SkillController.IncreaseSP(damage / 2);
-        }
-    }
-
-    [PunRPC]
-    private void ShieldOnHit(int damage, PhotonPlayer shooter, int weapPos, int shieldPos, int attackType) {//attackType :　Shield.defendtype
-        if (isDead) { return; }
-
-        Shield shield = bm.Weapons[shieldPos] as Shield;
-        if (shield == null) { Debug.LogWarning("shield is null."); return; }
-
-        CurrentHP -= shield.DecreaseDmg(damage, attackType);
-
-        //if (shield.IsOverHeat()) {
-        //    //do nothing
-        //} else {
-        //    shield.IncreaseHeat();
-        //}
-
-        SkillController.IncreaseSP(damage / 2);
-
-        GameObject shooterMech = ((GameObject)shooter.TagObject);
-        BuildMech shooterBM = (shooterMech == null) ? null : shooterMech.GetComponent<BuildMech>();
-        if (shooterBM == null) { Debug.LogWarning("OnHit bm null : tag Object is not init."); return; }
-
-        Weapon shooterWeapon = shooterBM.Weapons[weapPos];
+        Weapon shooterWeapon = shooter_cbt.GetWeapon(shooterWeapPos);
         if (shooterWeapon == null) { Debug.LogWarning("shooterWeapon is null."); return; }
 
-        shooterWeapon.OnTargetEffect(gameObject, true);
+        Weapon.AttackType attackType = shooterWeapon.GetWeaponAttackType();
 
-        //if (photonView.isMine) {//TODO :　improve anti-hack
-        //    if (shooterBM.Weapons[shieldPos] != null && !shooterBM.Weapons[shieldPos].IsOverHeat()) {
-        //        shooterBM.Weapons[shieldPos].IncreaseHeat();
-        //    }
-        //    SkillController.IncreaseSP(damage / 2);
-        //}   
+        //Get target weapon (this player)
+        Weapon targetWeapon = null;
+        if (targetWeapPos != -1) {
+            targetWeapon = bm.Weapons[targetWeapPos];
+            if (targetWeapon == null) { Debug.LogWarning("targetWeapon is null."); return; }
+        }
 
-        if (CurrentHP <= 0 && PhotonNetwork.isMasterClient) {
-            photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, shooterWeapon.WeaponName);
+        //Play on hit effect
+        bool isShield = (targetWeapon != null && targetWeapon.IsShield());//some weapons may be shield in some state ( the general meaning of a shield )
+        shooterWeapon.OnTargetEffect(gameObject, targetWeapon, isShield);
+
+        if (targetWeapon != null) targetWeapon.OnHitAction(shooter_cbt, shooterWeapon);
+
+        //Process damage
+        int dmg = damage;
+        if(targetWeapon != null) dmg = targetWeapon.ProcessDamage(damage, attackType);
+
+
+        //Master handle logic
+        if (PhotonNetwork.isMasterClient) {
+            if (CurrentHP - dmg >= MAX_HP) {
+                CurrentHP = MAX_HP;
+            } else {
+                CurrentHP -= dmg;
+            }
+
+            if (CurrentHP <= 0) {//sync disable player
+                photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, shooterWeapon.WeaponName);
+            }
+        }
+
+        if (photonView.isMine) {//TODO : improve anti hack
+            IncreaseSP(damage / 2);
         }
     }
 
@@ -316,8 +322,6 @@ public class MechCombat : Combat {
     }
 
     private void LateUpdate() {
-        if (!photonView.isMine) return;
-
         bm.Weapons[weaponOffset].HandleAnimation();
         bm.Weapons[weaponOffset + 1].HandleAnimation();
     }
@@ -358,11 +362,15 @@ public class MechCombat : Combat {
             IsSwitchingWeapon = false;
             yield break;
         }
-        // Stop current attacks and reset
-        if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].OnSwitchedWeaponAction();
-        if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].OnSwitchedWeaponAction();
 
         weaponOffset = (weaponOffset + 2) % 4;
+
+        // Stop current attacks and reset
+        for (int i = 0; i < bm.Weapons.Length; i++) {
+            if (bm.Weapons[i] != null) {
+                bm.Weapons[i].OnSwitchedWeaponAction(i == weaponOffset || i == weaponOffset + 1);
+            }
+        }
 
         // Switch weapons by enable/disable renderers
         ActivateWeapons();
@@ -380,11 +388,8 @@ public class MechCombat : Combat {
     }
 
     private void ActivateWeapons() {//Not using SetActive because it causes weapon Animator to bind the wrong rotation if the weapon animation is not finished (SMG reload)
-        for (int i = 0; i < bm.Weapons.Length; i++) {
-            if (bm.Weapons[i] != null) {
-                bm.Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
-            }
-        }
+        for (int i = 0; i < bm.Weapons.Length; i++)
+            if (bm.Weapons[i] != null)bm.Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
     }
 
     public void UpdateMovementClips() {
@@ -395,6 +400,7 @@ public class MechCombat : Combat {
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
+
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 
@@ -428,8 +434,7 @@ public class MechCombat : Combat {
         else
             CurrentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime;
 
-        if (CurrentEN < 0)
-            CurrentEN = 0;
+        if (CurrentEN < 0)CurrentEN = 0;
     }
 
     public bool EnoughENToBoost() {
@@ -477,11 +482,27 @@ public class MechCombat : Combat {
         return weaponOffset;
     }
 
-    public Camera GetCamera() {
+    public override void IncreaseSP(int amount) {
+        SkillController.IncreaseSP(amount);
+    }
+
+    public override Camera GetCamera() {
         return MainCam;
     }
 
-    public void SetMeleePlaying(bool isPlaying) {
+    public override Weapon GetWeapon(int weapPos) {
+        return bm.Weapons[weapPos];
+    }
+
+    public override WeaponData GetWeaponData(int weaponPos) {
+        return bm.WeaponDatas[weaponPos];
+    }
+
+    public override float GetAnimationLength(string name) {//TODO : improve this. 
+        return clipOverrides[name].length;        
+    }
+
+    public override void SetMeleePlaying(bool isPlaying) {
         isMeleePlaying = isPlaying;
 
         MechController.onInstantMoving = isPlaying;
@@ -491,25 +512,9 @@ public class MechCombat : Combat {
         return isMeleePlaying;
     }
 
-    public void OnAttackStateEnter<T>(int hand, MechStateMachineBehaviour state) {
+    public void OnWeaponStateCallBack<T>(int hand, MechStateMachineBehaviour state, int type) {
         if (bm.Weapons[weaponOffset + hand] != null && bm.Weapons[weaponOffset + hand] is T) {
-            bm.Weapons[weaponOffset + hand].OnAttackStateEnter(state);
-        } else {
-            Debug.LogWarning("weapon is null or type mismatch");
-        }
-    }
-
-    public void OnAttackStateExit<T>(int hand, MechStateMachineBehaviour state) {
-        if (bm.Weapons[weaponOffset + hand] != null && bm.Weapons[weaponOffset + hand] is T) {
-            bm.Weapons[weaponOffset + hand].OnAttackStateExit(state);
-        } else {
-            Debug.LogWarning("weapon is null or type mismatch");
-        }
-    }
-
-    public void OnAttackStateMachineExit<T>(int hand, MechStateMachineBehaviour state) {
-        if (bm.Weapons[weaponOffset + hand] != null && bm.Weapons[weaponOffset + hand] is T) {
-            bm.Weapons[weaponOffset + hand].OnAttackStateMachineExit(state);
+            bm.Weapons[weaponOffset + hand].OnStateCallBack(type, state);
         } else {
             Debug.LogWarning("weapon is null or type mismatch");
         }

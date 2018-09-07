@@ -449,7 +449,15 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public bool CheckIsGrounded() {
-        return Physics.CheckSphere(transform.position + new Vector3(0, 1, 0), 2.0f, Terrain);
+        return Physics.CheckSphere(transform.position + new Vector3(0, 1.9f, 0), 2f, Terrain);
+    }
+
+    public void OnJumpAction() {
+
+    }
+
+    public void OnLandingAction() {
+
     }
 
     public void CallLockMechRot(bool b) {

@@ -631,11 +631,11 @@ MonoBehaviour:
     dashENDrain: 0
     energyOutput: 1000
     minENRequired: 450
+  CanMeleeAttack: 1
   isDead: 0
   forceDead: 0
   EffectController: {fileID: 114512345716719972}
   MainCam: {fileID: 2087740}
-  CanMeleeAttack: 1
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -664,7 +664,7 @@ MonoBehaviour:
   movementVariables:
     verticalBoostSpeed: 0
     maxHorizontalBoostSpeed: 60
-    jumpPower: 70
+    jumpPower: 65
     moveSpeed: 30
     minBoostSpeed: 50
     acceleration: 2

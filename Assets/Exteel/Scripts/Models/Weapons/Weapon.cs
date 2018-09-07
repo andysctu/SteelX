@@ -5,7 +5,8 @@ public abstract class Weapon {
     protected WeaponData data;
 
     //Components
-    protected MechCombat mcbt;
+    protected Transform WeaponTransform;
+    protected Combat Cbt;
     protected PhotonView photonView;
     protected HeatBar HeatBar;
     protected Animator MechAnimator, WeaponAnimator;
@@ -19,32 +20,40 @@ public abstract class Weapon {
 
     //Weapon infos
     public string WeaponName;
-    protected Transform WeapPos;
-    protected int hand, pos;//Two-handed -> 0
+    protected int hand, weapPos;//Two-handed -> 0
     protected KeyCode BUTTON;
     protected const int LEFT_HAND = 0, RIGHT_HAND = 1;
-    protected float timeOfLastUse;
+    protected float timeOfLastUse, rate;
     public bool allowBothWeaponUsing = true, isFiring = false;
 
     protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
 
-    public virtual void Init(WeaponData data, int pos, Transform WeapPos, MechCombat mcbt, Animator MechAnimator) {
-        this.data = data;
-        this.mcbt = mcbt;
+    public enum AttackType { Melee, Ranged, Cannon, Rocket, Skill, Debuff, None };
+    protected AttackType attackType;
+
+    public virtual void Init(WeaponData data, int pos, Transform WeapPos, Combat Cbt, Animator MechAnimator) {
+        InitDataRelatedVars(data);
+        this.Cbt = Cbt;
         this.MechAnimator = MechAnimator;
-        this.WeapPos = WeapPos;
+        this.WeaponTransform = WeapPos;
         this.hand = pos % 2;
-        this.pos = pos;
+        this.weapPos = pos;
+
         BUTTON = (hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
 
-        WeaponName = data.weaponName;
-
         InstantiateWeapon(data);
+        InitAttackType();
         InitComponents();
         InitAnotherWeaponInfo();
         InitLayerMask();
         LoadSoundClips();
         SwitchWeaponAnimationClips(WeaponAnimator);
+    }
+
+    protected virtual void InitDataRelatedVars(WeaponData data) {
+        this.data = data;
+        rate = data.Rate;
+        WeaponName = data.weaponName;
     }
 
     protected virtual void InstantiateWeapon(WeaponData data) {
@@ -55,19 +64,20 @@ public abstract class Weapon {
         SetWeaponParent(weapon);
     }
 
-    protected virtual void InitComponents() {
-        photonView = mcbt.GetComponent<PhotonView>();
-        HeatBar = mcbt.GetComponentInChildren<HeatBar>(true);
+    protected abstract void InitAttackType();
+
+    private void InitComponents() {
+        photonView = Cbt.GetComponent<PhotonView>();
+        HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
         AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
-        AnimatorVars = mcbt.GetComponentInChildren<AnimatorVars>();
+        AnimatorVars = Cbt.GetComponentInChildren<AnimatorVars>();
         AddAudioSource(weapon);
     }
 
     private void InitAnotherWeaponInfo() {
-        int weaponOffset = pos - 2 >= 0 ? 2 : 0;
-        BuildMech bm = mcbt.GetComponent<BuildMech>();
-        anotherWeapon = bm.Weapons[weaponOffset + (hand + 1) % 2];
-        anotherWeaponData = bm.WeaponDatas[weaponOffset + (hand + 1) % 2];
+        int weaponOffset = weapPos - 2 >= 0 ? 2 : 0;
+        anotherWeapon = Cbt.GetWeapon(weaponOffset + (hand + 1) % 2);
+        anotherWeaponData = Cbt.GetWeaponData(weaponOffset + (hand + 1) % 2);
     }
 
     private void InitLayerMask() {
@@ -82,10 +92,10 @@ public abstract class Weapon {
         //Init AudioSource
         AudioSource.spatialBlend = 1;
         AudioSource.dopplerLevel = 0;
-        AudioSource.volume = 1;
+        AudioSource.volume = 0.8f;
         AudioSource.playOnAwake = false;
-        AudioSource.minDistance = 50;
-        AudioSource.maxDistance = 350;
+        AudioSource.minDistance = 20;
+        AudioSource.maxDistance = 250;
     }
 
     protected abstract void LoadSoundClips();
@@ -102,46 +112,43 @@ public abstract class Weapon {
     public abstract void HandleCombat();//Process Input
     public abstract void HandleAnimation();
 
-    public abstract void OnTargetEffect(GameObject target, bool isShield);
+    public abstract void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield);
+
+    public virtual void PlayOnHitEffect() {
+    }
+
+    public virtual void OnHitAction(Combat shooter, Weapon shooterWeapon) {
+    }
 
     public virtual void OnSkillAction(bool enter) {
     }
 
-    public virtual void OnSwitchedWeaponAction() {
-        ResetArmAnimatorState();
+    public virtual void OnSwitchedWeaponAction(bool b) {
     }
 
     public virtual void OnOverHeatAction(bool b) {
     }
 
-    private void ResetArmAnimatorState() {
-        MechAnimator.Play("Idle", 1 + LEFT_HAND);
-        MechAnimator.Play("Idle", 1 + RIGHT_HAND);
-    }
-
     public virtual bool IsOverHeat() {
-        return HeatBar.IsOverHeat(pos);
+        if(HeatBar ==null)return false;
+
+        return HeatBar.IsOverHeat(weapPos);
     }
 
     public virtual void SetOverHeat(bool b) {
-        HeatBar.SetOverHeat(pos, b);
+        HeatBar.SetOverHeat(weapPos, b);
 
         if (b) {
             OnOverHeatAction(b);
         }
     }
 
-    public virtual void IncreaseHeat() {
-        HeatBar.IncreaseHeat(pos, data.heat_increase_amount);
+    public virtual int ProcessDamage(int damage, AttackType type) {
+        return damage;
     }
 
-    public virtual void OnAttackStateEnter(MechStateMachineBehaviour state) {//Some weapon logics are animation-dependent
-    }
-
-    public virtual void OnAttackStateExit(MechStateMachineBehaviour state) {
-    }
-
-    public virtual void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
+    public virtual void IncreaseHeat(int amount) {
+        if(HeatBar!=null)HeatBar.IncreaseHeat(weapPos, amount);
     }
 
     public virtual void ActivateWeapon(bool b) {//Not using setActive because if weapons have their own animations & are playing , disabling causes weapon animators to rebind the wrong rotation & position
@@ -152,13 +159,13 @@ public abstract class Weapon {
     }
 
     protected virtual void AdjustScale(GameObject weapon) {
-        float newscale = mcbt.transform.root.localScale.x * mcbt.transform.localScale.x;
+        float newscale = Cbt.transform.root.localScale.x * Cbt.transform.localScale.x;
         weapon.transform.localScale = new Vector3(weapon.transform.localScale.x * newscale,
         weapon.transform.localScale.y * newscale, weapon.transform.localScale.z * newscale);
     }
 
     protected virtual void SetWeaponParent(GameObject weapon) {
-        weapon.transform.SetParent(WeapPos);
+        weapon.transform.SetParent(WeaponTransform);
         weapon.transform.localRotation = Quaternion.Euler(90, 0, 0);
         weapon.transform.localPosition = Vector3.zero;
     }
@@ -176,7 +183,21 @@ public abstract class Weapon {
         }
     }
 
+    public virtual bool IsShield() {//general meaning of a shield
+        return false;
+    }
+
+    public int GetRawDamage() {
+        return data.damage;
+    }
+
     public GameObject GetWeapon() {
         return weapon;
     }
+
+    public AttackType GetWeaponAttackType() {
+        return attackType;
+    }
+
+    public abstract void OnStateCallBack(int type, MechStateMachineBehaviour state);
 }

@@ -80,6 +80,14 @@ public class MechIK : MonoBehaviour {
     private void Update() {
         if (LeftIK_on) {//case 1&2 => leftIK_on
             switch (mode) {
+                case 0:
+                ideal_roL = Vector3.SignedAngle(cam.transform.forward, transform.forward, transform.right);
+                ideal_roL = Mathf.Clamp(ideal_roL, -50, 40);
+                ideal_roL += 180 - hips.localRotation.eulerAngles.z;
+
+                upperArmL_rot = clavicle_L.localRotation.eulerAngles;
+                clavicle_L.localRotation = Quaternion.Euler(upperArmL_rot + new Vector3(ideal_roL, 0, 0));
+                break;
                 case 1:
                 AimIK.solver.IKPositionWeight = Mathf.Lerp(AimIK.solver.IKPositionWeight, idealweight, Time.deltaTime * 5);
                 Target.position = cam.transform.forward * 1000 + transform.root.position + new Vector3(0, 10, 0);

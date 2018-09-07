@@ -25,14 +25,17 @@ MonoBehaviour:
   minRange: 10
   Rate: 1.4
   radius: 6
-  heat_increase_amount: 20
+  heat_increase_amount: 5
   slowDown: 0
   twoHanded: 0
   SPincreaseAmount: 50
   skillAnimations: []
   bulletPrefab: {fileID: 1447274583941618, guid: 7d5466a4f2e6ad84f93549dc21836832,
     type: 2}
+  muzzlePrefab: {fileID: 1461546803207808, guid: 9fb9fe44547341141befd5718b6d9f53,
+    type: 2}
   shotSound: {fileID: 8300000, guid: a306b29fffc5e1b40b00efcf96bf9665, type: 3}
   reload_sound: {fileID: 8300000, guid: f2e324f22f7f044d79a903cd2c96a372, type: 3}
   Atk: {fileID: 0}
   Reload: {fileID: 7400000, guid: 94226cc518ddf05469278303e2c1d059, type: 2}
+  bulletNum: 6
