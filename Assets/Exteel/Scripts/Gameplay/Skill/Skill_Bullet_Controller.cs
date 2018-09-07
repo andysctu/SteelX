@@ -105,7 +105,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
             if (multiTarget) {
                 if (!onTarget) {
                     GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
-                    BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
+                    MultiBullets bulletTrace = g.GetComponent<MultiBullets>();
                     //bulletTrace.SetStartDirection(-Effect_End.transform.right);
                 }
 
@@ -121,7 +121,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                             g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
                         }
 
-                        BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
+                        MultiBullets bulletTrace = g.GetComponent<MultiBullets>();
 
                         //bulletTrace.SetTarget(t, false);
                         //bulletTrace.interactWithTerrainWhenOnTarget = false;
@@ -135,7 +135,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
             } else {
                 //not multi-Target
                 GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
-                BulletTrace bulletTrace = g.GetComponent<BulletTrace>();
+                MultiBullets bulletTrace = g.GetComponent<MultiBullets>();
                 //bulletTrace.interactWithTerrainWhenOnTarget = false;
                 if (onTarget) {
                     //bulletTrace.SetTarget(target, false);
@@ -191,7 +191,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
         }
     }
 
-    private void ShowHitMsg(Transform target, BulletTrace bulletTrace = null) {
+    private void ShowHitMsg(Transform target, MultiBullets bulletTrace = null) {
         if (!player_pv.isMine)
             return;
 

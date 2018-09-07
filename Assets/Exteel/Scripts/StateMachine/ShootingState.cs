@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Animations;
 
 public class ShootingState : MechStateMachineBehaviour {
 
@@ -8,8 +7,8 @@ public class ShootingState : MechStateMachineBehaviour {
 	override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
 		base.Init(animator);
 		if (mcbt == null)return;
-
-		mechIK.SetIK (true, 0, hand);
+        mcbt.OnWeaponStateCallBack<RangedWeapon>(hand, this, (int)RangedWeapon.StateCallBackType.AttackStateEnter);
+        mechIK.SetIK (true, 0, hand);
 	}
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

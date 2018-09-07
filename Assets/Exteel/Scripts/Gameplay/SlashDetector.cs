@@ -39,7 +39,6 @@ public class SlashDetector : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider target) {
-        Debug.Log("target enter : "+target);
         if (target.gameObject != User && target.tag[0] != 'S') {//in player layer but not shield => player
             if (GameManager.isTeamMode) {
                 PhotonView pv = target.GetComponent<PhotonView>();

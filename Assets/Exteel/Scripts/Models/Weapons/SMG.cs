@@ -2,7 +2,7 @@
 
 public class SMG : RangedWeapon {
     private AudioClip shotSound, reloadSound;
-    private BulletTrace bulletTrace;
+    private MultiBullets bulletTrace;
 
     private float animationLength, totalAtkAnimationLength, speedCoeff, lastPlayShotSoundTime;
     private int bulletNum;
@@ -71,7 +71,7 @@ public class SMG : RangedWeapon {
 
         UpdateBulletEffect(Bullet.GetComponent<ParticleSystem>());
 
-        bulletTrace = Bullet.GetComponent<BulletTrace>();
+        bulletTrace = Bullet.GetComponent<MultiBullets>();
         bulletTrace.InitBulletTrace(MechCam, photonView);
 
         bulletTrace.SetParticleSystem(bulletNum, animationLength);

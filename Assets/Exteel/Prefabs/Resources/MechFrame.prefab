@@ -528,18 +528,24 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: CanExit
-  - Type: 1
-    SynchronizeType: 0
-    Name: rateL
-  - Type: 1
-    SynchronizeType: 0
-    Name: rateR
   - Type: 4
     SynchronizeType: 2
     Name: Slash
   - Type: 4
     SynchronizeType: 2
     Name: finalSlash
+  - Type: 1
+    SynchronizeType: 0
+    Name: SpeedLCoeff
+  - Type: 1
+    SynchronizeType: 0
+    Name: SpeedRCoeff
+  - Type: 4
+    SynchronizeType: 0
+    Name: AtkL
+  - Type: 4
+    SynchronizeType: 0
+    Name: AtkR
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -4461,7 +4467,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 50
   MaxDistance: 350
   Pan2D: 0
@@ -4541,7 +4547,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 50
   MaxDistance: 350
   Pan2D: 0
