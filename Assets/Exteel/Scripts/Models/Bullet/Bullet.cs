@@ -19,7 +19,7 @@ public abstract class Bullet : MonoBehaviour{
 
     //Bullet variables
     protected float psStartSpeed;
-    protected Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
+    protected Vector3 startDirection, MECH_MID_POINT = new Vector3(0, 5, 0);
 
     protected virtual void Awake() {
         InitComponents();
@@ -52,6 +52,10 @@ public abstract class Bullet : MonoBehaviour{
         } else {
             this.target = TargetPlayer;
         }
+    }
+
+    public virtual void SetDirection(Vector3 startDirection) {
+        this.startDirection = startDirection;
     }
 
     protected abstract void LateUpdate();

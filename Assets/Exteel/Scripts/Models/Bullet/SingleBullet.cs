@@ -2,9 +2,9 @@
 
 public class SingleBullet : Bullet {
     private Rigidbody Rigidbody;
-    private Vector3 direction;
 
     private const float BULLETSPEED = 300;
+    private bool calledStop = false;//make sure not trigger play impact again
 
     protected override void Awake() {
         base.Awake();
@@ -12,16 +12,13 @@ public class SingleBullet : Bullet {
         InitComponents();
     }
 
-    public void SetDirection(Vector3 direction) {
-        this.direction = direction;
-    }
-
     private void InitComponents() {
         AttachRigidbody();
     }
 
     private void AttachRigidbody() {
-        Rigidbody = gameObject.AddComponent<Rigidbody>();        
+        Rigidbody = gameObject.AddComponent<Rigidbody>();  
+        Rigidbody.useGravity = false;
     }
 
     public override void Play() {
@@ -30,14 +27,16 @@ public class SingleBullet : Bullet {
             transform.LookAt(target);
             bullet_ps.Play();
         } else {
-            transform.LookAt(direction * 9999);
-            Rigidbody.velocity = direction * BULLETSPEED;
+            transform.LookAt(startDirection * 9999);
+            Rigidbody.velocity = startDirection * BULLETSPEED;
             bullet_ps.Play();
         }
     }
 
     public override void Stop() {
-        bullet_ps.Stop();
+        calledStop = true;
+
+        bullet_ps.Stop(true);
         Destroy(gameObject);
         enabled = false;
     }
@@ -47,7 +46,7 @@ public class SingleBullet : Bullet {
             if (target == null) { Stop(); return; }
 
             if (Vector3.Distance(transform.position, target.position) <= BULLETSPEED * Time.deltaTime) {
-                PlayImpact(transform.position);
+                PlayImpact(transform.position);                
             } else {
                 Rigidbody.velocity = ((isTargetShield) ? (target.position - transform.position) : (target.position + MECH_MID_POINT - transform.position)).normalized * BULLETSPEED;
             }
@@ -65,6 +64,8 @@ public class SingleBullet : Bullet {
     }
 
     protected override void PlayImpact(Vector3 impactPoint) {
+        if(calledStop)return;
+
         Stop();
 
         if (target == null) {

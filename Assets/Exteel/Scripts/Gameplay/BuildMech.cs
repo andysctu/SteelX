@@ -148,10 +148,10 @@ public class BuildMech : Photon.MonoBehaviour {
         }
 
         //set weapons if null (in offline)
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[15];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[11];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[11];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[9];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[7];
 
         if (skill_IDs == null) {//TODO : remake this
             Debug.Log("skill_ids is null. Set defualt skills");
@@ -335,7 +335,7 @@ public class BuildMech : Photon.MonoBehaviour {
             WeaponDatas[i] = (i >= weaponNames.Length || weaponNames[i] == "Empty" || string.IsNullOrEmpty(weaponNames[i])) ? null : WeaponDataManager.FindData(weaponNames[i]);
 
             if (WeaponDatas[i] == null) {
-                if (i < weaponNames.Length && (weaponNames[i] == "Empty" || string.IsNullOrEmpty(weaponNames[i])))
+                if (i < weaponNames.Length && (weaponNames[i] != "Empty" || string.IsNullOrEmpty(weaponNames[i])))
                     Debug.LogError("Can't find weapon data : " + weaponNames[i]);
                 continue;
             }
@@ -345,6 +345,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //Init weapon scripts
         for(int i = 0; i < WeaponDatas.Length; i++) {
+            if(WeaponDatas[i]== null)continue;
             Transform weapPos = (WeaponDatas[i].twoHanded) ? hands[(i + 1) % 2] : hands[i % 2];
             Weapons[i].Init(WeaponDatas[i], i, weapPos, MechCombat, animator);
         }
@@ -353,6 +354,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //Enable renderers
         for(int i = 0; i < Weapons.Length; i++) {
+            if (Weapons[i] == null) continue;
             Weapons[i].ActivateWeapon( (i == weaponOffset || i == weaponOffset +1) );
         }
     }

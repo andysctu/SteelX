@@ -12,8 +12,8 @@ public class MechCombat : Combat {
 
     // Combat variables
     private bool isWeaponOffsetSynced = false, onSkill;
-    private int weaponOffset = 0;    
-    private int scanRange, MechSize;    
+    private int weaponOffset = 0;
+    private int scanRange, MechSize;
 
     //Switching weapon action
     private Coroutine SwitchWeaponCoroutine;
@@ -59,7 +59,7 @@ public class MechCombat : Combat {
     }
 
     private void InitAnimatorControllers() {
-        if(animatorOverrideController != null) return;
+        if (animatorOverrideController != null) return;
 
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
@@ -85,6 +85,16 @@ public class MechCombat : Combat {
     private void OnWeaponSwitchedAction() {
         UpdateWeightRelatedVars();
         UpdateMovementClips();
+
+        // Stop current attacks and reset
+        for (int i = 0; i < bm.Weapons.Length; i++) {
+            if (bm.Weapons[i] != null) {
+                bm.Weapons[i].OnSwitchedWeaponAction(i == weaponOffset || i == weaponOffset + 1);
+            }
+        }
+
+        // Switch weapons by enable/disable renderers
+        ActivateWeapons();
     }
 
     private void RegisterOnSkill() {
@@ -151,7 +161,7 @@ public class MechCombat : Combat {
         }
     }
 
-    [PunRPC]//Pass PhotonPlayer is for efficiency (Drone doesn't have PhotonPlayer, so we need to use photonView ID to search the object) 
+    [PunRPC]//Pass PhotonPlayer is for efficiency (Drone doesn't have PhotonPlayer, so we need to use photonView ID to search the object)
     private void Shoot(int weapPos, Vector3 direction, PhotonPlayer TargetPlayer, int target_pvID, int targetWeapPos) {//targetWeapPos : if hit on this weapon , play onHitEffect
         RangedWeapon rangedWeapon = bm.Weapons[weapPos] as RangedWeapon;
         if (rangedWeapon == null) { Debug.LogWarning("Cannot cast from source type to RangedWeapon."); return; }
@@ -167,7 +177,7 @@ public class MechCombat : Combat {
         //If shooter is null, use photonView id to search
         if (shooter == null || shooter.TagObject == null) {
             PhotonView shooter_pv = PhotonView.Find(shooter_pvID);
-            if(shooter_pv == null) {
+            if (shooter_pv == null) {
                 Debug.LogWarning("shooter_pv is null. Is the shooter not existed?");
                 return;
             } else {
@@ -201,8 +211,7 @@ public class MechCombat : Combat {
 
         //Process damage
         int dmg = damage;
-        if(targetWeapon != null) dmg = targetWeapon.ProcessDamage(damage, attackType);
-
+        if (targetWeapon != null) dmg = targetWeapon.ProcessDamage(damage, attackType);
 
         //Master handle logic
         if (PhotonNetwork.isMasterClient) {
@@ -314,16 +323,16 @@ public class MechCombat : Combat {
         if (!photonView.isMine || gm.IsGameEnding() || !GameManager.gameIsBegin) return; //TODO : improve these checks
         if (onSkill || gm.BlockInput || IsSwitchingWeapon) return;
 
-        bm.Weapons[weaponOffset].HandleCombat();
-        bm.Weapons[weaponOffset + 1].HandleCombat();
+        if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].HandleCombat();
+        if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].HandleCombat();
 
         HandleSkillInput();
         HandleSwitchWeapon();
     }
 
     private void LateUpdate() {
-        bm.Weapons[weaponOffset].HandleAnimation();
-        bm.Weapons[weaponOffset + 1].HandleAnimation();
+        if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].HandleAnimation();
+        if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].HandleAnimation();
     }
 
     private void HandleSkillInput() {
@@ -365,16 +374,6 @@ public class MechCombat : Combat {
 
         weaponOffset = (weaponOffset + 2) % 4;
 
-        // Stop current attacks and reset
-        for (int i = 0; i < bm.Weapons.Length; i++) {
-            if (bm.Weapons[i] != null) {
-                bm.Weapons[i].OnSwitchedWeaponAction(i == weaponOffset || i == weaponOffset + 1);
-            }
-        }
-
-        // Switch weapons by enable/disable renderers
-        ActivateWeapons();
-
         if (OnWeaponSwitched != null) OnWeaponSwitched();
 
         SwitchWeaponCoroutine = null;
@@ -389,7 +388,7 @@ public class MechCombat : Combat {
 
     private void ActivateWeapons() {//Not using SetActive because it causes weapon Animator to bind the wrong rotation if the weapon animation is not finished (SMG reload)
         for (int i = 0; i < bm.Weapons.Length; i++)
-            if (bm.Weapons[i] != null)bm.Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
+            if (bm.Weapons[i] != null) bm.Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
     }
 
     public void UpdateMovementClips() {
@@ -434,7 +433,7 @@ public class MechCombat : Combat {
         else
             CurrentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime;
 
-        if (CurrentEN < 0)CurrentEN = 0;
+        if (CurrentEN < 0) CurrentEN = 0;
     }
 
     public bool EnoughENToBoost() {
@@ -498,8 +497,8 @@ public class MechCombat : Combat {
         return bm.WeaponDatas[weaponPos];
     }
 
-    public override float GetAnimationLength(string name) {//TODO : improve this. 
-        return clipOverrides[name].length;        
+    public override float GetAnimationLength(string name) {//TODO : improve this.
+        return clipOverrides[name].length;
     }
 
     public override void SetMeleePlaying(bool isPlaying) {

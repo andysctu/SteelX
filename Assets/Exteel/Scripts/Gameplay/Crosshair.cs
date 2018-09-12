@@ -370,14 +370,17 @@ public class Crosshair : MonoBehaviour {
         return targetR;
     }
 
-    private void MarkTarget() {
+    private void MarkTarget() {//TODO : improve this (shaking)
         if (isRectifier_L) {
             if (targetL != null) {
                 crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0));
             }
         } else {
             if (targetL != null) {
-                crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0));
+                //crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0));
+
+                crosshairImage.targetMark.transform.position = Vector3.Lerp(crosshairImage.targetMark.transform.position,
+                   cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0)), Time.deltaTime * 10);
             }
         }
 
@@ -387,7 +390,9 @@ public class Crosshair : MonoBehaviour {
             }
         } else {
             if (targetR != null) {
-                crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0));
+                //crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0));
+                crosshairImage.targetMark.transform.position = Vector3.Lerp(crosshairImage.targetMark.transform.position,
+                   cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0)), Time.deltaTime*10);
             }
         }
         if ((!isRectifier_L && targetL != null) || (!isRectifier_R && targetR != null)) {

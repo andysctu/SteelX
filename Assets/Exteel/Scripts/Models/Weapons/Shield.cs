@@ -5,8 +5,7 @@ public class Shield : Weapon {
     private ShieldActionReceiver ShieldActionReceiver;
     private AudioClip OnHitSound;
     private ParticleSystem OnHitEffect, OverheatEffect;
-
-    private int block_id = 0;
+    private int AtkAnimHash;
 
     public Shield() {
         allowBothWeaponUsing = false;
@@ -15,6 +14,7 @@ public class Shield : Weapon {
     public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, pos, handTransform, Cbt, Animator);
         InitComponents();
+        InitAtkAnimHash();
         AddShieldActionReceiver();
         AttachEffects();
         ResetAnimationVars();
@@ -22,7 +22,10 @@ public class Shield : Weapon {
 
     private void InitComponents() {
         EffectEnd = weapon.transform.Find("EffectEnd");
-        if (AnimatorVars != null)block_id = (hand == 0) ? AnimatorVars.blockL_id : AnimatorVars.blockR_id;
+    }
+
+    private void InitAtkAnimHash() {
+        AtkAnimHash = (hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
     }
 
     private void AddShieldActionReceiver() {
@@ -42,7 +45,6 @@ public class Shield : Weapon {
 
     private void ResetAnimationVars() {
         isFiring = false;
-        if (block_id != 0) MechAnimator.SetBool(block_id, false);
     }
 
     public override void OnSkillAction(bool enter) {
@@ -52,6 +54,13 @@ public class Shield : Weapon {
 
     public override void OnSwitchedWeaponAction(bool b) {
         ResetAnimationVars();
+        if (b) {
+            UpdateMechArmState();
+        }
+    }
+
+    private void UpdateMechArmState() {
+        MechAnimator.Play("SHS", 1 + hand);
     }
 
     public override void HandleCombat() {
@@ -67,12 +76,12 @@ public class Shield : Weapon {
 
     public override void HandleAnimation() {
         if (isFiring) {
-            if (!MechAnimator.GetBool(block_id)) {
-                MechAnimator.SetBool(block_id, true);
+            if (!MechAnimator.GetBool(AtkAnimHash)) {
+                MechAnimator.SetBool(AtkAnimHash, true);
             }
         } else {
-            if (MechAnimator.GetBool(block_id)) {
-                MechAnimator.SetBool(block_id, false);
+            if (MechAnimator.GetBool(AtkAnimHash)) {
+                MechAnimator.SetBool(AtkAnimHash, false);
             }
         }
     }

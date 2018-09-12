@@ -167,6 +167,7 @@ public class MechIK : MonoBehaviour {
 
         if (bm.WeaponDatas[weaponOffset].twoHanded) {
             Knob = FindKnob(bm.Weapons[weaponOffset].GetWeapon().transform);
+
             AimTransform = bm.Weapons[weaponOffset].GetWeapon().transform.Find("AimTransform");//TODO : update when switchweapon
             if (AimTransform == null)
                 Debug.LogError("null aim Transform");
@@ -218,6 +219,7 @@ public class MechIK : MonoBehaviour {
 
     private Transform FindKnob(Transform weapon) {//knob must under the first child
         Transform t = weapon;
+
         while (t.childCount != 0) {
             t = t.GetChild(0);
         }

@@ -20,7 +20,6 @@ public abstract class RangedWeapon : Weapon {
 
         InitComponents();
         InitAtkAnimHash();
-        UpdateMechArmState();
 
         UpdateAnimationSpeed();
         UpdateMuzzleEffect();
@@ -42,7 +41,7 @@ public abstract class RangedWeapon : Weapon {
         if (MechCam != null) Crosshair = MechCam.GetComponent<Crosshair>();
     }
 
-    protected void InitAtkAnimHash() {
+    protected virtual void InitAtkAnimHash() {
         AtkAnimHash = (hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
     }
 
@@ -66,7 +65,7 @@ public abstract class RangedWeapon : Weapon {
     protected abstract void UpdateAnimationSpeed();
 
     public override void HandleCombat() {
-        if (!Input.GetKey(hand == LEFT_HAND ? KeyCode.Mouse0 : KeyCode.Mouse1) || IsOverHeat()) {
+        if (!Input.GetKey(BUTTON) || IsOverHeat()) {
             return;
         }
 
