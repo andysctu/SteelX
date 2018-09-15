@@ -10,7 +10,7 @@ public class RocketBullet : Bullet {
 
     //bullet info
     private int bulletdmg = 450, shooterWeapPos;
-    private float bulletSpeed = 200, impact_radius = 6;
+    private float impact_radius = 6;
     private bool isCollided = false, hasCalledPlayImpact = false;
     private int SPincreaseAmount=0;
 
@@ -19,8 +19,6 @@ public class RocketBullet : Bullet {
 
         InitComponents();
         InitGameVariables();
-
-        Destroy(gameObject, 2f);//TODO : check this
 	}
 
     private void InitComponents() {
@@ -28,14 +26,7 @@ public class RocketBullet : Bullet {
         AttachRigidbody();
     }
 
-    private void AttachRigidbody() {
-        Rigidbody = gameObject.AddComponent<Rigidbody>();
-        Rigidbody.useGravity = false;
-    }
-
     private void InitVelocity() {//Master update position
-        if (!PhotonNetwork.isMasterClient) return;
-
         Rigidbody.velocity = startDirection * bulletSpeed;
         transform.LookAt(startDirection * 9999);
     }
@@ -46,9 +37,12 @@ public class RocketBullet : Bullet {
     }
 
     private void Start() {
-        shooter = shooter_pv.gameObject;
-        InitVelocity();
         bullet_ps.Play();
+
+        if (!PhotonNetwork.isMasterClient)return;
+
+        shooter = shooter_pv.gameObject;
+        InitVelocity();        
     }
 
     public void SetBulletPropertis(int bulletdmg, int bulletSpeed, int impact_radius) {
@@ -114,6 +108,7 @@ public class RocketBullet : Bullet {
     //            }
                 ShieldActionReceiver shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldActionReceiver>();
                 int pos = shieldUpdater.GetPos();
+
                 colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_pv.owner, shooter_pv.viewID, shooterWeapPos, pos);
 
                 bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position, cam.transform.position, true);
@@ -176,6 +171,12 @@ public class RocketBullet : Bullet {
             Rigidbody.velocity = startDirection * bulletSpeed;
             bullet_ps.Play();
         }
+    }
+
+    private void AttachRigidbody() {
+        Rigidbody = gameObject.AddComponent<Rigidbody>();
+        Rigidbody.useGravity = false;
+        Rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
     public override void Stop() {

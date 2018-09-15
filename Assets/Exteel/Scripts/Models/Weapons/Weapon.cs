@@ -7,7 +7,7 @@ public abstract class Weapon {
     //Components
     protected Transform WeaponTransform;
     protected Combat Cbt;
-    protected PhotonView photonView;
+    protected PhotonView player_pv;
     protected HeatBar HeatBar;
     protected Animator MechAnimator, WeaponAnimator;
     protected AnimationEventController AnimationEventController;
@@ -67,7 +67,7 @@ public abstract class Weapon {
     protected abstract void InitAttackType();
 
     private void InitComponents() {
-        photonView = Cbt.GetComponent<PhotonView>();
+        player_pv = Cbt.GetComponent<PhotonView>();
         HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
         AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
         AnimatorVars = Cbt.GetComponentInChildren<AnimatorVars>();
@@ -112,12 +112,12 @@ public abstract class Weapon {
     public abstract void HandleCombat();//Process Input
     public abstract void HandleAnimation();
 
-    public abstract void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield);
+    public abstract void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield);//this is called in OnHit RPC
 
     public virtual void PlayOnHitEffect() {
     }
 
-    public virtual void OnHitAction(Combat shooter, Weapon shooterWeapon) {
+    public virtual void OnHitAction(Combat shooter, Weapon shooterWeapon) {//what to do if this weapon gets hit
     }
 
     public virtual void OnSkillAction(bool enter) {
@@ -174,14 +174,15 @@ public abstract class Weapon {
         if (weapon != null) Object.Destroy(weapon);
     }
 
-    private bool CheckTargetIsDead(GameObject target) {
-        MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
-        if (mcbt == null) {//Drone
-            return target.transform.root.GetComponent<DroneCombat>().CurrentHP <= 0;
-        } else {
-            return mcbt.CurrentHP <= 0;
-        }
-    }
+    //TODO : remove this if no error
+    //private bool CheckTargetIsDead(GameObject target) {
+    //    MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
+    //    if (mcbt == null) {//Drone
+    //        return target.transform.root.GetComponent<DroneCombat>().CurrentHP <= 0;
+    //    } else {
+    //        return mcbt.CurrentHP <= 0;
+    //    }
+    //}
 
     public virtual bool IsShield() {//general meaning of a shield
         return false;
@@ -199,5 +200,5 @@ public abstract class Weapon {
         return attackType;
     }
 
-    public abstract void OnStateCallBack(int type, MechStateMachineBehaviour state);
+    public abstract void OnStateCallBack(int type, MechStateMachineBehaviour state);//Animation call back
 }

@@ -107,7 +107,7 @@ public class Sword : MeleeWeapon {
         if(slashSounds!=null && slashSounds[curCombo] != null)
             AudioSource.PlayClipAtPoint(slashSounds[curCombo], weapon.transform.position);
 
-        if(photonView != null && photonView.isMine) {//TODO : master check this
+        if(player_pv != null && player_pv.isMine) {//TODO : master check this
             isFiring = true;
 
             //If not final slash
@@ -138,7 +138,7 @@ public class Sword : MeleeWeapon {
        threshold = ((SwordData)data).threshold;
     }
 
-    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
         
         if (isShield) {
             if(targetWeapon != null) {

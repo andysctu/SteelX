@@ -23,7 +23,7 @@ public class Rifle : RangedWeapon {
         base.HandleCombat();
     }
 
-    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
         if (data.slowDown && !isShield) {
             target.GetComponent<MechController>().SlowDown();
         }
@@ -66,9 +66,7 @@ public class Rifle : RangedWeapon {
     protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {
         bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
 
-        bullet.InitBulletTrace(MechCam, photonView);
-        bullet.SetTarget((Target == null) ? null : Target.transform, targetWeapon);
-        bullet.SetDirection(direction);        
+        bullet.InitBullet(MechCam, player_pv, direction, (Target == null) ? null : Target.transform, this, targetWeapon);   
     }
 
     public override void OnSkillAction(bool b) {
@@ -95,21 +93,17 @@ public class Rifle : RangedWeapon {
             case StateCallBackType.AttackStateUpdate:
             if (bullet != null && Time.time - animationStartTime >= 0.05f) {//Play the effects here to fit the animation 
                                                                             //MechAnimator.Update(0);//For the arm to be in right position , BUG : StateEnter won't trigger on two layer
-
                 bullet.transform.position = Effect_End.position;
                 bullet.Play();
                 bullet = null;
                 Muzzle.Play();
                 AudioSource.PlayOneShot(shotSound);
-                if (photonView.isMine) Crosshair.CallShakingEffect(hand);
+                if (player_pv.isMine) Crosshair.CallShakingEffect(hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:
             WeaponAnimator.SetTrigger("Reload");
             if(reloadSound!=null)AudioSource.PlayOneShot(reloadSound);
-            break;
-            default:
-            Debug.Log("should not go here");
             break;
         }
     }

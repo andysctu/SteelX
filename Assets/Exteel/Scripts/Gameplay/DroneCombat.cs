@@ -134,7 +134,7 @@ public class DroneCombat : Combat {
 
         //Play on hit effect
         bool isShield = (targetWeapon != null && targetWeapon.IsShield());//some weapons may be shield in some state ( the general meaning of a shield )
-        shooterWeapon.OnTargetEffect(gameObject, targetWeapon, isShield);
+        shooterWeapon.OnHitTargetAction(gameObject, targetWeapon, isShield);
 
         if (targetWeapon != null) targetWeapon.OnHitAction(shooter_cbt, shooterWeapon);
 

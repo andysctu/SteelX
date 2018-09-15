@@ -5,7 +5,7 @@ public class Rectifier : RangedWeapon {
         throw new System.NotImplementedException();
     }
 
-    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
         throw new System.NotImplementedException();
     }
 

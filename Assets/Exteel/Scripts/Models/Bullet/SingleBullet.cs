@@ -3,7 +3,6 @@
 public class SingleBullet : Bullet {
     private Rigidbody Rigidbody;
 
-    private const float BULLETSPEED = 300;
     private bool calledStop = false;//make sure not trigger play impact again
 
     protected override void Awake() {
@@ -19,6 +18,7 @@ public class SingleBullet : Bullet {
     private void AttachRigidbody() {
         Rigidbody = gameObject.AddComponent<Rigidbody>();  
         Rigidbody.useGravity = false;
+        Rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 
     public override void Play() {
@@ -28,7 +28,7 @@ public class SingleBullet : Bullet {
             bullet_ps.Play();
         } else {
             transform.LookAt(startDirection * 9999);
-            Rigidbody.velocity = startDirection * BULLETSPEED;
+            Rigidbody.velocity = startDirection * bulletSpeed;
             bullet_ps.Play();
         }
     }
@@ -37,7 +37,7 @@ public class SingleBullet : Bullet {
         calledStop = true;
 
         bullet_ps.Stop(true);
-        Destroy(gameObject);
+        Destroy(gameObject, 2);
         enabled = false;
     }
 
@@ -45,10 +45,10 @@ public class SingleBullet : Bullet {
         if (isfollow) {
             if (target == null) { Stop(); return; }
 
-            if (Vector3.Distance(transform.position, target.position) <= BULLETSPEED * Time.deltaTime) {
+            if (Vector3.Distance(transform.position, target.position) <= bulletSpeed * Time.deltaTime) {
                 PlayImpact(transform.position);                
             } else {
-                Rigidbody.velocity = ((isTargetShield) ? (target.position - transform.position) : (target.position + MECH_MID_POINT - transform.position)).normalized * BULLETSPEED;
+                Rigidbody.velocity = ((isTargetShield) ? (target.position - transform.position) : (target.position + MECH_MID_POINT - transform.position)).normalized * bulletSpeed;
             }
         }
     }
@@ -78,8 +78,7 @@ public class SingleBullet : Bullet {
         if (!isTargetShield) {
             bulletImpact.Play(impactPoint);
         } else {
-            if (isTargetShield) targetWeapon.PlayOnHitEffect();
-            else Debug.LogError("targetWeapon is null");
+            if(targetWeapon != null)targetWeapon.PlayOnHitEffect();
         }
     }
 }

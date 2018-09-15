@@ -90,7 +90,7 @@ public class Shield : Weapon {
         OnHitSound = ((ShieldData)data).OnHitSound;
     }
 
-    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
     }
 
     public override void OnHitAction(Combat shooter, Weapon shooterWeapon) {

@@ -12,13 +12,13 @@ public abstract class Bullet : MonoBehaviour{
 
     //Targets components
     protected DisplayHitMsg displayHitMsg;
-    protected Combat cbt;
-    protected Transform target;
-    protected Weapon targetWeapon;
+    protected Combat targetCbt;
+    protected Transform target;//If isTargetShield is true , then target == Shield otherwise target == target mech
+    protected Weapon shooterWeapon, targetWeapon;
     protected bool isTargetShield, isfollow = false;
 
     //Bullet variables
-    protected float psStartSpeed;
+    public float bulletSpeed = 280;
     protected Vector3 startDirection, MECH_MID_POINT = new Vector3(0, 5, 0);
 
     protected virtual void Awake() {
@@ -28,34 +28,35 @@ public abstract class Bullet : MonoBehaviour{
     private void InitComponents() {
         bullet_ps = GetComponent<ParticleSystem>();
         bulletImpact = Instantiate(ImpactPrefab).GetComponent<BulletImpact>();
-        psStartSpeed = bullet_ps.main.startSpeed.constant;
     }
 
-    public void InitBulletTrace(Camera cam, PhotonView shooter_pv) {
+    public virtual void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, Transform target, Weapon shooterWeapon, Weapon targetWeapon) {
         this.cam = cam;
         this.shooter_pv = shooter_pv;
+        this.startDirection = startDirection;
+        this.target = target;
+        this.shooterWeapon = shooterWeapon;
+        this.targetWeapon = targetWeapon;
+
+        InitTargetInfos(target, targetWeapon);
     }
 
-    public void SetTarget(Transform TargetPlayer, Weapon TargetWeapon) {
-        this.targetWeapon = TargetWeapon;
+    protected virtual void InitTargetInfos(Transform target, Weapon targetWeapon) {
+        this.targetWeapon = targetWeapon;
 
-        isTargetShield = (TargetWeapon != null && TargetWeapon.IsShield());
-        isfollow = (TargetPlayer != null);
+        isTargetShield = (targetWeapon != null && targetWeapon.IsShield());
+        isfollow = (target != null);
 
-        if (TargetPlayer != null) {
-            displayHitMsg = TargetPlayer.GetComponent<DisplayHitMsg>();
-            cbt = TargetPlayer.GetComponent<Combat>();
+        if (target != null) {
+            displayHitMsg = target.GetComponent<DisplayHitMsg>();
+            targetCbt = target.GetComponent<Combat>();
         }
 
         if (isTargetShield) {
-            this.target = TargetWeapon.GetWeapon().transform;
+            this.target = targetWeapon.GetWeapon().transform;
         } else {
-            this.target = TargetPlayer;
+            this.target = target;
         }
-    }
-
-    public virtual void SetDirection(Vector3 startDirection) {
-        this.startDirection = startDirection;
     }
 
     protected abstract void LateUpdate();
@@ -66,9 +67,9 @@ public abstract class Bullet : MonoBehaviour{
 
     protected void ShowHitMsg(Transform target) {
         if (shooter_pv.isMine) {
-            if (displayHitMsg == null || cbt == null) return;
+            if (displayHitMsg == null || targetCbt == null) return;
 
-            if (cbt.CurrentHP <= 0)
+            if (targetCbt.CurrentHP <= 0)
                 displayHitMsg.Display(DisplayHitMsg.HitMsg.KILL, cam);
             else {
                 if (isTargetShield) {
@@ -91,17 +92,16 @@ public abstract class Bullet : MonoBehaviour{
     }
 
     protected virtual void PlayImpact(Vector3 impactPoint) {
-        if (target == null) return;
-
         if (!isTargetShield) {
             bulletImpact.Play(impactPoint);
         } else {
-            if (isTargetShield) targetWeapon.PlayOnHitEffect();
-            else Debug.LogError("targetWeapon is null");
+            if (isTargetShield && targetWeapon != null) {
+                targetWeapon.PlayOnHitEffect();
+            }
         }
     }
 
-    protected virtual void OnDestroy() {
+    protected virtual void OnDestroy() {//When destroy this , also destroy bullet impact object
         if (bulletImpact != null) {
             Destroy(bulletImpact.gameObject, 2);
         }

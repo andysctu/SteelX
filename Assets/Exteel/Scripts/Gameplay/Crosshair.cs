@@ -370,17 +370,19 @@ public class Crosshair : MonoBehaviour {
         return targetR;
     }
 
-    private void MarkTarget() {//TODO : improve this (shaking)
+    private void MarkTarget() {
         if (isRectifier_L) {
             if (targetL != null) {
                 crosshairImage.EngTargetMark.transform.position = cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0));
             }
         } else {
             if (targetL != null) {
-                //crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0));
+                if (crosshairImage.middlecross.enabled) {
+                    crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0));
+                }
 
                 crosshairImage.targetMark.transform.position = Vector3.Lerp(crosshairImage.targetMark.transform.position,
-                   cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0)), Time.deltaTime * 10);
+                   cam.WorldToScreenPoint(targetL.transform.position + new Vector3(0, 5, 0)), Time.deltaTime * 15);
             }
         }
 
@@ -390,11 +392,15 @@ public class Crosshair : MonoBehaviour {
             }
         } else {
             if (targetR != null) {
-                //crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0));
+                if (crosshairImage.middlecross.enabled) {
+                    crosshairImage.targetMark.transform.position = cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0));
+                }
+
                 crosshairImage.targetMark.transform.position = Vector3.Lerp(crosshairImage.targetMark.transform.position,
-                   cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0)), Time.deltaTime*10);
+                   cam.WorldToScreenPoint(targetR.transform.position + new Vector3(0, 5, 0)), Time.deltaTime*15);
             }
         }
+
         if ((!isRectifier_L && targetL != null) || (!isRectifier_R && targetR != null)) {
             crosshairImage.middlecross.enabled = false;
         } else {

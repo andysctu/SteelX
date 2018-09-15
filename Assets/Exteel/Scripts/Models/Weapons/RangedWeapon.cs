@@ -119,15 +119,15 @@ public abstract class RangedWeapon : Weapon {
             PhotonView targetpv = target.transform.root.GetComponent<PhotonView>();
 
             if (target.tag != "Shield") {
-                photonView.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, -1);
+                player_pv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, -1);
             } else {//check what hand is it
                 ShieldActionReceiver ShieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
                 int target_ShieldPos = ShieldActionReceiver.GetPos();
 
-                photonView.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, target_ShieldPos);
+                player_pv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, target_ShieldPos);
             }
         } else {
-            photonView.RPC("Shoot", PhotonTargets.All, weapPos, direction, null, -1, -1);
+            player_pv.RPC("Shoot", PhotonTargets.All, weapPos, direction, null, -1, -1);
         }
     }
 
@@ -151,7 +151,7 @@ public abstract class RangedWeapon : Weapon {
 
         if (Target != null) {
             Combat targetCbt = Target.GetComponent<Combat>();
-            targetCbt.OnHit(data.damage, photonView.owner, photonView.viewID, weapPos, targetWeapPos);
+            targetCbt.OnHit(data.damage, player_pv.owner, player_pv.viewID, weapPos, targetWeapPos);
 
             DisplayBullet(direction, Target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 

@@ -23,7 +23,7 @@ public class Shotgun : RangedWeapon {
         base.HandleCombat();
     }
 
-    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
         if (data.slowDown && !isShield) {//TODO : drone mech controller
             //target.GetComponent<MechController>().SlowDown();
         }
@@ -66,9 +66,9 @@ public class Shotgun : RangedWeapon {
     protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {
         bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
 
-        bullet.InitBulletTrace(MechCam, photonView);
-        bullet.SetTarget((Target == null) ? null : Target.transform, targetWeapon);
-        bullet.SetDirection(direction);
+        //bullet.InitBulletTrace(MechCam, player_pv);
+        //bullet.InitTargetInfos((Target == null) ? null : Target.transform, targetWeapon);
+        //bullet.SetDirection(direction);
     }
 
     public override void OnSkillAction(bool b) {
@@ -102,7 +102,7 @@ public class Shotgun : RangedWeapon {
                 bullet = null;
                 Muzzle.Play();
                 AudioSource.PlayOneShot(shotSound);
-                if (photonView.isMine) Crosshair.CallShakingEffect(hand);
+                if (player_pv.isMine) Crosshair.CallShakingEffect(hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:

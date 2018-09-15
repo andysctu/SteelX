@@ -92,9 +92,9 @@ public abstract class MeleeWeapon : Weapon {
                 if (isHitShield) {
                     ShieldActionReceiver ShieldActionReceiver = t.transform.parent.GetComponent<ShieldActionReceiver>();
                     int shieldPos = ShieldActionReceiver.GetPos();//which hand holds the shield?
-                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.owner, photonView.viewID, weapPos, shieldPos);
+                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, player_pv.owner, player_pv.viewID, weapPos, shieldPos);
                 } else {
-                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, photonView.owner, photonView.viewID, weapPos, -1);
+                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, player_pv.owner, player_pv.viewID, weapPos, -1);
                 }
 
                 if (target.GetComponent<Combat>().CurrentHP <= 0) {

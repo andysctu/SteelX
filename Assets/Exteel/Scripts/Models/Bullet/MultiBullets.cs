@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class MultiBullets : Bullet {
-    //This script use emit(1) to emit bullets to have the rotation same with parent and is in world space 
+    //This script use emit(1) to emit bullets such that the rotation is the same with parent and is in world space 
 
     private ParticleSystem.Particle[] particles;
 
@@ -20,6 +20,7 @@ public class MultiBullets : Bullet {
             if (target == null) { Stop(); return; }
         }
 
+        //Emit particles
         if (totalSpawnedBulletNum >= maxBulletNum) {
             if (numParticlesAlive == 0) Stop();
         } else {
@@ -36,17 +37,19 @@ public class MultiBullets : Bullet {
 
         numParticlesAlive = bullet_ps.GetParticles(particles);
 
+        //Set velocity for each particle , and play impact if hit
         if (isfollow) {
             for (int i = 0; i < numParticlesAlive; i++) {
-                if (Vector3.Distance(particles[i].position, target.position) <= psStartSpeed * Time.deltaTime) {
+                if (Vector3.Distance(particles[i].position, target.position) <= bulletSpeed * Time.deltaTime) {
                     PlayImpact(particles[i].position);
                     particles[i].remainingLifetime = 0;
                 } else {
-                    particles[i].velocity = ((isTargetShield) ? (target.position - particles[i].position) : (target.position + MECH_MID_POINT - particles[i].position)).normalized * psStartSpeed;
+                    particles[i].velocity = ((isTargetShield) ? (target.position - particles[i].position) : (target.position + MECH_MID_POINT - particles[i].position)).normalized * bulletSpeed;
                 }
             }
         }
 
+        //Apply changes
         bullet_ps.SetParticles(particles, numParticlesAlive);
     }
 

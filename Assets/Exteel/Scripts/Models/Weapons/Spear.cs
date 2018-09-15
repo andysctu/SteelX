@@ -88,7 +88,7 @@ public class Spear : MeleeWeapon {
         if (smashSound != null)
             AudioSource.PlayClipAtPoint(smashSound, weapon.transform.position);
 
-        if (photonView != null && photonView.isMine) {//TODO : master check this
+        if (player_pv != null && player_pv.isMine) {//TODO : master check this
             isFiring = true;
 
             MeleeAttack(hand);
@@ -109,7 +109,7 @@ public class Spear : MeleeWeapon {
         //threshold = ((SpearData)data).threshold;
     }
 
-    public override void OnTargetEffect(GameObject target, Weapon targetWeapon, bool isShield) {
+    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
 
         if (isShield) {
             if(targetWeapon != null)
