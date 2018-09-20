@@ -100,28 +100,15 @@ public class RocketBullet : Bullet {
 			}
 			colliderViewIds.Add (colliderPV.viewID);
 
-            if (hitColliders [i].tag == "Shield") {
-				//if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP - bulletdmg / 2 <= 0) {
-    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooter_cam);
-				//} else {
-    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, shooter_cam);
-    //            }
+            if (hitColliders [i].tag == "Shield") {				
                 ShieldActionReceiver shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldActionReceiver>();
-                int pos = shieldUpdater.GetPos();
-
-                colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_pv.owner, shooter_pv.viewID, shooterWeapPos, pos);
-
-                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position, cam.transform.position, true);
-			} else {
-				if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP - bulletdmg <= 0) {
-                    colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
-				} else {
-                    colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
-				}
-               // colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_viewID, "RCL", true);
-                colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);
-
-                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, hitColliders[i].transform.position + MECH_MID_POINT, cam.transform.position, false);
+                int targetWeapPos = shieldUpdater.GetPos();
+                
+                colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_pv.owner, shooter_pv.viewID, shooterWeapPos, targetWeapPos);
+                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, bulletdmg, hitColliders[i].transform.position, colliderPV.owner, colliderPV.viewID, targetWeapPos, true);
+			} else {			
+                colliderPV.RPC("OnHit", PhotonTargets.All, bulletdmg, shooter_pv.owner, shooter_pv.viewID, shooterWeapPos, -1);
+                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, bulletdmg, hitColliders[i].transform.position + MECH_MID_POINT, colliderPV.owner, colliderPV.viewID, -1, false);
             }
 
             //increase SP
@@ -133,16 +120,37 @@ public class RocketBullet : Bullet {
         }
     }
 
-	
-	[PunRPC]
-	void CallPlayImpact(Vector3 collisionHitLoc, Vector3 camPos, bool isShield){
+    [PunRPC]
+	private void OnHitTarget(Vector3 direction, int target_pvIDs) {
+
+        if (PhotonNetwork.isMasterClient) {
+
+        }
+
+    }
+    //if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP - bulletdmg / 2 <= 0) {
+    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooter_cam);
+    //} else {
+    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, shooter_cam);
+    //}
+
+    [PunRPC]
+	void CallPlayImpact(int bulletdmg, Vector3 collisionHitLoc, PhotonPlayer target, int target_pvID,int targetWeapPos, bool isShield){
         if (!hasCalledPlayImpact) {
             hasCalledPlayImpact = true;
             Stop();
-
             if (PhotonNetwork.isMasterClient)Invoke("DestroyThis", 3f);
         }
 
+        
+    //     if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP - bulletdmg <= 0) {
+    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
+				//} else {
+    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
+				//}
+                
+
+        //colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);
         if (isShield) {
 
         } else {

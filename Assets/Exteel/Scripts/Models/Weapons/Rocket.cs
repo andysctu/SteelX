@@ -28,9 +28,23 @@ public class Rocket : RangedWeapon {
     }
 
     public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
-        if (data.slowDown && !isShield) {
-            //target.GetComponent<MechController>().SlowDown();
+        if (isShield) {
+            if (targetWeapon != null) {
+                targetWeapon.PlayOnHitEffect();
+            }
+        } else {
+            //Apply slowing down effect
+            if (data.slowDown) {
+                //MechController mctrl = target.GetComponent<MechController>();
+                //if (mctrl != null) {
+                //    mctrl.SlowDown();
+                //}
+            }
         }
+    }
+
+    public override void PlayOnHitEffect() {
+        
     }
 
     protected override void UpdateAnimationSpeed() {

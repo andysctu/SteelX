@@ -2706,7 +2706,7 @@ ParticleSystem:
         m_RotationOrder: 4
     minKillSpeed: 0
     maxKillSpeed: 10000
-    radiusScale: 1
+    radiusScale: 0.6
     collidesWith:
       serializedVersion: 2
       m_Bits: 4294960584
@@ -3580,7 +3580,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
-  randomSeed: 867108176
+  randomSeed: 1512741906
   InitialModule:
     serializedVersion: 3
     enabled: 1
