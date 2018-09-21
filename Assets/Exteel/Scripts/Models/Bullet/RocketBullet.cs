@@ -4,7 +4,7 @@ using System;
 
 public class RocketBullet : Bullet {
     private Rigidbody Rigidbody;
-    private PhotonView bullet_pv;
+    private PhotonView bulletPv;
     private GameObject shooter;//For checking not hitting shooter
     private LayerMask PlayerLayerMask, TerrainLayerMask;
 
@@ -21,7 +21,7 @@ public class RocketBullet : Bullet {
 	}
 
     private void InitComponents() {
-        bullet_pv = GetComponent<PhotonView>();
+        bulletPv = GetComponent<PhotonView>();
         AttachRigidbody();
     }
 
@@ -35,8 +35,8 @@ public class RocketBullet : Bullet {
     }
 
     private void InitVelocity() {//Master update position
-        Rigidbody.velocity = startDirection * bulletSpeed;
-        transform.LookAt(startDirection * 9999);
+        Rigidbody.velocity = transform.forward * bulletSpeed;
+        transform.LookAt(transform.forward * 9999);
     }
 
     protected void InitGameVariables() {
@@ -79,7 +79,7 @@ public class RocketBullet : Bullet {
         Vector3 impact_point = collisionEvents[0].intersection;
 
 	    if (PhotonNetwork.isMasterClient && ((1 << other.layer) & TerrainLayerMask) != 0) {
-	        bullet_pv.RPC("PlayImpact", PhotonTargets.All, impact_point);
+	        bulletPv.RPC("PlayImpact", PhotonTargets.All, impact_point);
 	    }
 
         Collider[] hitColliders = Physics.OverlapSphere(impact_point, impact_radius, PlayerLayerMask); // get overlap targets
@@ -115,14 +115,14 @@ public class RocketBullet : Bullet {
                 ShieldActionReceiver shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldActionReceiver>();
                 int targetWeapPos = shieldUpdater.GetPos();
 
-                bullet_pv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID, targetWeapPos);
+                bulletPv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID, targetWeapPos);
 			} else {
-                bullet_pv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID,  -1);
+                bulletPv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID,  -1);
             }
         }
 
         if (colliderViewIds.Count == 0) {//if no target is hit , then play impact on ground
-            bullet_pv.RPC("PlayImpact", PhotonTargets.All, impact_point);
+            bulletPv.RPC("PlayImpact", PhotonTargets.All, impact_point);
         }
     }
 
@@ -158,7 +158,7 @@ public class RocketBullet : Bullet {
                     targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooterCbt.GetCamera());
                 } else{
                     targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, shooterCbt.GetCamera());
-                    //targetCbt.KnockBack(5f); //TODO : implement this
+                    targetCbt.KnockBack(transform.forward, 5f);
                 }
             }
         }

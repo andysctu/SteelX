@@ -65,14 +65,14 @@ public class SMG : RangedWeapon {
         MechAnimator.Play("SMG", 1 + hand);
     }
 
-    protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {
-        GameObject Bullet = Object.Instantiate(BulletPrefab, Effect_End);
+    protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
+        GameObject Bullet = Object.Instantiate(BulletPrefab, EffectEnd);
         TransformExtension.SetLocalTransform(Bullet.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
 
         UpdateBulletEffect(Bullet.GetComponent<ParticleSystem>());
 
         bulletTrace = Bullet.GetComponent<MultiBullets>();
-        bulletTrace.InitBullet(MechCam, player_pv, direction, (Target == null) ? null : Target.transform, this, targetWeapon);
+        bulletTrace.InitBullet(MechCam, playerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
 
         bulletTrace.SetParticleSystem(bulletNum, animationLength);
 
@@ -105,7 +105,7 @@ public class SMG : RangedWeapon {
             if (Time.time - lastPlayShotSoundTime >= animationLength / speedCoeff) {
                 lastPlayShotSoundTime = Time.time;
                 AudioSource.PlayOneShot(shotSound);
-                if(player_pv.isMine)Crosshair.CallShakingEffect(hand);
+                if(playerPv.isMine)Crosshair.CallShakingEffect(hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:

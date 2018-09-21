@@ -107,7 +107,7 @@ public class Sword : MeleeWeapon {
         if(slashSounds!=null && slashSounds[curCombo] != null)
             AudioSource.PlayClipAtPoint(slashSounds[curCombo], weapon.transform.position);
 
-        if(player_pv != null && player_pv.isMine) {//TODO : master check this
+        if(playerPv != null && playerPv.isMine) {//TODO : master check this
             isFiring = true;
 
             //If not final slash

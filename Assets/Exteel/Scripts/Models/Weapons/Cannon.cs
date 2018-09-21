@@ -46,7 +46,7 @@ public class Cannon : RangedWeapon {
         throw new System.NotImplementedException();
     }
 
-    protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {
+    protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
         throw new System.NotImplementedException();
     }
 

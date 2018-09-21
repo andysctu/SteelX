@@ -106,7 +106,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 if (!onTarget) {
                     GameObject g = Instantiate(Bullet, Effect_End.position, Quaternion.identity);
                     MultiBullets bulletTrace = g.GetComponent<MultiBullets>();
-                    //bulletTrace.SetStartDirection(-Effect_End.transform.right);
+                    //bulletTrace.SetStartDirection(-EffectEnd.transform.right);
                 }
 
                 int i = 0;
@@ -140,7 +140,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 if (onTarget) {
                     //bulletTrace.SetTarget(target, false);
                 } else {
-                    //bulletTrace.SetStartDirection(Effect_End.forward);
+                    //bulletTrace.SetStartDirection(EffectEnd.forward);
                 }
 
                 ShowHitMsg(target, bulletTrace);
@@ -215,7 +215,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
                 target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
             }
         } else {
-            //bulletTrace.SetShooter(player_pv);
+            //bulletTrace.SetShooter(playerPv);
             //bulletTrace.ShowHitOnBulletCollision(displayKill);
             //bulletTrace.SetCamera(cam);
         }

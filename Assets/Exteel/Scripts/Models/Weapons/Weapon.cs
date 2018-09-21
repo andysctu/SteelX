@@ -7,7 +7,7 @@ public abstract class Weapon {
     //Components
     protected Transform WeaponTransform;
     protected Combat Cbt;
-    protected PhotonView player_pv;
+    protected PhotonView playerPv;
     protected HeatBar HeatBar;
     protected Animator MechAnimator, WeaponAnimator;
     protected AnimationEventController AnimationEventController;
@@ -67,7 +67,7 @@ public abstract class Weapon {
     protected abstract void InitAttackType();
 
     private void InitComponents() {
-        player_pv = Cbt.GetComponent<PhotonView>();
+        playerPv = Cbt.GetComponent<PhotonView>();
         HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
         AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
         AnimatorVars = Cbt.GetComponentInChildren<AnimatorVars>();

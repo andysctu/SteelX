@@ -88,7 +88,7 @@ public class Spear : MeleeWeapon {
         if (smashSound != null)
             AudioSource.PlayClipAtPoint(smashSound, weapon.transform.position);
 
-        if (player_pv != null && player_pv.isMine) {//TODO : master check this
+        if (playerPv != null && playerPv.isMine) {//TODO : master check this
             isFiring = true;
 
             MeleeAttack(hand);

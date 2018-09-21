@@ -2,15 +2,14 @@
 
 public abstract class RangedWeapon : Weapon {
     protected GameObject BulletPrefab, MuzzlePrefab;
-    protected GameObject BulletCollector;
     protected ParticleSystem Muzzle;
 
-    protected Transform Effect_End;
+    protected Transform EffectEnd;
     protected Camera MechCam;
     protected Crosshair Crosshair;
 
     protected int AtkAnimHash;
-    protected bool isAtkAnimationPlaying = false;
+    protected bool atkAnimationIsPlaying = false;
     protected float startShootTime;
 
     public enum StateCallBackType { ReloadStateEnter, AttackStateEnter, AttackStateUpdate, AttackStateExit }
@@ -36,7 +35,7 @@ public abstract class RangedWeapon : Weapon {
         MechCam = Cbt.GetCamera();
         FindEffectEnd();
 
-        AttachMuzzle(Effect_End);
+        AttachMuzzle(EffectEnd);
 
         if (MechCam != null) Crosshair = MechCam.GetComponent<Crosshair>();
     }
@@ -46,8 +45,8 @@ public abstract class RangedWeapon : Weapon {
     }
 
     protected virtual void FindEffectEnd() {
-        Effect_End = TransformExtension.FindDeepChild(weapon.transform, "EffectEnd");
-        if (Effect_End == null) { Debug.LogError("Can't find EffectEnd on this weapon : " + data.weaponName); };
+        EffectEnd = TransformExtension.FindDeepChild(weapon.transform, "EffectEnd");
+        if (EffectEnd == null) { Debug.LogError("Can't find EffectEnd on this weapon : " + data.weaponName); };
     }
 
     protected virtual void AttachMuzzle(Transform Effect_End) {
@@ -88,20 +87,20 @@ public abstract class RangedWeapon : Weapon {
     public override void HandleAnimation() {
         if (isFiring) {
             if (Time.time - startShootTime >= 1 / rate) {
-                if (isAtkAnimationPlaying) {
-                    isAtkAnimationPlaying = false;
+                if (atkAnimationIsPlaying) {
+                    atkAnimationIsPlaying = false;
                     MechAnimator.SetBool(AtkAnimHash, false);
                 }
             } else {
-                if (!isAtkAnimationPlaying) {
+                if (!atkAnimationIsPlaying) {
                     MechAnimator.SetBool(AtkAnimHash, true);
-                    isAtkAnimationPlaying = true;
+                    atkAnimationIsPlaying = true;
                 }
             }
         } else {
-            if (isAtkAnimationPlaying) {
+            if (atkAnimationIsPlaying) {
                 MechAnimator.SetBool(AtkAnimHash, false);
-                isAtkAnimationPlaying = false;
+                atkAnimationIsPlaying = false;
             }
         }
     }
@@ -113,47 +112,41 @@ public abstract class RangedWeapon : Weapon {
     }
 
     protected virtual void FireRaycast(Vector3 start, Vector3 direction, int hand) {
-        Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());//target might be shield collider
+        Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());
 
         if (target != null) {
-            PhotonView targetpv = target.transform.root.GetComponent<PhotonView>();
+            PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();
 
             if (target.tag != "Shield") {
-                player_pv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, -1);
+                playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetPv.viewID, -1);
             } else {//check what hand is it
-                ShieldActionReceiver ShieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
-                int target_ShieldPos = ShieldActionReceiver.GetPos();
+                ShieldActionReceiver shieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
+                int targetShieldPos = shieldActionReceiver.GetPos();
 
-                player_pv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, target_ShieldPos);
+                playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetPv.viewID, targetShieldPos);
             }
         } else {
-            player_pv.RPC("Shoot", PhotonTargets.All, weapPos, direction, null, -1, -1);
+            playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, -1, -1);
         }
     }
 
-    public virtual void Shoot(Vector3 direction, PhotonPlayer targetPlayer, int targetPvId, int targetWeapPos) {
+    public virtual void Shoot(Vector3 direction, int targetPvId, int targetWeapPos) {
         MechAnimator.SetBool(AtkAnimHash, true);
         WeaponAnimator.SetTrigger("Atk");
 
         isFiring = true;
         startShootTime = Time.time;
 
-        PhotonView targetpv = null;
-        GameObject Target = null;
+        GameObject target = null;
+        PhotonView targetPv = PhotonView.Find(targetPvId);
+        if(targetPv!=null) target = targetPv.gameObject;
 
-        //Get the target
-        if (targetPlayer == null) {
-            targetpv = PhotonView.Find(targetPvId);
-            if (targetpv != null) Target = targetpv.gameObject;
-        } else {
-            Target = (GameObject)targetPlayer.TagObject;
-        }
 
-        if (Target != null) {
-            Combat targetCbt = Target.GetComponent<Combat>();
-            targetCbt.OnHit(data.damage, player_pv.viewID, weapPos, targetWeapPos);
+        if (target != null) {
+            Combat targetCbt = target.GetComponent<Combat>();
+            targetCbt.OnHit(data.damage, playerPv.viewID, weapPos, targetWeapPos);
 
-            DisplayBullet(direction, Target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
+            DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 
             Cbt.IncreaseSP(data.SPincreaseAmount);
         } else {
@@ -161,5 +154,5 @@ public abstract class RangedWeapon : Weapon {
         }
     }
 
-    protected abstract void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon);
+    protected abstract void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon);
 }

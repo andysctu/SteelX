@@ -162,10 +162,10 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]//Pass PhotonPlayer is for efficiency (Drone doesn't have PhotonPlayer, so we need to use photonView ID to search the object)
-    private void Shoot(int weapPos, Vector3 direction, PhotonPlayer TargetPlayer, int target_pvID, int targetWeapPos) {//targetWeapPos : if hit on this weapon , play onHitEffect
+    private void Shoot(int weapPos, Vector3 direction, int targetPvID, int targetWeapPos) {//targetWeapPos : if hit on this weapon , play onHitEffect
         RangedWeapon rangedWeapon = bm.Weapons[weapPos] as RangedWeapon;
         if (rangedWeapon == null) { Debug.LogWarning("Cannot cast from source type to RangedWeapon."); return; }
-        rangedWeapon.Shoot(direction, TargetPlayer, target_pvID, targetWeapPos);
+        rangedWeapon.Shoot(direction, targetPvID, targetWeapPos);
     }
 
     [PunRPC]
@@ -212,10 +212,8 @@ public class MechCombat : Combat {
             }
         }
 
-        if (photonView.isMine) {//TODO : improve anti hack
-            IncreaseSP(damage / 2);
-        }
-        //TODO : implement shooter increase SP
+        IncreaseSP(damage / 2);
+        shooterCbt.IncreaseSP(damage / 2);
     }
 
     public override int ProcessDmg(int dmg, Weapon.AttackType attackType ,Weapon weapon){
@@ -236,11 +234,6 @@ public class MechCombat : Combat {
     [PunRPC]
     private void OnLocked() {//TODO : remake this (using raise event)
         if (photonView.isMine) crosshair.ShowLocked();
-    }
-
-    [PunRPC]
-    public void KnockBack(Vector3 dir, float length) {//TODO : check this
-        GetComponent<CharacterController>().Move(dir * length);
     }
 
     public void Skill_KnockBack(float length) {//TODO : check this

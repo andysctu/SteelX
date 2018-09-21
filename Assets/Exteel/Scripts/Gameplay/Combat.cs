@@ -69,7 +69,12 @@ public abstract class Combat : Photon.MonoBehaviour {
     public abstract int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon);
 
     [PunRPC]
-    public virtual void OnHit(int damage, int shooter_PvID, int shooterWeapPos, int targetWeapPos) {
+    public virtual void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
+    }
+
+    [PunRPC]
+    public virtual void KnockBack(Vector3 dir, float length) {//TODO : check this
+        GetComponent<CharacterController>().Move(dir * length);
     }
 
     [PunRPC]
