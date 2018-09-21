@@ -9,10 +9,9 @@ public class RocketBullet : Bullet {
     private LayerMask PlayerLayerMask, TerrainLayerMask;
 
     //bullet info
-    private int bulletdmg = 450, shooterWeapPos;
+    private int bulletDmg = 450, shooterWeapPos;
     private float impact_radius = 6;
     private bool isCollided = false, hasCalledPlayImpact = false;
-    private int SPincreaseAmount=0;
 
     protected override void Awake() {
         base.Awake();
@@ -24,6 +23,15 @@ public class RocketBullet : Bullet {
     private void InitComponents() {
         bullet_pv = GetComponent<PhotonView>();
         AttachRigidbody();
+    }
+
+    public override void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, Transform target, Weapon shooterWeapon,Weapon targetWeapon){
+        base.InitBullet(cam, shooter_pv, startDirection, target, shooterWeapon, targetWeapon);
+
+        Rocket rocket = shooterWeapon as Rocket;
+        if (rocket != null){
+            SetBulletProperties(rocket.GetRawDamage(), rocket.GetBulletSpeed(), rocket.GetImpactRadius());
+        }
     }
 
     private void InitVelocity() {//Master update position
@@ -39,20 +47,19 @@ public class RocketBullet : Bullet {
     private void Start() {
         bullet_ps.Play();
 
-        if (!PhotonNetwork.isMasterClient)return;
+        if(!PhotonNetwork.isMasterClient)return;
 
         shooter = shooter_pv.gameObject;
         InitVelocity();        
     }
 
-    public void SetBulletPropertis(int bulletdmg, int bulletSpeed, int impact_radius) {
-        this.bulletdmg = bulletdmg;
-        this.bulletSpeed = bulletSpeed;
-        this.impact_radius = impact_radius;
+    protected override void LateUpdate(){
     }
 
-    public void SetSPIncreaseAmount(int amount) {
-        SPincreaseAmount = amount;
+    public void SetBulletProperties(int bulletDmg, float bulletSpeed, float impact_radius) {
+        this.bulletDmg = bulletDmg;
+        this.bulletSpeed = bulletSpeed;
+        this.impact_radius = impact_radius;
     }
 
 	protected override void OnParticleCollision(GameObject other){//Master do the logic & destroy
@@ -64,12 +71,16 @@ public class RocketBullet : Bullet {
 			if (((1<<other.layer)&PlayerLayerMask) != 0) {//check if other.layer equals player layer
 				if (other.transform.root.GetComponent<PhotonView> ().owner.GetTeam () == shooter_pv.owner.GetTeam ())return;
 			}
-		}	
+		}
 
         isCollided = true;
 
         bullet_ps.GetCollisionEvents(other, collisionEvents);
         Vector3 impact_point = collisionEvents[0].intersection;
+
+	    if (PhotonNetwork.isMasterClient && ((1 << other.layer) & TerrainLayerMask) != 0) {
+	        bullet_pv.RPC("PlayImpact", PhotonTargets.All, impact_point);
+	    }
 
         Collider[] hitColliders = Physics.OverlapSphere(impact_point, impact_radius, PlayerLayerMask); // get overlap targets
 
@@ -103,70 +114,71 @@ public class RocketBullet : Bullet {
             if (hitColliders [i].tag == "Shield") {				
                 ShieldActionReceiver shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldActionReceiver>();
                 int targetWeapPos = shieldUpdater.GetPos();
-                
-                colliderPV.RPC ("OnHit", PhotonTargets.All, bulletdmg, shooter_pv.owner, shooter_pv.viewID, shooterWeapPos, targetWeapPos);
-                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, bulletdmg, hitColliders[i].transform.position, colliderPV.owner, colliderPV.viewID, targetWeapPos, true);
-			} else {			
-                colliderPV.RPC("OnHit", PhotonTargets.All, bulletdmg, shooter_pv.owner, shooter_pv.viewID, shooterWeapPos, -1);
-                bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, bulletdmg, hitColliders[i].transform.position + MECH_MID_POINT, colliderPV.owner, colliderPV.viewID, -1, false);
-            }
 
-            //increase SP
-            shooter.GetComponent<SkillController>().IncreaseSP(SPincreaseAmount);
+                bullet_pv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID, targetWeapPos);
+			} else {
+                bullet_pv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID,  -1);
+            }
         }
 
         if (colliderViewIds.Count == 0) {//if no target is hit , then play impact on ground
-            bullet_pv.RPC("CallPlayImpact", PhotonTargets.All, impact_point, cam.transform.position, false);
+            bullet_pv.RPC("PlayImpact", PhotonTargets.All, impact_point);
         }
     }
 
     [PunRPC]
-	private void OnHitTarget(Vector3 direction, int target_pvIDs) {
+    private void OnHitTarget(int bulletDmg, int shooterPvID, int shooterWeapPos, int targetPvID, int targetWeapPos){
 
-        if (PhotonNetwork.isMasterClient) {
+        PhotonView targetPv = PhotonView.Find(targetPvID), shooterPv = PhotonView.Find(shooterPvID);
+        if (targetPv == null) { Debug.LogWarning("Can't find pv"); return; }
 
+        GameObject targetMech = targetPv.gameObject;
+        Combat shooterCbt = (shooterPv == null)? null : shooterPv.GetComponent<Combat>();
+        targetCbt = targetMech.GetComponent<Combat>();
+        if (targetCbt == null){Debug.LogError("target cbt is null");return;}
+
+        targetCbt.OnHit(bulletDmg, shooter_pv.viewID, shooterWeapPos, targetWeapPos);
+
+        if (targetWeapPos != -1) {
+            targetWeapon = targetCbt.GetWeapon(targetWeapPos);
+            targetWeapon.PlayOnHitEffect();
+
+            if (shooterCbt != null && shooterPv.isMine) {
+                if (targetCbt.CurrentHP - targetCbt.ProcessDmg(bulletDmg, Weapon.AttackType.Rocket, targetWeapon) <= 0) {
+                    targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooterCbt.GetCamera());
+                } else {
+                    targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, shooterCbt.GetCamera());
+                }
+            }
+        } else{
+            PlayImpact(targetMech.transform.position + MECH_MID_POINT);
+
+            if (shooterCbt != null && shooterPv.isMine){
+                if (targetCbt.CurrentHP - targetCbt.ProcessDmg(bulletDmg, Weapon.AttackType.Rocket, null) <= 0){
+                    targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooterCbt.GetCamera());
+                } else{
+                    targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, shooterCbt.GetCamera());
+                    //targetCbt.KnockBack(5f); //TODO : implement this
+                }
+            }
         }
-
     }
-    //if (hitColliders [i].transform.root.GetComponent<Combat> ().CurrentHP - bulletdmg / 2 <= 0) {
-    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooter_cam);
-    //} else {
-    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, shooter_cam);
-    //}
 
     [PunRPC]
-	void CallPlayImpact(int bulletdmg, Vector3 collisionHitLoc, PhotonPlayer target, int target_pvID,int targetWeapPos, bool isShield){
+	protected override void PlayImpact(Vector3 collisionHitLoc){
         if (!hasCalledPlayImpact) {
             hasCalledPlayImpact = true;
             Stop();
-            if (PhotonNetwork.isMasterClient)Invoke("DestroyThis", 3f);
+            if (PhotonNetwork.isMasterClient)Invoke("DestroyThis", 5f);
         }
 
-        
-    //     if (hitColliders [i].gameObject.GetComponent<Combat> ().CurrentHP - bulletdmg <= 0) {
-    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, cam);
-				//} else {
-    //                colliderPV.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, cam);
-				//}
-                
-
-        //colliderPV.RPC("KnockBack", PhotonTargets.All, transform.forward, 5f);
-        if (isShield) {
-
-        } else {
-            GameObject impact = Instantiate(ImpactPrefab.gameObject, collisionHitLoc, Quaternion.identity);
-            BulletImpact BI = impact.GetComponent<BulletImpact>();
-            BI.Play(collisionHitLoc);
-        }
-        
+        GameObject impact = Instantiate(ImpactPrefab.gameObject, collisionHitLoc, Quaternion.identity);
+        BulletImpact BI = impact.GetComponent<BulletImpact>();
+        BI.Play(collisionHitLoc);
     }
 
-    void DestroyThis() {
+    private void DestroyThis() {
         PhotonNetwork.Destroy(gameObject);
-    }
-
-    protected override void LateUpdate() {
-
     }
 
     public override void Play() {

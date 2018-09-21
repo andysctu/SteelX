@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Combat : Photon.MonoBehaviour {
+public abstract class Combat : Photon.MonoBehaviour {
     protected GameManager gm;
 
     //Combat variable
@@ -66,8 +66,10 @@ public class Combat : Photon.MonoBehaviour {
         return null;
     }
 
+    public abstract int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon);
+
     [PunRPC]
-    public virtual void OnHit(int damage, PhotonPlayer shooter, int shooter_pvID, int weapPos, int targetWeapPos) {
+    public virtual void OnHit(int damage, int shooter_PvID, int shooterWeapPos, int targetWeapPos) {
     }
 
     [PunRPC]

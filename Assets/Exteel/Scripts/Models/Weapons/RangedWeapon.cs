@@ -131,7 +131,7 @@ public abstract class RangedWeapon : Weapon {
         }
     }
 
-    public virtual void Shoot(Vector3 direction, PhotonPlayer TargetPlayer, int target_pvID, int targetWeapPos) {
+    public virtual void Shoot(Vector3 direction, PhotonPlayer targetPlayer, int targetPvId, int targetWeapPos) {
         MechAnimator.SetBool(AtkAnimHash, true);
         WeaponAnimator.SetTrigger("Atk");
 
@@ -142,16 +142,16 @@ public abstract class RangedWeapon : Weapon {
         GameObject Target = null;
 
         //Get the target
-        if (TargetPlayer == null) {
-            targetpv = PhotonView.Find(target_pvID);
+        if (targetPlayer == null) {
+            targetpv = PhotonView.Find(targetPvId);
             if (targetpv != null) Target = targetpv.gameObject;
         } else {
-            Target = (GameObject)TargetPlayer.TagObject;
+            Target = (GameObject)targetPlayer.TagObject;
         }
 
         if (Target != null) {
             Combat targetCbt = Target.GetComponent<Combat>();
-            targetCbt.OnHit(data.damage, player_pv.owner, player_pv.viewID, weapPos, targetWeapPos);
+            targetCbt.OnHit(data.damage, player_pv.viewID, weapPos, targetWeapPos);
 
             DisplayBullet(direction, Target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 

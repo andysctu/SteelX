@@ -169,49 +169,35 @@ public class MechCombat : Combat {
     }
 
     [PunRPC]
-    public override void OnHit(int damage, PhotonPlayer shooter, int shooter_pvID, int shooterWeapPos, int targetWeapPos) {
-        if (isDead || shooter == null) { return; }
+    public override void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
+        if (isDead) { return; }
 
-        GameObject shooterMech = null;
-
-        //If shooter is null, use photonView id to search
-        if (shooter == null || shooter.TagObject == null) {
-            PhotonView shooter_pv = PhotonView.Find(shooter_pvID);
-            if (shooter_pv == null) {
-                Debug.LogWarning("shooter_pv is null. Is the shooter not existed?");
-                return;
-            } else {
-                shooterMech = shooter_pv.gameObject;
-            }
-        } else {
-            shooterMech = ((GameObject)shooter.TagObject);
-        }
+        PhotonView shooterPv = PhotonView.Find(shooterPvID);
+        if (shooterPv == null)return;
+        GameObject shooterMech = shooterPv.gameObject;
 
         //Get shooter weapon
-        Combat shooter_cbt = (shooterMech == null) ? null : shooterMech.GetComponent<Combat>();
-        if (shooter_cbt == null) { Debug.LogWarning("cbt null."); return; }
+        Combat shooterCbt = (shooterMech == null) ? null : shooterMech.GetComponent<Combat>();
+        if (shooterCbt == null) { Debug.LogWarning("shooter cbt is null."); return; }
 
-        Weapon shooterWeapon = shooter_cbt.GetWeapon(shooterWeapPos);
+        Weapon shooterWeapon = shooterCbt.GetWeapon(shooterWeapPos), targetWeapon = null;
         if (shooterWeapon == null) { Debug.LogWarning("shooterWeapon is null."); return; }
 
         Weapon.AttackType attackType = shooterWeapon.GetWeaponAttackType();
 
         //Get target weapon (this player)
-        Weapon targetWeapon = null;
         if (targetWeapPos != -1) {
             targetWeapon = bm.Weapons[targetWeapPos];
             if (targetWeapon == null) { Debug.LogWarning("targetWeapon is null."); return; }
         }
 
-        //Play on hit effect
-        bool isShield = (targetWeapon != null && targetWeapon.IsShield());//some weapons may be shield in some state ( the general meaning of a shield )
+        bool isShield = (targetWeapon != null && targetWeapon.IsShield());
         shooterWeapon.OnHitTargetAction(gameObject, targetWeapon, isShield);
 
-        if (targetWeapon != null) targetWeapon.OnHitAction(shooter_cbt, shooterWeapon);
-
-        //Process damage
-        int dmg = damage;
-        if (targetWeapon != null) dmg = targetWeapon.ProcessDamage(damage, attackType);
+        if (targetWeapon != null) targetWeapon.OnHitAction(shooterCbt, shooterWeapon);
+        
+        //Calculate Dmg
+        int dmg = ProcessDmg(damage, attackType, targetWeapon);
 
         //Master handle logic
         if (PhotonNetwork.isMasterClient) {
@@ -222,13 +208,21 @@ public class MechCombat : Combat {
             }
 
             if (CurrentHP <= 0) {//sync disable player
-                photonView.RPC("DisablePlayer", PhotonTargets.All, shooter, shooterWeapon.WeaponName);
+                photonView.RPC("DisablePlayer", PhotonTargets.All, shooterPv.owner, shooterWeapon.WeaponName);
             }
         }
 
         if (photonView.isMine) {//TODO : improve anti hack
             IncreaseSP(damage / 2);
         }
+        //TODO : implement shooter increase SP
+    }
+
+    public override int ProcessDmg(int dmg, Weapon.AttackType attackType ,Weapon weapon){
+        var finalDmg = dmg;
+        if (weapon != null) finalDmg = weapon.ProcessDamage(dmg, attackType);
+
+        return finalDmg;
     }
 
     //[PunRPC]

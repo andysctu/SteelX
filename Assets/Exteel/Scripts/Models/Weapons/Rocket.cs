@@ -4,7 +4,7 @@ public class Rocket : RangedWeapon {
     private AudioClip shotSound, reloadSound;
     private Bullet bullet;
 
-    private float animationStartTime;
+    private float bulletSpeed = 250, impactRadius = 0;
 
     public Rocket() {
         allowBothWeaponUsing = false;
@@ -14,6 +14,13 @@ public class Rocket : RangedWeapon {
         attackType = AttackType.Ranged;
     }
 
+    protected override void InitDataRelatedVars(WeaponData data){
+        base.InitDataRelatedVars(data);
+
+        bulletSpeed = ((RocketData)data).bullet_speed;
+        impactRadius = ((RocketData)data).impact_radius;
+    }
+
     protected override void LoadSoundClips() {
         shotSound = ((RocketData)data).shotSound;
         reloadSound = ((RocketData)data).reload_sound;
@@ -21,10 +28,6 @@ public class Rocket : RangedWeapon {
 
     protected override void InitAtkAnimHash() {
         AtkAnimHash = Animator.StringToHash("AtkL") ;
-    }
-
-    public override void HandleCombat() {
-        base.HandleCombat();
     }
 
     public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
@@ -48,9 +51,6 @@ public class Rocket : RangedWeapon {
     }
 
     protected override void UpdateAnimationSpeed() {
-    }
-
-    private void UpdateBulletEffect(ParticleSystem Bullet_ps) {
     }
 
     protected override void UpdateMuzzleEffect() {
@@ -104,7 +104,7 @@ public class Rocket : RangedWeapon {
         }
     }
 
-    public override void Shoot(Vector3 direction, PhotonPlayer TargetPlayer, int target_pvID, int targetWeapPos) {
+    public override void Shoot(Vector3 direction, PhotonPlayer targetPlayer, int targetPvId, int targetWeapPos) {
         //Play animation imm.
         MechAnimator.Play("RocketShootL",1);
         MechAnimator.Play("RocketShootR", 2);
@@ -115,23 +115,23 @@ public class Rocket : RangedWeapon {
         isFiring = true;
         startShootTime = Time.time;
 
-        GameObject Target = null;
+        GameObject target = null;
 
         //Get the target
-        if (TargetPlayer == null || TargetPlayer.TagObject == null) {
-            PhotonView targetpv = PhotonView.Find(target_pvID);
-            if (targetpv != null) Target = targetpv.gameObject;
+        if (targetPlayer == null || targetPlayer.TagObject == null) {
+            PhotonView targetPv = PhotonView.Find(targetPvId);
+            if (targetPv != null) target = targetPv.gameObject;
         } else {
-            Target = (GameObject)TargetPlayer.TagObject;
+            target = (GameObject)targetPlayer.TagObject;
         }
 
-        if (Target != null) {
-            Combat targetCbt = Target.GetComponent<Combat>();
+        if (target != null) {
+            Combat targetCbt = target.GetComponent<Combat>();
             if(targetCbt == null)return;
 
-            targetCbt.OnHit(data.damage, player_pv.owner, player_pv.viewID, weapPos, targetWeapPos);
+            targetCbt.OnHit(data.damage, player_pv.viewID, weapPos, targetWeapPos);
 
-            if(PhotonNetwork.isMasterClient)DisplayBullet(direction, Target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
+            if(PhotonNetwork.isMasterClient)DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 
             Cbt.IncreaseSP(data.SPincreaseAmount);
         } else {
@@ -139,9 +139,8 @@ public class Rocket : RangedWeapon {
         }
     }
 
-    protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {//Call by master client
-        bullet = PhotonNetwork.Instantiate(BulletPrefab.name, Effect_End.position, Quaternion.identity, 0).GetComponent<Bullet>();
-
+    protected override void DisplayBullet(Vector3 direction, GameObject Target, Weapon targetWeapon) {
+        bullet = PhotonNetwork.Instantiate(BulletPrefab.name, Effect_End.position, Quaternion.identity, 0).GetComponent<Bullet>();        
         bullet.InitBullet(MechCam, player_pv, direction, (Target == null) ? null : Target.transform, this , targetWeapon);
     }
 
@@ -173,5 +172,13 @@ public class Rocket : RangedWeapon {
             if (reloadSound != null) AudioSource.PlayOneShot(reloadSound);
             break;
         }
+    }
+
+    public float GetBulletSpeed(){
+        return bulletSpeed;
+    }
+
+    public float GetImpactRadius(){
+        return impactRadius;
     }
 }
