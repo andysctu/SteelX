@@ -13,7 +13,6 @@ public class Crosshair : MonoBehaviour {
     [SerializeField] private MechCombat MechCombat;
     [SerializeField] private SkillController SkillController;
 
-    private List<GameObject> TargetsToRemove = new List<GameObject>();
     public List<GameObject> Targets = new List<GameObject>();//control by checkisrendered.cs
 
     private WeaponData[] weaponScripts;
@@ -155,115 +154,91 @@ public class Crosshair : MonoBehaviour {
         crosshairImage.EngTargetMark.enabled = false;
     }
 
-    public Transform DectectTarget(float crosshairRadius, float range, float minimunRange, bool isTargetAlly) {
+    public Transform DectectTarget(float crosshairRadius, float range, float minimunRange, bool detectAlly) {
         if (crosshairRadius > 0) {
-            foreach (GameObject target in Targets) {
-                if (target == null) {
-                    TargetsToRemove.Add(target);
+            for (int i = 0; i < Targets.Count; i++) { 
+                if (Targets[i] == null) {
+                    Targets.RemoveAt(i);
                     continue;
                 }
 
-                if(target.layer == 0)//onskill
-                    continue;
+                if(Targets[i].layer == 0)continue;//On Skill or dead
 
-                PhotonView targetpv = target.GetComponent<PhotonView>();
-                if (targetpv.viewID == pv.viewID)
-                    continue;
+                PhotonView targetpv = Targets[i].GetComponent<PhotonView>();
+                if (targetpv.viewID == pv.viewID)continue;
 
                 if (isTeamMode) {
-                    if (!isTargetAlly) {
-                        if (targetpv.owner.GetTeam() == pv.owner.GetTeam()) {
-                            continue;
-                        }
+                    if (!detectAlly) {
+                        if (targetpv.owner.GetTeam() == pv.owner.GetTeam())continue;
                     } else {
-                        if (targetpv.owner.GetTeam() != pv.owner.GetTeam()) {
-                            continue;
-                        }
+                        if (targetpv.owner.GetTeam() != pv.owner.GetTeam())continue;
                     }
                 } else {
-                    //if not team mode , ignore eng
-                    if (isTargetAlly)
-                        continue;
+                    if (detectAlly)continue;//if not team mode , ignore eng
                 }
 
                 //check distance
-                if (Vector3.Distance(target.transform.position, transform.root.position) > range || Vector3.Distance(target.transform.position, transform.root.position) < minimunRange)
-                    continue;
+                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range || Vector3.Distance(Targets[i].transform.position, transform.root.position) < minimunRange)continue;
 
-                Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
+                Vector3 targetLocInCam = cam.WorldToViewportPoint(Targets[i].transform.position + new Vector3(0, 5, 0));
                 Vector3 rayStartPoint = transform.root.position + new Vector3(0, 5, 0); //rayStartpoint should not inside terrain => not detect
                 Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
                 if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
                     //check if Terrain block the way
                     RaycastHit hit;
-                    if (Physics.Raycast(rayStartPoint, (target.transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0, 5, 0)), Terrainlayer)) {
-                        if (hit.collider.gameObject.layer == 10) {
-                            continue;
-                        }
+                    if (Physics.Raycast(rayStartPoint, (Targets[i].transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, Targets[i].transform.position + new Vector3(0, 5, 0)), Terrainlayer)) {
+                        if (hit.collider.gameObject.layer == 10)continue;
                     }
 
-                    if (!isTargetAlly)
-                        SendLockedMessage(targetpv.viewID, target.name);
+                    if (!detectAlly)SendLockedMessage(targetpv.viewID, Targets[i].name);
 
-                    return target.transform;
+                    return Targets[i].transform;
                 }
             }
         }
         return null;
     }
 
-    public Transform[] DectectMultiTargets(float crosshairRadius, float range, bool isTargetAlly) {
+    public Transform[] DectectMultiTargets(float crosshairRadius, float range, bool detectAlly) {
         if (crosshairRadius > 0) {
             List<Transform> targets_in_range = new List<Transform>();
 
-            foreach (GameObject target in Targets) {
-                if (target == null) {
-                    TargetsToRemove.Add(target);
+            for(int i=0;i<Targets.Count;i++) {
+                if (Targets[i] == null) {
+                    Targets.RemoveAt(i);
                     continue;
                 }
 
-                if (target.layer == 0)//onskill
-                    continue;
+                if (Targets[i].layer == 0)continue;//On skill or dead
 
-                PhotonView targetpv = target.GetComponent<PhotonView>();
-                if (targetpv.viewID == pv.viewID)
-                    continue;
+                PhotonView targetpv = Targets[i].GetComponent<PhotonView>();
+                if (targetpv.viewID == pv.viewID)continue;
 
                 if (isTeamMode) {
-                    if (target.GetComponent<Collider>().tag == "Drone") {
-                        continue;
-                    }
-                    if (!isTargetAlly) {
-                        if (targetpv.owner.GetTeam() == pv.owner.GetTeam()) {
-                            continue;
-                        }
+                    if (!detectAlly) {
+                        if (targetpv.owner.GetTeam() == pv.owner.GetTeam())continue;
                     } else {
-                        if (targetpv.owner.GetTeam() != pv.owner.GetTeam()) {
-                            continue;
-                        }
+                        if (targetpv.owner.GetTeam() != pv.owner.GetTeam())continue;
                     }
                 } else {
-                    //if not team mode , ignore eng
-                    if (isTargetAlly)
-                        continue;
+                    if (detectAlly)continue;//if not team mode , ignore eng
                 }
 
                 //check distance
-                if (Vector3.Distance(target.transform.position, transform.root.position) > range)
-                    continue;
+                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range)continue;
 
-                Vector3 targetLocInCam = cam.WorldToViewportPoint(target.transform.position + new Vector3(0, 5, 0));
+                Vector3 targetLocInCam = cam.WorldToViewportPoint(Targets[i].transform.position + new Vector3(0, 5, 0));
                 Vector3 rayStartPoint = transform.root.position + new Vector3(0, 10, 0); //rayStartpoint should not inside terrain => not detect
                 Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * screenCoeff + 0.5f);
                 if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
                     //check if Terrain block the way
                     RaycastHit hit;
-                    if (Physics.Raycast(rayStartPoint, (target.transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, target.transform.position + new Vector3(0, 5, 0)), Terrainlayer)) {
+                    if (Physics.Raycast(rayStartPoint, (Targets[i].transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, Targets[i].transform.position + new Vector3(0, 5, 0)), Terrainlayer)) {
                         if (hit.collider.gameObject.layer == 10) {
                             continue;
                         }
                     }
-                    targets_in_range.Add(target.transform);
+                    targets_in_range.Add(Targets[i].transform);
                 }
             }
             return targets_in_range.ToArray();
@@ -310,11 +285,6 @@ public class Crosshair : MonoBehaviour {
                 foundTargetR = false;
             }
         }
-
-        foreach (GameObject g in TargetsToRemove) {//remove null target
-            Targets.Remove(g);
-        }
-        TargetsToRemove.Clear();
 
         MarkTarget();
     }
