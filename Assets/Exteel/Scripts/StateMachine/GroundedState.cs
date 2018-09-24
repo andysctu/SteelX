@@ -10,8 +10,8 @@ public class GroundedState : MechStateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		base.Init(animator);
 		if (cc == null || !cc.enabled) return;
-		animator.SetBool (grounded_id, true);
-		animator.SetBool (onMelee_id, false);
+		animator.SetBool (GroundedHash, true);
+		animator.SetBool (animatorVars.OnMeleeHash, false);
 		mctrl.grounded = true;
         mcbt.CanMeleeAttack = true;
         doubleButtonDown = false;
@@ -22,10 +22,10 @@ public class GroundedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 
-		animator.SetFloat(speed_id, mctrl.speed);
-		animator.SetFloat(direction_id, mctrl.direction);
+		animator.SetFloat(SpeedHash, mctrl.speed);
+		animator.SetFloat(DirectionHash, mctrl.direction);
 
-		if(animator.GetBool(jump_id)){
+		if(animator.GetBool(JumpHash)){
 			mctrl.Run ();//not lose speed in air
 			return;
 		}
@@ -33,7 +33,7 @@ public class GroundedState : MechStateMachineBehaviour {
 		if(!mctrl.CheckIsGrounded()){//check not jumping but is falling
 			mctrl.grounded = false;
 			mctrl.SetCanVerticalBoost (true);
-			animator.SetBool (grounded_id, false);
+			animator.SetBool (GroundedHash, false);
 			return;
 		}
 
@@ -45,26 +45,26 @@ public class GroundedState : MechStateMachineBehaviour {
             isBoosting = true;
         }
 
-        if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(onMelee_id) ) {
+        if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(animatorVars.OnMeleeHash) ) {
             if (mctrl.grounded) {
                 Debug.Log("Jump action");
             }
 
 			mctrl.SetCanVerticalBoost (true);
 			mctrl.grounded = false;
-			animator.SetBool(grounded_id, false);
-			animator.SetBool(jump_id, true);
+			animator.SetBool(GroundedHash, false);
+			animator.SetBool(JumpHash, true);
 			return;
 		}
 
 		if (!gm.BlockInput && (Input.GetKey(KeyCode.LeftShift) || doubleButtonDown) && mcbt.EnoughENToBoost()) {
 			if (mctrl.speed > 0 || mctrl.speed < 0 || mctrl.direction > 0 || mctrl.direction < 0) {	
-				animator.SetBool (boost_id, true);
+				animator.SetBool (BoostHash, true);
 				mctrl.Boost (true);
 			}else{
 				mctrl.Boost (true);
 			}
-		}else if(!animator.GetBool(boost_id)) {
+		}else if(!animator.GetBool(BoostHash)) {
 			mctrl.Boost (false);
 			mctrl.Run();
 		}

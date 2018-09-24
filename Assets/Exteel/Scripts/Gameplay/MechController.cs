@@ -151,12 +151,12 @@ public class MechController : Photon.MonoBehaviour {
 
     private void FixedUpdate() {
         if (!grounded) {
-            ySpeed -= (ySpeed < maxDownSpeed || Animator.GetBool(AnimatorVars.boost_id)) ? 0 : Gravity;
+            ySpeed -= (ySpeed < maxDownSpeed || Animator.GetBool(AnimatorVars.BoostHash)) ? 0 : Gravity;
         } else {
             ySpeed = -CharacterController.stepOffset;
         }
 
-        if (Animator.GetBool(AnimatorVars.boost_id)) {
+        if (Animator.GetBool(AnimatorVars.BoostHash)) {
             DynamicCam();
             mechCombat.DecrementEN();
         } else {
@@ -216,7 +216,7 @@ public class MechController : Photon.MonoBehaviour {
         move.x = 0;
         move.z = 0;
 
-        if (Animator.GetBool(AnimatorVars.jump_id))
+        if (Animator.GetBool(AnimatorVars.JumpHash))
             getJumpWhenSlash = true;
 
         //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
@@ -274,7 +274,7 @@ public class MechController : Photon.MonoBehaviour {
         run_xzDir.x = Mathf.Lerp(run_xzDir.x, xzDir.x, Time.deltaTime * runDir_coeff);//smooth slow down (boosting -> Idle&Walk
         run_xzDir.y = Mathf.Lerp(run_xzDir.y, xzDir.y, Time.deltaTime * runDir_coeff);//not achieving by gravity because we don't want walk smooth slow down
                                                                                       //decelerating
-        if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.boost_id)) {//not in transition to boost
+        if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.BoostHash)) {//not in transition to boost
             xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x + (run_xzDir.y * curboostingSpeed * transform.forward).x;
             zSpeed = (run_xzDir.x * curboostingSpeed * transform.right).z + (run_xzDir.y * curboostingSpeed * transform.forward).z;
 
@@ -295,7 +295,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void JumpMoveInAir() {
-        if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.boost_id)) {//not in transition to boost
+        if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.BoostHash)) {//not in transition to boost
             curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 10;
 
             xSpeed = (xzDir.x * curboostingSpeed * transform.right).x + (xzDir.y * curboostingSpeed * transform.forward).x;
@@ -364,7 +364,7 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
-    public void BCNPose() {
+    public void CnPose() {
         xSpeed = 0;
         zSpeed = 0;
     }

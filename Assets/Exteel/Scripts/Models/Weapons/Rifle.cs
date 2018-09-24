@@ -1,49 +1,26 @@
 ﻿using UnityEngine;
 
 public class Rifle : RangedWeapon {
-    private AudioClip shotSound, reloadSound;
-    private Bullet bullet;
-
-    private float animationStartTime;
-
-    public Rifle() {
-        allowBothWeaponUsing = true;
-    }
-
-    protected override void InitAttackType() {
-        attackType = AttackType.Ranged;
-    }
+    private AudioClip _shotSound, _reloadSound;
+    private Bullet _bullet;
 
     protected override void LoadSoundClips() {
-        shotSound = ((RifleData)data).shotSound;
-        reloadSound = ((RifleData)data).reload_sound;
-    }
-
-    public override void HandleCombat() {
-        base.HandleCombat();
+        _shotSound = ((RifleData)data).shotSound;
+        _reloadSound = ((RifleData)data).reload_sound;
     }
 
     public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
-        if (data.slowDown && !isShield) {
-            target.GetComponent<MechController>().SlowDown();
+        if (data.Slowdown && !isShield) {
+            //target.GetComponent<MechController>().SlowDown();
         }
     }
 
-    protected override void UpdateAnimationSpeed() {
-    }
-
-    private void UpdateBulletEffect(ParticleSystem Bullet_ps) {
-    }
-
-    protected override void UpdateMuzzleEffect() {
-    }
-
     protected override void UpdateMechArmState() {
-        MechAnimator.Play("Rifle", 1 + hand);
+        MechAnimator.Play("Rifle", 1 + Hand);
     }
 
     public override void HandleAnimation() {
-        if (isFiring) {
+        if (IsFiring) {
             if (Time.time - startShootTime >= 0.1f) { //0.1f : animation min time
                 if (atkAnimationIsPlaying) {
                     atkAnimationIsPlaying = false;
@@ -64,23 +41,23 @@ public class Rifle : RangedWeapon {
     }
 
     protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
-        bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
+        _bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
 
-        bullet.InitBullet(MechCam, playerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);   
+        _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);   
     }
 
-    public override void OnSkillAction(bool b) {
-        base.OnSkillAction(b);
-        if (b) {//Stop effects playing when entering
+    public override void OnSkillAction(bool enter) {
+        base.OnSkillAction(enter);
+        if (enter) {//Stop effects playing when entering
             Muzzle.Stop();
             AudioSource.Stop();
         }
     }
 
-    public override void OnSwitchedWeaponAction(bool b) {
-        base.OnSwitchedWeaponAction(b);
+    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
+        base.OnSwitchedWeaponAction(isThisWeaponActivated);
 
-        if (!b) {
+        if (!isThisWeaponActivated) {
             Muzzle.Stop();
             AudioSource.Stop();
         }
@@ -91,19 +68,18 @@ public class Rifle : RangedWeapon {
             case StateCallBackType.AttackStateEnter:
             break;
             case StateCallBackType.AttackStateUpdate:
-            if (bullet != null && Time.time - animationStartTime >= 0.05f) {//Play the effects here to fit the animation 
-                                                                            //MechAnimator.Update(0);//For the arm to be in right position , BUG : StateEnter won't trigger on two layer
-                bullet.transform.position = EffectEnd.position;
-                bullet.Play();
-                bullet = null;
+            if (_bullet != null && Time.time - startShootTime >= 0.05f) {//Play the effects here to fit the animation 
+                _bullet.transform.position = EffectEnd.position;
+                _bullet.Play();
+                _bullet = null;
                 Muzzle.Play();
-                AudioSource.PlayOneShot(shotSound);
-                if (playerPv.isMine) Crosshair.CallShakingEffect(hand);
+                AudioSource.PlayOneShot(_shotSound);
+                if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:
             WeaponAnimator.SetTrigger("Reload");
-            if(reloadSound!=null)AudioSource.PlayOneShot(reloadSound);
+            if(_reloadSound!=null)AudioSource.PlayOneShot(_reloadSound);
             break;
         }
     }

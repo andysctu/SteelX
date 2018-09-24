@@ -83,7 +83,7 @@ public class DroneCombat : Combat {
 
         //Init weapon scripts
         for (int i = 0; i < WeaponDatas.Length; i++) {
-            Transform weapPos = (WeaponDatas[i].twoHanded) ? Hands[(i + 1) % 2] : Hands[i % 2];
+            Transform weapPos = (WeaponDatas[i].IsTwoHanded) ? Hands[(i + 1) % 2] : Hands[i % 2];
             Weapons[i].Init(WeaponDatas[i], i, weapPos, this, Animator);
         }
 
@@ -184,10 +184,6 @@ public class DroneCombat : Combat {
                 transform.position = hit.point;
             }
         }
-    }
-    [PunRPC]
-    private void KnockBack(Vector3 dir, float length) {
-        transform.position += dir * length;
     }
 
     public void Skill_KnockBack(float length) {

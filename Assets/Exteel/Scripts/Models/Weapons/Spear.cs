@@ -3,10 +3,6 @@
 public class Spear : MeleeWeapon {
     private AudioClip smashSound;
 
-    public Spear() {
-        allowBothWeaponUsing = false;
-    }
-
     public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, pos, handTransform, Cbt, Animator);
         InitComponents();
@@ -33,18 +29,18 @@ public class Spear : MeleeWeapon {
             return;
         }
 
-        if (Time.time - timeOfLastUse >= 1 / rate) {
+        if (Time.time - TimeOfLastUse >= 1 / Rate) {
             if (!Cbt.CanMeleeAttack) { return; }
 
-            if (anotherWeapon != null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring) return;
+            if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
             Cbt.CanMeleeAttack = false;
-            timeOfLastUse = Time.time;
+            TimeOfLastUse = Time.time;
 
-            IncreaseHeat(data.heat_increase_amount);
+            IncreaseHeat(data.HeatIncreaseAmount);
 
             //Play Animation
-            AnimationEventController.Smash(hand);
+            AnimationEventController.Smash(Hand);
         }
     }
 
@@ -79,7 +75,21 @@ public class Spear : MeleeWeapon {
         }
     }
 
-    protected override void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
+    public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
+        switch ((StateCallBackType)type) {
+            case StateCallBackType.AttackStateEnter:
+                OnAttackStateEnter(state);
+                break;
+            case StateCallBackType.AttackStateExit:
+                OnAttackStateExit(state);
+                break;
+            case StateCallBackType.AttackStateMachineExit:
+                OnAttackStateMachineExit(state);
+                break;
+        }
+    }
+
+    private void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
         //((SmashState)state).SetThreshold(threshold);//the state is confirmed SmashState in mechCombat      
         
         WeaponAnimator.SetTrigger("Atk");
@@ -88,20 +98,20 @@ public class Spear : MeleeWeapon {
         if (smashSound != null)
             AudioSource.PlayClipAtPoint(smashSound, weapon.transform.position);
 
-        if (playerPv != null && playerPv.isMine) {//TODO : master check this
-            isFiring = true;
+        if (PlayerPv != null && PlayerPv.isMine) {//TODO : master check this
+            IsFiring = true;
 
-            MeleeAttack(hand);
+            MeleeAttack(Hand);
         }
     }
 
-    protected override void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
-        isFiring = false;
+    private void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
+        IsFiring = false;
     }
 
-    protected override void OnAttackStateExit(MechStateMachineBehaviour state) {
+    private void OnAttackStateExit(MechStateMachineBehaviour state) {
         if (((SmashState)state).IsInAir()) {
-            isFiring = false;
+            IsFiring = false;
         }
     }
 
@@ -116,7 +126,7 @@ public class Spear : MeleeWeapon {
                 targetWeapon.PlayOnHitEffect();
         } else {
             //Apply slowing down effect
-            if (data.slowDown) {
+            if (data.Slowdown) {
                 MechController mctrl = target.GetComponent<MechController>();
                 if (mctrl != null) {
                     mctrl.SlowDown();
@@ -127,9 +137,5 @@ public class Spear : MeleeWeapon {
             TransformExtension.SetLocalTransform(p.transform, new Vector3(0,5,0));
         }
 
-    }
-
-    protected override void InitAttackType() {
-        attackType = AttackType.Melee;
     }
 }

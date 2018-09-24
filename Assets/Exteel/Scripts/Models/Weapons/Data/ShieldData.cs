@@ -12,9 +12,11 @@ public class ShieldData : WeaponData {
 
     ShieldData() {
         WeaponType = typeof(Shield);
+        attackType = Weapon.AttackType.None;
+        AllowBothWeaponUsing = false;
         damage = 0;
-        slowDown = false;
-        twoHanded = false;
+        Slowdown = false;
+        IsTwoHanded = false;
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {

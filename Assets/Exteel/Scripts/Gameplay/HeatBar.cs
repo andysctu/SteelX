@@ -70,7 +70,7 @@ public class HeatBar : MonoBehaviour {
     private void UpdateHeatBar() {
         weaponOffset = mcbt.GetCurrentWeaponOffset();
 
-        if (bm.WeaponDatas[weaponOffset].twoHanded) {
+        if (bm.WeaponDatas[weaponOffset].IsTwoHanded) {
             EnableHeatBar(weaponOffset, true);
             EnableHeatBar(weaponOffset + 1, false);
         } else {

@@ -9,7 +9,7 @@ public class Rectifier : RangedWeapon {
         throw new System.NotImplementedException();
     }
 
-    protected override void UpdateAnimationSpeed() {
+    protected void UpdateAnimationSpeed() {
         throw new System.NotImplementedException();
     }
 
@@ -17,13 +17,7 @@ public class Rectifier : RangedWeapon {
         throw new System.NotImplementedException();
     }
 
-    protected override void InitAttackType() {
-        throw new System.NotImplementedException();
-    }
-
-
-
-    protected override void UpdateMuzzleEffect() {
+    protected void UpdateMuzzleEffect() {
         throw new System.NotImplementedException();
     }
 

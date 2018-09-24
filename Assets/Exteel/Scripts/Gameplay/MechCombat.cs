@@ -213,7 +213,7 @@ public class MechCombat : Combat {
         }
 
         IncreaseSP(damage / 2);
-        shooterCbt.IncreaseSP(damage / 2);
+        //shooterCbt.IncreaseSP(damage / 2);
     }
 
     public override int ProcessDmg(int dmg, Weapon.AttackType attackType ,Weapon weapon){
@@ -380,7 +380,7 @@ public class MechCombat : Combat {
 
     public void UpdateMovementClips() {
         if (bm.WeaponDatas == null) return;
-        bool isCurrentWeaponTwoHanded = (bm.WeaponDatas[(weaponOffset) % 4] != null && bm.WeaponDatas[(weaponOffset) % 4].twoHanded);
+        bool isCurrentWeaponTwoHanded = (bm.WeaponDatas[(weaponOffset) % 4] != null && bm.WeaponDatas[(weaponOffset) % 4].IsTwoHanded);
 
         MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {

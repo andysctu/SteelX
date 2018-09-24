@@ -13,15 +13,15 @@ public class JumpedState : MechStateMachineBehaviour {
 
 		if(isFirstjump){
 			mctrl.Boost (false);
-			animator.SetBool (boost_id, false);//avoid shift+space directly vertically boost
+			animator.SetBool (BoostHash, false);//avoid shift+space directly vertically boost
 			jumpReleased = false;
 			mctrl.grounded = false;
-			animator.SetBool (grounded_id, false);
-		}else if(!animator.GetBool(jump_id)){//dir falling
+			animator.SetBool (GroundedHash, false);
+		}else if(!animator.GetBool(JumpHash)){//dir falling
 			mctrl.Boost (false);
-			animator.SetBool (boost_id, false);
-			animator.SetBool (jump_id, true);
-			animator.SetBool (grounded_id, false);
+			animator.SetBool (BoostHash, false);
+			animator.SetBool (JumpHash, true);
+			animator.SetBool (GroundedHash, false);
 			jumpReleased = true;
 			mctrl.grounded = false;
 		}
@@ -33,22 +33,22 @@ public class JumpedState : MechStateMachineBehaviour {
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
-		animator.SetFloat(speed_id, speed);
-		animator.SetFloat(direction_id, direction);
+		animator.SetFloat(SpeedHash, speed);
+		animator.SetFloat(DirectionHash, direction);
 
 		if (!gm.BlockInput && Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
 
-		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(boost_id)) {//the first jump is on ground
+		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(BoostHash)) {//the first jump is on ground
             if (!mctrl.grounded) {
                 Debug.Log("On Landing action");
                 mctrl.OnLandingAction();
             }
 
 			mctrl.grounded = true;
-			animator.SetBool(grounded_id, true);
-			animator.SetBool (jump_id, false);
+			animator.SetBool(GroundedHash, true);
+			animator.SetBool (JumpHash, false);
 			mctrl.SetCanVerticalBoost (false);
 			return;
 		}else{
@@ -58,7 +58,7 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (!gm.BlockInput && Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
 			mctrl.SetCanVerticalBoost (false);
 			jumpReleased = false;
-			animator.SetBool(boost_id, true);
+			animator.SetBool(BoostHash, true);
 			mctrl.Boost (true);
 		}
 	}

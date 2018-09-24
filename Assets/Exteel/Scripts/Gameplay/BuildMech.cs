@@ -148,7 +148,7 @@ public class BuildMech : Photon.MonoBehaviour {
         }
 
         //set weapons if null (in offline)
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[9];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[10];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
         if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[11];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
@@ -346,7 +346,7 @@ public class BuildMech : Photon.MonoBehaviour {
         //Init weapon scripts
         for(int i = 0; i < WeaponDatas.Length; i++) {
             if(WeaponDatas[i]== null)continue;
-            Transform weapPos = (WeaponDatas[i].twoHanded) ? hands[(i + 1) % 2] : hands[i % 2];
+            Transform weapPos = (WeaponDatas[i].IsTwoHanded) ? hands[(i + 1) % 2] : hands[i % 2];
             Weapons[i].Init(WeaponDatas[i], i, weapPos, MechCombat, animator);
         }
 
@@ -375,7 +375,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //if previous is two-handed => also destroy left hand
         if (pos == 3) {
-            if (Weapons[2] != null && WeaponDatas[2].twoHanded) {
+            if (Weapons[2] != null && WeaponDatas[2].IsTwoHanded) {
                 if (isDataGetSaved) UserData.myData.Mech[Mech_Num].Weapon2L = "Empty";
 
                 Weapons[2].OnDestroy();
@@ -383,7 +383,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 WeaponDatas[2] = null;
             }
         } else if (pos == 1) {
-            if (Weapons[0] != null && WeaponDatas[0].twoHanded) {
+            if (Weapons[0] != null && WeaponDatas[0].IsTwoHanded) {
                 if (isDataGetSaved) UserData.myData.Mech[Mech_Num].Weapon1L = "Empty";
 
                 Weapons[0].OnDestroy();
@@ -393,7 +393,7 @@ public class BuildMech : Photon.MonoBehaviour {
         }
 
         //if the new one is two-handed => also destroy right hand
-        if (data.twoHanded) {
+        if (data.IsTwoHanded) {
             if (Weapons[pos + 1] != null) {
                 Weapons[pos + 1].OnDestroy();
                 Weapons[pos + 1] = null;
@@ -417,7 +417,7 @@ public class BuildMech : Photon.MonoBehaviour {
         //Init
         WeaponDatas[pos] = data;
         Weapons[pos] = (Weapon)(WeaponDatas[pos].GetWeaponObject());
-        Transform weapPos = (WeaponDatas[pos].twoHanded) ? hands[(pos + 1) % 2] : hands[pos % 2];
+        Transform weapPos = (WeaponDatas[pos].IsTwoHanded) ? hands[(pos + 1) % 2] : hands[pos % 2];
         Weapons[pos].Init(WeaponDatas[pos], pos % 2, weapPos, MechCombat, animator);
 
         Weapons[pos].ActivateWeapon(pos == weaponOffset || pos == weaponOffset + 1);
@@ -452,7 +452,7 @@ public class BuildMech : Photon.MonoBehaviour {
     public void UpdateAnimatorState() {
         if (animator == null) { Debug.LogError("Animator is null"); return; };
 
-        MovementClips movementClips = (WeaponDatas[weaponOffset]!= null && WeaponDatas[weaponOffset].twoHanded) ? TwoHandedMovementClips : defaultMovementClips;
+        MovementClips movementClips = (WeaponDatas[weaponOffset]!= null && WeaponDatas[weaponOffset].IsTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }

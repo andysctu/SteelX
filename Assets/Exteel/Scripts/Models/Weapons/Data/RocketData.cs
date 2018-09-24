@@ -13,8 +13,10 @@ public class RocketData : RangedWeaponData {
 
     RocketData() {
         WeaponType = typeof(Rocket);
-        slowDown = true;
-        twoHanded = true;
+        attackType = Weapon.AttackType.Rocket;
+        AllowBothWeaponUsing = false;
+        Slowdown = true;
+        IsTwoHanded = true;
         impact_radius = 6;
         bullet_speed = 200;
     }

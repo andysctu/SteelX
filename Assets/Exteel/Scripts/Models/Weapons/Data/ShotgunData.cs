@@ -6,8 +6,10 @@ public class ShotgunData : RangedWeaponData {
 
     ShotgunData() {
         WeaponType = typeof(Shotgun);
-        slowDown = true;
-        twoHanded = false;
+        attackType = Weapon.AttackType.Ranged;
+        AllowBothWeaponUsing = true;
+        Slowdown = true;
+        IsTwoHanded = false;
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {

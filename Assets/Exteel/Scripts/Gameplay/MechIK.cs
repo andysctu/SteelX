@@ -105,8 +105,6 @@ public class MechIK : MonoBehaviour {
                     AimIK.solver.IKPositionWeight = 0;
                 }
                 break;
-                default:
-                break;
             }
         }
     }
@@ -165,7 +163,7 @@ public class MechIK : MonoBehaviour {
     public void UpdateMechIK() {
         weaponOffset = mechCombat.GetCurrentWeaponOffset();
 
-        if (bm.WeaponDatas[weaponOffset].twoHanded) {
+        if (bm.WeaponDatas[weaponOffset].IsTwoHanded) {
             Knob = FindKnob(bm.Weapons[weaponOffset].GetWeapon().transform);
 
             AimTransform = bm.Weapons[weaponOffset].GetWeapon().transform.Find("AimTransform");//TODO : update when switchweapon
@@ -193,7 +191,7 @@ public class MechIK : MonoBehaviour {
     public void UpdateMechIK(int weaponOffset) {//called by buildMech
         this.weaponOffset = weaponOffset;
 
-        if (bm.WeaponDatas[weaponOffset]!= null &&  bm.WeaponDatas[weaponOffset].twoHanded) {
+        if (bm.WeaponDatas[weaponOffset]!= null &&  bm.WeaponDatas[weaponOffset].IsTwoHanded) {
             Knob = FindKnob(bm.Weapons[weaponOffset].GetWeapon().transform);
             AimTransform = bm.Weapons[weaponOffset].GetWeapon().transform.Find("AimTransform");//TODO : update when switchweapon
             if (AimTransform == null)

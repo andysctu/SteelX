@@ -12,16 +12,13 @@ public abstract class RangedWeapon : Weapon {
     protected bool atkAnimationIsPlaying = false;
     protected float startShootTime;
 
-    public enum StateCallBackType { ReloadStateEnter, AttackStateEnter, AttackStateUpdate, AttackStateExit }
+    public enum StateCallBackType {AttackStateEnter, AttackStateUpdate, AttackStateExit , ReloadStateEnter, ReloadStateExit, PoseStateEnter, PoseStateExit }
 
     public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, hand, handTransform, Cbt, Animator);
 
         InitComponents();
         InitAtkAnimHash();
-
-        UpdateAnimationSpeed();
-        UpdateMuzzleEffect();
     }
 
     protected override void InitDataRelatedVars(WeaponData data) {
@@ -41,7 +38,7 @@ public abstract class RangedWeapon : Weapon {
     }
 
     protected virtual void InitAtkAnimHash() {
-        AtkAnimHash = (hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
+        AtkAnimHash = (Hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
     }
 
     protected virtual void FindEffectEnd() {
@@ -54,39 +51,23 @@ public abstract class RangedWeapon : Weapon {
         TransformExtension.SetLocalTransform(Muzzle.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
     }
 
-    //Update muzzle particle system to fit the rate
-    protected abstract void UpdateMuzzleEffect();
-
-    //Play specific animator state
-    protected abstract void UpdateMechArmState();
-
-    //Adjust the animation to fit the rate
-    protected abstract void UpdateAnimationSpeed();
-
     public override void HandleCombat() {
-        if (!Input.GetKey(BUTTON) || IsOverHeat()) {
-            return;
+        if (!Input.GetKey(BUTTON) || IsOverHeat()) return;
+
+        if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
+
+        if (Time.time - TimeOfLastUse >= 1 / Rate) {
+            FireRaycast(MechCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MechCam.transform.forward, Hand);
+
+            IncreaseHeat(data.HeatIncreaseAmount);
+
+            TimeOfLastUse = Time.time;
         }
-
-        if (anotherWeapon != null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring) return;
-
-        if (Time.time - timeOfLastUse >= 1 / rate) {
-            FireRaycast(MechCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MechCam.transform.forward, hand);
-
-            IncreaseHeat(data.heat_increase_amount);
-
-            timeOfLastUse = Time.time;
-        }
-    }
-
-    protected virtual void OnRateChanged() {
-        UpdateAnimationSpeed();
-        UpdateMuzzleEffect();
     }
 
     public override void HandleAnimation() {
-        if (isFiring) {
-            if (Time.time - startShootTime >= 1 / rate) {
+        if (IsFiring) {
+            if (Time.time - startShootTime >= 1 / Rate) {
                 if (atkAnimationIsPlaying) {
                     atkAnimationIsPlaying = false;
                     MechAnimator.SetBool(AtkAnimHash, false);
@@ -105,11 +86,20 @@ public abstract class RangedWeapon : Weapon {
         }
     }
 
-    public override void OnSwitchedWeaponAction(bool b) {
-        if (b) {
+    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
+        if (isThisWeaponActivated) {
             UpdateMechArmState();
         }
     }
+
+    public override void OnSkillAction(bool enter){
+        base.OnSkillAction(enter);
+        if (!enter) {
+            UpdateMechArmState();
+        }
+    }
+
+    protected abstract void UpdateMechArmState() ;
 
     protected virtual void FireRaycast(Vector3 start, Vector3 direction, int hand) {
         Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());
@@ -118,15 +108,15 @@ public abstract class RangedWeapon : Weapon {
             PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();
 
             if (target.tag != "Shield") {
-                playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetPv.viewID, -1);
+                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, -1);
             } else {//check what hand is it
                 ShieldActionReceiver shieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
                 int targetShieldPos = shieldActionReceiver.GetPos();
 
-                playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetPv.viewID, targetShieldPos);
+                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, targetShieldPos);
             }
         } else {
-            playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, -1, -1);
+            PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, -1, -1);
         }
     }
 
@@ -134,21 +124,20 @@ public abstract class RangedWeapon : Weapon {
         MechAnimator.SetBool(AtkAnimHash, true);
         WeaponAnimator.SetTrigger("Atk");
 
-        isFiring = true;
+        IsFiring = true;
         startShootTime = Time.time;
 
         GameObject target = null;
         PhotonView targetPv = PhotonView.Find(targetPvId);
         if(targetPv!=null) target = targetPv.gameObject;
 
-
         if (target != null) {
             Combat targetCbt = target.GetComponent<Combat>();
-            targetCbt.OnHit(data.damage, playerPv.viewID, weapPos, targetWeapPos);
+            targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
 
             DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 
-            Cbt.IncreaseSP(data.SPincreaseAmount);
+            Cbt.IncreaseSP(data.SpIncreaseAmount);//TODO : check this
         } else {
             DisplayBullet(direction, null, null);
         }

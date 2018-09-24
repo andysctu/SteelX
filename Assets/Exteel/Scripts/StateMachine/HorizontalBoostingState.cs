@@ -25,18 +25,18 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)
 			return;
 
-		animator.SetFloat(speed_id, mctrl.speed);
-		animator.SetFloat(direction_id, mctrl.direction);
+		animator.SetFloat(SpeedHash, mctrl.speed);
+		animator.SetFloat(DirectionHash, mctrl.direction);
 
-		if(animator.GetBool(jump_id)){
+		if(animator.GetBool(JumpHash)){
             return;
 		}
 
 		if(!mctrl.CheckIsGrounded()){//falling
 			mctrl.SetCanVerticalBoost (true);
 			mctrl.grounded = false;
-			animator.SetBool (grounded_id, false);
-			animator.SetBool (boost_id, false);//avoid dir go to next state (the transition interrupts by next state)
+			animator.SetBool (GroundedHash, false);
+			animator.SetBool (BoostHash, false);//avoid dir go to next state (the transition interrupts by next state)
 			mctrl.Boost (false);
 			return;
 		}
@@ -60,19 +60,19 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
                 Debug.Log("Jump action");
             }
             mctrl.grounded = false;
-            animator.SetBool(grounded_id, false);
+            animator.SetBool(GroundedHash, false);
 
             mctrl.SetCanVerticalBoost(true);
-			animator.SetBool(jump_id, true);
+			animator.SetBool(JumpHash, true);
 		}
 
 		if (gm.BlockInput || (!isBoostingUsingShift && !doubleButtonDown) || !mcbt.IsENAvailable ()) {
 			mctrl.Run ();
-			animator.SetBool (boost_id, false);
+			animator.SetBool (BoostHash, false);
 			mctrl.Boost (false);
 			return;
 		} else{
-			animator.SetBool (boost_id, true);
+			animator.SetBool (BoostHash, true);
 			mctrl.Boost (true);
 		}
 	}

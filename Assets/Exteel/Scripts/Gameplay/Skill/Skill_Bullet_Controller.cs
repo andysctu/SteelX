@@ -177,8 +177,8 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     }
 
     private void CallPlayShotSound() {
-        if (playGunShotSound)
-            Sounds.PlayShot(hand);
+       // if (playGunShotSound)
+            //Sounds.PlayShot(hand);
     }
 
     private void PlayMuz() {

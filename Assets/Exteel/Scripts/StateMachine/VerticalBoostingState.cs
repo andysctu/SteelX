@@ -8,7 +8,7 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		base.Init(animator);
 		if ( cc == null || !cc.enabled) return;
 		mctrl.SetCanVerticalBoost(false);
-		animator.SetBool (onMelee_id, false);
+		animator.SetBool (animatorVars.OnMeleeHash, false);
 	}
 
 	// OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -19,13 +19,13 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		float speed = Input.GetAxis("Vertical");
 		float direction = Input.GetAxis("Horizontal");
 
-		animator.SetFloat(speed_id, speed);
-		animator.SetFloat(direction_id, direction);
+		animator.SetFloat(SpeedHash, speed);
+		animator.SetFloat(DirectionHash, direction);
 
 		if ( (mcbt.IsENEmpty() || !Input.GetKey(KeyCode.Space) || gm.BlockInput)) {
 			mctrl.Boost (false);
-			animator.SetFloat(speed_id, 0);
-			animator.SetBool(boost_id, false);
+			animator.SetFloat(SpeedHash, 0);
+			animator.SetBool(BoostHash, false);
 		}else{
 			mctrl.VerticalBoost();
 		}

@@ -14,7 +14,6 @@ MonoBehaviour:
   weaponPrefab_lft: {fileID: 1262561255075506, guid: 66d6c48ab19a76840bdba77b56e7dd53,
     type: 2}
   weaponPrefab_rt: {fileID: 0}
-  weaponType: Sword
   weaponName: SHL009
   displayName: 
   Grip:
@@ -22,14 +21,15 @@ MonoBehaviour:
   - {fileID: 1096434313937498, guid: d2e6b508631160c4a940459178fb5898, type: 2}
   damage: 330
   weight: 1400
+  AllowBothWeaponUsing: 0
   Range: 0
-  minRange: 0
+  MinRange: 0
   Rate: 5
-  radius: 0
-  heat_increase_amount: 10
-  slowDown: 1
-  twoHanded: 0
-  SPincreaseAmount: 100
+  Radius: 0
+  HeatIncreaseAmount: 10
+  Slowdown: 1
+  IsTwoHanded: 0
+  SpIncreaseAmount: 100
   skillAnimations: []
   hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}

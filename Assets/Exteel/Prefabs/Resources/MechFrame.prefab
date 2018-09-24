@@ -488,24 +488,6 @@ MonoBehaviour:
     Name: Grounded
   - Type: 4
     SynchronizeType: 1
-    Name: ShootL
-  - Type: 4
-    SynchronizeType: 1
-    Name: ShootR
-  - Type: 4
-    SynchronizeType: 2
-    Name: BlockR
-  - Type: 4
-    SynchronizeType: 2
-    Name: BlockL
-  - Type: 4
-    SynchronizeType: 1
-    Name: BCNPose
-  - Type: 4
-    SynchronizeType: 0
-    Name: OnBCN
-  - Type: 4
-    SynchronizeType: 1
     Name: ENGShootL
   - Type: 4
     SynchronizeType: 1
@@ -513,9 +495,6 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: OnMelee
-  - Type: 4
-    SynchronizeType: 1
-    Name: BCNLoad
   - Type: 1
     SynchronizeType: 0
     Name: slashTime
@@ -523,17 +502,11 @@ MonoBehaviour:
     SynchronizeType: 0
     Name: RCLShoot
   - Type: 4
-    SynchronizeType: 1
-    Name: BCNShoot
-  - Type: 4
     SynchronizeType: 0
     Name: CanExit
   - Type: 4
     SynchronizeType: 2
     Name: Slash
-  - Type: 4
-    SynchronizeType: 2
-    Name: finalSlash
   - Type: 1
     SynchronizeType: 0
     Name: SpeedLCoeff
@@ -546,6 +519,18 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: AtkR
+  - Type: 4
+    SynchronizeType: 1
+    Name: CnShoot
+  - Type: 4
+    SynchronizeType: 2
+    Name: CnPose
+  - Type: 4
+    SynchronizeType: 1
+    Name: CnLoad
+  - Type: 4
+    SynchronizeType: 0
+    Name: FinalSlash
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -4747,13 +4732,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MechCombat: {fileID: 11445986}
   pv: {fileID: 11496946}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
   SwitchWeapon: {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
-  BCNload: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
-  BCNPose: {fileID: 8300000, guid: 2903ae5fb12411043b72b5c315b8a21c, type: 3}
   Source: {fileID: 82915054223986856}
   MovementSource: {fileID: 82000013355623540}
 --- !u!114 &114000012410893822
@@ -5047,19 +5029,19 @@ MonoBehaviour:
   Sounds: {fileID: 0}
   mechIK: {fileID: 0}
   EffectController: {fileID: 0}
-  boost_id: 0
-  grounded_id: 0
-  jump_id: 0
-  speed_id: 0
-  direction_id: 0
-  onMelee_id: 0
-  blockL_id: 0
-  blockR_id: 0
-  slash_id: 0
-  finalSlash_id: 0
-  BCNPose_id: 0
-  OnBCN_id: 0
-  BCNShoot_id: 0
+  BoostHash: 0
+  GroundedHash: 0
+  JumpHash: 0
+  SpeedHash: 0
+  DirectionHash: 0
+  OnMeleeHash: 0
+  BlockLHash: 0
+  BlockRHash: 0
+  SlashHash: 0
+  FinalSlashHash: 0
+  CnPoseHash: 0
+  CnShootHash: 0
+  CnLoadHash: 0
   inHangar: 0
 --- !u!114 &114161801815670764
 MonoBehaviour:

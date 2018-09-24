@@ -4,13 +4,13 @@ using System.Linq;
 
 public abstract class MeleeWeapon : Weapon {
     protected SlashDetector SlashDetector;    
-    protected List<Transform> targets_in_collider;
+    protected List<Transform> TargetsInCollider;
     protected ParticleSystem HitEffectPrefab;
 
-    public enum StateCallBackType { AttackStateEnter, AttackStateExit, AttackStateMachineExit }
-
     private const int DetectShieldMaxDistance = 50;//the ray which checks if hitting shield max distance
-    public float threshold;
+    public float Threshold;
+
+    public enum StateCallBackType { AttackStateEnter, AttackStateExit, AttackStateMachineExit }
 
     public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, hand, handTransform, Cbt, Animator);
@@ -32,7 +32,7 @@ public abstract class MeleeWeapon : Weapon {
     }
 
     protected virtual void ResetArmAnimatorState() {
-        MechAnimator.Play("Idle", 1 + hand);
+        MechAnimator.Play("Idle", 1 + Hand);
     }
 
     //Enable  Detector
@@ -46,24 +46,23 @@ public abstract class MeleeWeapon : Weapon {
         if(enter)ResetMeleeVars();
     }
 
-    public override void OnDestroy() {        
-        base.OnDestroy();
+    public override void OnDestroy() {
         ResetMeleeVars();
+        base.OnDestroy();
     }
 
-    public override void OnSwitchedWeaponAction(bool b) {
-        if (b) {
+    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
+        if (isThisWeaponActivated) {
             ResetMeleeVars();
             ResetArmAnimatorState();
         }        
     }
 
     public virtual void MeleeAttack(int hand) {//TODO : check this again
-        if ((targets_in_collider = SlashDetector.getCurrentTargets()).Count != 0) {
+        if ((TargetsInCollider = SlashDetector.getCurrentTargets()).Count != 0) {
             int damage = data.damage;
-            string weaponName = data.weaponName;
 
-            foreach (Transform target in targets_in_collider) {
+            foreach (Transform target in TargetsInCollider) {
                 if (target == null) {continue;}
 
                 //cast a ray to check if hitting shield
@@ -92,9 +91,9 @@ public abstract class MeleeWeapon : Weapon {
                 if (isHitShield) {
                     ShieldActionReceiver ShieldActionReceiver = t.transform.parent.GetComponent<ShieldActionReceiver>();
                     int shieldPos = ShieldActionReceiver.GetPos();//which hand holds the shield?
-                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, playerPv.owner, playerPv.viewID, weapPos, shieldPos);
+                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PlayerPv.owner, PlayerPv.viewID, WeapPos, shieldPos);
                 } else {
-                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, playerPv.owner, playerPv.viewID, weapPos, -1);
+                    target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PlayerPv.owner, PlayerPv.viewID, WeapPos, -1);
                 }
 
                 if (target.GetComponent<Combat>().CurrentHP <= 0) {
@@ -107,26 +106,8 @@ public abstract class MeleeWeapon : Weapon {
                 }
 
                 //TODO : improve this
-                Cbt.IncreaseSP(data.SPincreaseAmount);
+                Cbt.IncreaseSP(data.SpIncreaseAmount);
             }
         }
     }
-
-    public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
-        switch ((StateCallBackType)type) {
-            case StateCallBackType.AttackStateEnter:
-            OnAttackStateEnter(state);
-            break;
-            case StateCallBackType.AttackStateExit:
-            OnAttackStateExit(state);
-            break;
-            case StateCallBackType.AttackStateMachineExit:
-            OnAttackStateMachineExit(state);
-            break;
-        }
-    }
-
-    protected virtual void OnAttackStateEnter(MechStateMachineBehaviour state) { }
-    protected virtual void OnAttackStateExit(MechStateMachineBehaviour state) { }
-    protected virtual void OnAttackStateMachineExit(MechStateMachineBehaviour state) { }
 }

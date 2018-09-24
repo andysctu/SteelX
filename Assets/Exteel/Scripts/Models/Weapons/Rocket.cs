@@ -1,29 +1,21 @@
 ﻿using UnityEngine;
 
 public class Rocket : RangedWeapon {
-    private AudioClip shotSound, reloadSound;
-    private Bullet bullet;
+    private AudioClip _shotSound, _reloadSound;
+    private Bullet _bullet;
 
-    private float bulletSpeed = 250, impactRadius = 0;
-
-    public Rocket() {
-        allowBothWeaponUsing = false;
-    }
-
-    protected override void InitAttackType() {
-        attackType = AttackType.Ranged;
-    }
+    private float _bulletSpeed, _impactRadius;
 
     protected override void InitDataRelatedVars(WeaponData data) {
         base.InitDataRelatedVars(data);
 
-        bulletSpeed = ((RocketData)data).bullet_speed;
-        impactRadius = ((RocketData)data).impact_radius;
+        _bulletSpeed = ((RocketData)data).bullet_speed;
+        _impactRadius = ((RocketData)data).impact_radius;
     }
 
     protected override void LoadSoundClips() {
-        shotSound = ((RocketData)data).shotSound;
-        reloadSound = ((RocketData)data).reload_sound;
+        _shotSound = ((RocketData)data).shotSound;
+        _reloadSound = ((RocketData)data).reload_sound;
     }
 
     protected override void InitAtkAnimHash() {
@@ -36,23 +28,10 @@ public class Rocket : RangedWeapon {
                 targetWeapon.PlayOnHitEffect();
             }
         } else {
-            //Apply slowing down effect
-            if (data.slowDown) {
-                //MechController mctrl = target.GetComponent<MechController>();
-                //if (mctrl != null) {
-                //    mctrl.SlowDown();
-                //}
+            if (data.Slowdown) {
+                //TODO : implement this
             }
         }
-    }
-
-    public override void PlayOnHitEffect() {
-    }
-
-    protected override void UpdateAnimationSpeed() {
-    }
-
-    protected override void UpdateMuzzleEffect() {
     }
 
     protected override void UpdateMechArmState() {
@@ -61,7 +40,7 @@ public class Rocket : RangedWeapon {
     }
 
     public override void HandleAnimation() {
-        if (isFiring) {
+        if (IsFiring) {
             if (Time.time - startShootTime >= 0.1f) { //0.1f : animation min time
                 if (atkAnimationIsPlaying) {
                     atkAnimationIsPlaying = false;
@@ -82,6 +61,7 @@ public class Rocket : RangedWeapon {
     }
 
     protected override void FireRaycast(Vector3 start, Vector3 direction, int hand) {
+        //TODO : implement rocket that follow targets
         //does Rocket follow target ?
         //Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());//target might be shield collider
 
@@ -91,15 +71,15 @@ public class Rocket : RangedWeapon {
             PhotonView targetpv = target.transform.root.GetComponent<PhotonView>();
 
             if (target.tag != "Shield") {
-                playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, -1);
+                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetpv.owner, targetpv.viewID, -1);
             } else {//check which hand is it
                 ShieldActionReceiver ShieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
                 int target_ShieldPos = ShieldActionReceiver.GetPos();
 
-                playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, targetpv.owner, targetpv.viewID, target_ShieldPos);
+                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetpv.owner, targetpv.viewID, target_ShieldPos);
             }
         } else {
-            playerPv.RPC("Shoot", PhotonTargets.All, weapPos, direction, -1, -1);
+            PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, -1, -1);
         }
     }
 
@@ -111,7 +91,7 @@ public class Rocket : RangedWeapon {
 
         WeaponAnimator.SetTrigger("Atk");
 
-        isFiring = true;
+        IsFiring = true;
         startShootTime = Time.time;
 
         GameObject target = null;
@@ -122,33 +102,33 @@ public class Rocket : RangedWeapon {
             Combat targetCbt = target.GetComponent<Combat>();
             if (targetCbt == null) return;
 
-            targetCbt.OnHit(data.damage, playerPv.viewID, weapPos, targetWeapPos);
+            targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
 
             if (PhotonNetwork.isMasterClient) DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 
-            Cbt.IncreaseSP(data.SPincreaseAmount);
+            Cbt.IncreaseSP(data.SpIncreaseAmount);
         } else {
             if (PhotonNetwork.isMasterClient) DisplayBullet(direction, null, null);
         }
     }
 
     protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
-        bullet = PhotonNetwork.Instantiate(BulletPrefab.name, EffectEnd.position, Quaternion.LookRotation(direction, Vector3.up), 0).GetComponent<Bullet>();
-        bullet.InitBullet(MechCam, playerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
+        _bullet = PhotonNetwork.Instantiate(BulletPrefab.name, EffectEnd.position, Quaternion.LookRotation(direction, Vector3.up), 0).GetComponent<Bullet>();
+        _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
     }
 
-    public override void OnSkillAction(bool b) {
-        base.OnSkillAction(b);
-        if (b) {//Stop effects playing when entering
+    public override void OnSkillAction(bool enter) {
+        base.OnSkillAction(enter);
+        if (enter) {//Stop effects playing when entering
             Muzzle.Stop();
             AudioSource.Stop();
         }
     }
 
-    public override void OnSwitchedWeaponAction(bool b) {
-        base.OnSwitchedWeaponAction(b);
+    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
+        base.OnSwitchedWeaponAction(isThisWeaponActivated);
 
-        if (!b) {
+        if (!isThisWeaponActivated) {
             Muzzle.Stop();
             AudioSource.Stop();
         }
@@ -158,20 +138,20 @@ public class Rocket : RangedWeapon {
         switch ((StateCallBackType)type) {
             case StateCallBackType.AttackStateEnter:
             Muzzle.Play();
-            AudioSource.PlayOneShot(shotSound);
+            AudioSource.PlayOneShot(_shotSound);
             break;
             case StateCallBackType.AttackStateExit:
             WeaponAnimator.SetTrigger("Reload");
-            if (reloadSound != null) AudioSource.PlayOneShot(reloadSound);
+            if (_reloadSound != null) AudioSource.PlayOneShot(_reloadSound);
             break;
         }
     }
 
     public float GetBulletSpeed() {
-        return bulletSpeed;
+        return _bulletSpeed;
     }
 
     public float GetImpactRadius() {
-        return impactRadius;
+        return _impactRadius;
     }
 }

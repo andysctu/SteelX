@@ -137,7 +137,7 @@ public class HangarManager : IScene {
 
             Button[] btns = uiPart.transform.Find("Equip").GetComponentsInChildren<Button>();
             for (int i = 0; i < btns.Length; i++) {
-                if ((weapon.twoHanded) && (i == 1 || i == 3)) {//if two handed , turn off equip on right hand
+                if ((weapon.IsTwoHanded) && (i == 1 || i == 3)) {//if two handed , turn off equip on right hand
                     btns[i].gameObject.SetActive(false);
                     btns[i].image.enabled = false;
                     continue;

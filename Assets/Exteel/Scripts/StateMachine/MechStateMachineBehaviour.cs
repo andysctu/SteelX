@@ -13,16 +13,11 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected EffectController EffectController;
     protected GameManager gm;
 
-	protected int boost_id;
-	protected int grounded_id;
-	protected int jump_id;
-	protected int speed_id;
-	protected int direction_id;
-	protected int onMelee_id;
-
-	protected int slash_id, finalSlash_id;
-
-	protected int OnBCN_id;
+	protected int BoostHash;
+	protected int GroundedHash;
+	protected int JumpHash;
+	protected int SpeedHash;
+	protected int DirectionHash;
 
 	public void Init(Animator animator){
 		animatorVars = animator.GetComponent<AnimatorVars> ();
@@ -35,23 +30,17 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
         gm = FindObjectOfType<GameManager>();
 
         cc = animatorVars.cc;
-		mctrl = animatorVars.mctrl;
-		mcbt = animatorVars.mcbt;
+		mctrl = animatorVars.Mctrl;
+		mcbt = animatorVars.Mcbt;
         AnimationEventController = animator.GetComponent<AnimationEventController>();
         Sounds = animatorVars.Sounds;
-		mechIK = animatorVars.mechIK;
+		mechIK = animatorVars.MechIK;
 		EffectController = animatorVars.EffectController;
 
-		boost_id = animatorVars.boost_id;
-		grounded_id = animatorVars.grounded_id;
-		jump_id = animatorVars.jump_id;
-		direction_id = animatorVars.direction_id;
-		onMelee_id = animatorVars.onMelee_id;
-		speed_id = animatorVars.speed_id;
-
-        finalSlash_id = animatorVars.finalSlash_id;
-        slash_id = animatorVars.slash_id;
-
-		OnBCN_id = animatorVars.OnBCN_id;
+		BoostHash = animatorVars.BoostHash;
+		GroundedHash = animatorVars.GroundedHash;
+		JumpHash = animatorVars.JumpHash;
+		DirectionHash = animatorVars.DirectionHash;
+		SpeedHash = animatorVars.SpeedHash;
 	}
 }

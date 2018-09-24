@@ -1,15 +1,11 @@
 ﻿using UnityEngine;
 
 public class Shield : Weapon {
-    private Transform EffectEnd;
-    private ShieldActionReceiver ShieldActionReceiver;
-    private AudioClip OnHitSound;
-    private ParticleSystem OnHitEffect, OverheatEffect;
+    private Transform _effectEnd;
+    private ShieldActionReceiver _shieldActionReceiver;
+    private AudioClip _onHitSound;
+    private ParticleSystem _onHitEffect, _overheatEffect;
     private int AtkAnimHash;
-
-    public Shield() {
-        allowBothWeaponUsing = false;
-    }
     
     public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, pos, handTransform, Cbt, Animator);
@@ -21,30 +17,30 @@ public class Shield : Weapon {
     }
 
     private void InitComponents() {
-        EffectEnd = weapon.transform.Find("EffectEnd");
+        _effectEnd = weapon.transform.Find("EffectEnd");
     }
 
     private void InitAtkAnimHash() {
-        AtkAnimHash = (hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
+        AtkAnimHash = (Hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
     }
 
     private void AddShieldActionReceiver() {
-        ShieldActionReceiver = weapon.AddComponent<ShieldActionReceiver>();
-        ShieldActionReceiver.SetPos(weapPos);        
+        _shieldActionReceiver = weapon.AddComponent<ShieldActionReceiver>();
+        _shieldActionReceiver.SetPos(WeapPos);        
     }
 
     private void AttachEffects() {
         //OnHitEffect
-        OnHitEffect = Object.Instantiate(((ShieldData)data).OnHitEffect, EffectEnd);
-        TransformExtension.SetLocalTransform(OnHitEffect.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
+        _onHitEffect = Object.Instantiate(((ShieldData)data).OnHitEffect, _effectEnd);
+        TransformExtension.SetLocalTransform(_onHitEffect.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
 
         //OverheatEffect
-        OverheatEffect = Object.Instantiate(((ShieldData)data).OverheatEffect, weapon.transform);
-        TransformExtension.SetLocalTransform(OverheatEffect.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
+        _overheatEffect = Object.Instantiate(((ShieldData)data).OverheatEffect, weapon.transform);
+        TransformExtension.SetLocalTransform(_overheatEffect.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
     }
 
     private void ResetAnimationVars() {
-        isFiring = false;
+        IsFiring = false;
     }
 
     public override void OnSkillAction(bool enter) {
@@ -52,30 +48,30 @@ public class Shield : Weapon {
         ResetAnimationVars();
     }
 
-    public override void OnSwitchedWeaponAction(bool b) {
+    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
         ResetAnimationVars();
-        if (b) {
+        if (isThisWeaponActivated) {
             UpdateMechArmState();
         }
     }
 
     private void UpdateMechArmState() {
-        MechAnimator.Play("SHS", 1 + hand);
+        MechAnimator.Play("SHS", 1 + Hand);
     }
 
     public override void HandleCombat() {
         if (!Input.GetKey(BUTTON) || IsOverHeat()) {
-            isFiring = false;
+            IsFiring = false;
             return;
         }
 
-        if (anotherWeapon != null && !anotherWeapon.allowBothWeaponUsing && anotherWeapon.isFiring) return;
+        if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-        isFiring = true;
+        IsFiring = true;
     }
 
     public override void HandleAnimation() {
-        if (isFiring) {
+        if (IsFiring) {
             if (!MechAnimator.GetBool(AtkAnimHash)) {
                 MechAnimator.SetBool(AtkAnimHash, true);
             }
@@ -87,7 +83,7 @@ public class Shield : Weapon {
     }
 
     protected override void LoadSoundClips() {
-        OnHitSound = ((ShieldData)data).OnHitSound;
+        _onHitSound = ((ShieldData)data).OnHitSound;
     }
 
     public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
@@ -98,21 +94,21 @@ public class Shield : Weapon {
     }
 
     public override void PlayOnHitEffect() {
-        AudioSource.PlayOneShot(OnHitSound);
+        AudioSource.PlayOneShot(_onHitSound);
 
-        OnHitEffect.Play();
+        _onHitEffect.Play();
     }
 
-    public override void OnOverHeatAction(bool b) {
-        if(OverheatEffect==null)return;
+    public override void OnOverHeatAction(bool isOverHeat) {
+        if(_overheatEffect==null)return;
 
-        if (b) {
-            var main = OverheatEffect.main;
-            main.duration = HeatBar.GetCooldownLength(weapPos);
+        if (isOverHeat) {
+            var main = _overheatEffect.main;
+            main.duration = HeatBar.GetCooldownLength(WeapPos);
 
-            OverheatEffect.Play();
+            _overheatEffect.Play();
         } else {
-            OverheatEffect.Stop();
+            _overheatEffect.Stop();
         }        
     }
 
@@ -144,15 +140,6 @@ public class Shield : Weapon {
         return true;
     }
 
-    public override void OnDestroy() {
-        base.OnDestroy();
-    }
-
-    protected override void InitAttackType() {
-        attackType = AttackType.None;
-    }
-
     public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
-        throw new System.NotImplementedException();
     }
 }

@@ -1,127 +1,172 @@
 ﻿using UnityEngine;
 
 public class Cannon : RangedWeapon {
+    private MechController Mctrl;
+    private AudioClip _shotSound, _reloadSound;
+    private Bullet _bullet;
+    private int _bulletNum = 3;
+
+    private bool _onPose = false, _onShoot = false, _onReload = false, _isCanceled = false;
 
     public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, hand, handTransform, Cbt, Animator);
+        InitComponents();
+
         ResetAnimationVars();
+        ResetBulletNum();
     }
 
+    private void InitComponents() {
+        Mctrl = Cbt.GetComponent<MechController>();
+    }
 
     public override void OnSkillAction(bool enter) {
         base.OnSkillAction(enter);
-        ResetAnimationVars();
-    }
-
-    private void ResetAnimationVars() {
-        MechAnimator.SetBool("OnBCN", false);
-        MechAnimator.SetBool("BCNLoad", false);
-
-        //TODO : Reset bullet num
-
-        if (Cbt.photonView.isMine) {
-            MechAnimator.SetBool("BCNPose", false);
+        if (enter) {
+            ResetAnimationVars();
+            ResetBulletNum();
         }
     }
 
+    private void ResetAnimationVars() {//TODO : check this
+        _onShoot = false;
+        _onPose = false;
+        _onReload = false;
+
+        if (Cbt.photonView.isMine) {
+            MechAnimator.SetBool("CnPose", false);
+            MechAnimator.SetBool("CnLoad", false);
+            MechAnimator.SetBool("CnShoot", false);
+        }
+    }
+
+    private void ResetBulletNum() {
+        _bulletNum = ((CannonData)data).MaxBullet;
+    }
+
     protected override void LoadSoundClips() {
-        throw new System.NotImplementedException();
+        _shotSound = ((CannonData)data).shotSound;
+        _reloadSound = ((CannonData)data).reload_sound;
     }
 
     public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
-        throw new System.NotImplementedException();
-    }
-
-
-
-    protected override void UpdateMuzzleEffect() {
-        throw new System.NotImplementedException();
+        if (!isShield && data.Slowdown) {
+            //TODO : implement this
+        }
     }
 
     protected override void UpdateMechArmState() {
-        throw new System.NotImplementedException();
+        MechAnimator.Play("Cn", 1);
+        MechAnimator.Play("Cn", 2);
     }
 
-    protected override void UpdateAnimationSpeed() {
-        throw new System.NotImplementedException();
+    public override void HandleCombat() {
+        if (Input.GetKeyDown(KeyCode.Mouse1) || IsOverHeat()) {
+            _isCanceled = true;
+            MechAnimator.SetBool(AnimatorVars.CnPoseHash, false);
+            return;
+        }
+
+        if (_isCanceled){
+            if (!Input.GetKey(KeyCode.Mouse0)){
+                _isCanceled = false;
+            } else{
+                return;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Mouse0) && !_onPose && !_onShoot && _bulletNum>=1 && Mctrl.grounded) {
+            AnimationEventController.CnPose();
+            MechAnimator.SetBool(AnimatorVars.CnPoseHash, true);
+        }
+
+        if (Time.time - TimeOfLastUse >= 1 / Rate && _onPose) {
+            if (Input.GetKey(KeyCode.Mouse0) || !MechAnimator.GetBool(AnimatorVars.CnPoseHash) || !Mctrl.grounded)return;
+
+            IsFiring = true;
+
+            FireRaycast(MechCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MechCam.transform.forward, Hand);
+
+            TimeOfLastUse = Time.time;
+        }
+    }
+
+    public override void Shoot(Vector3 direction, int targetPvId, int targetWeapPos) {
+        WeaponAnimator.SetTrigger("Atk");
+
+        MechAnimator.SetBool("CnShoot", true);
+
+        _bulletNum--;
+
+        if (PlayerPv.isMine && _bulletNum <= 0) {
+            MechAnimator.SetBool("CnLoad", true);
+        }
+
+        IsFiring = true;
+
+        GameObject target = null;
+        PhotonView targetPv = PhotonView.Find(targetPvId);
+        if (targetPv != null) target = targetPv.gameObject;
+
+        if (target != null) {
+            Combat targetCbt = target.GetComponent<Combat>();
+            targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
+
+            DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
+
+            Cbt.IncreaseSP(data.SpIncreaseAmount);//TODO : check this
+        } else {
+            DisplayBullet(direction, null, null);
+        }
+
+        IncreaseHeat(data.HeatIncreaseAmount);
     }
 
     protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
-        throw new System.NotImplementedException();
-    }
+        _bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
+        _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
+        _bullet.transform.position = EffectEnd.position;
 
-    protected override void InitAttackType() {
-        throw new System.NotImplementedException();
+        _bullet.Play();
+        Muzzle.Play();
+        AudioSource.PlayOneShot(_shotSound);
+        if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
     }
 
     public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
-        throw new System.NotImplementedException();
+        switch ((StateCallBackType)type) {
+            case StateCallBackType.AttackStateEnter:
+                _onShoot = true;
+
+                Cbt.KnockBack(-Cbt.transform.forward, 8);
+            break;
+            case StateCallBackType.AttackStateExit:
+                _onShoot = false;
+                MechAnimator.SetBool("CnShoot", false);
+            break;
+            case StateCallBackType.ReloadStateEnter:
+                _onReload = true;
+                WeaponAnimator.SetTrigger("Reload");
+                if (_reloadSound != null){
+                    AudioSource.clip = _reloadSound;
+                    AudioSource.PlayDelayed(0.2f);//To match the reload animation
+                }
+            break;
+            case StateCallBackType.ReloadStateExit:
+                _onReload = false;
+                MechAnimator.SetBool("CnLoad", false);
+                _bulletNum = ((CannonData)data).MaxBullet;
+            break;
+            case StateCallBackType.PoseStateEnter:
+                _onPose = true;
+                Mctrl.ResetCurBoostingSpeed();
+                //mechIK.SetIK (true, 1, 0);
+            break;
+            case StateCallBackType.PoseStateExit:
+                _onPose = false;
+                MechAnimator.SetBool("CnPose", false);
+                //mechIK.SetIK (false, 1, 0);
+            break;
+        }
     }
-
-    ////BCN // TODO : remake this part
-    //public int BCNbulletNum = 2;
-    //public bool isOnBCNPose, onSkill = false;
-    //private bool on_BCNShoot = false;
-    //public bool On_BCNShoot {
-    //    get { return on_BCNShoot; }
-    //    set {
-    //        on_BCNShoot = value;
-    //        MechController.onInstantMoving = value;
-    //        if (value) BCNbulletNum--;
-    //        if (BCNbulletNum <= 0) {
-    //            animator.Play("BCN", 1);
-    //            animator.Play("BCN", 2);
-    //            animator.SetBool("BCNLoad", true);
-    //        }
-    //    }
-    //}
-    //private bool isBCNcanceled = false;//check if right click cancel
-
-    //Init BCNbulletNum = 2;
-
-    //Init Combat variable
-    //animator.SetBool("OnBCN", false);
-    //animator.SetBool("BCNLoad", false);
-
-
-    //Disable player when not on skill : is mine : animator.SetBool(AnimatorVars.BCNPose_id, false);
 }
-
-
-//        case (int)GeneralWeaponTypes.Cannon:
-//        if (Time.time - timeOfLastShotL >= 0.5f)
-//            setIsFiring(hand, false);
-//        if (Input.GetKeyDown(KeyCode.Mouse1) || is_overheat[weaponOffset]) {//right click cancel BCNPose
-//            isBCNcanceled = true;
-//            animator.SetBool(AnimatorVars.BCNPose_id, false);
-//            return;
-//        } else if (Input.GetKey(KeyCode.Mouse0) && !isBCNcanceled && !On_BCNShoot && !animator.GetBool(AnimatorVars.BCNPose_id) && MechController.grounded && !animator.GetBool("BCNLoad")) {
-//            AnimationEventController.BCNPose();
-//            animator.SetBool(AnimatorVars.BCNPose_id, true);
-//            timeOfLastShotL = Time.time - 1 / bm.WeaponDatas[weaponOffset + hand].Rate / 2;
-//        } else if (!Input.GetKey(KeyCode.Mouse0)) {
-//            isBCNcanceled = false;
-//        }
-//        break;
-
-
-//        case (int)GeneralWeaponTypes.Cannon:
-//        if (Time.time - timeOfLastShotL >= 1 / bm.WeaponDatas[weaponOffset + hand].Rate && isOnBCNPose) {
-//            if (Input.GetKey(KeyCode.Mouse0) || !animator.GetBool(AnimatorVars.BCNPose_id) || !MechController.grounded)
-//                return;
-
-//            setIsFiring(hand, true);
-//            HeatBar.IncreaseHeatBarL(45);
-//            //TODO : check the start position : cam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH)
-//            FireRaycast(MainCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MainCam.transform.forward, hand);
-//            timeOfLastShotL = Time.time;
-//        }
-//        break;
-
-
-//            case (int)GeneralWeaponTypes.Cannon:
-//            animator.SetBool(AnimatorVars.BCNShoot_id, true);
-//            break;
-//ELSE
-//        else if (curGeneralWeaponTypes[weaponOffset + hand] == (int)GeneralWeaponTypes.Cannon)
-//            animator.SetBool(AnimatorVars.BCNShoot_id, false);

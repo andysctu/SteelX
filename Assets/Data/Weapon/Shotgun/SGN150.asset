@@ -21,14 +21,15 @@ MonoBehaviour:
   - {fileID: 1096434313937498, guid: 29f73c51e41892743a98ab87783c3de7, type: 2}
   damage: 260
   weight: 6600
+  AllowBothWeaponUsing: 1
   Range: 80
-  minRange: 10
+  MinRange: 10
   Rate: 1
-  radius: 7
-  heat_increase_amount: 20
-  slowDown: 1
-  twoHanded: 0
-  SPincreaseAmount: 50
+  Radius: 7
+  HeatIncreaseAmount: 20
+  Slowdown: 1
+  IsTwoHanded: 0
+  SpIncreaseAmount: 80
   skillAnimations: []
   bulletPrefab: {fileID: 1000012364431528, guid: ec663680a4d9f6a48a50a3a5b0ebecf0,
     type: 2}

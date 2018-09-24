@@ -10,4 +10,8 @@ public class ReloadState : MechStateMachineBehaviour {
         mcbt.OnWeaponStateCallBack<RangedWeapon>(hand, this, (int)RangedWeapon.StateCallBackType.ReloadStateEnter);
     }
 
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        base.Init(animator);
+        mcbt.OnWeaponStateCallBack<RangedWeapon>(hand, this, (int)RangedWeapon.StateCallBackType.ReloadStateExit);
+    }
 }

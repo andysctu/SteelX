@@ -11,8 +11,10 @@ public class SwordData : MeleeWeaponData {
 
     SwordData() {
         WeaponType = typeof(Sword);
-        slowDown = true;
-        twoHanded = false;
+        attackType = Weapon.AttackType.Melee;
+        AllowBothWeaponUsing = false;
+        Slowdown = true;
+        IsTwoHanded = false;
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {

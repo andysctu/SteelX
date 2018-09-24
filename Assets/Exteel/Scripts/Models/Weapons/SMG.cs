@@ -1,116 +1,112 @@
 ﻿using UnityEngine;
 
 public class SMG : RangedWeapon {
-    private AudioClip shotSound, reloadSound;
-    private MultiBullets bulletTrace;
+    private AudioClip _shotSound, _reloadSound;
+    private MultiBullets _bulletTrace;
 
-    private float animationLength, totalAtkAnimationLength, speedCoeff, lastPlayShotSoundTime;
-    private int bulletNum;
-
-    public SMG() {
-        allowBothWeaponUsing = true;
-    }
-
-    protected override void InitAttackType() {
-        attackType = AttackType.Ranged;
-    }
+    private float _animationLength, _totalAtkAnimationLength, _speedCoeff, _lastPlayShotSoundTime;
+    private int _bulletNum;
 
     public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, pos, handTransform, Cbt, Animator);
+
+        UpdateAnimationSpeed();
+        UpdateMuzzleEffect();
     }
 
     protected override void InitDataRelatedVars(WeaponData data) {
         base.InitDataRelatedVars(data);
 
-        bulletNum = ((SMGData)data).bulletNum;
+        _bulletNum = ((SMGData)data).bulletNum;
     }
 
     protected override void LoadSoundClips() {
-        shotSound = ((SMGData)data).shotSound;
-        reloadSound = ((SMGData)data).reload_sound;
+        _shotSound = ((SMGData)data).shotSound;
+        _reloadSound = ((SMGData)data).reload_sound;
     }
 
-    public override void HandleCombat() {
-        base.HandleCombat();
-    }
-
-    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
-    }
-
-    protected override void UpdateAnimationSpeed() {
-        animationLength = Cbt.GetAnimationLength((hand == 0) ? "Atk_SMG_Run_LH_F_02" : "Atk_SMG_Run_RH_F_02");
-        totalAtkAnimationLength = animationLength * bulletNum;
-        speedCoeff = totalAtkAnimationLength / (1 / rate);
-        MechAnimator.SetFloat((hand == 0) ? "SpeedLCoeff" : "SpeedRCoeff", speedCoeff);
-    }
-
-    private void UpdateBulletEffect(ParticleSystem Bullet_ps) {
-        var main = Bullet_ps.main;
-        main.duration = totalAtkAnimationLength / speedCoeff;
-        main.maxParticles = bulletNum;
-
-        var emission = Bullet_ps.emission;
-        emission.rateOverTime = 1 / (animationLength / speedCoeff);
-    }
-
-    protected override void UpdateMuzzleEffect() {
+    //Update muzzle particle system to fit the rate
+    protected void UpdateMuzzleEffect() {
         var main = Muzzle.main;
-        main.duration = totalAtkAnimationLength / speedCoeff;
+        main.duration = _totalAtkAnimationLength / _speedCoeff;
 
         var emission = Muzzle.emission;
-        emission.rateOverTime = 1 / (animationLength / speedCoeff);
+        emission.rateOverTime = 1 / (_animationLength / _speedCoeff);
     }
 
     protected override void UpdateMechArmState() {
-        MechAnimator.Play("SMG", 1 + hand);
+        MechAnimator.Play("SMG", 1 + Hand);
+    }
+
+    //Adjust the animation to fit the rate
+    protected void UpdateAnimationSpeed() {
+        _animationLength = Cbt.GetAnimationLength((Hand == 0) ? "Atk_SMG_Run_LH_F_02" : "Atk_SMG_Run_RH_F_02");
+        _totalAtkAnimationLength = _animationLength * _bulletNum;
+        _speedCoeff = _totalAtkAnimationLength / (1 / Rate);
+        MechAnimator.SetFloat((Hand == 0) ? "SpeedLCoeff" : "SpeedRCoeff", _speedCoeff);
     }
 
     protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
-        GameObject Bullet = Object.Instantiate(BulletPrefab, EffectEnd);
-        TransformExtension.SetLocalTransform(Bullet.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
+        GameObject bullet = Object.Instantiate(BulletPrefab, EffectEnd);
+        TransformExtension.SetLocalTransform(bullet.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
 
-        UpdateBulletEffect(Bullet.GetComponent<ParticleSystem>());
+        UpdateBulletEffect(bullet.GetComponent<ParticleSystem>());
 
-        bulletTrace = Bullet.GetComponent<MultiBullets>();
-        bulletTrace.InitBullet(MechCam, playerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
+        _bulletTrace = bullet.GetComponent<MultiBullets>();
+        _bulletTrace.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
+        _bulletTrace.SetParticleSystem(_bulletNum, _animationLength);
 
-        bulletTrace.SetParticleSystem(bulletNum, animationLength);
-
-        bulletTrace.Play();
+        _bulletTrace.Play();
         Muzzle.Play();
     }
 
-    public override void OnSkillAction(bool b) {
-        base.OnSkillAction(b);
-        if (b) {//Stop effects playing when entering
-            if (bulletTrace != null) bulletTrace.Stop();
-            Muzzle.Stop();
-            AudioSource.Stop();
+    private void UpdateBulletEffect(ParticleSystem bulletPs) {
+        var main = bulletPs.main;
+        main.duration = _totalAtkAnimationLength / _speedCoeff;
+        main.maxParticles = _bulletNum;
+
+        var emission = bulletPs.emission;
+        emission.rateOverTime = 1 / (_animationLength / _speedCoeff);
+    }
+
+    public override void OnRateChanged() {
+        UpdateAnimationSpeed();
+        UpdateMuzzleEffect();
+    }
+
+    public override void OnSkillAction(bool enter) {
+        base.OnSkillAction(enter);
+        if (enter) {
+            StopBulletTrace();
         }
     }
 
-    public override void OnSwitchedWeaponAction(bool b) {
-        base.OnSwitchedWeaponAction(b);
-
-        if (!b) {
-            if (bulletTrace != null) bulletTrace.Stop();
-            Muzzle.Stop();
-            AudioSource.Stop();
+    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
+        base.OnSwitchedWeaponAction(isThisWeaponActivated);
+        if (!isThisWeaponActivated) {
+            StopBulletTrace();
         }
+    }
+
+    private void StopBulletTrace() {
+        if (_bulletTrace != null) _bulletTrace.Stop();
+        Muzzle.Stop();
+        AudioSource.Stop();
     }
 
     public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
         switch ((StateCallBackType)type) {
             case StateCallBackType.AttackStateUpdate:
-            if (Time.time - lastPlayShotSoundTime >= animationLength / speedCoeff) {
-                lastPlayShotSoundTime = Time.time;
-                AudioSource.PlayOneShot(shotSound);
-                if(playerPv.isMine)Crosshair.CallShakingEffect(hand);
+            if (Time.time - _lastPlayShotSoundTime >= _animationLength / _speedCoeff) {
+                _lastPlayShotSoundTime = Time.time;
+                AudioSource.PlayOneShot(_shotSound);
+                WeaponAnimator.SetTrigger("Atk");
+                if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:
-            WeaponAnimator.SetTrigger("Reload");
-            AudioSource.PlayOneShot(reloadSound);
+                WeaponAnimator.SetTrigger("Reload");
+                AudioSource.PlayOneShot(_reloadSound);
             break;
         }
     }

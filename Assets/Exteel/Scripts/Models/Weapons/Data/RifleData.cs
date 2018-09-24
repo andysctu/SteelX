@@ -4,8 +4,10 @@
 public class RifleData : RangedWeaponData {
     RifleData() {
         WeaponType = typeof(Rifle);
-        slowDown = false;
-        twoHanded = false;
+        attackType = Weapon.AttackType.Ranged;
+        AllowBothWeaponUsing = true;
+        Slowdown = false;
+        IsTwoHanded = false;
     }
 
     public override object GetWeaponObject() {

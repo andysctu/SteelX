@@ -15,11 +15,8 @@ public class AnimationEventController : MonoBehaviour {
     private int minCallMoveDistance = 6, weaponOffset = 0;
 
     private void Awake() {
-        if (MechCombat != null) MechCombat.OnWeaponSwitched += UpdateAnimationEventController;
-    }
-
-    private void Start() {
         pv = GetComponent<PhotonView>();
+        if (MechCombat != null) MechCombat.OnWeaponSwitched += UpdateAnimationEventController;
     }
 
     private void UpdateAnimationEventController() {
@@ -47,10 +44,10 @@ public class AnimationEventController : MonoBehaviour {
     public void Slash(int hand, int combo) {//combo starts from 0
         if (hand == 0) {
             if(combo == 3) {
-                Animator.SetBool(AnimatorVars.finalSlash_id, true);
+                Animator.SetBool(AnimatorVars.FinalSlashHash, true);
             } else {
-                if (!Animator.GetBool(AnimatorVars.onMelee_id)) {
-                    if (Animator.GetBool(AnimatorVars.grounded_id)) {
+                if (!Animator.GetBool(AnimatorVars.OnMeleeHash)) {
+                    if (Animator.GetBool(AnimatorVars.GroundedHash)) {
                         pv.RPC("SlashRPC", PhotonTargets.All, 0, 0);
                     } else {
                         if (MechCamera.GetCamAngle() <= -10)
@@ -61,15 +58,15 @@ public class AnimationEventController : MonoBehaviour {
                             pv.RPC("SlashRPC", PhotonTargets.All, 0, 2);
                     }
                 } else {
-                    Animator.SetBool(AnimatorVars.slash_id, true);
+                    Animator.SetBool(AnimatorVars.SlashHash, true);
                 }
             }
         } else {
             if (combo == 3) {
-                Animator.SetBool(AnimatorVars.finalSlash_id, true);
+                Animator.SetBool(AnimatorVars.FinalSlashHash, true);
             } else {
-                if (!Animator.GetBool(AnimatorVars.onMelee_id)) {
-                    if (Animator.GetBool(AnimatorVars.grounded_id)) {
+                if (!Animator.GetBool(AnimatorVars.OnMeleeHash)) {
+                    if (Animator.GetBool(AnimatorVars.GroundedHash)) {
                         pv.RPC("SlashRPC", PhotonTargets.All, 1, 0);
                     } else {
                         if (MechCamera.GetCamAngle() <= -10)
@@ -80,7 +77,7 @@ public class AnimationEventController : MonoBehaviour {
                             pv.RPC("SlashRPC", PhotonTargets.All, 1, 2);
                     }
                 } else {
-                    Animator.SetBool(AnimatorVars.slash_id, true);
+                    Animator.SetBool(AnimatorVars.SlashHash, true);
                 }
             }
         }
@@ -89,7 +86,7 @@ public class AnimationEventController : MonoBehaviour {
     public void Smash(int hand) {
         MechCombat.SetMeleePlaying(true);
 
-        if (Animator.GetBool(AnimatorVars.grounded_id)) {
+        if (Animator.GetBool(AnimatorVars.GroundedHash)) {
             pv.RPC("SmashRPC", PhotonTargets.All, hand, 0);
         } else {
             if (MechCamera.GetCamAngle() <= -10)
@@ -171,7 +168,7 @@ public class AnimationEventController : MonoBehaviour {
         }
     }
 
-    public void CallMoving(float speed) {//also called by BCN shoot with speed < 0
+    public void CallMoving(float speed) {//also called by Cn shoot with speed < 0
         if (!pv.isMine)
             return;
 
@@ -195,42 +192,16 @@ public class AnimationEventController : MonoBehaviour {
         }
     }
 
-    public void BCNPose() {
-        if (!pv.isMine)
-            return;
-        pv.RPC("BCNPoseRPC", PhotonTargets.All);
+    public void CnPose() {
+        pv.RPC("CnPoseRPC", PhotonTargets.All);
     }
 
     [PunRPC]
-    public void BCNPoseRPC() {
-        Animator.Play("BCNPose_Start");
-    }
-
-    public void CallBCNShoot(int b) {
-        if (!pv.isMine)
-            return;
-
-        //MechCombat.On_BCNShoot = (b == 1);
-        if (b == 0) {
-            Animator.SetBool("BCNPose", false);
-            Animator.SetBool("OnBCN", false);
-        }
-    }
-    
-    public void SetBCNLoadToFalse() {
-        Animator.SetBool("BCNLoad", false);
-        Animator.SetBool("OnBCN", false);
-        Animator.SetBool("BCNPose", false);
-        //MechCombat.BCNbulletNum = 2;
+    public void CnPoseRPC() {
+        Animator.Play("CnPoseStart");
     }
 
     public void CallJump() {
         MechController.Jump();
-    }
-
-    public void CallAtk(int hand) {//TODO : remake this
-        if (weaponAnimators[weaponOffset + hand] != null) {
-            weaponAnimators[weaponOffset + hand].SetTrigger("Atk");
-        }
     }
 }

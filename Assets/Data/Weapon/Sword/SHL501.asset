@@ -21,14 +21,15 @@ MonoBehaviour:
   - {fileID: 1096434313937498, guid: 988de0d8939e7ef4d87b54f4b0fb2f7d, type: 2}
   damage: 300
   weight: 1300
+  AllowBothWeaponUsing: 0
   Range: 0
-  minRange: 0
+  MinRange: 0
   Rate: 5
-  radius: 0
-  heat_increase_amount: 10
-  slowDown: 1
-  twoHanded: 0
-  SPincreaseAmount: 100
+  Radius: 0
+  HeatIncreaseAmount: 10
+  Slowdown: 1
+  IsTwoHanded: 0
+  SpIncreaseAmount: 100
   skillAnimations: []
   hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}

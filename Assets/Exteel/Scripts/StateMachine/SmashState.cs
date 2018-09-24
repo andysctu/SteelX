@@ -14,13 +14,13 @@ public class SmashState : MechStateMachineBehaviour {
 
         if ( cc == null || !cc.enabled ) return;
 
-		animator.SetBool (onMelee_id, true);
-        animator.SetBool(boost_id, false);
-        inAir = animator.GetBool (jump_id);
+		animator.SetBool (animatorVars.OnMeleeHash, true);
+        animator.SetBool(BoostHash, false);
+        inAir = animator.GetBool (JumpHash);
 
         detectedGrounded = false;
 
-		mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
+		mcbt.CanMeleeAttack = !animator.GetBool (JumpHash);
         mcbt.SetMeleePlaying(true);
         mctrl.ResetCurBoostingSpeed();
 
@@ -39,12 +39,12 @@ public class SmashState : MechStateMachineBehaviour {
         mcbt.CanMeleeAttack = true;
         mcbt.SetMeleePlaying(false);
 
-        animator.SetBool(onMelee_id, false);
+        animator.SetBool(animatorVars.OnMeleeHash, false);
     }
 
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
         if ( cc == null || !cc.enabled) return;
-        mcbt.CanMeleeAttack = !animator.GetBool (jump_id);
+        mcbt.CanMeleeAttack = !animator.GetBool (JumpHash);
 
         bool b = (inAir && !mcbt.IsMeleePlaying());
 
@@ -59,13 +59,13 @@ public class SmashState : MechStateMachineBehaviour {
                 mctrl.Boost(false);
             }
 
-            mcbt.CanMeleeAttack = !animator.GetBool(jump_id);
+            mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
             if (mctrl.CheckIsGrounded()) {
                 detectedGrounded = true;
                 mctrl.grounded = true;
                 mctrl.SetCanVerticalBoost(false);
-                animator.SetBool(jump_id, false);
-                animator.SetBool(grounded_id, true);
+                animator.SetBool(JumpHash, false);
+                animator.SetBool(GroundedHash, true);
                 mctrl.Boost(false);
             }
         }
@@ -79,7 +79,7 @@ public class SmashState : MechStateMachineBehaviour {
         mctrl.SetCanVerticalBoost(false);
 
         if (inAir) {//exiting from jump melee attack
-            animator.SetBool(onMelee_id, false);
+            animator.SetBool(animatorVars.OnMeleeHash, false);
             mcbt.SetMeleePlaying(false);
         } else {
             mcbt.CanMeleeAttack = true;//sometimes OnstateMachineExit does not ensure canslash set to true ( called before update )

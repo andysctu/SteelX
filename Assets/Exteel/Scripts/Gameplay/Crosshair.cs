@@ -94,9 +94,9 @@ public class Crosshair : MonoBehaviour {
             MaxDistanceL = 0;
             MinDistanceL = 0;
         } else {
-            CrosshairRadiusL = weaponScripts[weaponOffset].radius * (1 + Marksmanship / 100.0f);
+            CrosshairRadiusL = weaponScripts[weaponOffset].Radius * (1 + Marksmanship / 100.0f);
             MaxDistanceL = weaponScripts[weaponOffset].Range;
-            MinDistanceL = weaponScripts[weaponOffset].minRange;
+            MinDistanceL = weaponScripts[weaponOffset].MinRange;
         }
 
         if (weaponScripts[weaponOffset + 1] == null) {
@@ -104,9 +104,9 @@ public class Crosshair : MonoBehaviour {
             MaxDistanceR = 0;
             MinDistanceR = 0;
         } else {
-            CrosshairRadiusR = weaponScripts[weaponOffset + 1].radius * (1 + Marksmanship / 100.0f);
+            CrosshairRadiusR = weaponScripts[weaponOffset + 1].Radius * (1 + Marksmanship / 100.0f);
             MaxDistanceR = weaponScripts[weaponOffset + 1].Range;
-            MinDistanceR = weaponScripts[weaponOffset + 1].minRange;
+            MinDistanceR = weaponScripts[weaponOffset + 1].MinRange;
         }
 
         isRectifier_L = (weaponScripts[weaponOffset] != null && weaponScripts[weaponOffset].GetWeaponType() == typeof(Rectifier));

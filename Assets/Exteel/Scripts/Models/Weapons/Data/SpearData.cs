@@ -8,8 +8,10 @@ public class SpearData : MeleeWeaponData {
 
     SpearData() {
         WeaponType = typeof(Spear);
-        slowDown = true;
-        twoHanded = false;
+        attackType = Weapon.AttackType.Melee;
+        AllowBothWeaponUsing = false;
+        Slowdown = true;
+        IsTwoHanded = false;
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {

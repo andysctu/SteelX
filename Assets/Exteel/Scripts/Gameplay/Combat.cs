@@ -73,7 +73,7 @@ public abstract class Combat : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    public virtual void KnockBack(Vector3 dir, float length) {//TODO : check this
+    public virtual void KnockBack(Vector3 dir, float length) {//TODO : improve this
         GetComponent<CharacterController>().Move(dir * length);
     }
 

@@ -7,7 +7,7 @@ public abstract class Weapon {
     //Components
     protected Transform WeaponTransform;
     protected Combat Cbt;
-    protected PhotonView playerPv;
+    protected PhotonView PlayerPv;
     protected HeatBar HeatBar;
     protected Animator MechAnimator, WeaponAnimator;
     protected AnimationEventController AnimationEventController;
@@ -15,17 +15,16 @@ public abstract class Weapon {
     protected AudioSource AudioSource;
 
     //Another weapon
-    protected Weapon anotherWeapon;
-    protected WeaponData anotherWeaponData;
+    protected Weapon AnotherWeapon;
+    protected WeaponData AnotherWeaponData;
 
     //Weapon infos
     public string WeaponName;
-    protected int hand, weapPos;//Two-handed -> 0
+    public bool AllowBothWeaponUsing, IsFiring = false;//Whether the Mech Atk animation is playing or not
+    protected int Hand, WeapPos;//Two-handed weapon's Hand is 0
     protected KeyCode BUTTON;
+    protected float TimeOfLastUse, Rate;
     protected const int LEFT_HAND = 0, RIGHT_HAND = 1;
-    protected float timeOfLastUse, rate;
-    public bool allowBothWeaponUsing = true, isFiring = false;
-
     protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
 
     public enum AttackType { Melee, Ranged, Cannon, Rocket, Skill, Debuff, None };
@@ -36,13 +35,12 @@ public abstract class Weapon {
         this.Cbt = Cbt;
         this.MechAnimator = MechAnimator;
         this.WeaponTransform = WeapPos;
-        this.hand = pos % 2;
-        this.weapPos = pos;
+        this.Hand = pos % 2;
+        this.WeapPos = pos;
 
-        BUTTON = (hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
+        BUTTON = (Hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
 
         InstantiateWeapon(data);
-        InitAttackType();
         InitComponents();
         InitAnotherWeaponInfo();
         InitLayerMask();
@@ -52,22 +50,22 @@ public abstract class Weapon {
 
     protected virtual void InitDataRelatedVars(WeaponData data) {
         this.data = data;
-        rate = data.Rate;
+        attackType = data.GetAttackType();
+        AllowBothWeaponUsing = data.AllowBothWeaponUsing;
+        Rate = data.Rate;
         WeaponName = data.weaponName;
     }
 
     protected virtual void InstantiateWeapon(WeaponData data) {
-        weapon = Object.Instantiate(data.GetWeaponPrefab(hand % 2), Vector3.zero, Quaternion.identity) as GameObject;
+        weapon = Object.Instantiate(data.GetWeaponPrefab(Hand % 2), Vector3.zero, Quaternion.identity) as GameObject;
         WeaponAnimator = weapon.GetComponent<Animator>();
 
         AdjustScale(weapon);
         SetWeaponParent(weapon);
     }
 
-    protected abstract void InitAttackType();
-
     private void InitComponents() {
-        playerPv = Cbt.GetComponent<PhotonView>();
+        PlayerPv = Cbt.GetComponent<PhotonView>();
         HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
         AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
         AnimatorVars = Cbt.GetComponentInChildren<AnimatorVars>();
@@ -75,9 +73,9 @@ public abstract class Weapon {
     }
 
     private void InitAnotherWeaponInfo() {
-        int weaponOffset = weapPos - 2 >= 0 ? 2 : 0;
-        anotherWeapon = Cbt.GetWeapon(weaponOffset + (hand + 1) % 2);
-        anotherWeaponData = Cbt.GetWeaponData(weaponOffset + (hand + 1) % 2);
+        int weaponOffset = WeapPos - 2 >= 0 ? 2 : 0;
+        AnotherWeapon = Cbt.GetWeapon(weaponOffset + (Hand + 1) % 2);
+        AnotherWeaponData = Cbt.GetWeaponData(weaponOffset + (Hand + 1) % 2);
     }
 
     private void InitLayerMask() {
@@ -112,7 +110,8 @@ public abstract class Weapon {
     public abstract void HandleCombat();//Process Input
     public abstract void HandleAnimation();
 
-    public abstract void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield);//this is called in OnHit RPC
+    public virtual void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){//This is called in onHit rpc
+    }
 
     public virtual void PlayOnHitEffect() {
     }
@@ -121,6 +120,9 @@ public abstract class Weapon {
     }
 
     public virtual void OnSkillAction(bool enter) {
+    }
+
+    public virtual void OnRateChanged(){
     }
 
     public virtual void OnSwitchedWeaponAction(bool b) {
@@ -132,11 +134,11 @@ public abstract class Weapon {
     public virtual bool IsOverHeat() {
         if(HeatBar ==null)return false;
 
-        return HeatBar.IsOverHeat(weapPos);
+        return HeatBar.IsOverHeat(WeapPos);
     }
 
     public virtual void SetOverHeat(bool b) {
-        HeatBar.SetOverHeat(weapPos, b);
+        HeatBar.SetOverHeat(WeapPos, b);
 
         if (b) {
             OnOverHeatAction(b);
@@ -148,7 +150,7 @@ public abstract class Weapon {
     }
 
     public virtual void IncreaseHeat(int amount) {
-        if(HeatBar!=null)HeatBar.IncreaseHeat(weapPos, amount);
+        if(HeatBar!=null)HeatBar.IncreaseHeat(WeapPos, amount);
     }
 
     public virtual void ActivateWeapon(bool b) {//Not using setActive because if weapons have their own animations & are playing , disabling causes weapon animators to rebind the wrong rotation & position
@@ -173,16 +175,6 @@ public abstract class Weapon {
     public virtual void OnDestroy() {
         if (weapon != null) Object.Destroy(weapon);
     }
-
-    //TODO : remove this if no error
-    //private bool CheckTargetIsDead(GameObject target) {
-    //    MechCombat mcbt = target.transform.root.GetComponent<MechCombat>();
-    //    if (mcbt == null) {//Drone
-    //        return target.transform.root.GetComponent<DroneCombat>().CurrentHP <= 0;
-    //    } else {
-    //        return mcbt.CurrentHP <= 0;
-    //    }
-    //}
 
     public virtual bool IsShield() {//general meaning of a shield
         return false;

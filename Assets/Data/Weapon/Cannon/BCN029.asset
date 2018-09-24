@@ -21,14 +21,15 @@ MonoBehaviour:
   - {fileID: 1096434313937498, guid: cab6ccf5c933fbf45b88e4da61268fa8, type: 2}
   damage: 800
   weight: 45000
+  AllowBothWeaponUsing: 0
   Range: 300
-  minRange: 20
+  MinRange: 10
   Rate: 1
-  radius: 2
-  heat_increase_amount: 60
-  slowDown: 1
-  twoHanded: 1
-  SPincreaseAmount: 300
+  Radius: 2
+  HeatIncreaseAmount: 40
+  Slowdown: 1
+  IsTwoHanded: 1
+  SpIncreaseAmount: 300
   skillAnimations: []
   bulletPrefab: {fileID: 1089007466238554, guid: 4dc398f818ee4cd48b534a7bff5a72d1,
     type: 2}
@@ -36,5 +37,5 @@ MonoBehaviour:
     type: 2}
   shotSound: {fileID: 8300000, guid: 7e7c3404adab746a581da5465e70349c, type: 3}
   reload_sound: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
-  Reload: {fileID: 7400002, guid: d674ab0e2f8211e498b277358c034076, type: 3}
-  maxBullet: 2
+  _reloadClip: {fileID: 0}
+  MaxBullet: 3

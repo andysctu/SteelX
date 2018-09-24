@@ -7,8 +7,10 @@ public class SMGData : RangedWeaponData {
 
     SMGData() {
         WeaponType = typeof(SMG);
-        slowDown = false;
-        twoHanded = false;
+        attackType = Weapon.AttackType.Ranged;
+        AllowBothWeaponUsing = true;
+        Slowdown = false;
+        IsTwoHanded = false;
     }
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
