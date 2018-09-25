@@ -1,12 +1,9 @@
-using System.Collections;
 using UnityEngine;
 
-public class ElectricBolt : MonoBehaviour {
-    [SerializeField] private Transform lineEnd = null;
-    private LineRenderer lRend;
-    private Vector3[] points = new Vector3[5];
-    private Camera cam;
-    private Transform target = null;
+public class ElectricBolt : Bullet {
+    [SerializeField] private Transform _lineEnd = null;
+    private LineRenderer _lRend;
+    private readonly Vector3[] _points = new Vector3[5];
 
     private readonly int point_Begin = 0;
     private readonly int point_Middle_Left = 1;
@@ -18,38 +15,43 @@ public class ElectricBolt : MonoBehaviour {
     private readonly float randomWithOffsetMax = 4.5f;
     private readonly float randomWithOffsetMin = 3.5f;
 
-    private readonly WaitForSeconds customFrame = new WaitForSeconds(0.03f);
+    private bool _calledPlay = false;
 
-    private void Start() {
-        lRend = GetComponent<LineRenderer>();
-        StartCoroutine(Beam());
-        Destroy(gameObject, 1.675f);
+    protected override void Awake(){
+        base.Awake();
+
+        InitComponents();
     }
 
-    public void SetCamera(Camera cam) {
-        this.cam = cam;
+    private void InitComponents(){
+        _lRend = GetComponent<LineRenderer>();
     }
 
-    public void SetTarget(Transform target) {
-        this.target = target;
-    }
-
-    private IEnumerator Beam() {
-        yield return customFrame;
-        points[point_Begin] = transform.position;
+    protected override void LateUpdate() {
+        if(!_calledPlay)return;
+        _points[point_Begin] = transform.position;
         if (target != null) {
-            lineEnd.position = target.position + new Vector3(0, 5f, 0);
-            points[point_End] = lineEnd.position;
+            _lineEnd.position = target.position + new Vector3(0, 5f, 0);
+            _points[point_End] = _lineEnd.position;
         } else {
-            points[point_End] = transform.position + cam.transform.forward * 50f;
-            lineEnd.position = points[point_End];
+            _points[point_End] = transform.position + cam.transform.forward * 50f;
+            _lineEnd.position = _points[point_End];
         }
         CalculateMiddle();
-        lRend.SetPositions(points);
-        lRend.startWidth = RandomWidthOffset();
-        lRend.endWidth = RandomWidthOffset();
+        _lRend.SetPositions(_points);
+        _lRend.startWidth = RandomWidthOffset();
+        _lRend.endWidth = RandomWidthOffset();
         //lRend.SetWidth(RandomWidthOffset(), RandomWidthOffset());
-        StartCoroutine(Beam());
+    }
+
+    public override void Play() {
+        _lRend.enabled = true;
+        _calledPlay = true;
+    }
+
+    public override void Stop() {
+        _lRend.enabled = false;
+        _calledPlay = false;
     }
 
     private float RandomWidthOffset() {
@@ -57,10 +59,10 @@ public class ElectricBolt : MonoBehaviour {
     }
 
     private void CalculateMiddle() {
-        Vector3 center = GetMiddleWithRandomness(transform.position, lineEnd.position);
-        points[point_Center] = center;
-        points[point_Middle_Left] = GetMiddleWithRandomness(transform.position, center);
-        points[point_Middle_Right] = GetMiddleWithRandomness(center, lineEnd.position);
+        Vector3 center = GetMiddleWithRandomness(transform.position, _lineEnd.position);
+        _points[point_Center] = center;
+        _points[point_Middle_Left] = GetMiddleWithRandomness(transform.position, center);
+        _points[point_Middle_Right] = GetMiddleWithRandomness(center, _lineEnd.position);
     }
 
     private Vector3 GetMiddleWithRandomness(Vector3 point1, Vector3 point2) {
