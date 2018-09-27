@@ -93,14 +93,15 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void Start() {
-        InitCam(cam_orbitradius, cam_angleoffset);
+        if (!photonView.isMine) return;
 
+        InitCam(cam_orbitradius, cam_angleoffset);
         FindGameManager();
         GetLayerMask();
     }
 
     private void FindGameManager() {
-        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gm = FindObjectOfType<GameManager>();
     }
 
     private void GetLayerMask(){
