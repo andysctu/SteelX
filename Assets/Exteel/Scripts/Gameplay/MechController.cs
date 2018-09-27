@@ -3,21 +3,29 @@ using UnityEngine;
 
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
-    [SerializeField] private Camera cam;
-    [SerializeField] private AnimatorVars AnimatorVars;
-    [SerializeField] private Animator Animator;
-    [SerializeField] private MechCombat mechCombat;
-    [SerializeField] private MechCamera mechCamera;
-    [SerializeField] private Sounds Sounds;
-    [SerializeField] private EffectController EffectController;
-    [SerializeField] private Transform camTransform, boosterBone;
-    [SerializeField] private CharacterController CharacterController;
-    [SerializeField] private LayerMask Terrain;
-    [SerializeField] private SkillController SkillController;
+    [SerializeField] private EffectController EffectController;//TODO : remove this
+    [SerializeField] private Transform boosterBone;
     [SerializeField] private MovementVariables movementVariables = new MovementVariables();
+
+    [SerializeField] private GameObject JumpEffectPrefab;
+    [SerializeField] private AudioClip LandingSound, JumpSound;
+
     private BuildMech bm;
     private GameManager gm;
     private BoosterController BoosterController;
+    private MechCombat _mechCombat;
+    private MechCamera _mechCam;
+    private CharacterController CharacterController;
+    private SkillController SkillController;
+    private Transform _camTransform;
+    private AnimatorVars _animatorVars;
+    private Animator _mainAnimator;
+    private LayerMask _terrainMask;
+    
+    private Sounds _sounds;
+    private AudioSource _audioSource;
+    private ParticleSystem JumpEffect;
+    private bool _isFootStepVarPositive = false;
 
     private float runDir_coeff = 3, runDecel_rate = 0.5f;
     private float curboostingSpeed;//global space
@@ -37,8 +45,8 @@ public class MechController : Photon.MonoBehaviour {
     private float slashTeleportMinDistance = 3f;
 
     // Animation
-    public float speed { get;private set;}
-    public float direction { get;private set;}
+    public float speed { get; private set; }
+    public float direction { get; private set; }
 
     private float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
     public float Gravity = 4;
@@ -48,35 +56,70 @@ public class MechController : Photon.MonoBehaviour {
     public bool grounded = true, onSkill = false; //changes with animator bool "grounded"
     public float LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
+    //Rotate legs
+    private Transform _pelvis, _spine1;
+    private float _rLPelvisDegree = 30, _rLSpineDegree = -45, _rLLerpSpeed = 10, _rLDir;
+
     public bool onSkillMoving = false, onInstantMoving = false;
 
     private void Awake() {
+        InitComponents();
+
         RegisterOnMechBuilt();
         RegisterOnWeaponSwithed();
         RegisterOnSkill();
         RegisterOnMechEnabled();
     }
 
-    private void Start() {
-        initComponents();
-        initCam(cam_orbitradius, cam_angleoffset);
+    private void InitComponents() {
+        Transform currentMech = transform.Find("CurrentMech");
+        _animatorVars = currentMech.GetComponent<AnimatorVars>();
+        _mainAnimator = currentMech.GetComponent<Animator>();
+        _mechCombat = GetComponent<MechCombat>();
+        _mechCam = GetComponentInChildren<MechCamera>();
+        _camTransform = _mechCam.transform;
+        _sounds = currentMech.GetComponent<Sounds>();
 
-        enabled = photonView.isMine;
+        CharacterController = GetComponent<CharacterController>();
+        SkillController = GetComponent<SkillController>();
+
+        _pelvis = transform.Find("CurrentMech/Bip01/Bip01_Pelvis");
+        _spine1 = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1");
+
+        JumpEffect = Instantiate(JumpEffectPrefab, transform).GetComponent<ParticleSystem>();
+        TransformExtension.SetLocalTransform(JumpEffect.transform);
+
+        AddAudioSource();
+    }
+
+    private void Start() {
+        InitCam(cam_orbitradius, cam_angleoffset);
+
+        FindGameManager();
+        GetLayerMask();
+    }
+
+    private void FindGameManager() {
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
+
+    private void GetLayerMask(){
+        _terrainMask =  LayerMask.GetMask("Terrain");
     }
 
     private void RegisterOnMechBuilt() {
         if ((bm = GetComponent<BuildMech>()) != null) {
             bm.OnMechBuilt += FindBoosterController;
-            bm.OnMechBuilt += initControllerVar;
+            bm.OnMechBuilt += InitControllerVar;
         }
     }
 
     private void RegisterOnWeaponSwithed() {
-        mechCombat.OnWeaponSwitched += UpdateWeightRelatedVars;
+        _mechCombat.OnWeaponSwitched += UpdateWeightRelatedVars;
     }
 
     private void RegisterOnMechEnabled() {
-        mechCombat.OnMechEnabled += OnMechEnabled;
+        _mechCombat.OnMechEnabled += OnMechEnabled;
     }
 
     private void RegisterOnSkill() {
@@ -95,21 +138,21 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void OnMechEnabled(bool b) {
-        if(!photonView.isMine)
+        if (!photonView.isMine)
             return;
 
         enabled = b;
     }
 
-    public void initControllerVar() {
+    private void InitControllerVar() {
         //grounded = true;
         onInstantMoving = false;
         canVerticalBoost = false;
         isSlowDown = false;
-        mechCamera.LockMechRotation(false);
+        _mechCam.LockMechRotation(false);
         curboostingSpeed = movementVariables.moveSpeed;
-        Animator.SetBool("Boost", false);
-        Animator.SetBool("Jump", false);
+        _mainAnimator.SetBool("Boost", false);
+        _mainAnimator.SetBool("Jump", false);
         run_xzDir = Vector2.zero;
     }
 
@@ -118,7 +161,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void UpdateWeightRelatedVars() {
-        int partWeight = bm.MechProperty.Weight, weaponOffset = mechCombat.GetCurrentWeaponOffset();
+        int partWeight = bm.MechProperty.Weight, weaponOffset = _mechCombat.GetCurrentWeaponOffset();
         int weaponWeight = ((bm.WeaponDatas[weaponOffset] == null) ? 0 : bm.WeaponDatas[weaponOffset].weight) + ((bm.WeaponDatas[weaponOffset + 1] == null) ? 0 : bm.WeaponDatas[weaponOffset + 1].weight);
 
         movementVariables.moveSpeed = bm.MechProperty.GetMoveSpeed(partWeight, weaponWeight) * 0.08f;
@@ -133,35 +176,56 @@ public class MechController : Photon.MonoBehaviour {
         //jump speed
     }
 
-    private void initComponents() {
-        //Transform currentMech = transform.Find("CurrentMech");
-        CharacterController = GetComponent<CharacterController>();
-        SkillController = GetComponent<SkillController>();
-        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+    private void AddAudioSource() {
+        _audioSource = gameObject.AddComponent<AudioSource>();
+
+        //Init AudioSource
+        _audioSource.spatialBlend = 1;
+        _audioSource.dopplerLevel = 0;
+        _audioSource.volume = 0.8f;
+        _audioSource.playOnAwake = false;
+        _audioSource.minDistance = 20;
+        _audioSource.maxDistance = 250;
     }
 
-    private void initCam(float radius, float offset) {
-        mechCamera.orbitRadius = radius;
-        mechCamera.angleOffset = offset;
+    private void InitCam(float radius, float offset) {
+        _mechCam.orbitRadius = radius;
+        _mechCam.angleOffset = offset;
     }
 
     private void Update() {
+        if(!photonView.isMine)return;
+
         GetXZDirection();
+
+        //TODO : remake this (test use)
+        if (_isFootStepVarPositive){
+            if (_mainAnimator.GetFloat("FootStep") < 0) {
+                _isFootStepVarPositive = false;
+                _sounds.PlayWalk();
+            }
+        }else if (_mainAnimator.GetFloat("FootStep") > 0) {
+            _isFootStepVarPositive = true;
+            _sounds.PlayWalk();
+        }
+
     }
 
     private void FixedUpdate() {
+        if (!photonView.isMine) return;
+
         if (!grounded) {
-            ySpeed -= (ySpeed < maxDownSpeed || Animator.GetBool(AnimatorVars.BoostHash)) ? 0 : Gravity;
+            ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool(_animatorVars.BoostHash)) ? 0 : Gravity;
         } else {
             ySpeed = -CharacterController.stepOffset;
         }
 
-        if (Animator.GetBool(AnimatorVars.BoostHash)) {
+        if (_mainAnimator.GetBool(_animatorVars.BoostHash)) {
             DynamicCam();
-            mechCombat.DecrementEN();
+            _mechCombat.DecrementEN();
         } else {
             ResetCam();
-            mechCombat.IncrementEN();
+            _mechCombat.IncrementEN();
         }
 
         UpdateSpeed();
@@ -169,7 +233,7 @@ public class MechController : Photon.MonoBehaviour {
 
     public void UpdateSpeed() {
         if (onInstantMoving) {
-            InstantMove(); 
+            InstantMove();
             return;
         }
 
@@ -192,7 +256,7 @@ public class MechController : Photon.MonoBehaviour {
 
     public void SetMoving(float speed) {//called by animation
         instantMoveSpeed = speed;
-        instantMoveDir = cam.transform.forward;
+        instantMoveDir = _camTransform.forward;
         if (grounded) instantMoveDir = new Vector3(instantMoveDir.x, 0, instantMoveDir.z);// make sure not slashing to the sky
         curInstantMoveSpeed = instantMoveSpeed;
     }
@@ -216,13 +280,13 @@ public class MechController : Photon.MonoBehaviour {
         move.x = 0;
         move.z = 0;
 
-        if (Animator.GetBool(AnimatorVars.JumpHash))
+        if (_mainAnimator.GetBool(_animatorVars.JumpHash))
             getJumpWhenSlash = true;
 
         //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
         RaycastHit hit;
-        if (!getJumpWhenSlash && Physics.Raycast(transform.position, -Vector3.up, out hit, Terrain)) {
-            if (Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance && !Physics.CheckSphere(hit.point + new Vector3(0, 2.1f, 0), CharacterController.radius, Terrain)) {
+        if (!getJumpWhenSlash && Physics.Raycast(transform.position, -Vector3.up, out hit, _terrainMask)) {
+            if (Vector3.Distance(hit.point, transform.position) >= slashTeleportMinDistance && !Physics.CheckSphere(hit.point + new Vector3(0, 2.1f, 0), CharacterController.radius, _terrainMask)) {
                 transform.position = hit.point;
 
                 //TODO : map edge case
@@ -230,16 +294,17 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
-    /*
-    //TODO : test
-    public Transform pelvis; //put spine here
-    public int degree = 30;
     private void LateUpdate() {
-        if(pelvis != null) {
-            float ind_dir = Input.GetAxis("Horizontal");
-            pelvis.rotation = Quaternion.Euler(pelvis.rotation.eulerAngles.x, pelvis.rotation.eulerAngles.y + ind_dir * degree, pelvis.rotation.eulerAngles.z);
-        }
-    }*/
+        RotateLegs();//Other player has to run this 
+    }
+
+    private void RotateLegs(){
+        _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
+        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!grounded)? -60 : -30, _rLLerpSpeed * Time.deltaTime);
+
+        _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
+        _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
+    }
 
     public void SetCanVerticalBoost(bool canVBoost) {
         canVerticalBoost = canVBoost;
@@ -274,7 +339,7 @@ public class MechController : Photon.MonoBehaviour {
         run_xzDir.x = Mathf.Lerp(run_xzDir.x, xzDir.x, Time.deltaTime * runDir_coeff);//smooth slow down (boosting -> Idle&Walk
         run_xzDir.y = Mathf.Lerp(run_xzDir.y, xzDir.y, Time.deltaTime * runDir_coeff);//not achieving by gravity because we don't want walk smooth slow down
                                                                                       //decelerating
-        if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.BoostHash)) {//not in transition to boost
+        if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
             xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x + (run_xzDir.y * curboostingSpeed * transform.forward).x;
             zSpeed = (run_xzDir.x * curboostingSpeed * transform.right).z + (run_xzDir.y * curboostingSpeed * transform.forward).z;
 
@@ -295,7 +360,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void JumpMoveInAir() {
-        if (curboostingSpeed >= movementVariables.moveSpeed && !Animator.GetBool(AnimatorVars.BoostHash)) {//not in transition to boost
+        if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
             curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 10;
 
             xSpeed = (xzDir.x * curboostingSpeed * transform.right).x + (xzDir.y * curboostingSpeed * transform.forward).x;
@@ -383,7 +448,7 @@ public class MechController : Photon.MonoBehaviour {
 
     private IEnumerator SlowDownCoroutine() {
         SetCanVerticalBoost(false);
-        Animator.SetBool("Boost", false);
+        _mainAnimator.SetBool("Boost", false);
         Boost(false);
         if (!CheckIsGrounded())//in air => small bump effect
             ySpeed = 0;
@@ -394,14 +459,14 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void ResetCam() {
-        Vector3 curPos = camTransform.localPosition;
+        Vector3 curPos = _camTransform.localPosition;
         Vector3 newPos = new Vector3(0, curPos.y, curPos.z);
-        camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, 0.1f);
+        _camTransform.localPosition = Vector3.Lerp(_camTransform.localPosition, newPos, 0.1f);
     }
 
     public void DynamicCam() {
-        Vector3 curPos = camTransform.localPosition;
-        Vector3 newPos = camTransform.localPosition;
+        Vector3 curPos = _camTransform.localPosition;
+        Vector3 newPos = _camTransform.localPosition;
 
         if (direction > 0) {
             newPos = new Vector3(LocalxOffset, curPos.y, curPos.z);
@@ -411,7 +476,7 @@ public class MechController : Photon.MonoBehaviour {
             newPos = new Vector3(0, curPos.y, curPos.z);
         }
 
-        camTransform.localPosition = Vector3.Lerp(camTransform.localPosition, newPos, Time.fixedDeltaTime * lerpCam_coeff);
+        _camTransform.localPosition = Vector3.Lerp(_camTransform.localPosition, newPos, Time.fixedDeltaTime * lerpCam_coeff);
     }
 
     [PunRPC]
@@ -443,25 +508,26 @@ public class MechController : Photon.MonoBehaviour {
         } else {
             speed = v;
             direction = h;
-        }        
+        }
 
         xzDir = new Vector2(direction, speed).normalized;
     }
 
     public bool CheckIsGrounded() {
-        return Physics.CheckSphere(transform.position + new Vector3(0, 1.9f, 0), 2f, Terrain);
+        return Physics.CheckSphere(transform.position + new Vector3(0, 1.9f, 0), 2f, _terrainMask);
     }
 
     public void OnJumpAction() {
-
+        _audioSource.PlayOneShot(JumpSound);
     }
 
     public void OnLandingAction() {
-
+        if (JumpEffect != null) JumpEffect.Play();
+        _audioSource.PlayOneShot(LandingSound);
     }
 
     public void CallLockMechRot(bool b) {
-        mechCamera.LockMechRotation(b);
+        _mechCam.LockMechRotation(b);
     }
 
     private void InterruptCurrentMovement(bool b) {
