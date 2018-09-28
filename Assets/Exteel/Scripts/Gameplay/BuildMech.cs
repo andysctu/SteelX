@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Weapons;
 
 public class BuildMech : Photon.MonoBehaviour {
     //Components
@@ -148,9 +149,9 @@ public class BuildMech : Photon.MonoBehaviour {
         }
 
         //set weapons if null (in offline)
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[10];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[9];
         if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[11];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[6];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[13];
 
         if (skill_IDs == null) {//TODO : remake this

@@ -2,7 +2,7 @@
 
 public class CheckIsRendered : MonoBehaviour {
     private SkinnedMeshRenderer theMeshRenderer;
-    private Crosshair crosshair;//same player's crosshair for all mechs
+    private CrosshairController crosshair;//same player's crosshair for all mechs
 
     private bool isVisible = false;
     private float lastRequestTime;
@@ -22,7 +22,7 @@ public class CheckIsRendered : MonoBehaviour {
         }
     }
 
-    public void SetCrosshair(Crosshair crosshair) {
+    public void SetCrosshair(CrosshairController crosshair) {
         this.crosshair = crosshair;
     }
 
@@ -34,7 +34,7 @@ public class CheckIsRendered : MonoBehaviour {
                 Camera[] cameras = (Camera[])GameObject.FindObjectsOfType<Camera>();
                 foreach (Camera cam in cameras) {
                     if (cam.transform.root.name == "PlayerCam") {
-                        crosshair = cam.GetComponent<Crosshair>();
+                        crosshair = cam.GetComponent<CrosshairController>();
                     }
                 }
             }

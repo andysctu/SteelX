@@ -372,7 +372,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         return Timer.CheckIfGameEnd();
     }
 
-    protected virtual void OnPhotonPlayerConnfected(PhotonPlayer newPlayer) {
+    protected virtual void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
         InGameChat.AddLine(newPlayer + " is connected.", Color.green);
     }
 

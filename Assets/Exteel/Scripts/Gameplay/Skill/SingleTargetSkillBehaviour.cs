@@ -4,7 +4,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private SkillController SkillController;
     private MechCombat mcbt;
     private Sounds Sounds;
-    private Crosshair Crosshair;
+    private CrosshairController Crosshair;
     private PhotonView player_pv;
     private Transform target;
     private int TerrainLayer;
@@ -16,7 +16,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
     private void InitComponent() {
         player_pv = GetComponent<PhotonView>();
         SkillController = GetComponent<SkillController>();
-        Crosshair = SkillController.GetCamera().GetComponent<Crosshair>();
+        Crosshair = SkillController.GetCamera().GetComponent<CrosshairController>();
         mcbt = GetComponent<MechCombat>();
         TerrainLayer = LayerMask.GetMask("Terrain");
 

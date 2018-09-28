@@ -13,7 +13,7 @@ public class EnableLocal : MonoBehaviour {
         mainCamera.GetComponent<Camera>().enabled = b;
         mainCamera.GetComponent<MechCamera>().enabled = b;
         mainCamera.GetComponentInChildren<Canvas>().enabled = b;
-        mainCamera.GetComponent<Crosshair>().enabled = b;
+        mainCamera.GetComponent<CrosshairController>().enabled = b;
 
         radar.SetActive(b);
     }

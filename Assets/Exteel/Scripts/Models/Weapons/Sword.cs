@@ -1,169 +1,176 @@
 ﻿using UnityEngine;
 using XftWeapon;
 
-public class Sword : MeleeWeapon {
-    private XWeaponTrail _weaponTrail;
-    private AudioClip[] _slashSounds = new AudioClip[4];
+namespace Weapons
+{
+    public class Sword : MeleeWeapon
+    {
+        private XWeaponTrail _weaponTrail;
+        private AudioClip[] _slashSounds = new AudioClip[4];
 
-    private bool _receiveNextSlash, _isAnotherWeaponSword;
-    private int _curCombo = 0;
+        private bool _receiveNextSlash, _isAnotherWeaponSword;
+        private int _curCombo = 0;
 
-    public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator) {
-        base.Init(data, pos, handTransform, Cbt, Animator);
-        InitComponents();
-        Threshold = ((SwordData)data).threshold;
+        public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator){
+            base.Init(data, pos, handTransform, Cbt, Animator);
+            InitComponents();
+            Threshold = ((SwordData) data).threshold;
 
-        CheckIsAnotherWeaponSword();
+            CheckIsAnotherWeaponSword();
 
-        UpdateSlashAnimationThreshold();
-    }
-
-    private void InitComponents() {
-        FindTrail(weapon);
-    }
-
-    private void CheckIsAnotherWeaponSword() {
-        _isAnotherWeaponSword = (AnotherWeaponData.GetWeaponType() == typeof(Sword));
-    }
-
-    protected override void LoadSoundClips() {
-        _slashSounds = ((SwordData)data).slash_sound;
-    }
-
-    private void FindTrail(GameObject weapon) {
-        _weaponTrail = weapon.GetComponentInChildren<XWeaponTrail>(true);
-        if (_weaponTrail != null) _weaponTrail.Deactivate();
-    }
-
-    public override void HandleCombat() {
-        if (!Input.GetKeyDown(BUTTON) || IsOverHeat()) {
-            return;
+            UpdateSlashAnimationThreshold();
         }
 
-        if (Time.time - TimeOfLastUse >= 1 / Rate) {
-            if (!_receiveNextSlash || !Cbt.CanMeleeAttack) {return;}
-
-            if (_curCombo == 3 && !_isAnotherWeaponSword)return;
-
-            if (AnotherWeapon!=null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring)return;
-
-            Cbt.CanMeleeAttack = false;
-            _receiveNextSlash = false;
-            TimeOfLastUse = Time.time;
-
-            IncreaseHeat(data.HeatIncreaseAmount);
-
-            //Play Animation
-            AnimationEventController.Slash(Hand, _curCombo);            
+        private void InitComponents(){
+            FindTrail(weapon);
         }
-    }
 
-    public override void HandleAnimation() {
-    }
-
-    protected override void ResetMeleeVars() {//this is called when on skill or init
-        base.ResetMeleeVars();
-        _curCombo = 0;
-
-        if (!Cbt.photonView.isMine) return;
-
-        _receiveNextSlash = true;
-
-        Cbt.CanMeleeAttack = true;
-        Cbt.SetMeleePlaying(false);
-        MechAnimator.SetBool("Slash", false);
-    }
-
-    public void EnableWeaponTrail(bool b) { 
-        if (_weaponTrail == null) return;
-
-        if (b) {
-            _weaponTrail.Activate();
-        } else {
-            _weaponTrail.StopSmoothly(0.1f);
+        private void CheckIsAnotherWeaponSword(){
+            _isAnotherWeaponSword = (AnotherWeaponData.GetWeaponType() == typeof(Sword));
         }
-    }
 
-    public override void OnSkillAction(bool enter) {
-        base.OnSkillAction(enter);
+        protected override void LoadSoundClips(){
+            _slashSounds = ((SwordData) data).slash_sound;
+        }
 
-        if (enter) {
-            _receiveNextSlash = false;            
-        } else {
+        private void FindTrail(GameObject weapon){
+            _weaponTrail = weapon.GetComponentInChildren<XWeaponTrail>(true);
+            if (_weaponTrail != null) _weaponTrail.Deactivate();
+        }
+
+        public override void HandleCombat(){
+            if (!Input.GetKeyDown(BUTTON) || IsOverHeat()){
+                return;
+            }
+
+            if (Time.time - TimeOfLastUse >= 1 / Rate){
+                if (!_receiveNextSlash || !Cbt.CanMeleeAttack){
+                    return;
+                }
+
+                if (_curCombo == 3 && !_isAnotherWeaponSword) return;
+
+                if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
+
+                Cbt.CanMeleeAttack = false;
+                _receiveNextSlash = false;
+                TimeOfLastUse = Time.time;
+
+                IncreaseHeat(data.HeatIncreaseAmount);
+
+                //Play Animation
+                AnimationEventController.Slash(Hand, _curCombo);
+            }
+        }
+
+        public override void HandleAnimation(){
+        }
+
+        protected override void ResetMeleeVars(){
+            //this is called when on skill or init
+            base.ResetMeleeVars();
+            _curCombo = 0;
+
+            if (!Cbt.photonView.isMine) return;
+
             _receiveNextSlash = true;
+
             Cbt.CanMeleeAttack = true;
+            Cbt.SetMeleePlaying(false);
+            MechAnimator.SetBool("Slash", false);
         }
-    }
 
-    public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
-        switch ((StateCallBackType)type) {
-            case StateCallBackType.AttackStateEnter:
-                OnAttackStateEnter(state);
-                break;
-            case StateCallBackType.AttackStateExit:
-                OnAttackStateExit(state);
-                break;
-            case StateCallBackType.AttackStateMachineExit:
-                OnAttackStateMachineExit(state);
-                break;
+        public void EnableWeaponTrail(bool b){
+            if (_weaponTrail == null) return;
+
+            if (b){
+                _weaponTrail.Activate();
+            } else{
+                _weaponTrail.StopSmoothly(0.1f);
+            }
         }
-    }
 
-    private void OnAttackStateEnter(MechStateMachineBehaviour state) {//other player will also execute this
-        ((SlashState)state).SetThreshold(Threshold);//the state is confirmed SlashState in mechCombat        
+        public override void OnSkillAction(bool enter){
+            base.OnSkillAction(enter);
 
-        //Play slash sound
-        if(_slashSounds!=null && _slashSounds[_curCombo] != null)
-            AudioSource.PlayClipAtPoint(_slashSounds[_curCombo], weapon.transform.position);
-
-        if(PlayerPv != null && PlayerPv.isMine) {//TODO : master check this
-            IsFiring = true;
-
-            //If not final slash
-            if (!MechAnimator.GetBool(AnimatorVars.FinalSlashHash))
+            if (enter){
+                _receiveNextSlash = false;
+            } else{
                 _receiveNextSlash = true;
-
-            MeleeAttack(Hand);
+                Cbt.CanMeleeAttack = true;
+            }
         }
 
-        _curCombo++;
-    }
+        public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
+            switch ((StateCallBackType) type){
+                case StateCallBackType.AttackStateEnter:
+                    OnAttackStateEnter(state);
+                    break;
+                case StateCallBackType.AttackStateExit:
+                    OnAttackStateExit(state);
+                    break;
+                case StateCallBackType.AttackStateMachineExit:
+                    OnAttackStateMachineExit(state);
+                    break;
+            }
+        }
 
-    private void OnAttackStateMachineExit(MechStateMachineBehaviour state) {
-        IsFiring = false;
-        _receiveNextSlash = true;
-        _curCombo = 0;
-    }
+        private void OnAttackStateEnter(MechStateMachineBehaviour state){
+            //other player will also execute this
+            ((SlashState) state).SetThreshold(Threshold); //the state is confirmed SlashState in mechCombat        
 
-    private void OnAttackStateExit(MechStateMachineBehaviour state) {
-        if (((SlashState)state).IsInAir()) {
+            //Play slash sound
+            if (_slashSounds != null && _slashSounds[_curCombo] != null) AudioSource.PlayClipAtPoint(_slashSounds[_curCombo], weapon.transform.position);
+
+            if (PlayerPv != null && PlayerPv.isMine){
+                //TODO : master check this
+                IsFiring = true;
+
+                //If not final slash
+                if (!MechAnimator.GetBool(AnimatorVars.FinalSlashHash)) _receiveNextSlash = true;
+
+                MeleeAttack(Hand);
+            }
+
+            _curCombo++;
+        }
+
+        private void OnAttackStateMachineExit(MechStateMachineBehaviour state){
             IsFiring = false;
             _receiveNextSlash = true;
             _curCombo = 0;
         }
-    }
 
-    private void UpdateSlashAnimationThreshold() {
-       Threshold = ((SwordData)data).threshold;
-    }
-
-    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
-        
-        if (isShield) {
-            if(targetWeapon != null) {
-                targetWeapon.PlayOnHitEffect();
+        private void OnAttackStateExit(MechStateMachineBehaviour state){
+            if (((SlashState) state).IsInAir()){
+                IsFiring = false;
+                _receiveNextSlash = true;
+                _curCombo = 0;
             }
-        } else {
-            //Apply slowing down effect
-            if (data.Slowdown) {
-                MechController mctrl = target.GetComponent<MechController>();
-                if(mctrl != null) {
-                    mctrl.SlowDown();
+        }
+
+        private void UpdateSlashAnimationThreshold(){
+            Threshold = ((SwordData) data).threshold;
+        }
+
+        public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
+
+            if (isShield){
+                if (targetWeapon != null){
+                    targetWeapon.PlayOnHitEffect();
                 }
-            }
+            } else{
+                //Apply slowing down effect
+                if (data.Slowdown){
+                    MechController mctrl = target.GetComponent<MechController>();
+                    if (mctrl != null){
+                        mctrl.SlowDown();
+                    }
+                }
 
-            ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
-            TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
+                ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
+                TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
+            }
         }
     }
 }

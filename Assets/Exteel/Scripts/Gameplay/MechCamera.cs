@@ -15,7 +15,7 @@ public class MechCamera : MonoBehaviour {
     private float idealLocalAngle = 0, orbitAngle = 0;//this is cam local angle
     private CharacterController parentCtrl;
     private float playerlerpspeed = 50f, orbitlerpspeed = 50f;
-    private float upAmount = 1;
+    private float upAmount = 0;
 
     private Vector2 rotationRange = new Vector2(70, 200);
 

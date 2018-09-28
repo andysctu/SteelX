@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Weapons;
+using Weapons.Bullets;
 
 public class Shotgun : RangedWeapon {
     private AudioClip _shotSound, _reloadSound;
@@ -57,8 +59,8 @@ public class Shotgun : RangedWeapon {
         }
     }
 
-    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
-        base.OnSwitchedWeaponAction(isThisWeaponActivated);
+    public override void OnWeaponSwitchedAction(bool isThisWeaponActivated) {
+        base.OnWeaponSwitchedAction(isThisWeaponActivated);
 
         if (!isThisWeaponActivated) {
             Muzzle.Stop();

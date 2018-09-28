@@ -12,7 +12,9 @@ public class JumpedState : MechStateMachineBehaviour {
 		if (cc == null || !cc.enabled)return;
 
 		if(isFirstjump){
-			mctrl.Boost (false);
+		    mctrl.OnJumpAction();
+
+            mctrl.Boost (false);
 			animator.SetBool (BoostHash, false);//avoid shift+space directly vertically boost
 			jumpReleased = false;
 			mctrl.grounded = false;
@@ -42,7 +44,6 @@ public class JumpedState : MechStateMachineBehaviour {
 
 		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(BoostHash)) {//the first jump is on ground
             if (!mctrl.grounded) {
-                Debug.Log("On Landing action");
                 mctrl.OnLandingAction();
             }
 

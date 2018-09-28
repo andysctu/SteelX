@@ -11,7 +11,7 @@ public class UserData : MonoBehaviour {
     public static CloudRegionCode region = CloudRegionCode.jp;
 
     public static float cameraRotationSpeed = 5;//mouse sensitivity in game    
-    public static float generalVolume = 0.5f;
+    public static float generalVolume = 1f;
 
     private void Awake() {
         PhotonNetwork.sendRate = 60;

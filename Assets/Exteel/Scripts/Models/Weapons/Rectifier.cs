@@ -1,5 +1,6 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using Weapons;
+using Weapons.Bullets;
 
 public class Rectifier : RangedWeapon
 {
@@ -60,7 +61,7 @@ public class Rectifier : RangedWeapon
     }
 
     protected override void FireRaycast(Vector3 start, Vector3 direction, int hand){
-        Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());
+        Transform target = ((hand == 0) ? Crosshair.GetCurrentTargetL() : Crosshair.GetCurrentTargetR());
 
         if (target != null){
             PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();

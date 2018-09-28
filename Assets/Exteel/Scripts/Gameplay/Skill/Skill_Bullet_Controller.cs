@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Weapons.Bullets;
 
 public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     //this script controll all the bullets & Muz in skill

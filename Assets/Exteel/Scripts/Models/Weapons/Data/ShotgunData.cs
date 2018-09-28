@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Weapons;
+using Weapons.Crosshairs;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Shotgun", order = 3)]
 public class ShotgunData : RangedWeaponData {
@@ -24,6 +26,10 @@ public class ShotgunData : RangedWeaponData {
             Debug.Log("You need to assign Shotgun animation clip : Atk || Reload . Ignore this if use empty clips.");
         }
         animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    public override Crosshair GetCrosshair() {
+        return new NCrosshair();
     }
 
     public override object GetWeaponObject() {

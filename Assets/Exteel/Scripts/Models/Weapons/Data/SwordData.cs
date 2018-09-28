@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Weapons;
+using Weapons.Crosshairs;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Sword", order = 0)]
 public class SwordData : MeleeWeaponData {
@@ -19,6 +21,10 @@ public class SwordData : MeleeWeaponData {
 
     public override void SwitchAnimationClips(Animator weaponAniamtor) {
         return;
+    }
+
+    public override Crosshair GetCrosshair() {
+        return null;
     }
 
     public override object GetWeaponObject() {

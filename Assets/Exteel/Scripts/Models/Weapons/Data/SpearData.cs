@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Weapons;
+using Weapons.Crosshairs;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Spear", order = 0)]
 public class SpearData : MeleeWeaponData {
@@ -26,6 +28,10 @@ public class SpearData : MeleeWeaponData {
         }
 
         animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    public override Crosshair GetCrosshair() {
+        return null;
     }
 
     public override object GetWeaponObject() {

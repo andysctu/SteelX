@@ -24,11 +24,12 @@ MonoBehaviour:
   AllowBothWeaponUsing: 1
   Range: 120
   MinRange: 10
-  Rate: 0.6
+  Rate: 0.8
   Radius: 8
   HeatIncreaseAmount: 20
   Slowdown: 0
   IsTwoHanded: 0
+  IsTargetAlly: 1
   SpIncreaseAmount: 50
   skillAnimations: []
   bulletPrefab: {fileID: 1667889749490334, guid: a1f4322b38872b84785dd0057aedea95,

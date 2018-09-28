@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Weapons;
+using Weapons.Crosshairs;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Cannon", order = 6)]
 public class CannonData : RangedWeaponData {
@@ -23,6 +25,10 @@ public class CannonData : RangedWeaponData {
 
         clipOverrides["Reload"] = _reloadClip;
         animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    public override Crosshair GetCrosshair(){
+        return new NCrosshair();
     }
 
     public override object GetWeaponObject() {

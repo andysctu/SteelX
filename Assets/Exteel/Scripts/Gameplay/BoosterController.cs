@@ -15,7 +15,7 @@ public class BoosterController : MonoBehaviour {
     private void InitAudioSource() {
         audioSource = GetComponent<AudioSource>();
 
-        audioSource.volume = 1;
+        audioSource.volume = 0.8f;
         audioSource.dopplerLevel = 0;
         audioSource.spatialBlend = 1;
         audioSource.clip = BoostLoop;

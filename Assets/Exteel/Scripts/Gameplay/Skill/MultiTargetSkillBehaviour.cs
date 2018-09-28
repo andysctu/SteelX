@@ -6,7 +6,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     private MechCombat mcbt;
     private Camera cam;
     private Sounds Sounds;
-    private Crosshair Crosshair;
+    private CrosshairController Crosshair;
     private PhotonView player_pv;
     private MultiTargetSkillConfig config;
     private Transform[] targets;
@@ -18,7 +18,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     private void InitComponent() {
         player_pv = GetComponent<PhotonView>();
         SkillController = GetComponent<SkillController>();
-        Crosshair = SkillController.GetCamera().GetComponent<Crosshair>();
+        Crosshair = SkillController.GetCamera().GetComponent<CrosshairController>();
         mcbt = GetComponent<MechCombat>();
         cam = SkillController.GetCamera();
 

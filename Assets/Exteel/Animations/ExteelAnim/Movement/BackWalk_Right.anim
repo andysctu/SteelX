@@ -9776,6 +9776,34 @@ AnimationClip:
     path: 
     classID: 95
     script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 2
+        time: 0
+        value: -1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 0.28426382
+        value: 0.7106247
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 1.2666667
+        value: -1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 3
+      m_PostInfinity: 3
+      m_RotationOrder: 0
+    attribute: FootStep
+    path: 
+    classID: 95
+    script: {fileID: 0}
   m_PPtrCurves: []
   m_SampleRate: 30
   m_WrapMode: 0
@@ -10350,6 +10378,13 @@ AnimationClip:
       script: {fileID: 0}
       typeID: 95
       customType: 8
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 0
+      attribute: 3222363537
+      script: {fileID: 0}
+      typeID: 95
+      customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
       path: 0

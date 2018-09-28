@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Weapons;
 
 public class AnimationEventController : MonoBehaviour {
     [SerializeField] private MechCombat MechCombat;

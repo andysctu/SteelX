@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Weapons;
 
 public class SlashState : MechStateMachineBehaviour {
     private bool inAir = false, detectedGrounded;

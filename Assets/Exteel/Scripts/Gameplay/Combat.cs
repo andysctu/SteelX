@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Weapons;
 
 public abstract class Combat : Photon.MonoBehaviour {
     protected GameManager gm;
@@ -50,7 +51,7 @@ public abstract class Combat : Photon.MonoBehaviour {
     protected virtual void Update() {
         if (forceDead) {//Debug use
             forceDead = false;
-            photonView.RPC("OnHit", PhotonTargets.All, 10000, PhotonNetwork.player, -1, -1, -1);
+            photonView.RPC("OnHit", PhotonTargets.All, 10000, photonView.viewID);
         }
     }
 
@@ -70,6 +71,26 @@ public abstract class Combat : Photon.MonoBehaviour {
 
     [PunRPC]
     public virtual void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
+    }
+
+    [PunRPC]
+    public virtual void OnHit(int damage, int shooterPvID) {
+        PhotonView shooterPv = PhotonView.Find(shooterPvID);
+        if (shooterPv == null) return;
+
+        if (PhotonNetwork.isMasterClient) {
+            if (CurrentHP - damage >= MAX_HP) {
+                CurrentHP = MAX_HP;
+            } else {
+                CurrentHP -= damage;
+            }
+
+            if (CurrentHP <= 0) {//sync disable player
+                photonView.RPC("DisablePlayer", PhotonTargets.All, shooterPv.owner, "null");
+            }
+        }
+
+        IncreaseSP(damage / 2);
     }
 
     [PunRPC]

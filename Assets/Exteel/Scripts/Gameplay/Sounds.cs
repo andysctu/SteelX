@@ -4,12 +4,14 @@ public class Sounds : MonoBehaviour {
     [SerializeField] private PhotonView pv;
     [SerializeField] private AudioClip Lock, OnLocked;
     [SerializeField] private AudioClip SwitchWeapon;
-    //[SerializeField]AudioClip WalkSound;
+    [SerializeField] AudioClip WalkSound;
     [SerializeField] private AudioSource Source;
     [SerializeField] private AudioSource MovementSource;
 
     private void Start() {
-        SetVolume(0.8f);
+        SetVolume(1f);
+
+        MovementSource.clip = WalkSound;
     }
 
     private void SetVolume(float v) {
@@ -27,13 +29,9 @@ public class Sounds : MonoBehaviour {
         Source.PlayOneShot(OnLocked);
     }
 
-    /*public void PlayWalk(bool b){
-		if(b){
-			MovementSource.Play ();
-		}else{
-			MovementSource.Stop ();
-		}
-	}*/
+    public void PlayWalk(){
+		MovementSource.PlayOneShot(WalkSound);
+	}
 
     public void PlayClip(AudioClip ac) {
         Source.PlayOneShot(ac);

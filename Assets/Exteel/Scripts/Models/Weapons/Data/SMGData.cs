@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Weapons;
+using Weapons.Crosshairs;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/SMG", order = 3)]
 public class SMGData : RangedWeaponData {
@@ -25,6 +27,10 @@ public class SMGData : RangedWeaponData {
             Debug.Log("You need to assign SMG animation clip : Atk && Reload . Ignore this if use empty clips.");
         }
         animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    public override Crosshair GetCrosshair() {
+        return new NCrosshair();
     }
 
     public override object GetWeaponObject() {

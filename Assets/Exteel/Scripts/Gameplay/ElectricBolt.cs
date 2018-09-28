@@ -1,4 +1,5 @@
 using UnityEngine;
+using Weapons.Bullets;
 
 public class ElectricBolt : Bullet {
     [SerializeField] private Transform _lineEnd = null;

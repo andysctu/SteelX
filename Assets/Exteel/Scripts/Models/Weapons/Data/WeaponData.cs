@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
+using Weapons.Crosshairs;
 
 public abstract class WeaponData : ScriptableObject {
     [SerializeField] private GameObject weaponPrefab_lft, weaponPrefab_rt;
 
     protected System.Type WeaponType;
-    protected Weapon.AttackType attackType;
+    protected Weapons.Weapon.AttackType attackType;
     public string weaponName, displayName;//displayName will be displayed in hangar    
     public GameObject[] Grip = new GameObject[2];//0&1 -> L&R. Grips only set the rotation , the position is adjusted by hand offset
-
     public int damage = 0, weight = 0;
     public bool AllowBothWeaponUsing = false;
     [Tooltip("The range of ranged weapons")]
@@ -16,8 +16,7 @@ public abstract class WeaponData : ScriptableObject {
     [Tooltip("Crosshair size")][Range(0, 15)]public float Radius = 0;
     [Range(0,200)]public int HeatIncreaseAmount;
 
-    public bool Slowdown;
-    public bool IsTwoHanded;
+    public bool Slowdown, IsTwoHanded, IsTargetAlly = false;
     public int SpIncreaseAmount = 0;
 
     public abstract void SwitchAnimationClips(Animator weaponAniamtor);
@@ -45,11 +44,13 @@ public abstract class WeaponData : ScriptableObject {
 
     public abstract object GetWeaponObject();
 
+    public abstract Crosshair GetCrosshair();
+    
     public System.Type GetWeaponType() {
         return WeaponType;
     }
 
-    public Weapon.AttackType GetAttackType(){
+    public Weapons.Weapon.AttackType GetAttackType(){
         return attackType;
     }
 }

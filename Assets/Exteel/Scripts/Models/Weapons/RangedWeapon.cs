@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Weapons;
 
 public abstract class RangedWeapon : Weapon {
     protected GameObject BulletPrefab, MuzzlePrefab;
@@ -6,7 +7,7 @@ public abstract class RangedWeapon : Weapon {
 
     protected Transform EffectEnd;
     protected Camera MechCam;
-    protected Crosshair Crosshair;
+    protected CrosshairController Crosshair;
 
     protected int AtkAnimHash;
     protected bool atkAnimationIsPlaying = false;
@@ -34,7 +35,7 @@ public abstract class RangedWeapon : Weapon {
 
         AttachMuzzle(EffectEnd);
 
-        if (MechCam != null) Crosshair = MechCam.GetComponent<Crosshair>();
+        if (MechCam != null) Crosshair = MechCam.GetComponent<CrosshairController>();
     }
 
     protected virtual void InitAtkAnimHash() {
@@ -57,7 +58,7 @@ public abstract class RangedWeapon : Weapon {
         if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
         if (Time.time - TimeOfLastUse >= 1 / Rate) {
-            FireRaycast(MechCam.transform.TransformPoint(0, 0, Crosshair.CAM_DISTANCE_TO_MECH), MechCam.transform.forward, Hand);
+            FireRaycast(MechCam.transform.TransformPoint(0, 0, CrosshairController.CamDistanceToMech), MechCam.transform.forward, Hand);
 
             IncreaseHeat(data.HeatIncreaseAmount);
 
@@ -86,7 +87,7 @@ public abstract class RangedWeapon : Weapon {
         }
     }
 
-    public override void OnSwitchedWeaponAction(bool isThisWeaponActivated) {
+    public override void OnWeaponSwitchedAction(bool isThisWeaponActivated) {
         if (isThisWeaponActivated) {
             UpdateMechArmState();
         }
@@ -102,7 +103,7 @@ public abstract class RangedWeapon : Weapon {
     protected abstract void UpdateMechArmState() ;
 
     protected virtual void FireRaycast(Vector3 start, Vector3 direction, int hand) {
-        Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());
+        Transform target = ((hand == 0) ? Crosshair.GetCurrentTargetL() : Crosshair.GetCurrentTargetR());
 
         if (target != null) {
             PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();

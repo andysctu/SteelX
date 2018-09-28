@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Weapons;
 
 public class MechCombat : Combat {
     [SerializeField] private EffectController EffectController;
@@ -8,7 +9,7 @@ public class MechCombat : Combat {
     private MechController MechController;
     private BuildMech bm;
     private HUD HUD;
-    private Crosshair crosshair;
+    private CrosshairController crosshair;
 
     // Combat variables
     private bool isWeaponOffsetSynced = false, onSkill;
@@ -49,7 +50,7 @@ public class MechCombat : Combat {
         SkillController = GetComponent<SkillController>();
         MechController = GetComponent<MechController>();
         animator = currentMech.GetComponent<Animator>();
-        crosshair = (MainCam == null) ? null : MainCam.GetComponent<Crosshair>();
+        crosshair = (MainCam == null) ? null : MainCam.GetComponent<CrosshairController>();
         HUD = GetComponent<HUD>();
     }
 
@@ -89,7 +90,7 @@ public class MechCombat : Combat {
         // Stop current attacks and reset
         for (int i = 0; i < bm.Weapons.Length; i++) {
             if (bm.Weapons[i] != null) {
-                bm.Weapons[i].OnSwitchedWeaponAction(i == weaponOffset || i == weaponOffset + 1);
+                bm.Weapons[i].OnWeaponSwitchedAction(i == weaponOffset || i == weaponOffset + 1);
             }
         }
 
@@ -232,7 +233,7 @@ public class MechCombat : Combat {
     //}
 
     [PunRPC]
-    private void OnLocked() {//TODO : remake this (using raise event)
+    private void OnLocked() {
         if (photonView.isMine) crosshair.ShowLocked();
     }
 

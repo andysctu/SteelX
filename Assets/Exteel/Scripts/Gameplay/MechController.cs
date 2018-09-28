@@ -296,6 +296,8 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void LateUpdate() {
+        if(_mechCombat.IsMeleePlaying() || onSkill)return;
+
         RotateLegs();//Other player has to run this 
     }
 

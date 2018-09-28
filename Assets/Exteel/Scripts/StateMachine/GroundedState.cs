@@ -46,10 +46,6 @@ public class GroundedState : MechStateMachineBehaviour {
         }
 
         if (!gm.BlockInput && Input.GetKeyDown(KeyCode.Space) && !animator.GetBool(animatorVars.OnMeleeHash) ) {
-            if (mctrl.grounded) {
-                Debug.Log("Jump action");
-            }
-
 			mctrl.SetCanVerticalBoost (true);
 			mctrl.grounded = false;
 			animator.SetBool(GroundedHash, false);

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using Weapons;
+using Weapons.Crosshairs;
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Rocket", order = 5)]
 public class RocketData : RangedWeaponData {
@@ -34,6 +35,10 @@ public class RocketData : RangedWeaponData {
         }
 
         animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    public override Crosshair GetCrosshair() {
+        return new RocketCrosshair();
     }
 
     public override object GetWeaponObject() {
