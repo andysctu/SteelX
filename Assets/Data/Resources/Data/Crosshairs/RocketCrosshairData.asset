@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976107c446718a64dae3bb07be81800c, type: 3}
+  m_Name: RocketCrosshairData
+  m_EditorClassIdentifier: 
+  CrosshairPrefab: {fileID: 1040216052644394, guid: 0e11506177a846f4ea6171124e8b8c54,
+    type: 2}
+  RedCrosshairPrefab: {fileID: 1305438068152504, guid: 269234675bbaed44eb93fbb7b75a5a3c,
+    type: 2}
+  MiddleCrossPrefab: {fileID: 1874219426896284, guid: 2cfdfa3ed0b29204b9b73067365af00f,
+    type: 2}
+  TargetMarkPrefab: {fileID: 1795711272219912, guid: d0423e532509a6b44a612f86fa83b413,
+    type: 2}
