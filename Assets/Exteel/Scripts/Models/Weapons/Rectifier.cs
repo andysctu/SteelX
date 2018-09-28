@@ -83,6 +83,7 @@ public class Rectifier : RangedWeapon
     public override void Shoot(Vector3 direction, int targetPvId, int targetWeapPos){
         MechAnimator.SetBool(AtkAnimHash, true);
         WeaponAnimator.SetTrigger("Atk");
+        Muzzle.Play();
 
         IsFiring = true;
         startShootTime = Time.time;

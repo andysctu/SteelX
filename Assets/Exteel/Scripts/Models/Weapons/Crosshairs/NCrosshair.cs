@@ -13,7 +13,7 @@ namespace Weapons.Crosshairs {
 
             _middleCross = Object.Instantiate(data.MiddleCrossPrefab, parent);
             _targetMark = Object.Instantiate(data.TargetMarkPrefab, parent);
-            Debug.Log(crosshair.name + " hand : " + hand);
+
             _LRmark = Object.Instantiate((hand == 0) ? data.LMarkPrefab : data.RMarkPrefab, (hand == 0) ? crosshair.transform.GetChild(2) : crosshair.transform.GetChild(3));
             _LRRedMark = Object.Instantiate((hand == 0) ? data.LRedmarkPrefab : data.RRedmarkPrefab, (hand == 0) ? redCrosshair.transform.GetChild(2) : redCrosshair.transform.GetChild(3));
         }

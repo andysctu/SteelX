@@ -96,7 +96,6 @@ GameObject:
   m_Component:
   - component: {fileID: 400766}
   - component: {fileID: 14356836}
-  - component: {fileID: 114851947574770634}
   - component: {fileID: 11462782}
   - component: {fileID: 11416036}
   - component: {fileID: 11422958}
@@ -452,8 +451,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 4
+  instantiationId: 4
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -716,8 +715,8 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 11418256}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 3
+  instantiationId: 3
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
@@ -2646,7 +2645,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1992201224753744
 GameObject:
   m_ObjectHideFlags: 1
@@ -4610,20 +4609,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114851947574770634
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ca87e29fb2ce47b3be85f2139582c1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCamera: {fileID: 113264}
-  crosshairImage: {fileID: 106124}
-  radar: {fileID: 1984927614146684}
 --- !u!114 &114895722533198232
 MonoBehaviour:
   m_ObjectHideFlags: 1

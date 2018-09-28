@@ -126,7 +126,6 @@ public class MechCreator
 
 		wrapper.AddComponent<MechController>().enabled = false;
 		wrapper.AddComponent<NetworkIdentity>().localPlayerAuthority = true;
-		wrapper.AddComponent<EnableLocal>();
 		NetworkTransform nt = wrapper.AddComponent<NetworkTransform>();
 		nt.sendInterval = 1/20f;
 		nt.transformSyncMode = NetworkTransform.TransformSyncMode.SyncCharacterController;

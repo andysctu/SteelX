@@ -18,6 +18,11 @@ public class Radar : MonoBehaviour {
 
     private void Awake() {
         pv = transform.root.GetComponent<PhotonView>();
+        if (!pv.isMine){
+            gameObject.SetActive(false);
+            return;
+        }
+
         radarCam = GetComponentInChildren<Camera>();
 
         radarCam.enabled = pv.isMine;

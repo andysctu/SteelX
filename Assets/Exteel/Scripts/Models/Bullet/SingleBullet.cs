@@ -39,6 +39,7 @@ namespace Weapons.Bullets
         public override void Stop(){
             calledStop = true;
 
+            bullet_ps.Clear();
             bullet_ps.Stop(true);
             Destroy(gameObject, 2);
             enabled = false;

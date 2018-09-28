@@ -35,6 +35,7 @@ public class MechCamera : MonoBehaviour {
     private void EnableCamera(bool b) {
         enabled = b;
         GetComponent<Camera>().enabled = b;
+        GetComponentInChildren<Canvas>().enabled = b;
         GetComponent<AudioListener>().enabled = b;
     }
 

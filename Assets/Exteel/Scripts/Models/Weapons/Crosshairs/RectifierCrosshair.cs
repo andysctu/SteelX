@@ -18,21 +18,16 @@ namespace Weapons.Crosshairs {
         }
 
         protected override void GetCrosshairData() {
-            CrosshairData = Resources.Load<RocketCrosshairData>("Data/Crosshairs/RocketCrosshairData");
+            CrosshairData = Resources.Load<RectifierCrosshairData>("Data/Crosshairs/RectifierCrosshairData");
         }
 
         public override void EnableCrosshair(bool b) {
-            base.EnableCrosshair(b);
-
             _middleCross.transform.localPosition = Vector3.zero;
             _middleCross.SetActive(b);
             _targetMark.SetActive(false);
         }
 
         public override void OnTarget(bool onTarget) {
-            base.OnTarget(onTarget);
-
-            //_middleCross.SetActive(onTarget);
             _targetMark.SetActive(onTarget);
         }
 
