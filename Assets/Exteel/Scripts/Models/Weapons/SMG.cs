@@ -106,7 +106,9 @@ namespace Weapons
                         _lastPlayShotSoundTime = Time.time;
                         AudioSource.PlayOneShot(_shotSound);
                         WeaponAnimator.SetTrigger("Atk");
-                        if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
+                        if (PlayerPv.isMine) {
+                            if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+                        }
                     }
 
                     break;

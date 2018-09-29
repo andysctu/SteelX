@@ -61,7 +61,7 @@ public class Rectifier : RangedWeapon
     }
 
     protected override void FireRaycast(Vector3 start, Vector3 direction, int hand){
-        Transform target = ((hand == 0) ? Crosshair.GetCurrentTargetL() : Crosshair.GetCurrentTargetR());
+        Transform target = ((hand == 0) ? CrosshairController.GetCurrentTargetL() : CrosshairController.GetCurrentTargetR());
 
         if (target != null){
             PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();

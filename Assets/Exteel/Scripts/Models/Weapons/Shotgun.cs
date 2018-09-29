@@ -80,15 +80,11 @@ public class Shotgun : RangedWeapon {
                 _bullet = null;
                 Muzzle.Play();
                 AudioSource.PlayOneShot(_shotSound);
-                if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:
             WeaponAnimator.SetTrigger("Reload");
             if (_reloadSound != null) AudioSource.PlayOneShot(_reloadSound);
-            break;
-            default:
-            Debug.Log("should not go here");
             break;
         }
     }

@@ -142,7 +142,6 @@ namespace Weapons
             _bullet.Play();
             Muzzle.Play();
             AudioSource.PlayOneShot(_shotSound);
-            if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
         }
 
         public override void OnStateCallBack(int type, MechStateMachineBehaviour state){

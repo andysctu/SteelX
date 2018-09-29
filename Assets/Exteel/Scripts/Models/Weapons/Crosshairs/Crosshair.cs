@@ -30,6 +30,9 @@ namespace Weapons.Crosshairs {
 
         protected abstract void GetCrosshairData();
 
+        public virtual void OnShootAction() {
+        }
+
         public virtual void Update() {
         }
 

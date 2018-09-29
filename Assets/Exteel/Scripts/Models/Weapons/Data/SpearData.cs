@@ -23,9 +23,6 @@ public class SpearData : MeleeWeaponData {
         animatorOverrideController.GetOverrides(clipOverrides);
 
         clipOverrides["Atk"] = Atk;
-        if (Atk == null) {
-            Debug.Log("You need to assign spear animation clip : Atk . Ignore this if use empty animation");
-        }
 
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }

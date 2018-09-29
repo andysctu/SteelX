@@ -30,9 +30,6 @@ public class RocketData : RangedWeaponData {
 
         clipOverrides["Atk"] = Atk;
         clipOverrides["Reload"] = Reload;
-        if(Atk == null || Reload == null) {
-            Debug.Log("You need to assign rocket animation clip : Atk || Reload");
-        }
 
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }

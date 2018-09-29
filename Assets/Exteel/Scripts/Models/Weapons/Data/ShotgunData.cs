@@ -22,9 +22,6 @@ public class ShotgunData : RangedWeaponData {
 
         clipOverrides["Atk"] = Atk;
         clipOverrides["Reload"] = Reload;
-        if (Atk == null || Reload == null) {
-            Debug.Log("You need to assign Shotgun animation clip : Atk || Reload . Ignore this if use empty clips.");
-        }
         animatorOverrideController.ApplyOverrides(clipOverrides);
     }
 

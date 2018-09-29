@@ -7,13 +7,13 @@ public abstract class RangedWeapon : Weapon {
 
     protected Transform EffectEnd;
     protected Camera MechCam;
-    protected CrosshairController Crosshair;
+    protected CrosshairController CrosshairController;
 
     protected int AtkAnimHash;
     protected bool atkAnimationIsPlaying = false;
     protected float startShootTime;
 
-    public enum StateCallBackType {AttackStateEnter, AttackStateUpdate, AttackStateExit , ReloadStateEnter, ReloadStateExit, PoseStateEnter, PoseStateExit }
+    public enum StateCallBackType { AttackStateEnter, AttackStateUpdate, AttackStateExit, ReloadStateEnter, ReloadStateExit, PoseStateEnter, PoseStateExit }
 
     public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator) {
         base.Init(data, hand, handTransform, Cbt, Animator);
@@ -35,7 +35,7 @@ public abstract class RangedWeapon : Weapon {
 
         AttachMuzzle(EffectEnd);
 
-        if (MechCam != null) Crosshair = MechCam.GetComponent<CrosshairController>();
+        if (MechCam != null) CrosshairController = MechCam.GetComponent<CrosshairController>();
     }
 
     protected virtual void InitAtkAnimHash() {
@@ -93,17 +93,17 @@ public abstract class RangedWeapon : Weapon {
         }
     }
 
-    public override void OnSkillAction(bool enter){
+    public override void OnSkillAction(bool enter) {
         base.OnSkillAction(enter);
         if (!enter) {
             UpdateMechArmState();
         }
     }
 
-    protected abstract void UpdateMechArmState() ;
+    protected abstract void UpdateMechArmState();
 
     protected virtual void FireRaycast(Vector3 start, Vector3 direction, int hand) {
-        Transform target = ((hand == 0) ? Crosshair.GetCurrentTargetL() : Crosshair.GetCurrentTargetR());
+        Transform target = ((hand == 0) ? CrosshairController.GetCurrentTargetL() : CrosshairController.GetCurrentTargetR());
 
         if (target != null) {
             PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();
@@ -122,6 +122,10 @@ public abstract class RangedWeapon : Weapon {
     }
 
     public virtual void Shoot(Vector3 direction, int targetPvId, int targetWeapPos) {
+        if (PlayerPv.isMine) {
+            if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+        }
+
         MechAnimator.SetBool(AtkAnimHash, true);
         WeaponAnimator.SetTrigger("Atk");
 
@@ -130,7 +134,7 @@ public abstract class RangedWeapon : Weapon {
 
         GameObject target = null;
         PhotonView targetPv = PhotonView.Find(targetPvId);
-        if(targetPv!=null) target = targetPv.gameObject;
+        if (targetPv != null) target = targetPv.gameObject;
 
         if (target != null) {
             Combat targetCbt = target.GetComponent<Combat>();

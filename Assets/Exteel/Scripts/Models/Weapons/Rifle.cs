@@ -76,7 +76,6 @@ public class Rifle : RangedWeapon {
                 _bullet = null;
                 Muzzle.Play();
                 AudioSource.PlayOneShot(_shotSound);
-                if (PlayerPv.isMine) Crosshair.CallShakingEffect(Hand);
             }
             break;
             case StateCallBackType.ReloadStateEnter:

@@ -37,17 +37,19 @@ namespace Weapons.Crosshairs {
         }
 
         public override void Update() {
-            if (IsShaking) {//TODO : implement this
-                //Setoffset(_radius);
-                //_radius = Mathf.Lerp(_radius, _orgRadius, 0.05f);
+            if (IsShaking) {
+                SetOffset(Radius);
+                Radius = Mathf.Lerp(Radius, OrgRadius, 4 * Time.deltaTime);
+
+                if (Radius - OrgRadius < 0.05f){
+                    Radius = OrgRadius;
+                    IsShaking = false;
+                }
             }
         }
 
         public override void EnableCrosshair(bool b) {
             base.EnableCrosshair(b);
-
-            //_LRmark.SetActive(b);
-            //_LRRedMark.SetActive(false);
 
             _middleCross.transform.localPosition = Vector3.zero;
             _middleCross.SetActive(b);
@@ -60,6 +62,12 @@ namespace Weapons.Crosshairs {
             //_middleCross.SetActive(onTarget);
             if(!onTarget) _middleCross.transform.localPosition = Vector3.zero;
             _targetMark.SetActive(onTarget);
+        }
+
+        public override void OnShootAction(){
+            IsShaking = true;
+
+            Radius = OrgRadius * 1.3f;
         }
 
         public override void MarkTarget(Transform target) {
