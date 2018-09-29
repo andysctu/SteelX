@@ -303,7 +303,9 @@ public class MechController : Photon.MonoBehaviour {
 
     private void RotateLegs(){
         _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
-        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!grounded)? -60 : -30, _rLLerpSpeed * Time.deltaTime);
+        if(_mainAnimator.GetFloat(_animatorVars.SpeedHash) < 0) _rLDir *= -1;
+
+        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
 
         _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
         _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);

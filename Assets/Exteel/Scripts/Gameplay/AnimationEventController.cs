@@ -10,18 +10,11 @@ public class AnimationEventController : MonoBehaviour {
     [SerializeField] private Animator Animator;
     [SerializeField] private AnimatorVars AnimatorVars;
     [SerializeField] private SlashDetector SlashDetector;
-    [SerializeField] private Sounds Sounds;
-    private Animator[] weaponAnimators = new Animator[4];
     private PhotonView pv;
-    private int minCallMoveDistance = 6, weaponOffset = 0;
+    private int minCallMoveDistance = 6;
 
-    private void Awake() {
+    private void Awake(){
         pv = GetComponent<PhotonView>();
-        if (MechCombat != null) MechCombat.OnWeaponSwitched += UpdateAnimationEventController;
-    }
-
-    private void UpdateAnimationEventController() {
-        weaponOffset = MechCombat.GetCurrentWeaponOffset();
     }
 
     public void CallLMeleePlaying(int isPlaying) {//this can control the drop time when attacking in air

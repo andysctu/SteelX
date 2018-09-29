@@ -9,7 +9,7 @@ public class MechCombat : Combat {
     private MechController MechController;
     private BuildMech bm;
     private HUD HUD;
-    private CrosshairController crosshair;
+    private CrosshairController _crosshairController;
 
     // Combat variables
     private bool isWeaponOffsetSynced = false, onSkill;
@@ -50,7 +50,7 @@ public class MechCombat : Combat {
         SkillController = GetComponent<SkillController>();
         MechController = GetComponent<MechController>();
         animator = currentMech.GetComponent<Animator>();
-        crosshair = (MainCam == null) ? null : MainCam.GetComponent<CrosshairController>();
+        _crosshairController = (MainCam == null) ? null : MainCam.GetComponent<CrosshairController>();
         HUD = GetComponent<HUD>();
     }
 
@@ -174,7 +174,7 @@ public class MechCombat : Combat {
         if (isDead) { return; }
 
         PhotonView shooterPv = PhotonView.Find(shooterPvID);
-        if (shooterPv == null)return;
+        if (shooterPv == null) return;
         GameObject shooterMech = shooterPv.gameObject;
 
         //Get shooter weapon
@@ -196,7 +196,7 @@ public class MechCombat : Combat {
         shooterWeapon.OnHitTargetAction(gameObject, targetWeapon, isShield);
 
         if (targetWeapon != null) targetWeapon.OnHitAction(shooterCbt, shooterWeapon);
-        
+
         //Calculate Dmg
         int dmg = ProcessDmg(damage, attackType, targetWeapon);
 
@@ -217,7 +217,7 @@ public class MechCombat : Combat {
         //shooterCbt.IncreaseSP(damage / 2);
     }
 
-    public override int ProcessDmg(int dmg, Weapon.AttackType attackType ,Weapon weapon){
+    public override int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon) {
         var finalDmg = dmg;
         if (weapon != null) finalDmg = weapon.ProcessDamage(dmg, attackType);
 
@@ -234,7 +234,7 @@ public class MechCombat : Combat {
 
     [PunRPC]
     private void OnLocked() {
-        if (photonView.isMine) crosshair.ShowLocked();
+        if (photonView.isMine) _crosshairController.ShowLocked();
     }
 
     public void Skill_KnockBack(float length) {//TODO : check this
@@ -384,6 +384,7 @@ public class MechCombat : Combat {
         bool isCurrentWeaponTwoHanded = (bm.WeaponDatas[(weaponOffset) % 4] != null && bm.WeaponDatas[(weaponOffset) % 4].IsTwoHanded);
 
         MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
+
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
