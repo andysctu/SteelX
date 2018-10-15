@@ -413,16 +413,16 @@ public class MechCombat : Combat {
         }
     }
 
-    public void IncrementEN() {
-        CurrentEN += energyProperties.energyOutput * Time.fixedDeltaTime;
+    public void IncrementEN(float msec) {
+        CurrentEN += energyProperties.energyOutput * msec;
         if (CurrentEN > MAX_EN) CurrentEN = MAX_EN;
     }
 
-    public void DecrementEN() {
+    public void DecrementEN(float msec) {
         if (MechController.grounded)
-            CurrentEN -= energyProperties.dashENDrain * Time.fixedDeltaTime;
+            CurrentEN -= energyProperties.dashENDrain * msec;
         else
-            CurrentEN -= energyProperties.jumpENDrain * Time.fixedDeltaTime;
+            CurrentEN -= energyProperties.jumpENDrain * msec;
 
         if (CurrentEN < 0) CurrentEN = 0;
     }

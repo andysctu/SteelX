@@ -98,7 +98,8 @@ public class HandleInputs : MonoBehaviour {
             CurUserCmd.ViewAngle = (float)tables[d - i - 1][(int)CMD.ViewAngle];
 
             byte button = (byte)tables[d - i - 1][(int)CMD.ButtonByte];
-            CurUserCmd.Buttons = ConvertByteToBoolArray(button);
+            Array.Copy(ConvertByteToBoolArray(button), 0, CurUserCmd.Buttons, 0, 2);
+            //CurUserCmd.Buttons = ConvertByteToBoolArray(button);
 
             ProcessInputs(CurUserCmd);
 

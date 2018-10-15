@@ -256,6 +256,13 @@ public class MechController : Photon.MonoBehaviour {
             if (Buttons[(int) HandleInputs.Button.LeftShift] && _mechCombat.IsENAvailable()){
                 Boost(true, xzDirNormalized.x, xzDirNormalized.y, userCmd.msec);
                 _mainAnimator.SetBool(_animatorVars.BoostHash, true);
+
+                if (_mainAnimator.GetBool("Boost")) {//TODO : client decrease faster
+                    _mechCombat.DecrementEN(userCmd.msec);
+                } else {
+                    _mechCombat.IncrementEN(userCmd.msec);
+                }
+                
             } else{
                 Boost(false, 0, 0, userCmd.msec);
                 _mainAnimator.SetBool(_animatorVars.BoostHash, false);
@@ -282,13 +289,13 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if (PhotonNetwork.isMasterClient){
-            if (_mainAnimator.GetBool("Boost")) {
-                _mechCombat.DecrementEN();
-            } else {
-                _mechCombat.IncrementEN();
-            }
-        }
+        //if (PhotonNetwork.isMasterClient){
+        //    if (_mainAnimator.GetBool("Boost")) {
+        //        _mechCombat.DecrementEN();
+        //    } else {
+        //        _mechCombat.IncrementEN();
+        //    }
+        //}
 
         //if (_rootPv.isMine){
         //    if (_mainAnimator.GetBool("Boost")) {
@@ -453,7 +460,7 @@ public class MechController : Photon.MonoBehaviour {
         }
         if (b) {
             if (grounded) {
-                if (Mathf.Abs(speed) < 0.1f && Mathf.Abs(direction) < 0.1f) {//boosting but not moving => decrease current boosting speed
+                if (Mathf.Abs(vertical_nor) < 0.1f && Mathf.Abs(horizontal_nor) < 0.1f) {//boosting but not moving => decrease current boosting speed
                     if (curboostingSpeed >= movementVariables.minBoostSpeed)
                         curboostingSpeed -= movementVariables.acceleration * msec * 10;
                 } else {//increase magnitude if < max
