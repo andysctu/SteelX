@@ -89,6 +89,9 @@ public class MechController : Photon.MonoBehaviour {
         CharacterController = GetComponent<CharacterController>();
         SkillController = GetComponent<SkillController>();
 
+        //Disable animation sync
+        if (_rootPv.isMine) currentMech.GetComponent<PhotonView>().ObservedComponents.Clear();
+
         _pelvis = transform.Find("CurrentMech/Bip01/Bip01_Pelvis");
         _spine1 = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1");
 
@@ -104,9 +107,6 @@ public class MechController : Photon.MonoBehaviour {
 
         if (!_rootPv.isMine) return;
         InitCam(cam_orbitradius, cam_angleoffset);
-
-        //TODO : move this to other place
-        GetComponentInChildren<PhotonAnimatorView>().enabled = false;
     }
 
     private void FindGameManager() {
@@ -253,9 +253,9 @@ public class MechController : Photon.MonoBehaviour {
 
             ySpeed = -CharacterController.stepOffset * userCmd.msec * 40;
         } else{
-            
+            JumpMoveInAir(xzDir.x, xzDir.y, userCmd.msec);
 
-            ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool("Boost")) ? 0 : Gravity  * userCmd.msec * 40 ;
+            ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool(_animatorVars.BoostHash)) ? 0 : Gravity  * userCmd.msec * 40 ;
         }
 
 
@@ -427,20 +427,20 @@ public class MechController : Photon.MonoBehaviour {
         zSpeed = 0;
     }
 
-    public void JumpMoveInAir() {
+    public void JumpMoveInAir(float horizontal_nor, float vertical_nor, float msec) {
         if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
             curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 10;
 
-            xSpeed = (xzDir.x * curboostingSpeed * transform.right).x + (xzDir.y * curboostingSpeed * transform.forward).x;
-            zSpeed = (xzDir.x * curboostingSpeed * transform.right).z + (xzDir.y * curboostingSpeed * transform.forward).z;
+            xSpeed = (horizontal_nor * curboostingSpeed * transform.right).x + (vertical_nor * curboostingSpeed * transform.forward).x;
+            zSpeed = (horizontal_nor * curboostingSpeed * transform.right).z + (vertical_nor * curboostingSpeed * transform.forward).z;
         } else {
             //float xRawDir = Input.GetAxisRaw("Horizontal");
 
             //xSpeed = movementVariables.moveSpeed * xRawDir * transform.right.x + movementVariables.moveSpeed * xzDir.y * transform.forward.x;
             //zSpeed = movementVariables.moveSpeed * xRawDir * transform.right.z + movementVariables.moveSpeed * xzDir.y * transform.forward.z;
 
-            xSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.x + movementVariables.moveSpeed * xzDir.y * transform.forward.x;
-            zSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.z + movementVariables.moveSpeed * xzDir.y * transform.forward.z;
+            xSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.x + movementVariables.moveSpeed * vertical_nor * transform.forward.x;
+            zSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.z + movementVariables.moveSpeed * vertical_nor * transform.forward.z;
         }
     }
 
