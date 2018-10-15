@@ -9,6 +9,13 @@ public abstract class RangedWeapon : Weapon {
     protected Camera MechCam;
     protected CrosshairController CrosshairController;
 
+    //IK
+    protected GameObject CurTarget = null;
+    protected Transform Hips, Clavicle, Spine1;
+    protected Vector3 UpperArm;
+    protected float IdealRot;
+    protected bool IsIkOn = false;
+
     protected int AtkAnimHash;
     protected bool atkAnimationIsPlaying = false;
     protected float startShootTime;
@@ -31,11 +38,22 @@ public abstract class RangedWeapon : Weapon {
 
     private void InitComponents() {
         MechCam = Cbt.GetCamera();
+        InitIkTransforms();
         FindEffectEnd();
 
         AttachMuzzle(EffectEnd);
 
         if (MechCam != null) CrosshairController = MechCam.GetComponent<CrosshairController>();
+    }
+
+    protected virtual void InitIkTransforms(){
+        if(MechAnimator == null)return;
+        Hips = MechAnimator.transform.Find("Bip01/Bip01_Pelvis");
+
+        Clavicle = (Hand==0)? MechAnimator.transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle") :
+                    MechAnimator.transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
+
+        Spine1 = MechAnimator.transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1");
     }
 
     protected virtual void InitAtkAnimHash() {
@@ -85,11 +103,28 @@ public abstract class RangedWeapon : Weapon {
                 atkAnimationIsPlaying = false;
             }
         }
+
+        if (IsIkOn){
+            UpdateIk();
+        }
+    }
+
+    protected virtual void UpdateIk(){
+        if(MechCam == null)return;
+
+        IdealRot = Vector3.SignedAngle(MechCam.transform.forward, Cbt.transform.forward, Cbt.transform.right);
+        IdealRot = Mathf.Clamp(IdealRot, -50, 40);
+        IdealRot += (Hand==0)? 180 - Hips.localRotation.eulerAngles.z : -(180 - Hips.localRotation.eulerAngles.z);
+
+        UpperArm = Clavicle.localRotation.eulerAngles;
+        Clavicle.localRotation = Quaternion.Euler(UpperArm + new Vector3(IdealRot, 0, 0));
     }
 
     public override void OnWeaponSwitchedAction(bool isThisWeaponActivated) {
         if (isThisWeaponActivated) {
             UpdateMechArmState();
+        } else{
+            IsIkOn = false;
         }
     }
 
@@ -97,6 +132,7 @@ public abstract class RangedWeapon : Weapon {
         base.OnSkillAction(enter);
         if (!enter) {
             UpdateMechArmState();
+            IsIkOn = false;
         }
     }
 
@@ -136,6 +172,8 @@ public abstract class RangedWeapon : Weapon {
         PhotonView targetPv = PhotonView.Find(targetPvId);
         if (targetPv != null) target = targetPv.gameObject;
 
+        CurTarget = target;
+
         if (target != null) {
             Combat targetCbt = target.GetComponent<Combat>();
             targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
@@ -149,4 +187,7 @@ public abstract class RangedWeapon : Weapon {
     }
 
     protected abstract void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon);
+
+    protected virtual void OnAnimatorIKCallBack(){
+    }
 }

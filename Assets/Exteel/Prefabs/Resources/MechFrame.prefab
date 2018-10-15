@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 114666270378404098}
   - component: {fileID: 114715354567852064}
   - component: {fileID: 114927918550711304}
+  - component: {fileID: 114369657553542572}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -444,15 +445,15 @@ MonoBehaviour:
   group: 0
   OwnerShipWasTransfered: 0
   prefixBackup: -1
-  synchronization: 3
+  synchronization: 0
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
-  ownershipTransfer: 2
+  ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 114000012410893822}
+  - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 4
-  instantiationId: 4
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &11418256
@@ -631,6 +632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rootPv: {fileID: 11416036}
   EffectController: {fileID: 114512345716719972}
   boosterBone: {fileID: 4073627584581096}
   movementVariables:
@@ -656,6 +658,7 @@ MonoBehaviour:
   cam_angleoffset: 33
   onSkillMoving: 0
   onInstantMoving: 0
+  isJumping: 0
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -714,9 +717,10 @@ MonoBehaviour:
   ownershipTransfer: 2
   ObservedComponents:
   - {fileID: 11418256}
+  - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 3
-  instantiationId: 3
+  viewIdField: 0
+  instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!124 &12423242
@@ -4158,9 +4162,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c15faef08202c475bb9c4b68055cf909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pv: {fileID: 11416036}
-  SkillController: {fileID: 114715354567852064}
-  cam: {fileID: 2087740}
+  _rootPv: {fileID: 11416036}
+  _mainCam: {fileID: 405268}
 --- !u!114 &114033848892960072
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4354,9 +4357,11 @@ MonoBehaviour:
   cc: {fileID: 0}
   Mcbt: {fileID: 0}
   Mctrl: {fileID: 0}
+  HandleInputs: {fileID: 0}
   Sounds: {fileID: 0}
   MechIK: {fileID: 0}
   EffectController: {fileID: 0}
+  RootPv: {fileID: 11416036}
   BoostHash: 0
   GroundedHash: 0
   JumpHash: 0
@@ -4400,6 +4405,19 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   mcbt: {fileID: 11445986}
   pv: {fileID: 11416036}
+--- !u!114 &114369657553542572
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26d45b9f8bbc63e429b72912c81bed5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rootPv: {fileID: 11416036}
+  threshold: 0.1
 --- !u!114 &114437314829428946
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4627,7 +4645,6 @@ MonoBehaviour:
   Animator: {fileID: 9563454}
   AnimatorVars: {fileID: 114137985907184306}
   SlashDetector: {fileID: 114057908317756476}
-  Sounds: {fileID: 114000010976113334}
 --- !u!114 &114927918550711304
 MonoBehaviour:
   m_ObjectHideFlags: 1

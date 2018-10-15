@@ -3,12 +3,12 @@ using Weapons;
 
 public class BuildMech : Photon.MonoBehaviour {
     //Components
-    [SerializeField] private Transform RootBone;    
+    [SerializeField] private Transform RootBone;
     private MechCombat MechCombat;
     private MechIK MechIK;
     private WeaponDataManager WeaponDataManager;
     private SkillManager SkillManager;
-    private MechPartManager MechPartManager;    
+    private MechPartManager MechPartManager;
     private SkillController SkillController;
 
     private GameManager gm;
@@ -30,7 +30,7 @@ public class BuildMech : Photon.MonoBehaviour {
     private AnimationClipOverrides clipOverrides;
     private MovementClips defaultMovementClips, TwoHandedMovementClips;
 
-    //Settings    
+    //Settings
     private bool buildLocally = false, isDataGetSaved = true;
     private int Total_Mech = 4;
     public int Mech_Num = 0;
@@ -46,7 +46,7 @@ public class BuildMech : Photon.MonoBehaviour {
         if (UserData.myData.Mech == null) {
             GameObject g = new GameObject();
             UserData u = g.AddComponent<UserData>();
-            if(UserData.myData.Mech == null)Debug.Log("user data null");
+            if (UserData.myData.Mech == null) Debug.Log("user data null");
         }
 
         FindGameManager();
@@ -72,7 +72,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void InitComponents() {
-        Transform CurrentMech = transform.Find("CurrentMech");        
+        Transform CurrentMech = transform.Find("CurrentMech");
         animator = CurrentMech.GetComponent<Animator>();
         MechCombat = GetComponent<MechCombat>();
         MechIK = CurrentMech.GetComponent<MechIK>();
@@ -88,20 +88,20 @@ public class BuildMech : Photon.MonoBehaviour {
         hands[1] = shoulderR.Find("Bip01_R_UpperArm/Bip01_R_ForeArm/Bip01_R_Hand/Weapon_rt_Bone");
     }
 
-    private void Start() {        
+    private void Start() {
         CheckIfBuildLocally();
         CheckIsDataGetSaved();
 
         // If this is not me, don't build this mech. Someone else will RPC build it
-        if (!buildLocally && !photonView.isMine && tag!="Drone") return;
+        if (!buildLocally && !photonView.isMine && tag != "Drone") return;
 
         InitMechData();
         InitAnimatorControllers();
 
-        if (buildLocally || tag == "Drone") {//TODO : Drone build mech 
-            if(!onPanel)OperatorStatsUI = FindObjectOfType< OperatorStatsUI >();
+        if (buildLocally || tag == "Drone") {//TODO : Drone build mech
+            if (!onPanel) OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
             buildMech(UserData.myData.Mech[0]);
-        } else{ // Register my name on all clients
+        } else { // Register my name on all clients
             photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player);
         }
     }
@@ -141,18 +141,18 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {        
+    public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {
         string[] parts = new string[9] { c, a, l, h, b, w1l, w1r, w2l, w2r };
 
-        for (int i = 0; i < parts.Length - 4; i++) {            
+        for (int i = 0; i < parts.Length - 4; i++) {
             parts[i] = string.IsNullOrEmpty(parts[i]) ? defaultParts[i] : parts[i];
         }
 
         //set weapons if null (in offline)
-        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[9];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[12];
-        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[11];
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[13];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[9];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[16];
 
         if (skill_IDs == null) {//TODO : remake this
             Debug.Log("skill_ids is null. Set defualt skills");
@@ -203,11 +203,11 @@ public class BuildMech : Photon.MonoBehaviour {
         buildSkills(skill_IDs);
 
         // Replace weapons
-        if(tag!="Drone")BuildWeapons(new string[4] { parts[5], parts[6], parts[7], parts[8] });
+        if (tag != "Drone") BuildWeapons(new string[4] { parts[5], parts[6], parts[7], parts[8] });
 
         if (!buildLocally) {
             UpdateMechCombatVars();
-        } else if(!onPanel) {//display properties            
+        } else if (!onPanel) {//display properties
             OperatorStatsUI OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
             if (OperatorStatsUI != null) {
                 OperatorStatsUI.DisplayMechProperties();
@@ -345,8 +345,8 @@ public class BuildMech : Photon.MonoBehaviour {
         }
 
         //Init weapon scripts
-        for(int i = 0; i < WeaponDatas.Length; i++) {
-            if(WeaponDatas[i]== null)continue;
+        for (int i = 0; i < WeaponDatas.Length; i++) {
+            if (WeaponDatas[i] == null) continue;
             Transform weapPos = (WeaponDatas[i].IsTwoHanded) ? hands[(i + 1) % 2] : hands[i % 2];
             Weapons[i].Init(WeaponDatas[i], i, weapPos, MechCombat, animator);
         }
@@ -354,14 +354,14 @@ public class BuildMech : Photon.MonoBehaviour {
         if (buildLocally) UpdateAnimatorState();
 
         //Enable renderers
-        for(int i = 0; i < Weapons.Length; i++) {
+        for (int i = 0; i < Weapons.Length; i++) {
             if (Weapons[i] == null) continue;
-            Weapons[i].ActivateWeapon( (i == weaponOffset || i == weaponOffset +1) );
+            Weapons[i].ActivateWeapon((i == weaponOffset || i == weaponOffset + 1));
         }
     }
 
     private void buildSkills(int[] skill_IDs) {
-        if (skill_IDs == null) {Debug.Log("skill_IDs is null");return;}
+        if (skill_IDs == null) { Debug.Log("skill_IDs is null"); return; }
         SkillConfig[] skills = new SkillConfig[4];
         for (int i = 0; i < skill_IDs.Length; i++) {
             skills[i] = SkillManager.GetSkillConfig(skill_IDs[i]);
@@ -372,7 +372,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
     public void EquipWeapon(string weapon, int pos) {
         WeaponData data = WeaponDataManager.FindData(weapon);
-        if (data == null) {Debug.LogError("Can't find weapon data : " + weapon);return;}
+        if (data == null) { Debug.LogError("Can't find weapon data : " + weapon); return; }
 
         //if previous is two-handed => also destroy left hand
         if (pos == 3) {
@@ -401,10 +401,10 @@ public class BuildMech : Photon.MonoBehaviour {
             }
 
             if (pos == 0) {
-                if (isDataGetSaved)UserData.myData.Mech[Mech_Num].Weapon1R = "Empty";
+                if (isDataGetSaved) UserData.myData.Mech[Mech_Num].Weapon1R = "Empty";
                 WeaponDatas[1] = null;
             } else if (pos == 2) {
-                if (isDataGetSaved)UserData.myData.Mech[Mech_Num].Weapon2R = "Empty";
+                if (isDataGetSaved) UserData.myData.Mech[Mech_Num].Weapon2R = "Empty";
                 WeaponDatas[3] = null;
             }
         }
@@ -439,7 +439,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
     public void DisplayWeapons(int weaponOffset) {
         this.weaponOffset = weaponOffset;
-        for (int i = 0; i < 4; i++) if (Weapons[i] != null) Weapons[i].ActivateWeapon( i == weaponOffset || i == weaponOffset+1 );
+        for (int i = 0; i < 4; i++) if (Weapons[i] != null) Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
 
         if (!onPanel && OperatorStatsUI != null) {//!onPanel : hargar,lobby,store
             OperatorStatsUI.DisplayMechProperties();
@@ -453,7 +453,7 @@ public class BuildMech : Photon.MonoBehaviour {
     public void UpdateAnimatorState() {
         if (animator == null) { Debug.LogError("Animator is null"); return; };
 
-        MovementClips movementClips = (WeaponDatas[weaponOffset]!= null && WeaponDatas[weaponOffset].IsTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
+        MovementClips movementClips = (WeaponDatas[weaponOffset] != null && WeaponDatas[weaponOffset].IsTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
@@ -461,16 +461,16 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void SetMechDefaultIfEmpty(int mech_num) {
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Core))UserData.myData.Mech[mech_num].Core = defaultParts[0];    
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Arms))UserData.myData.Mech[mech_num].Arms = defaultParts[1];
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Legs))UserData.myData.Mech[mech_num].Legs = defaultParts[2];
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Head))UserData.myData.Mech[mech_num].Head = defaultParts[3];
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Booster))UserData.myData.Mech[mech_num].Booster = defaultParts[4];
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon1L))UserData.myData.Mech[mech_num].Weapon1L = defaultParts[5];
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon1R))UserData.myData.Mech[mech_num].Weapon1R = defaultParts[5];
-        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon2L))UserData.myData.Mech[mech_num].Weapon2L = defaultParts[5];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Core)) UserData.myData.Mech[mech_num].Core = defaultParts[0];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Arms)) UserData.myData.Mech[mech_num].Arms = defaultParts[1];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Legs)) UserData.myData.Mech[mech_num].Legs = defaultParts[2];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Head)) UserData.myData.Mech[mech_num].Head = defaultParts[3];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Booster)) UserData.myData.Mech[mech_num].Booster = defaultParts[4];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon1L)) UserData.myData.Mech[mech_num].Weapon1L = defaultParts[5];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon1R)) UserData.myData.Mech[mech_num].Weapon1R = defaultParts[5];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon2L)) UserData.myData.Mech[mech_num].Weapon2L = defaultParts[5];
         if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon2R)) UserData.myData.Mech[mech_num].Weapon2R = defaultParts[11];
-        if (UserData.myData.Mech[mech_num].skillIDs == null)UserData.myData.Mech[mech_num].skillIDs = new int[4] { -1, -1, -1, -1 };
+        if (UserData.myData.Mech[mech_num].skillIDs == null) UserData.myData.Mech[mech_num].skillIDs = new int[4] { -1, -1, -1, -1 };
     }
 
     public void SetMechNum(int num) {
@@ -497,6 +497,15 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void OnPhotonInstantiate(PhotonMessageInfo info) {
+        //TODO : move it to other place
+        //Transfer owner ship
+        if (PhotonNetwork.isMasterClient) {
+            foreach (var Var in GetComponentsInChildren<PhotonView>()) {
+                if(Var == GetComponent<PhotonView>())continue;
+                Var.TransferOwnership(PhotonNetwork.masterClient);
+            }
+        }
+
         info.sender.TagObject = gameObject;
     }
 }

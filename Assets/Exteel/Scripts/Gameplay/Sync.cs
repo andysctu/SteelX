@@ -1,48 +1,39 @@
 ﻿using UnityEngine;
 
 public class Sync : Photon.MonoBehaviour {
-    [SerializeField] private PhotonView pv;
-    [SerializeField] private SkillController SkillController;
-    [SerializeField] private Camera cam;
+    [Tooltip("RootPv is owned by the player who instantiated this mech")]
+    [SerializeField] private PhotonView _rootPv;
+    [SerializeField] private Transform _mainCam;
 
-    //sync vals
-    private Vector3 trueLoc;
-    private Quaternion trueRot;
-
-    private bool onSkill = false;
-
-    private void Awake() {
-        RegisterOnSkill();
-    }
-
-    private void RegisterOnSkill() {
-        if (SkillController != null) SkillController.OnSkill += OnSkill;
-    }
-
-    public void OnSkill(bool b) {
-        enabled = !b;
-    }
+    private Vector3 _trueLoc;
+    private Quaternion _trueRot = Quaternion.identity, _camTrueRot;
 
     private void Update() {
-        if (!pv.isMine) {
-            transform.position = Vector3.Lerp(transform.position, trueLoc, Time.deltaTime * 5);
-            transform.rotation = Quaternion.Lerp(transform.rotation, trueRot, Time.deltaTime * 5);
+        if (!PhotonNetwork.isMasterClient && !_rootPv.isMine) {
+            transform.position = Vector3.Lerp(transform.position, _trueLoc, Time.deltaTime * 10);
+            transform.rotation = Quaternion.Lerp(transform.rotation, _trueRot, Time.deltaTime * 10);
+            _mainCam.rotation = _camTrueRot;
         }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
-        //we are reicieving data
         if (stream.isReading) {
-            if (!pv.isMine) {
-                this.trueLoc = (Vector3)stream.ReceiveNext();
-                this.trueRot = (Quaternion)stream.ReceiveNext();
-                cam.transform.rotation = (Quaternion)stream.ReceiveNext();
+            if (!PhotonNetwork.isMasterClient){
+                this._trueLoc = (Vector3)stream.ReceiveNext();
+
+                if (!_rootPv.isMine){
+                    this._trueRot = (Quaternion)stream.ReceiveNext();
+                    this._camTrueRot = (Quaternion)stream.ReceiveNext();
+                } else{
+                    stream.ReceiveNext();
+                    stream.ReceiveNext();
+                }
             }
         } else {
-            if (pv.isMine) {
+            if (PhotonNetwork.isMasterClient) {
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
-                stream.SendNext(cam.transform.rotation);
+                stream.SendNext(_mainCam.rotation);
             }
         }
     }

@@ -39,7 +39,7 @@ public class PlayerMapElement : MapElement {
     private void SwitchSprite() {
         //Check if this is me        
         if (root_pv.isMine && root_pv.tag != "Drone") {
-            if (GameManager.isTeamMode) {
+            if (GameManager.IsTeamMode) {
                 if (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) {
                     Point.sprite = Self_Red;
                 } else {
@@ -59,7 +59,7 @@ public class PlayerMapElement : MapElement {
             return;
         }
 
-        if (GameManager.isTeamMode) {
+        if (GameManager.IsTeamMode) {
             if (ThePlayer.GetPhotonView() == null || ThePlayer.GetPhotonView().owner == null) {
                 Point.sprite = Red;
                 NameText.color = Color.red;

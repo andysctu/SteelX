@@ -6,7 +6,16 @@ public class JumpedState : MechStateMachineBehaviour {
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         base.Init(animator);
-        if (cc == null || !cc.enabled) return;
+        if (!PhotonNetwork.isMasterClient || !cc.enabled){
+            if (isFirstjump) {
+                mctrl.OnJumpAction();
+                mctrl.grounded = false;
+            } else if (!animator.GetBool("Jump")) {//dir falling
+                jumpReleased = true;
+                mctrl.grounded = false;
+            }
+            return;
+        }
 
         if (isFirstjump) {
             mctrl.OnJumpAction();
@@ -27,15 +36,23 @@ public class JumpedState : MechStateMachineBehaviour {
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        if (cc == null || !cc.enabled) return;
+        if (!PhotonNetwork.isMasterClient || !cc.enabled){
+            if (!isFirstjump && animator.GetBool("Grounded")){
+                if (!mctrl.grounded){
+                    mctrl.OnLandingAction();
+                    mctrl.grounded = true;
+                }
+            }
+            return;
+        }
 
-        float speed = Input.GetAxis("Vertical");
-        float direction = Input.GetAxis("Horizontal");
+        //float speed = Input.GetAxis("Vertical");
+        //float direction = Input.GetAxis("Horizontal");
 
-        animator.SetFloat(SpeedHash, speed);
-        animator.SetFloat(DirectionHash, direction);
+        //animator.SetFloat(SpeedHash, speed);
+        //animator.SetFloat(DirectionHash, direction);
 
-        if (!gm.BlockInput && Input.GetKeyUp(KeyCode.Space)) {
+        if (!HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space]) {
             jumpReleased = true;
         }
 
@@ -53,7 +70,7 @@ public class JumpedState : MechStateMachineBehaviour {
             mctrl.JumpMoveInAir();
         }
 
-        if (!gm.BlockInput && Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
+        if (HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space] && jumpReleased && mctrl.CanVerticalBoost()) {
             mctrl.SetCanVerticalBoost(false);
             jumpReleased = false;
             animator.SetBool(BoostHash, true);

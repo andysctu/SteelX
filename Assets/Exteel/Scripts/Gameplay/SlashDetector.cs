@@ -40,7 +40,7 @@ public class SlashDetector : MonoBehaviour {
 
     private void OnTriggerEnter(Collider target) {
         if (target.gameObject != User && target.tag[0] != 'S') {//in player layer but not shield => player
-            if (GameManager.isTeamMode) {
+            if (GameManager.IsTeamMode) {
                 PhotonView pv = target.GetComponent<PhotonView>();
                 if (pv.owner.GetTeam() == PhotonNetwork.player.GetTeam() && pv.owner != PhotonNetwork.player) {return; }
             } 
@@ -50,7 +50,7 @@ public class SlashDetector : MonoBehaviour {
 
     private void OnTriggerExit(Collider target) {
         if (target.gameObject != User && target.tag[0] != 'S') {
-            if (GameManager.isTeamMode) {
+            if (GameManager.IsTeamMode) {
                 PhotonView pv = target.GetComponent<PhotonView>();
                 if (pv.owner.GetTeam() == PhotonNetwork.player.GetTeam() && pv.owner != PhotonNetwork.player)
                     return;

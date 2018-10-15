@@ -4,9 +4,11 @@ public class AnimatorVars : MonoBehaviour {
     [HideInInspector] public CharacterController cc = null;
     [HideInInspector] public MechCombat Mcbt = null;
     [HideInInspector] public MechController Mctrl = null;
+    [HideInInspector] public HandleInputs HandleInputs = null;
     [HideInInspector] public Sounds Sounds = null;
     [HideInInspector] public MechIK MechIK = null;
     [HideInInspector] public EffectController EffectController = null;
+    public PhotonView RootPv;
 
     [HideInInspector] public int BoostHash;
     [HideInInspector] public int GroundedHash;
@@ -33,18 +35,17 @@ public class AnimatorVars : MonoBehaviour {
     }
 
     private void FindComponents() {
-        if (transform.root.GetComponent<PhotonView>().isMine)
-            cc = transform.parent.GetComponent<CharacterController>();
-
+        cc = transform.parent.GetComponent<CharacterController>();
         Mctrl = transform.parent.GetComponent<MechController>();
         Mcbt = transform.parent.GetComponent<MechCombat>();
+        HandleInputs = transform.parent.GetComponent<HandleInputs>();
         Sounds = GetComponent<Sounds>();
         MechIK = GetComponent<MechIK>();
         EffectController = transform.root.GetComponentInChildren<EffectController>();
     }
 
     private void HashAnimatorVars() {
-        if (inHangar || !transform.parent.GetComponent<PhotonView>().isMine)return;
+        if (inHangar || (!RootPv.isMine && !PhotonNetwork.isMasterClient) )return;
 
         BoostHash = Animator.StringToHash("Boost");
         GroundedHash = Animator.StringToHash("Grounded");

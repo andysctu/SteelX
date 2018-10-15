@@ -8,7 +8,7 @@ public class UserData : MonoBehaviour {
 
     //Assigned when login
     public static string version = "0.0";
-    public static CloudRegionCode region = CloudRegionCode.jp;
+    public static CloudRegionCode region = CloudRegionCode.us;
 
     public static float cameraRotationSpeed = 5;//mouse sensitivity in game    
     public static float generalVolume = 1f;

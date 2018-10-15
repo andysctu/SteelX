@@ -51,6 +51,19 @@ namespace Weapons
             MechAnimator.SetFloat((Hand == 0) ? "SpeedLCoeff" : "SpeedRCoeff", _speedCoeff);
         }
 
+        protected override void UpdateIk(){
+            base.UpdateIk();
+            //Debug.Log("Update ik");
+            if (CurTarget != null){
+                //Face the target
+                Debug.DrawRay(Cbt.transform.position, Spine1.up * 10, Color.red, 1);
+
+                Debug.DrawRay(Cbt.transform.position, CurTarget.transform.position - Cbt.transform.position, Color.red, 1);
+
+                //Debug.Log("Angle between : "+ Vector3.Angle(Spine1.up, CurTarget.transform.position - Cbt.transform.position));
+            }
+        }
+
         protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
             GameObject bullet = Object.Instantiate(BulletPrefab, EffectEnd);
             TransformExtension.SetLocalTransform(bullet.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
@@ -101,6 +114,9 @@ namespace Weapons
 
         public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
             switch ((StateCallBackType) type){
+                case StateCallBackType.AttackStateEnter:
+                    IsIkOn = true;
+                    break;
                 case StateCallBackType.AttackStateUpdate:
                     if (Time.time - _lastPlayShotSoundTime >= _animationLength / _speedCoeff){
                         _lastPlayShotSoundTime = Time.time;
@@ -110,7 +126,9 @@ namespace Weapons
                             if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
                         }
                     }
-
+                    break;
+                case StateCallBackType.AttackStateExit:
+                    IsIkOn = false;
                     break;
                 case StateCallBackType.ReloadStateEnter:
                     WeaponAnimator.SetTrigger("Reload");

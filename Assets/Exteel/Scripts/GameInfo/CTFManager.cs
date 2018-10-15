@@ -20,7 +20,7 @@ public class CTFManager : GameManager {
     public PhotonPlayer BlueFlagHolder = null, RedFlagHolder = null;
 
     private CTFManager() {
-        isTeamMode = true;
+        IsTeamMode = true;
     }
 
     protected override void Awake() {
@@ -112,13 +112,11 @@ public class CTFManager : GameManager {
 
         Mech m = (Offline) ? new Mech() : UserData.myData.Mech[0];//Default 0  //TODO : remove offline check
 
-        player = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
-        BuildMech mechBuilder = player.GetComponent<BuildMech>();
+        PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
+        BuildMech mechBuilder = PlayerMech.GetComponent<BuildMech>();
         mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
-        player_mcbt = player.GetComponent<MechCombat>();
-
-        FindPlayerMainCameras(player);
+        FindPlayerMainCameras(PlayerMech);
     }
 
     private void FindPlayerMainCameras(GameObject player) {
@@ -130,7 +128,7 @@ public class CTFManager : GameManager {
                 mainCameras.Add(cam);
         }
 
-        thePlayerMainCameras = mainCameras.ToArray();
+        PlayerMainCameras = mainCameras.ToArray();
     }
 
     public override void OnPlayerDead(PhotonPlayer victim, PhotonPlayer shooter, string weapon) {
@@ -258,7 +256,7 @@ public class CTFManager : GameManager {
     private void InitPlayerInZones() {
         PlayerInZone[] playerInZones = FindObjectsOfType<PlayerInZone>();
         foreach (PlayerInZone p in playerInZones) {
-            p.SetPlayer(player);
+            p.SetPlayer(PlayerMech);
         }
     }
 
@@ -307,19 +305,19 @@ public class CTFManager : GameManager {
         if (player_team == PunTeams.Team.none && !Offline) { Debug.LogWarning("This player is team none"); }//debug use
 
         if (PhotonNetwork.room.CustomProperties["T_" + num] == null) {//Master has not init this
-            respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;//Set to the base point
-            Debug.Log("Call set respawn point :" + num + " but Master did not init this point.  Set to base : " + respawnPointNum);
+            CurRespawnPoint = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;//Set to the base point
+            Debug.Log("Call set respawn point :" + num + " but Master did not init this point.  Set to base : " + CurRespawnPoint);
             return;
         }
 
         if (player_team == PunTeams.Team.red && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)PunTeams.Team.red) {
-            respawnPointNum = num;
+            CurRespawnPoint = num;
             Debug.Log("Set successfully with respawn point : " + num);
         } else if ((player_team == PunTeams.Team.blue || player_team == PunTeams.Team.none) && int.Parse(PhotonNetwork.room.CustomProperties["T_" + num].ToString()) == (int)PunTeams.Team.blue) {
-            respawnPointNum = num;
+            CurRespawnPoint = num;
             Debug.Log("Set successfully with respawn point : " + num);
         } else {
-            respawnPointNum = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;
+            CurRespawnPoint = (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) ? RedBaseIndex : BlueBaseIndex;
             Debug.Log("Set failed : " + num);
         }
     }
@@ -617,7 +615,7 @@ public class CTFManager : GameManager {
     private void EndGame(int winTeam) {
         Debug.Log("win team : " + winTeam);
         this.winTeam = (PunTeams.Team)winTeam;
-        gameEnding = true;
+        GameEnding = true;
 
         EndGameProcess();
     }
@@ -658,6 +656,6 @@ public class CTFManager : GameManager {
     protected override void ApplyOfflineSettings() {
         base.ApplyOfflineSettings();
         CTFMsgDisplayer.ShowWaitOtherPlayer(false);
-        isTeamMode = false;
+        IsTeamMode = false;
     }
 }

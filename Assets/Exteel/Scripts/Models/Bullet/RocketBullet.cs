@@ -72,7 +72,7 @@ namespace Weapons.Bullets
 
             if (isCollided || shooter_pv == null || other == shooter) return;
 
-            if (GameManager.isTeamMode){
+            if (GameManager.IsTeamMode){
                 if (((1 << other.layer) & PlayerLayerMask) != 0){
                     //check if other.layer equals player layer
                     if (other.transform.root.GetComponent<PhotonView>().owner.GetTeam() == shooter_pv.owner.GetTeam()) return;
@@ -110,7 +110,7 @@ namespace Weapons.Bullets
                 }
 
                 //check team & drone
-                if (GameManager.isTeamMode){
+                if (GameManager.IsTeamMode){
                     if (other.tag == "Drone" || colliderPV.owner.GetTeam() == shooter_pv.owner.GetTeam()) continue;
                 }
 

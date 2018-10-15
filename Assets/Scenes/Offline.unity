@@ -7373,16 +7373,6 @@ Prefab:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 224664867978541124, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224336873930886196, guid: dace0f8d137bc4c339fcea3950b1731e,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
   m_IsPrefabParent: 0
@@ -9700,7 +9690,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1682129379
+  randomSeed: 1791144251
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -17136,6 +17126,10 @@ Prefab:
         type: 2}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1903318460581744, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
@@ -35144,7 +35138,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 15841384
+  randomSeed: -600766565
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -38734,7 +38728,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 101.700195, y: 2.999939}
+  m_AnchoredPosition: {x: 101.700195, y: 3}
   m_SizeDelta: {x: 135, y: 100}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1090706045
@@ -39620,6 +39614,10 @@ Prefab:
     - target: {fileID: 223015916292473496, guid: 545f090d62a999d4fb239968534f7e57,
         type: 2}
       propertyPath: m_AdditionalShaderChannelsFlag
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004212112406534, guid: 545f090d62a999d4fb239968534f7e57, type: 2}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
@@ -45015,9 +45013,11 @@ MonoBehaviour:
   cc: {fileID: 0}
   Mcbt: {fileID: 0}
   Mctrl: {fileID: 0}
+  HandleInputs: {fileID: 0}
   Sounds: {fileID: 0}
   MechIK: {fileID: 0}
   EffectController: {fileID: 0}
+  RootPv: {fileID: 0}
   BoostHash: 0
   GroundedHash: 0
   JumpHash: 0
@@ -45051,7 +45051,6 @@ MonoBehaviour:
   Animator: {fileID: 1386687634}
   AnimatorVars: {fileID: 1386687638}
   SlashDetector: {fileID: 0}
-  Sounds: {fileID: 1386687641}
 --- !u!82 &1386687640
 AudioSource:
   m_ObjectHideFlags: 0
@@ -63237,7 +63236,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 709269227
+  randomSeed: 1732784504
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -66631,7 +66630,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2143493328}
   - component: {fileID: 2143493338}
-  - component: {fileID: 2143493335}
   - component: {fileID: 2143493330}
   - component: {fileID: 2143493329}
   m_Layer: 8
@@ -66738,25 +66736,6 @@ MonoBehaviour:
   SkillController: {fileID: 798632761}
   AimIK: {fileID: 2143493329}
   Target: {fileID: 1460855308}
---- !u!114 &2143493335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114000010976113334, guid: dace0f8d137bc4c339fcea3950b1731e,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2143493327}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pv: {fileID: 0}
-  Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
-  OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
-  SwitchWeapon: {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
-  WalkSound: {fileID: 0}
-  Source: {fileID: 0}
-  MovementSource: {fileID: 0}
 --- !u!95 &2143493338
 Animator:
   serializedVersion: 3

@@ -44,7 +44,7 @@ public class CrosshairController : MonoBehaviour {
 
     private void Awake() {
         InitComponents();
-        if (_playerPv == null || !_playerPv.isMine){ enabled = false;return; }
+        if (_playerPv == null || !_playerPv.isMine) { enabled = false; return; }
 
         RegisterOnWeaponBuilt();
         RegisterOnWeaponSwitched();
@@ -63,10 +63,10 @@ public class CrosshairController : MonoBehaviour {
         }
 
         //Init new crosshairs
-        for (int i = 0; i < bm.WeaponDatas.Length; i++){
-            _crosshairs[i] = (bm.WeaponDatas[i] == null)? null : bm.WeaponDatas[i].GetCrosshair();
+        for (int i = 0; i < bm.WeaponDatas.Length; i++) {
+            _crosshairs[i] = (bm.WeaponDatas[i] == null) ? null : bm.WeaponDatas[i].GetCrosshair();
 
-            if(_crosshairs[i]!=null)_crosshairs[i].Init(crosshairParent, _cam, i%2);
+            if (_crosshairs[i] != null) _crosshairs[i].Init(crosshairParent, _cam, i % 2);
         }
     }
 
@@ -83,14 +83,14 @@ public class CrosshairController : MonoBehaviour {
     }
 
     private void Start() {
-        if (_playerPv == null || !_playerPv.isMine) {return;}
+        if (_playerPv == null || !_playerPv.isMine) { return; }
 
         GetGameVars();
     }
 
     private void GetGameVars() {
         _screenCoeff = (float)Screen.height / Screen.width;
-        _isTeamMode = GameManager.isTeamMode;
+        _isTeamMode = GameManager.IsTeamMode;
 
         _terrainLayerMask = LayerMask.GetMask("Terrain");
         _playerLayerMask = LayerMask.GetMask("PlayerLayer");
@@ -98,7 +98,7 @@ public class CrosshairController : MonoBehaviour {
 
     private void InitComponents() {
         _playerPv = bm.GetComponent<PhotonView>();
-        if(_playerPv == null || !_playerPv.isMine)return;
+        if (_playerPv == null || !_playerPv.isMine) return;
 
         _mechCombat = bm.GetComponent<MechCombat>();
         _cam = GetComponent<Camera>();
@@ -113,23 +113,23 @@ public class CrosshairController : MonoBehaviour {
         //Disable/Enable crosshairs
         for (int i = 0; i < bm.WeaponDatas.Length; i++) {
             bool b = (i == _weaponOffset || i == _weaponOffset + 1);
-            if (_crosshairs[i] != null){
+            if (_crosshairs[i] != null) {
                 _crosshairs[i].SetRadius(bm.WeaponDatas[i].Radius * (1 + Marksmanship / 100.0f));
                 _crosshairs[i].EnableCrosshair(b);
 
-                if (b){
-                    if (i % 2 == 0){
+                if (b) {
+                    if (i % 2 == 0) {
                         _crosshairRadiusL = bm.WeaponDatas[i].Radius * (1 + Marksmanship / 100.0f);
                         _maxDistanceL = bm.WeaponDatas[i].Range;
                         _minDistanceL = bm.WeaponDatas[i].MinRange;
-                    } else{
+                    } else {
                         _crosshairRadiusR = bm.WeaponDatas[i].Radius * (1 + Marksmanship / 100.0f);
                         _maxDistanceR = bm.WeaponDatas[i].Range;
                         _minDistanceR = bm.WeaponDatas[i].MinRange;
                     }
                 }
-            } else{
-                if (b){
+            } else {
+                if (b) {
                     if (i % 2 == 0) {
                         _crosshairRadiusL = 0;
                         _maxDistanceL = 0;
@@ -144,7 +144,7 @@ public class CrosshairController : MonoBehaviour {
         }
 
         _isTargetAllyL = (bm.WeaponDatas[_weaponOffset] != null && bm.WeaponDatas[_weaponOffset].IsTargetAlly);
-        _isTargetAllyR = (bm.WeaponDatas[_weaponOffset+1] != null && bm.WeaponDatas[_weaponOffset+1].IsTargetAlly);
+        _isTargetAllyR = (bm.WeaponDatas[_weaponOffset + 1] != null && bm.WeaponDatas[_weaponOffset + 1].IsTargetAlly);
 
         _targetL = null;
         _targetR = null;
@@ -152,29 +152,29 @@ public class CrosshairController : MonoBehaviour {
 
     public Transform DectectTarget(float crosshairRadius, float range, float minimunRange, bool detectAlly) {
         if (crosshairRadius > 0) {
-            for (int i = 0; i < Targets.Count; i++) { 
+            for (int i = 0; i < Targets.Count; i++) {
                 if (Targets[i] == null) {
                     Targets.RemoveAt(i);
                     continue;
                 }
 
-                if(Targets[i].layer == 0)continue;//the target is on skill or dead
+                if (Targets[i].layer == 0) continue;//the target is on skill or dead
 
                 PhotonView targetPv = Targets[i].GetComponent<PhotonView>();
-                if (targetPv.viewID == _playerPv.viewID)continue;
+                if (targetPv.viewID == _playerPv.viewID) continue;
 
                 if (_isTeamMode) {
                     if (!detectAlly) {
-                        if (targetPv.owner.GetTeam() == _playerPv.owner.GetTeam())continue;
+                        if (targetPv.owner.GetTeam() == _playerPv.owner.GetTeam()) continue;
                     } else {
-                        if (targetPv.owner.GetTeam() != _playerPv.owner.GetTeam())continue;
+                        if (targetPv.owner.GetTeam() != _playerPv.owner.GetTeam()) continue;
                     }
                 } else {
-                    if (detectAlly)continue;//Not team mode => no ally
+                    if (detectAlly) continue;//Not team mode => no ally
                 }
 
                 //check distance
-                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range || Vector3.Distance(Targets[i].transform.position, transform.root.position) < minimunRange)continue;
+                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range || Vector3.Distance(Targets[i].transform.position, transform.root.position) < minimunRange) continue;
 
                 Vector3 targetLocInCam = _cam.WorldToViewportPoint(Targets[i].transform.position + new Vector3(0, 5, 0));
                 Vector3 rayStartPoint = transform.root.position + new Vector3(0, 5, 0); //rayStartpoint should not inside terrain => not detect
@@ -184,10 +184,10 @@ public class CrosshairController : MonoBehaviour {
                     //check if Terrain block the way
                     RaycastHit hit;
                     if (Physics.Raycast(rayStartPoint, (Targets[i].transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, Targets[i].transform.position + new Vector3(0, 5, 0)), _terrainLayerMask)) {
-                        if (hit.collider.gameObject.layer == 10)continue;
+                        if (hit.collider.gameObject.layer == 10) continue;
                     }
 
-                    if (!detectAlly)SendLockedMessage(targetPv);
+                    if (!detectAlly) SendLockedMessage(targetPv);
 
                     return Targets[i].transform;
                 }
@@ -200,29 +200,29 @@ public class CrosshairController : MonoBehaviour {
         if (crosshairRadius > 0) {
             List<Transform> targets_in_range = new List<Transform>();
 
-            for(int i=0;i<Targets.Count;i++) {
+            for (int i = 0; i < Targets.Count; i++) {
                 if (Targets[i] == null) {
                     Targets.RemoveAt(i);
                     continue;
                 }
 
-                if (Targets[i].layer == 0)continue;//On skill or dead
+                if (Targets[i].layer == 0) continue;//On skill or dead
 
                 PhotonView targetpv = Targets[i].GetComponent<PhotonView>();
-                if (targetpv.viewID == _playerPv.viewID)continue;
+                if (targetpv.viewID == _playerPv.viewID) continue;
 
                 if (_isTeamMode) {
                     if (!detectAlly) {
-                        if (targetpv.owner.GetTeam() == _playerPv.owner.GetTeam())continue;
+                        if (targetpv.owner.GetTeam() == _playerPv.owner.GetTeam()) continue;
                     } else {
-                        if (targetpv.owner.GetTeam() != _playerPv.owner.GetTeam())continue;
+                        if (targetpv.owner.GetTeam() != _playerPv.owner.GetTeam()) continue;
                     }
                 } else {
-                    if (detectAlly)continue;//if not team mode , ignore eng
+                    if (detectAlly) continue;//if not team mode , ignore eng
                 }
 
                 //check distance
-                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range)continue;
+                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range) continue;
 
                 Vector3 targetLocInCam = _cam.WorldToViewportPoint(Targets[i].transform.position + new Vector3(0, 5, 0));
                 Vector3 rayStartPoint = transform.root.position + new Vector3(0, 10, 0); //rayStartpoint should not inside terrain => not detect
@@ -247,24 +247,28 @@ public class CrosshairController : MonoBehaviour {
         if (_onSkill) return;
 
         if (_crosshairs[_weaponOffset] != null) {
+            _crosshairs[_weaponOffset].Update();
+
             if ((_targetL = DectectTarget(_crosshairRadiusL, _maxDistanceL, _minDistanceL, _isTargetAllyL)) != null) {
                 _crosshairs[_weaponOffset].OnTarget(true);
                 MarkTarget(_weaponOffset, _targetL);
 
-                if (!_lockedL) {Sounds.PlayLock();_lockedL = true;}
-            } else{
+                if (!_lockedL) { Sounds.PlayLock(); _lockedL = true; }
+            } else {
                 _crosshairs[_weaponOffset].OnTarget(false);
                 _lockedL = false;
             }
         }
 
-        if (_crosshairs[_weaponOffset+1] != null) {
+        if (_crosshairs[_weaponOffset + 1] != null) {
+            _crosshairs[_weaponOffset + 1].Update();
+
             if ((_targetR = DectectTarget(_crosshairRadiusR, _maxDistanceR, _minDistanceR, _isTargetAllyR)) != null) {
                 _crosshairs[_weaponOffset + 1].OnTarget(true);
                 MarkTarget(_weaponOffset + 1, _targetR);
 
-                if (!_lockedR) {Sounds.PlayLock();_lockedR = true;}
-            } else{
+                if (!_lockedR) { Sounds.PlayLock(); _lockedR = true; }
+            } else {
                 _crosshairs[_weaponOffset + 1].OnTarget(false);
                 _lockedR = false;
             }
@@ -331,6 +335,12 @@ public class CrosshairController : MonoBehaviour {
         }
     }
 
+    public void OnShootAction(int WeapPos) {
+        if (_crosshairs[WeapPos] != null) {
+            _crosshairs[WeapPos].OnShootAction();
+        }
+    }
+
     public void ShowLocked() {//TODO : move this part to HUD
         if (_isOnLocked) {
             StopCoroutine(_lockingTargetCoroutine);
@@ -367,21 +377,17 @@ public class CrosshairController : MonoBehaviour {
         }
     }
 
-    public void CallShakingEffect(int hand) {
-        if(_crosshairs[_weaponOffset + hand]!=null)_crosshairs[_weaponOffset + hand].ShakingEffect();
-    }
-
     public void EnableCrosshair(bool b) {
-        if(!_playerPv.isMine)return;
+        if (!_playerPv.isMine) return;
 
         enabled = b;
 
-        if (!b)  DisableAllCrosshairs();
+        if (!b) DisableAllCrosshairs();
     }
 
     private void DisableAllCrosshairs() {
-        for (int i = 0; i < _crosshairs.Length; i++){
-            if(_crosshairs[i] != null) 
+        for (int i = 0; i < _crosshairs.Length; i++) {
+            if (_crosshairs[i] != null)
                 _crosshairs[i].EnableCrosshair(false);
         }
     }

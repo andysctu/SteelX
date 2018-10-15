@@ -43,7 +43,7 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
             if (hit.transform.root == transform.root)
                 continue;
 
-            if (GameManager.isTeamMode) {
+            if (GameManager.IsTeamMode) {
                 if (player_pv.owner.GetTeam() != targetPV.owner.GetTeam()) {
                     if (hit.tag != "Shield") { //shield is on player layer
                         target_pvIDs.Add(targetPV.viewID);

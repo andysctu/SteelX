@@ -16,10 +16,13 @@ public class GameSceneManager : IScene {
     }
 
     private void StartTestScene() {
-        CTFManager CTFManager = gameObject.AddComponent<CTFManager>();
-        gm = CTFManager as GameManager;
-        CTFManager.Offline = true;
-        Debug.Log("Add CTFManager");
+        //CTFManager CTFManager = gameObject.AddComponent<CTFManager>();
+        //gm = CTFManager as GameManager;
+        //CTFManager.Offline = true;
+        //Debug.Log("Add CTFManager");
+
+        TestModeManager TestModeManager = gameObject.AddComponent<TestModeManager>();
+        gm = TestModeManager as GameManager;
     }
 
     public override void StartScene() {

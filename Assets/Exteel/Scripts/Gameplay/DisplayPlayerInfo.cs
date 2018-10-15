@@ -61,7 +61,7 @@ public class DisplayPlayerInfo : DisplayInfo{
         //set the info name
         SetName(thisPlayerName + "_Infos");
 
-        if (tag != "Drone" && GameManager.isTeamMode && PhotonNetwork.player.GetTeam() == pv.owner.GetTeam()) {
+        if (tag != "Drone" && GameManager.IsTeamMode && PhotonNetwork.player.GetTeam() == pv.owner.GetTeam()) {
             bar.color = Color.white;
             Text.color = Color.white;
         } else {

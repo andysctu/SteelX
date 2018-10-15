@@ -11,23 +11,23 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
 	protected Sounds Sounds;
 	protected MechIK mechIK;
 	protected EffectController EffectController;
-    protected GameManager gm;
+    protected HandleInputs HandleInputs;
 
-	protected int BoostHash;
+    protected int BoostHash;
 	protected int GroundedHash;
 	protected int JumpHash;
 	protected int SpeedHash;
 	protected int DirectionHash;
 
+    protected bool IsMine = false;
+    private bool _isInit = false;
+
 	public void Init(Animator animator){
 		animatorVars = animator.GetComponent<AnimatorVars> ();
-		if (animatorVars == null)//find too slow ?
-			return;
 
-		if (mctrl != null)//already init ( every state need to be assigned only one time )  ; cc is null if it's not mine
-			return;
+		if (_isInit)return;
 
-        gm = FindObjectOfType<GameManager>();
+	    IsMine = animatorVars.RootPv.isMine;
 
         cc = animatorVars.cc;
 		mctrl = animatorVars.Mctrl;
@@ -36,11 +36,14 @@ public class MechStateMachineBehaviour : StateMachineBehaviour {
         Sounds = animatorVars.Sounds;
 		mechIK = animatorVars.MechIK;
 		EffectController = animatorVars.EffectController;
+	    HandleInputs = animatorVars.HandleInputs;
 
-		BoostHash = animatorVars.BoostHash;
+        BoostHash = animatorVars.BoostHash;
 		GroundedHash = animatorVars.GroundedHash;
 		JumpHash = animatorVars.JumpHash;
 		DirectionHash = animatorVars.DirectionHash;
 		SpeedHash = animatorVars.SpeedHash;
-	}
+
+	    _isInit = true;
+    }
 }

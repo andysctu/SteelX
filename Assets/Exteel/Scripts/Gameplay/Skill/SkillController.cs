@@ -42,6 +42,7 @@ public class SkillController : MonoBehaviour {
     public bool isDrone = false;
 
     private void Awake() {
+        Debug.Log("skillcontroller awake : "+gameObject.name);
         InitSkillAnimatorControllers();
         RegisterOnSkill();//TODO : remake this
         RegisterOnMechBuilt();
@@ -92,7 +93,7 @@ public class SkillController : MonoBehaviour {
         LoadWeaponSkillAnimations();
         LoadBoosterSkillAnimations();
         InitHUD();
-        if (photonView.isMine) SkillHUD.InitSkills(skills);
+        //if (photonView.isMine) SkillHUD.InitSkills(skills);
     }
 
     public void LoadMechProperties() {
@@ -101,6 +102,7 @@ public class SkillController : MonoBehaviour {
     }
 
     private void Start() {
+        Debug.Log("skillcontroller start");
         InitComponents();
 
         if (tag == "Drone")
@@ -110,10 +112,10 @@ public class SkillController : MonoBehaviour {
     private void InitSkillHUD() {
         if (!photonView.isMine || tag == "Drone")
             return;
-        Transform PanelCanvas = GameObject.Find("PanelCanvas").transform;//TODO : remake this
-        SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
+        //Transform PanelCanvas = GameObject.Find("PanelCanvas").transform;//TODO : remake this
+        //SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
 
-        SkillHUD.enabled = true;
+        //SkillHUD.enabled = true;
     }
 
     public void SetSkills(SkillConfig[] skills) {//this gets called in buildMech

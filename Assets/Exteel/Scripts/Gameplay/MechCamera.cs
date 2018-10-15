@@ -27,8 +27,8 @@ public class MechCamera : MonoBehaviour {
     private void Awake() {
         PhotonView pv = currentMech.transform.root.GetComponent<PhotonView>();
         EnableCamera(pv.isMine);
-        if(!pv.isMine)return;
-        
+        if (!pv.isMine) return;
+
         RegisterOnSkill();
     }
 
@@ -76,8 +76,8 @@ public class MechCamera : MonoBehaviour {
         }
     }
 
-    private void FixedUpdate() {
-        fakeTransform.position = Vector3.Lerp(fakeTransform.position, player.position + new Vector3(0, upAmount, 0), Time.fixedDeltaTime * lerpFakePosSpeed);
+    private void LateUpdate() {
+        fakeTransform.position = Vector3.Lerp(fakeTransform.position, player.position + new Vector3(0, upAmount, 0), Time.deltaTime * lerpFakePosSpeed);
 
         transform.localRotation = m_OriginalRotation;
 
@@ -85,7 +85,7 @@ public class MechCamera : MonoBehaviour {
             currentMech.transform.rotation = tempCurrentMechRot;
         } else {
             if (currentMech.transform.localRotation != Quaternion.identity) {
-                currentMech.transform.localRotation = Quaternion.Lerp(currentMech.transform.localRotation, Quaternion.identity, Time.fixedDeltaTime * playerlerpspeed);
+                currentMech.transform.localRotation = Quaternion.Lerp(currentMech.transform.localRotation, Quaternion.identity, Time.deltaTime * playerlerpspeed);
             }
         }
 
@@ -105,11 +105,11 @@ public class MechCamera : MonoBehaviour {
         m_FollowAngles = m_TargetAngles;
 
         //lerp parent rotation
-        transform.parent.rotation = Quaternion.Lerp(transform.parent.rotation, m_OriginalRotation * Quaternion.Euler(0, m_FollowAngles.y, 0), Time.fixedDeltaTime * playerlerpspeed);
+        transform.parent.rotation = Quaternion.Lerp(transform.parent.rotation, m_OriginalRotation * Quaternion.Euler(0, m_FollowAngles.y, 0), Time.deltaTime * playerlerpspeed);
         //transform.parent.rotation = m_OriginalRotation * Quaternion.Euler (0, m_FollowAngles.y, 0);
 
         if (player != null)
-            player.rotation = Quaternion.Lerp(transform.parent.rotation, m_OriginalRotation * Quaternion.Euler(0, m_FollowAngles.y, 0), Time.fixedDeltaTime * playerlerpspeed);
+            player.rotation = Quaternion.Lerp(transform.parent.rotation, m_OriginalRotation * Quaternion.Euler(0, m_FollowAngles.y, 0), Time.deltaTime * playerlerpspeed);
 
         //lerp cam rotation
         //orbitAngle = Mathf.Lerp (orbitAngle, Mathf.Clamp (orbitAngle + inputV * rotationSpeed, 70, 220), Time.deltaTime * orbitlerpspeed);

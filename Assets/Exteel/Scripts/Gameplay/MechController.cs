@@ -3,6 +3,7 @@ using UnityEngine;
 
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
+    [SerializeField] private PhotonView _rootPv;
     [SerializeField] private EffectController EffectController;//TODO : remove this
     [SerializeField] private Transform boosterBone;
     [SerializeField] private MovementVariables movementVariables = new MovementVariables();
@@ -60,7 +61,10 @@ public class MechController : Photon.MonoBehaviour {
     private Transform _pelvis, _spine1;
     private float _rLPelvisDegree = 30, _rLSpineDegree = -45, _rLLerpSpeed = 10, _rLDir;
 
-    public bool onSkillMoving = false, onInstantMoving = false;
+    public bool onSkillMoving = false, onInstantMoving = false, isJumping = false;
+
+    //Input
+    private HandleInputs _handleInputs;
 
     private void Awake() {
         InitComponents();
@@ -79,6 +83,7 @@ public class MechController : Photon.MonoBehaviour {
         _mechCam = GetComponentInChildren<MechCamera>();
         _camTransform = _mechCam.transform;
         _sounds = currentMech.GetComponent<Sounds>();
+        _handleInputs = GetComponent<HandleInputs>();
 
         CharacterController = GetComponent<CharacterController>();
         SkillController = GetComponent<SkillController>();
@@ -93,11 +98,14 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void Start() {
-        if (!photonView.isMine) return;
-
-        InitCam(cam_orbitradius, cam_angleoffset);
         FindGameManager();
         GetLayerMask();
+
+        if (!_rootPv.isMine) return;
+        InitCam(cam_orbitradius, cam_angleoffset);
+
+        //TODO : move this to other place
+        GetComponentInChildren<PhotonAnimatorView>().enabled = false;
     }
 
     private void FindGameManager() {
@@ -139,9 +147,6 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void OnMechEnabled(bool b) {
-        if (!photonView.isMine)
-            return;
-
         enabled = b;
     }
 
@@ -194,12 +199,11 @@ public class MechController : Photon.MonoBehaviour {
         _mechCam.angleOffset = offset;
     }
 
+    int curT = 0;
+
     private void Update() {
-        if(!photonView.isMine)return;
-
-        GetXZDirection();
-
         //TODO : remake this (test use)
+        //Other player also need to run this
         if (_isFootStepVarPositive){
             if (_mainAnimator.GetFloat("FootStep") < 0) {
                 _isFootStepVarPositive = false;
@@ -209,50 +213,88 @@ public class MechController : Photon.MonoBehaviour {
             _isFootStepVarPositive = true;
             _sounds.PlayWalk();
         }
+    }
 
+    public void UpdatePosition(HandleInputs.UserCmd userCmd){
+        //Rotate mech so the transform.right/forward are correct directions
+        float rotateDelta = userCmd.ViewAngle - transform.eulerAngles.y;
+        transform.Rotate(new Vector3(0, rotateDelta, 0));
+
+        xzDir = new Vector2(userCmd.Horizontal, userCmd.Vertical).normalized;
+
+        grounded = CheckIsGrounded();
+
+        if (isJumping && grounded){
+            isJumping = false;
+
+            _mainAnimator.SetBool(_animatorVars.JumpHash, false);
+        }
+
+        if (userCmd.Buttons[(int) HandleInputs.Button.Space] && !isJumping && grounded){
+            isJumping = true;
+            grounded = false;
+            v_boost_start_yPos = 0;
+            ySpeed = movementVariables.jumpPower;
+
+            _mainAnimator.SetBool(_animatorVars.JumpHash, true);
+        }
+
+        if (grounded){
+            Run(xzDir.x, xzDir.y, userCmd.msec);
+
+            _mainAnimator.SetFloat(_animatorVars.SpeedHash, userCmd.Vertical);
+            _mainAnimator.SetFloat(_animatorVars.DirectionHash, userCmd.Horizontal);
+
+            ySpeed = -CharacterController.stepOffset * userCmd.msec * 40;
+        } else{
+            ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool("Boost")) ? 0 : Gravity  * userCmd.msec * 40 ;
+        }
+
+
+        //Apply the speed
+        move = Vector3.right * xSpeed * userCmd.msec;
+        move += Vector3.forward * zSpeed * userCmd.msec;
+        move.y += ySpeed * userCmd.msec;
+
+        CharacterController.Move(move);
+
+        //Rotate mech back
+        transform.Rotate(new Vector3(0, -rotateDelta, 0));
     }
 
     private void FixedUpdate() {
-        if (!photonView.isMine) return;
-
-        if (!grounded) {
-            ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool(_animatorVars.BoostHash)) ? 0 : Gravity;
-        } else {
-            ySpeed = -CharacterController.stepOffset;
+        if (PhotonNetwork.isMasterClient){
+            if (_mainAnimator.GetBool("Boost")) {
+                _mechCombat.DecrementEN();
+            } else {
+                _mechCombat.IncrementEN();
+            }
         }
 
-        if (_mainAnimator.GetBool(_animatorVars.BoostHash)) {
-            DynamicCam();
-            _mechCombat.DecrementEN();
-        } else {
-            ResetCam();
-            _mechCombat.IncrementEN();
-        }
-
-        UpdateSpeed();
+        //if (_rootPv.isMine){
+        //    if (_mainAnimator.GetBool("Boost")) {
+        //        DynamicCam();
+        //    } else {
+        //        ResetCam();
+        //    }
+        //}
     }
 
-    public void UpdateSpeed() {
-        if (onInstantMoving) {
-            InstantMove();
-            return;
-        }
+    private void UpdateSpeed() {
+        //if (onInstantMoving) {
+        //    InstantMove();
+        //    return;
+        //}
 
-        move = Vector3.right * xSpeed * Time.fixedDeltaTime;
-        move += Vector3.forward * zSpeed * Time.fixedDeltaTime;
-        move.y += ySpeed * Time.fixedDeltaTime;
+        //if (isSlowDown) {
+        //    move.x = move.x * slowDownCoeff;
+        //    move.z = move.z * slowDownCoeff;
+        //}
 
-        if (isSlowDown) {
-            move.x = move.x * slowDownCoeff;
-            move.z = move.z * slowDownCoeff;
-        }
-
-        if (!GameManager.gameIsBegin) {//player can't move but can rotate
-            move.x = 0;
-            move.z = 0;
-        }
-
-        CharacterController.Move(move);
+        //if (!gm.GameIsBegin) {//player can't move but can rotate
+        //    move.x = 0;
+        //    move.z = 0;
+        //}
     }
 
     public void SetMoving(float speed) {//called by animation
@@ -302,13 +344,16 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void RotateLegs(){
-        _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
-        if(_mainAnimator.GetFloat(_animatorVars.SpeedHash) < 0) _rLDir *= -1;
 
-        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
 
-        _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
-        _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
+    //    _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
+    //    if(_mainAnimator.GetFloat(_animatorVars.SpeedHash) < 0) _rLDir *= -1;
+
+    //    _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
+
+    //    _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
+    //    _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
+    //
     }
 
     public void SetCanVerticalBoost(bool canVBoost) {
@@ -340,18 +385,28 @@ public class MechController : Photon.MonoBehaviour {
         ySpeed = movementVariables.jumpPower;
     }
 
-    public void Run() {
-        run_xzDir.x = Mathf.Lerp(run_xzDir.x, xzDir.x, Time.deltaTime * runDir_coeff);//smooth slow down (boosting -> Idle&Walk
-        run_xzDir.y = Mathf.Lerp(run_xzDir.y, xzDir.y, Time.deltaTime * runDir_coeff);//not achieving by gravity because we don't want walk smooth slow down
-                                                                                      //decelerating
-        if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
-            xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x + (run_xzDir.y * curboostingSpeed * transform.forward).x;
-            zSpeed = (run_xzDir.x * curboostingSpeed * transform.right).z + (run_xzDir.y * curboostingSpeed * transform.forward).z;
+    private void Run(float horizontal_nor, float vertical_nor, float msec) {
+        //run_xzDir.x = Mathf.Lerp(run_xzDir.x, horizontal, msec * runDir_coeff);//smooth slow down (boosting -> Idle&Walk
+        //run_xzDir.y = Mathf.Lerp(run_xzDir.y, vertical, msec * runDir_coeff);//not achieving by gravity because we don't want walk smooth slow down
+        //                                                                              //decelerating
+        //if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
+        //    xSpeed = (run_xzDir.x * curboostingSpeed * transform.right).x + (run_xzDir.y * curboostingSpeed * transform.forward).x;
+        //    zSpeed = (run_xzDir.x * curboostingSpeed * transform.right).z + (run_xzDir.y * curboostingSpeed * transform.forward).z;
 
-            curboostingSpeed -= movementVariables.deceleration * Time.deltaTime * 5;
+        //    curboostingSpeed -= movementVariables.deceleration * msec * 5;
+        //} else {
+        //    xSpeed = movementVariables.moveSpeed * horizontal * transform.right.x + movementVariables.moveSpeed * ((vertical < 0) ? vertical / 2 : vertical) * transform.forward.x;
+        //    zSpeed = movementVariables.moveSpeed * horizontal * transform.right.z + movementVariables.moveSpeed * ((vertical < 0) ? vertical / 2 : vertical) * transform.forward.z;
+        //}
+       
+        if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
+            xSpeed = (horizontal_nor * curboostingSpeed * transform.right).x + (vertical_nor * curboostingSpeed * transform.forward).x;
+            zSpeed = (horizontal_nor * curboostingSpeed * transform.right).z + (vertical_nor * curboostingSpeed * transform.forward).z;
+
+            curboostingSpeed -= movementVariables.deceleration * msec * 5;
         } else {
-            xSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.x + movementVariables.moveSpeed * ((xzDir.y < 0) ? xzDir.y / 2 : xzDir.y) * transform.forward.x;
-            zSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.z + movementVariables.moveSpeed * ((xzDir.y < 0) ? xzDir.y / 2 : xzDir.y) * transform.forward.z;
+            xSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.x + movementVariables.moveSpeed * ((vertical_nor < 0) ? vertical_nor / 2 : vertical_nor) * transform.forward.x;
+            zSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.z + movementVariables.moveSpeed * ((vertical_nor < 0) ? vertical_nor / 2 : vertical_nor) * transform.forward.z;
         }
     }
 
@@ -371,14 +426,17 @@ public class MechController : Photon.MonoBehaviour {
             xSpeed = (xzDir.x * curboostingSpeed * transform.right).x + (xzDir.y * curboostingSpeed * transform.forward).x;
             zSpeed = (xzDir.x * curboostingSpeed * transform.right).z + (xzDir.y * curboostingSpeed * transform.forward).z;
         } else {
-            float xRawDir = Input.GetAxisRaw("Horizontal");
+            //float xRawDir = Input.GetAxisRaw("Horizontal");
 
-            xSpeed = movementVariables.moveSpeed * xRawDir * transform.right.x + movementVariables.moveSpeed * xzDir.y * transform.forward.x;
-            zSpeed = movementVariables.moveSpeed * xRawDir * transform.right.z + movementVariables.moveSpeed * xzDir.y * transform.forward.z;
+            //xSpeed = movementVariables.moveSpeed * xRawDir * transform.right.x + movementVariables.moveSpeed * xzDir.y * transform.forward.x;
+            //zSpeed = movementVariables.moveSpeed * xRawDir * transform.right.z + movementVariables.moveSpeed * xzDir.y * transform.forward.z;
+
+            xSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.x + movementVariables.moveSpeed * xzDir.y * transform.forward.x;
+            zSpeed = movementVariables.moveSpeed * xzDir.x * transform.right.z + movementVariables.moveSpeed * xzDir.y * transform.forward.z;
         }
     }
 
-    public void Boost(bool b) {
+    public void Boost(bool b) {//TODO : improve this using animator bool to decide open/close
         if (b != isBoostFlameOn) {
             photonView.RPC("BoostFlame", PhotonTargets.All, b, grounded);
             isBoostFlameOn = b;
@@ -497,8 +555,8 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void GetXZDirection() {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        float h = _handleInputs.CurUserCmd.Horizontal;
+        float v = _handleInputs.CurUserCmd.Vertical;
 
         if (v <= marginOfError && v >= -marginOfError) {
             v = 0;
@@ -507,13 +565,8 @@ public class MechController : Photon.MonoBehaviour {
             h = 0;
         }
 
-        if (gm.BlockInput) {
-            speed = 0;
-            direction = 0;
-        } else {
-            speed = v;
-            direction = h;
-        }
+        speed = v;
+        direction = h;
 
         xzDir = new Vector2(direction, speed).normalized;
     }

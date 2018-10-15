@@ -33,6 +33,7 @@ public class MechCombat : Combat {
     private MovementClips defaultMovementClips, TwoHandedMovementClips;
 
     protected override void Awake() {
+        Debug.Log("Mcbt awake : "+gameObject.name);
         base.Awake();
         InitComponents();
         LoadMovementClips();
@@ -105,6 +106,7 @@ public class MechCombat : Combat {
     protected override void Start() {
         base.Start();
         InitGameObjects();
+        Debug.Log("Mcbt start : "+gameObject.name);
     }
 
     private void LoadMechProperties() {
@@ -308,7 +310,7 @@ public class MechCombat : Combat {
     protected override void Update() {
         base.Update();
 
-        if (!photonView.isMine || gm.IsGameEnding() || !GameManager.gameIsBegin) return; //TODO : improve these checks
+        if (!photonView.isMine || gm.IsGameEnding() || !gm.GameIsBegin) return; //TODO : improve these checks
         if (onSkill || gm.BlockInput || IsSwitchingWeapon) return;
 
         if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].HandleCombat();

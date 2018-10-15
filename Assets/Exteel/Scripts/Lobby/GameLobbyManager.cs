@@ -108,7 +108,7 @@ public class GameLobbyManager : IScene {
 
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("GameInit", false);
-        h.Add("Status", (int)GameManager.Status.InBattle);
+        h.Add("Status", (int)GameManager.RoomStatus.InBattle);
         PhotonNetwork.room.SetCustomProperties(h);
 
         photonView.RPC("CallStartGame", PhotonTargets.All);

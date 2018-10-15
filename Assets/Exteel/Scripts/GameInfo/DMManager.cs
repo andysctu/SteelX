@@ -12,7 +12,7 @@ public class DMManager : GameManager {
     private bool game_environment_is_built = false;
 
     DMManager() {
-        isTeamMode = false;
+        IsTeamMode = false;
     }
 
     protected override void Awake() {
@@ -70,13 +70,11 @@ public class DMManager : GameManager {
 
         Mech m = (Offline) ? new Mech() : UserData.myData.Mech[0];//Default 0  //TODO : remove offline check
 
-        player = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
-        BuildMech mechBuilder = player.GetComponent<BuildMech>();
+        PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
+        BuildMech mechBuilder = PlayerMech.GetComponent<BuildMech>();
         mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
-        player_mcbt = player.GetComponent<MechCombat>();
-
-        FindPlayerMainCameras(player);
+        FindPlayerMainCameras(PlayerMech);
     }
 
     private void FindPlayerMainCameras(GameObject player) {
@@ -88,7 +86,7 @@ public class DMManager : GameManager {
                 mainCameras.Add(cam);
         }
 
-        thePlayerMainCameras = mainCameras.ToArray();
+        PlayerMainCameras = mainCameras.ToArray();
     }
 
     public override void OnPlayerDead(PhotonPlayer victim, PhotonPlayer shooter, string weapon) {
@@ -161,7 +159,7 @@ public class DMManager : GameManager {
     private void InitPlayerInZones() {
         PlayerInZone[] playerInZones = FindObjectsOfType<PlayerInZone>();
         foreach (PlayerInZone p in playerInZones) {
-            p.SetPlayer(player);
+            p.SetPlayer(PlayerMech);
         }
     }
 
@@ -227,7 +225,7 @@ public class DMManager : GameManager {
 
     public override void SetRespawnPoint(int num) {
         Debug.Log("Set respawn Point : " + num);
-        respawnPointNum = num;
+        CurRespawnPoint = num;
     }
 
     protected override void OnPhotonPlayerDisconnected(PhotonPlayer player) {
@@ -265,6 +263,6 @@ public class DMManager : GameManager {
     protected override void ApplyOfflineSettings() {
         base.ApplyOfflineSettings();
         DMMsgDisplayer.ShowWaitOtherPlayer(false);
-        isTeamMode = false;
+        IsTeamMode = false;
     }
 }

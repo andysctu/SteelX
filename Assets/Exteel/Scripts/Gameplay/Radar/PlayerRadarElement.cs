@@ -32,7 +32,7 @@ public class PlayerRadarElement : RadarElement {
         //Check if this is me        
         if (root_pv.isMine && root_pv.tag != "Drone") {
             nameTextMesh.text = "";
-            if (GameManager.isTeamMode) {
+            if (GameManager.IsTeamMode) {
                 if (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) {
                     SpriteRenderer.sprite = Self_red;
                 } else {
@@ -51,7 +51,7 @@ public class PlayerRadarElement : RadarElement {
             return;
         }
 
-        if (GameManager.isTeamMode) {
+        if (GameManager.IsTeamMode) {
             if (ThePlayer.GetPhotonView() == null || ThePlayer.GetPhotonView().owner == null) {
                 SpriteRenderer.sprite = Red;
                 nameTextMesh.color = Color.red;

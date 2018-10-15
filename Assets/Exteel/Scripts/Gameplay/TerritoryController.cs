@@ -6,6 +6,7 @@ public class TerritoryController : MonoBehaviour {
     public int Territory_ID = 0;    
     public bool interactable = true;//base : false 
     public PunTeams.Team curTerritoryState = PunTeams.Team.none;
+    private GameManager gm;
     private MapPanelController MapPanelController;
     private TerritoryRadarElement TerritoryRadarElement;
     private TerritoryMapElement TerritoryMapElement;
@@ -47,6 +48,7 @@ public class TerritoryController : MonoBehaviour {
     }
 
     private void InitComponents() {
+        gm = FindObjectOfType<GameManager>();
         baseMesh = GetComponentInChildren<MeshRenderer>();
         DisplayInfo = GetComponent<DisplayInfo>();
         TerritoryRadarElement = GetComponentInChildren<TerritoryRadarElement>();
@@ -94,7 +96,7 @@ public class TerritoryController : MonoBehaviour {
         if (stream.isWriting) {
             if (PhotonNetwork.isMasterClient) {
 
-                if(!GameManager.gameIsBegin)
+                if(!gm.GameIsBegin)
                     return;
 
                 if (PlayerInZone.whichTeamDominate() != (int)PunTeams.Team.none) {

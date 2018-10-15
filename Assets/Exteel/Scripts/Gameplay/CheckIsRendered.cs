@@ -2,7 +2,7 @@
 
 public class CheckIsRendered : MonoBehaviour {
     private SkinnedMeshRenderer theMeshRenderer;
-    private CrosshairController crosshair;//same player's crosshair for all mechs
+    private CrosshairController crosshairController;//same player's crosshair for all mechs
 
     private bool isVisible = false;
     private float lastRequestTime;
@@ -22,19 +22,19 @@ public class CheckIsRendered : MonoBehaviour {
         }
     }
 
-    public void SetCrosshair(CrosshairController crosshair) {
-        this.crosshair = crosshair;
+    public void SetCrosshair(CrosshairController crosshairController) {
+        this.crosshairController = crosshairController;
     }
 
     // Update is called once per frame
     private void Update() {
-        if (crosshair == null) {//TODO : improve this
+        if (crosshairController == null) {//TODO : improve this
             if (Time.time - lastRequestTime >= requestDeltaTime) {
                 lastRequestTime = Time.time;
                 Camera[] cameras = (Camera[])GameObject.FindObjectsOfType<Camera>();
                 foreach (Camera cam in cameras) {
                     if (cam.transform.root.name == "PlayerCam") {
-                        crosshair = cam.GetComponent<CrosshairController>();
+                        crosshairController = cam.GetComponent<CrosshairController>();
                     }
                 }
             }
@@ -47,12 +47,12 @@ public class CheckIsRendered : MonoBehaviour {
             if (theMeshRenderer.isVisible) {
                 if (!isVisible) {
                     isVisible = true;
-                    crosshair.Targets.Add(transform.root.gameObject);
+                    crosshairController.Targets.Add(transform.root.gameObject);
                 }
             } else {
                 if (isVisible) {
                     isVisible = false;
-                    crosshair.Targets.Remove(transform.root.gameObject);
+                    crosshairController.Targets.Remove(transform.root.gameObject);
                 }
             }
         }

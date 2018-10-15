@@ -63,7 +63,7 @@ public class LobbyManager : IScene {
         h.Add("GameMode", "DeathMatch");
         h.Add("MaxKills", 1);//TODO : remove this
         h.Add("MaxTime", 5);
-        h.Add("Status", (int)GameManager.Status.Waiting);
+        h.Add("Status", (int)GameManager.RoomStatus.Waiting);
         h.Add("time", "05:00");
 
         RoomOptions ro = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
@@ -91,10 +91,10 @@ public class LobbyManager : IScene {
             if(roomsInfo[i].CustomProperties["Status"] != null) {
                 int status = int.Parse(roomsInfo[i].CustomProperties["Status"].ToString());
 
-                info[2].text = (status == (int)GameManager.Status.Waiting) ? "Waiting" : "In Battle";
+                info[2].text = (status == (int)GameManager.RoomStatus.Waiting) ? "Waiting" : "In Battle";
 
                 //Display time
-                if(status == (int)GameManager.Status.InBattle && roomsInfo[i].CustomProperties["time"] != null) {                    
+                if(status == (int)GameManager.RoomStatus.InBattle && roomsInfo[i].CustomProperties["time"] != null) {                    
                     info[2].text += "(" + roomsInfo[i].CustomProperties["time"].ToString() + ")";
                 }
 

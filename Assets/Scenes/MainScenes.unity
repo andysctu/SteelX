@@ -10780,18 +10780,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bm: {fileID: 0}
-  pv: {fileID: 0}
   LockedImg: {fileID: 0}
-  crosshairImage: {fileID: 0}
-  playerlayer:
-    serializedVersion: 2
-    m_Bits: 0
-  Terrainlayer:
-    serializedVersion: 2
-    m_Bits: 0
   Sounds: {fileID: 0}
-  MechCombat: {fileID: 0}
   SkillController: {fileID: 0}
+  crosshairParent: {fileID: 0}
   Targets: []
 --- !u!114 &457874220
 MonoBehaviour:
@@ -13913,7 +13905,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 2.9639225, y: 0.6288452}
+  m_AnchoredPosition: {x: 2.9639225, y: 0.6335602}
   m_SizeDelta: {x: 568, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &588889697
@@ -32688,7 +32680,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1533102527}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.89333326
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -34091,8 +34083,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 201130506}
   m_HandleRect: {fileID: 201130505}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.9963928
   m_NumberOfSteps: 1
   m_OnValueChanged:
     m_PersistentCalls:
@@ -35011,7 +35003,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000019073486}
+  m_AnchoredPosition: {x: 0, y: -0.0000038146973}
   m_SizeDelta: {x: 0, y: 16}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1514220800
@@ -35536,7 +35528,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0000076293945}
+  m_AnchoredPosition: {x: 0, y: -0.000015258789}
   m_SizeDelta: {x: -10, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1536609248
@@ -40173,8 +40165,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 581917280}
   m_HandleRect: {fileID: 581917279}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.9999999
+  m_Value: 1
+  m_Size: 0.00000006536347
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -47367,7 +47359,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 345258404}
   m_Direction: 3
   m_Value: 1
-  m_Size: 0.56666666
+  m_Size: 0.5666667
   m_NumberOfSteps: 1
   m_OnValueChanged:
     m_PersistentCalls:

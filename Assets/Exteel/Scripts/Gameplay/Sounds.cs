@@ -10,8 +10,8 @@ public class Sounds : MonoBehaviour {
 
     private void Start() {
         SetVolume(1f);
-
-        MovementSource.clip = WalkSound;
+        if(MovementSource !=null)
+            MovementSource.clip = WalkSound;
     }
 
     private void SetVolume(float v) {

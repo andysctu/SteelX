@@ -3,28 +3,30 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public abstract class GameManager : Photon.MonoBehaviour {
-    protected RespawnPanel RespawnPanel;    
-    protected Vector3[] RespawnPoints;
     protected Transform PanelCanvas;
+    protected RespawnPanel RespawnPanel;
     protected EscPanel EscPanel;
-    protected GameObject MechPrefab, player;
-    protected Timer Timer = new Timer();
-    protected MechCombat player_mcbt;
-    protected Camera[] thePlayerMainCameras;
-    protected int respawnPointNum;//The current respawn point choosed , may be invalid
-    private InGameChat InGameChat;
-    public static bool isTeamMode;
 
-    public enum Status { Waiting, InBattle};
+    protected GameObject MechPrefab, PlayerMech;
+    protected Camera[] PlayerMainCameras;
+
+    protected Vector3[] RespawnPoints;
+    protected int CurRespawnPoint;//The current respawn point choosed , may be invalid
+
+    protected Timer Timer = new Timer();
+    protected InGameChat InGameChat;
+    public static bool IsTeamMode;
+
+    public enum RoomStatus { Waiting, InBattle};
 
     //Block input
     private BlockInputSet BlockInputSet = new BlockInputSet();
-    public bool BlockInput { get { return blockInput; } }//Set by BlockInputController method
-    private bool blockInput = false;
+    public bool BlockInput { get { return _blockInput; } }//Set by BlockInputController method
+    private bool _blockInput = false;
 
     //end & start
-    protected bool gameEnding = false, callEndGame = false, ExitingGame = false;
-    public static bool gameIsBegin = false;
+    protected bool GameEnding = false, ExitingGame = false;
+    public bool GameIsBegin = false;
     public bool calledGameBegin = false;
 
     private bool IsMasterInitGame = false;
@@ -45,10 +47,6 @@ public abstract class GameManager : Photon.MonoBehaviour {
     //debug
     public bool Offline = false;
     public bool endGameImmediately = false;//debug use
-
-    protected GameManager() {
-        gameIsBegin = false;
-    }
 
     protected virtual void Awake() {
         Application.targetFrameRate = UserData.preferredFrameRate;//TODO : player can choose target frame rate
@@ -234,22 +232,22 @@ public abstract class GameManager : Photon.MonoBehaviour {
         if (Offline) return;
 
         // Update time
-        if (is_Time_init && gameIsBegin) {
+        if (is_Time_init && GameIsBegin) {
             Timer.UpdateTime();
         }
 
         //Master check end game condition
-        if (PhotonNetwork.isMasterClient && !gameEnding) {
+        if (PhotonNetwork.isMasterClient && !GameEnding) {
             if (CheckEndGameCondition()) {
-                gameEnding = true;
+                GameEnding = true;
                 SetBlockInput(BlockInputSet.Elements.GameEnding, true);
                 MasterOnGameOverAction();
             }
         }
 
         //TODO : debug take out
-        if (endGameImmediately && !gameEnding) {
-            gameEnding = true;
+        if (endGameImmediately && !GameEnding) {
+            GameEnding = true;
             SetBlockInput(BlockInputSet.Elements.GameEnding, true);
             photonView.RPC("EndGame", PhotonTargets.All);
         }
@@ -277,7 +275,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     public abstract void OnPlayerDead(PhotonPlayer player, PhotonPlayer shooter, string weapon);
 
     private void FixedUpdate() {
-        if (!gameIsBegin) {
+        if (!GameIsBegin) {
             if (is_Time_init && Timer.CheckIfGameBegin()) {
                 SetGameBegin();
                 OnGameStart();
@@ -344,8 +342,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             }
 
             //Master destroy his mech
-            if(player_mcbt.gameObject !=null)
-                PhotonNetwork.Destroy(player_mcbt.gameObject);
+            if(PlayerMech !=null)PhotonNetwork.Destroy(PlayerMech.gameObject);
 
             //remove buffered rpcs in GameManager
             PhotonNetwork.RemoveRPCs(photonView);
@@ -359,12 +356,12 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     public bool IsGameEnding() {
-        return gameEnding;
+        return GameEnding;
     }
 
     public void SetBlockInput(BlockInputSet.Elements element, bool b) {
         BlockInputSet.SetElement(element, b);
-        blockInput = BlockInputSet.IsInputBlocked();
+        _blockInput = BlockInputSet.IsInputBlocked();
         Debug.Log("Set blockInput : "+element.ToString() + " , "+b);
     }
 
@@ -383,17 +380,17 @@ public abstract class GameManager : Photon.MonoBehaviour {
     public abstract void SetRespawnPoint(int num);
 
     public int GetRespawnPoint() {
-        return respawnPointNum;
+        return CurRespawnPoint;
     }
 
     public abstract Vector3 GetRespawnPointPosition(int num);
 
     public void CallRespawn(int mech_num) {
-        Debug.Log("Call respawn mech num : " + mech_num + " respoint : " + respawnPointNum);
-        SetRespawnPoint(respawnPointNum);//set again to make sure not changed
+        Debug.Log("Call respawn mech num : " + mech_num + " respoint : " + CurRespawnPoint);
+        SetRespawnPoint(CurRespawnPoint);//set again to make sure not changed
 
         EnableRespawnPanel(false);
-        player_mcbt.GetComponent<PhotonView>().RPC("EnablePlayer", PhotonTargets.All, respawnPointNum, mech_num);
+        PlayerMech.GetComponent<PhotonView>().RPC("EnablePlayer", PhotonTargets.All, CurRespawnPoint, mech_num);
     }
 
     public void EnableRespawnPanel(bool b) {
@@ -404,11 +401,11 @@ public abstract class GameManager : Photon.MonoBehaviour {
     public abstract GameObject GetMap();
 
     public virtual GameObject GetThePlayerMech() {
-        return player;
+        return PlayerMech;
     }
 
     public Camera[] GetThePlayerMainCameras() {
-        return thePlayerMainCameras;
+        return PlayerMainCameras;
     }
 
     private void LoadOfflineInfo() {
@@ -423,7 +420,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         PhotonNetwork.player.NickName = "Player1";
         PhotonNetwork.offlineMode = true;
         PhotonNetwork.CreateRoom("offline");             
-        gameIsBegin = true;        
+        GameIsBegin = true;        
         RespawnPoints = new Vector3[1];
         RespawnPoints[0] = Vector3.zero;
         InstantiatePlayer();
@@ -435,7 +432,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             InGameChat.AddLine("Master forced end game", Color.red);
         }
 
-        gameEnding = true;
+        GameEnding = true;
         SetBlockInput(BlockInputSet.Elements.GameEnding, true);
         EndGameProcess();
     }
@@ -463,7 +460,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             PhotonNetwork.room.IsOpen = true;
 
             ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable {
-                { "Status", (int)Status.Waiting }
+                { "Status", (int)RoomStatus.Waiting }
             };
             PhotonNetwork.room.SetCustomProperties(h);
         }
@@ -489,7 +486,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     private void SetGameBegin() {
-        gameIsBegin = true;
+        GameIsBegin = true;
     }
 
     public void DisplayMsgOnGameChat(string str) {
