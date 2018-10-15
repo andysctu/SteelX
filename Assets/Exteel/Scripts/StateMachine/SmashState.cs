@@ -48,7 +48,7 @@ public class SmashState : MechStateMachineBehaviour {
         bool b = (inAir && !mcbt.IsMeleePlaying());
 
         if (b) {
-            mctrl.JumpMoveInAir();
+            //mctrl.JumpMoveInAir();
         }
 
         mctrl.CallLockMechRot (!animator.IsInTransition (0));
