@@ -30,9 +30,9 @@ public class SlashState : MechStateMachineBehaviour {
 
         //Boost Effect
         if (inAir) {
-            mctrl.Boost(true);
+            //mctrl.Boost(true);
         } else {
-            mctrl.Boost(false);
+            //mctrl.Boost(false);
         }
     }
 
@@ -54,7 +54,7 @@ public class SlashState : MechStateMachineBehaviour {
 
         if (stateInfo.normalizedTime > 0.5f && !detectedGrounded) {
             if (b) {
-                mctrl.Boost(false);
+                //mctrl.Boost(false);
             }
 
             mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
@@ -64,7 +64,7 @@ public class SlashState : MechStateMachineBehaviour {
                 mctrl.SetCanVerticalBoost(false);
                 animator.SetBool(JumpHash, false);
                 animator.SetBool(GroundedHash, true);
-                mctrl.Boost(false);
+                //mctrl.Boost(false);
             }
         }
     }

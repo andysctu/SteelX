@@ -34,7 +34,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 			mctrl.grounded = false;
 			animator.SetBool (GroundedHash, false);
 			animator.SetBool (BoostHash, false);//avoid dir go to next state (the transition interrupts by next state)
-			mctrl.Boost (false);
+			//mctrl.Boost (false);
 			return;
 		}
 
@@ -65,11 +65,11 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		if ((!isBoostingUsingShift && !doubleButtonDown) || !mcbt.IsENAvailable ()) {
 			//mctrl.Run ();
 			animator.SetBool (BoostHash, false);
-			mctrl.Boost (false);
+			//mctrl.Boost (false);
 			return;
 		} else{
 			animator.SetBool (BoostHash, true);
-			mctrl.Boost (true);
+			//mctrl.Boost (true);
 		}
 	}
 

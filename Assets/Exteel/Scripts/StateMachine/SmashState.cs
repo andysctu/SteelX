@@ -24,9 +24,9 @@ public class SmashState : MechStateMachineBehaviour {
         mctrl.ResetCurBoostingSpeed();
 
         if (inAir) {
-            mctrl.Boost(true);
+            //mctrl.Boost(true);
         } else {
-            mctrl.Boost(false);
+            //mctrl.Boost(false);
         }
     }
 
@@ -55,7 +55,7 @@ public class SmashState : MechStateMachineBehaviour {
 
         if (stateInfo.normalizedTime > 0.5f && !detectedGrounded) {
             if (b) {
-                mctrl.Boost(false);
+                //mctrl.Boost(false);
             }
 
             mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
@@ -65,7 +65,7 @@ public class SmashState : MechStateMachineBehaviour {
                 mctrl.SetCanVerticalBoost(false);
                 animator.SetBool(JumpHash, false);
                 animator.SetBool(GroundedHash, true);
-                mctrl.Boost(false);
+                //mctrl.Boost(false);
             }
         }
     }

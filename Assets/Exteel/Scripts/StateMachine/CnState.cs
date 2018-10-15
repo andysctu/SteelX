@@ -18,7 +18,7 @@ public class CnState : MechStateMachineBehaviour {
         //shut down boost
 		if (animator.GetBool(BoostHash) && !animator.IsInTransition (0)) {
 			animator.SetBool (BoostHash, false);
-			mctrl.Boost (false);
+			//mctrl.Boost (false);
 		}
 	}
 }

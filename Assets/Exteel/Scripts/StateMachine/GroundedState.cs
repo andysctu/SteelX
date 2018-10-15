@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
 public class GroundedState : MechStateMachineBehaviour {
-    private float lastInputDownTime;
-    private bool doubleButtonDown = false;
-    private KeyCode lastInput = KeyCode.None;
-    private const float DetectButtonDownInterval = 0.4f;
+    //TODO : implement these elsewhere
+    //private float lastInputDownTime;
+    //private bool doubleButtonDown = false;
+    //private KeyCode lastInput = KeyCode.None;
+    //private const float DetectButtonDownInterval = 0.4f;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         base.Init(animator);
@@ -12,17 +13,16 @@ public class GroundedState : MechStateMachineBehaviour {
 
         animator.SetBool(GroundedHash, true);
         animator.SetBool(animatorVars.OnMeleeHash, false);
+        
+        //TODO : implement these elsewhere
+        //doubleButtonDown = false;
         //mctrl.grounded = true;
         //mcbt.CanMeleeAttack = true;
-        doubleButtonDown = false;
         //isBoosting = false;
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
-
-        animator.SetFloat(SpeedHash, mctrl.speed);
-        animator.SetFloat(DirectionHash, mctrl.direction);
 
         if (animator.GetBool(JumpHash)) {
             return;
@@ -69,7 +69,7 @@ public class GroundedState : MechStateMachineBehaviour {
         //    //mctrl.Run();
         //}
 
-        doubleButtonDown = false;
+        //doubleButtonDown = false;
     }
 
     //TODO : remake this using HandleInputs

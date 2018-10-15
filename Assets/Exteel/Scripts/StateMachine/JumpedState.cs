@@ -5,6 +5,7 @@ public class JumpedState : MechStateMachineBehaviour {
     public bool isFirstjump = false;
 
     private bool _playedOnLandingAction;
+
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         base.Init(animator);
         if (!cc.enabled)return;
@@ -19,7 +20,7 @@ public class JumpedState : MechStateMachineBehaviour {
 
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
-        mctrl.Boost(false);
+        //mctrl.Boost(false);
         animator.SetBool(GroundedHash, false);
         animator.SetBool(BoostHash, false);//avoid shift+space directly vertically boost
 
@@ -48,10 +49,6 @@ public class JumpedState : MechStateMachineBehaviour {
         }
 
         if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(BoostHash)) {//the first jump is on ground
-            if (!mctrl.grounded) {
-                mctrl.OnLandingAction();
-            }
-
             mctrl.grounded = true;
             animator.SetBool(GroundedHash, true);
             animator.SetBool(JumpHash, false);
@@ -65,7 +62,7 @@ public class JumpedState : MechStateMachineBehaviour {
             mctrl.SetCanVerticalBoost(false);
             jumpReleased = false;
             animator.SetBool(BoostHash, true);
-            mctrl.Boost(true);
+            //mctrl.Boost(true);
         }
     }
 }

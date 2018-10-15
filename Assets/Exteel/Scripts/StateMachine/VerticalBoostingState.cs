@@ -19,7 +19,7 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 		animator.SetFloat(DirectionHash, mctrl.direction);
 
 		if ( mcbt.IsENEmpty() || !HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space]) {
-			mctrl.Boost (false);
+			//mctrl.Boost (false);
 			//animator.SetFloat(SpeedHash, 0);
 			animator.SetBool(BoostHash, false);
 		}else{
