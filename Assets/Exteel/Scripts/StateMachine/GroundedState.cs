@@ -8,7 +8,7 @@ public class GroundedState : MechStateMachineBehaviour {
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         base.Init(animator);
-        if (!PhotonNetwork.isMasterClient || !cc.enabled) return;
+        if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
         animator.SetBool(GroundedHash, true);
         animator.SetBool(animatorVars.OnMeleeHash, false);
@@ -19,18 +19,18 @@ public class GroundedState : MechStateMachineBehaviour {
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        //if (!PhotonNetwork.isMasterClient || !cc.enabled)return;
+        if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
-        //animator.SetFloat(SpeedHash, mctrl.speed);
-        //animator.SetFloat(DirectionHash, mctrl.direction);
+        animator.SetFloat(SpeedHash, mctrl.speed);
+        animator.SetFloat(DirectionHash, mctrl.direction);
 
-        //if (animator.GetBool(JumpHash)) {
-        //    //mctrl.Run();//not lose speed in air
-        //    return;
-        //}
+        if (animator.GetBool(JumpHash)) {
+            //mctrl.Run();//not lose speed in air
+            return;
+        }
 
         //if (!mctrl.CheckIsGrounded()) {//check not jumping but is falling
-        //    mctrl.grounded = false;
+            //mctrl.grounded = false;
         //    mctrl.SetCanVerticalBoost(true);
         //    animator.SetBool(GroundedHash, false);
         //    return;

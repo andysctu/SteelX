@@ -199,8 +199,6 @@ public class MechController : Photon.MonoBehaviour {
         _mechCam.angleOffset = offset;
     }
 
-    int curT = 0;
-
     private void Update() {
         //TODO : remake this (test use)
         //Other player also need to run this
@@ -221,6 +219,8 @@ public class MechController : Photon.MonoBehaviour {
         transform.Rotate(new Vector3(0, rotateDelta, 0));
 
         xzDir = new Vector2(userCmd.Horizontal, userCmd.Vertical).normalized;
+        speed = userCmd.Vertical;
+        direction = userCmd.Horizontal;
 
         grounded = CheckIsGrounded();
 
@@ -239,11 +239,11 @@ public class MechController : Photon.MonoBehaviour {
             _mainAnimator.SetBool(_animatorVars.JumpHash, true);
         }
 
+        _mainAnimator.SetFloat(_animatorVars.SpeedHash, userCmd.Vertical);
+        _mainAnimator.SetFloat(_animatorVars.DirectionHash, userCmd.Horizontal);
+
         if (grounded){
             Run(xzDir.x, xzDir.y, userCmd.msec);
-
-            _mainAnimator.SetFloat(_animatorVars.SpeedHash, userCmd.Vertical);
-            _mainAnimator.SetFloat(_animatorVars.DirectionHash, userCmd.Horizontal);
 
             ySpeed = -CharacterController.stepOffset * userCmd.msec * 40;
         } else{
