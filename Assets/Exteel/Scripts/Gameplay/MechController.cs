@@ -65,6 +65,7 @@ public class MechController : Photon.MonoBehaviour {
 
     //Input
     private HandleInputs _handleInputs;
+    public bool[] Buttons = new bool[2];
 
     private void Awake() {
         InitComponents();
@@ -218,9 +219,14 @@ public class MechController : Photon.MonoBehaviour {
         float rotateDelta = userCmd.ViewAngle - transform.eulerAngles.y;
         transform.Rotate(new Vector3(0, rotateDelta, 0));
 
+        Buttons[0] = userCmd.Buttons[0];
+        Buttons[1] = userCmd.Buttons[1];
+
+
+        speed = (userCmd.Vertical > -marginOfError && userCmd.Vertical < marginOfError) ? 0 : userCmd.Vertical;
+        direction = (userCmd.Horizontal > -marginOfError && userCmd.Horizontal < marginOfError) ? 0 : userCmd.Horizontal;
+
         xzDir = new Vector2(userCmd.Horizontal, userCmd.Vertical).normalized;
-        speed = userCmd.Vertical;
-        direction = userCmd.Horizontal;
 
         grounded = CheckIsGrounded();
 
@@ -247,6 +253,8 @@ public class MechController : Photon.MonoBehaviour {
 
             ySpeed = -CharacterController.stepOffset * userCmd.msec * 40;
         } else{
+            
+
             ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool("Boost")) ? 0 : Gravity  * userCmd.msec * 40 ;
         }
 
@@ -552,23 +560,6 @@ public class MechController : Photon.MonoBehaviour {
             BoosterController.StopBoost();
             EffectController.BoostingDustEffect(false);
         }
-    }
-
-    private void GetXZDirection() {
-        float h = _handleInputs.CurUserCmd.Horizontal;
-        float v = _handleInputs.CurUserCmd.Vertical;
-
-        if (v <= marginOfError && v >= -marginOfError) {
-            v = 0;
-        }
-        if (h <= marginOfError && h >= -marginOfError) {
-            h = 0;
-        }
-
-        speed = v;
-        direction = h;
-
-        xzDir = new Vector2(direction, speed).normalized;
     }
 
     public bool CheckIsGrounded() {

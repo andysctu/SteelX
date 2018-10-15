@@ -4,55 +4,46 @@ public class JumpedState : MechStateMachineBehaviour {
     public static bool jumpReleased = false;
     public bool isFirstjump = false;
 
+    private bool _playedOnLandingAction;
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         base.Init(animator);
-        if (!PhotonNetwork.isMasterClient || !cc.enabled){
-            if (isFirstjump) {
-                mctrl.OnJumpAction();
-                mctrl.grounded = false;
-            } else if (!animator.GetBool("Jump")) {//dir falling
-                jumpReleased = true;
-                mctrl.grounded = false;
-            }
-            return;
-        }
+        if (!cc.enabled)return;
+
+        _playedOnLandingAction = false;
 
         if (isFirstjump) {
             mctrl.OnJumpAction();
-
-            mctrl.Boost(false);
-            animator.SetBool(BoostHash, false);//avoid shift+space directly vertically boost
-            jumpReleased = false;
-            mctrl.grounded = false;
-            animator.SetBool(GroundedHash, false);
-        } else if (!animator.GetBool(JumpHash)) {//dir falling
-            mctrl.Boost(false);
-            animator.SetBool(BoostHash, false);
-            animator.SetBool(JumpHash, true);
-            animator.SetBool(GroundedHash, false);
+        } else if (!animator.GetBool("Jump")) {//dir falling
             jumpReleased = true;
-            mctrl.grounded = false;
+        }
+
+        if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
+
+        mctrl.Boost(false);
+        animator.SetBool(GroundedHash, false);
+        animator.SetBool(BoostHash, false);//avoid shift+space directly vertically boost
+
+        if (isFirstjump) {
+            jumpReleased = false;
+        } else if (!animator.GetBool(JumpHash)) {//dir falling
+            animator.SetBool(JumpHash, true);
+            jumpReleased = true;
         }
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        if (!PhotonNetwork.isMasterClient || !cc.enabled){
-            if (!isFirstjump && animator.GetBool("Grounded")){
-                if (!mctrl.grounded){
-                    mctrl.OnLandingAction();
-                    mctrl.grounded = true;
-                }
+        if (!cc.enabled) return;
+
+        if (!isFirstjump && animator.GetBool("Grounded")) {
+            if (!_playedOnLandingAction) {
+                _playedOnLandingAction = true;
+                mctrl.OnLandingAction();
             }
-            return;
         }
 
-        //float speed = Input.GetAxis("Vertical");
-        //float direction = Input.GetAxis("Horizontal");
+        if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
-        //animator.SetFloat(SpeedHash, speed);
-        //animator.SetFloat(DirectionHash, direction);
-
-        if (!HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space]) {
+        if (!mctrl.Buttons[(int)HandleInputs.Button.Space]) {
             jumpReleased = true;
         }
 
@@ -67,10 +58,10 @@ public class JumpedState : MechStateMachineBehaviour {
             mctrl.SetCanVerticalBoost(false);
             return;
         } else {
-            mctrl.JumpMoveInAir();
+            //mctrl.JumpMoveInAir();
         }
 
-        if (HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space] && jumpReleased && mctrl.CanVerticalBoost()) {
+        if (mctrl.Buttons[(int)HandleInputs.Button.Space] && jumpReleased && mctrl.CanVerticalBoost()) {
             mctrl.SetCanVerticalBoost(false);
             jumpReleased = false;
             animator.SetBool(BoostHash, true);

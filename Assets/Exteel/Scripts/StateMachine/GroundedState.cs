@@ -12,8 +12,8 @@ public class GroundedState : MechStateMachineBehaviour {
 
         animator.SetBool(GroundedHash, true);
         animator.SetBool(animatorVars.OnMeleeHash, false);
-        mctrl.grounded = true;
-        mcbt.CanMeleeAttack = true;
+        //mctrl.grounded = true;
+        //mcbt.CanMeleeAttack = true;
         doubleButtonDown = false;
         //isBoosting = false;
     }
@@ -25,7 +25,6 @@ public class GroundedState : MechStateMachineBehaviour {
         animator.SetFloat(DirectionHash, mctrl.direction);
 
         if (animator.GetBool(JumpHash)) {
-            //mctrl.Run();//not lose speed in air
             return;
         }
 
