@@ -227,7 +227,7 @@ public class MechController : Photon.MonoBehaviour {
 
         xzDirNormalized = new Vector2(userCmd.Horizontal, userCmd.Vertical).normalized;
 
-        //Update animator floats
+        //Update animator floats //TODO : consider move this part out
         _mainAnimator.SetFloat(_animatorVars.SpeedHash, userCmd.Vertical);
         _mainAnimator.SetFloat(_animatorVars.DirectionHash, userCmd.Horizontal);
 
@@ -248,6 +248,8 @@ public class MechController : Photon.MonoBehaviour {
 
                 _mainAnimator.SetBool(_animatorVars.JumpHash, true);
                 _mainAnimator.SetBool(_animatorVars.GroundedHash, false);
+
+                Boost(false, 0, 0, userCmd.msec);
             }
         }
 
@@ -257,11 +259,11 @@ public class MechController : Photon.MonoBehaviour {
                 Boost(true, xzDirNormalized.x, xzDirNormalized.y, userCmd.msec);
                 _mainAnimator.SetBool(_animatorVars.BoostHash, true);
 
-                if (_mainAnimator.GetBool("Boost")) {//TODO : client decrease faster
-                    _mechCombat.DecrementEN(userCmd.msec);
-                } else {
-                    _mechCombat.IncrementEN(userCmd.msec);
-                }
+                //if (_mainAnimator.GetBool("Boost")) {//TODO : client decrease faster
+                //    _mechCombat.DecrementEN(userCmd.msec);
+                //} else {
+                    //_mechCombat.IncrementEN(userCmd.msec);
+                //}
                 
             } else{
                 Boost(false, 0, 0, userCmd.msec);
@@ -289,12 +291,12 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        //if (PhotonNetwork.isMasterClient){
-        //    if (_mainAnimator.GetBool("Boost")) {
-        //        _mechCombat.DecrementEN();
-        //    } else {
-        //        _mechCombat.IncrementEN();
-        //    }
+        //if (PhotonNetwork.isMasterClient) {
+            if (_mainAnimator.GetBool("Boost")) {
+                _mechCombat.DecrementEN(Time.fixedDeltaTime);
+            } else {
+                _mechCombat.IncrementEN(Time.fixedDeltaTime);
+            }
         //}
 
         //if (_rootPv.isMine){
@@ -370,16 +372,13 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void RotateLegs(){
+        _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
+        if (_mainAnimator.GetFloat(_animatorVars.SpeedHash) < 0) _rLDir *= -1;
 
+        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
 
-    //    _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
-    //    if(_mainAnimator.GetFloat(_animatorVars.SpeedHash) < 0) _rLDir *= -1;
-
-    //    _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
-
-    //    _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
-    //    _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
-    //
+        _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
+        _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
     }
 
     public void SetCanVerticalBoost(bool canVBoost) {

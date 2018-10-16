@@ -44,25 +44,25 @@ public class JumpedState : MechStateMachineBehaviour {
 
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
-        if (!mctrl.Buttons[(int)HandleInputs.Button.Space]) {
-            jumpReleased = true;
-        }
+        //if (!mctrl.Buttons[(int)HandleInputs.Button.Space]) {
+        //    jumpReleased = true;
+        //}
 
-        if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(BoostHash)) {//the first jump is on ground
-            mctrl.grounded = true;
-            animator.SetBool(GroundedHash, true);
-            animator.SetBool(JumpHash, false);
-            mctrl.SetCanVerticalBoost(false);
-            return;
-        } else {
-            //mctrl.JumpMoveInAir();
-        }
+        //if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(BoostHash)) {//the first jump is on ground
+        //    //mctrl.grounded = true;
+        //    animator.SetBool(GroundedHash, true);
+        //    animator.SetBool(JumpHash, false);
+        //    //mctrl.SetCanVerticalBoost(false);
+        //    return;
+        //} else {
+        //    //mctrl.JumpMoveInAir();
+        //}
 
-        if (mctrl.Buttons[(int)HandleInputs.Button.Space] && jumpReleased && mctrl.CanVerticalBoost()) {
-            mctrl.SetCanVerticalBoost(false);
-            jumpReleased = false;
-            animator.SetBool(BoostHash, true);
-            //mctrl.Boost(true);
-        }
+        //if (mctrl.Buttons[(int)HandleInputs.Button.Space] && jumpReleased && mctrl.CanVerticalBoost()) {
+        //    mctrl.SetCanVerticalBoost(false);
+        //    jumpReleased = false;
+        //    animator.SetBool(BoostHash, true);
+        //    //mctrl.Boost(true);
+        //}
     }
 }
