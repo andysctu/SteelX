@@ -372,8 +372,8 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void RotateLegs(){
-        _rLDir = _mainAnimator.GetFloat(_animatorVars.DirectionHash);
-        if (_mainAnimator.GetFloat(_animatorVars.SpeedHash) < 0) _rLDir *= -1;
+        _rLDir = _mainAnimator.GetFloat("Direction");
+        if (_mainAnimator.GetFloat("Speed") < 0) _rLDir *= -1;
 
         _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
 
