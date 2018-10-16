@@ -82,23 +82,31 @@ public class HandleInputs : MonoBehaviour {
         int clientTick = (int)tables[0][(int)CMD.Tick];
 
         int d = 0;
+
         if (clientTick - _tick < 0) {
             d = 1024 - _tick + clientTick;
+            if (d >= 4) {
+                Debug.LogError("Package loss");
+
+                _tick = (clientTick - 3) % 1024;
+                d = 3;
+            }
         } else if (clientTick - _tick < 4) {
             d = clientTick - _tick;
         } else if (clientTick != _tick) {
-            d = 4;
+            Debug.LogError("Package loss");
+
+            _tick = (clientTick - 3) % 1024;
+            d = 3;
         }
 
-        for (int i = 0; i < 4 && i < d; i++) {
-            if (d - i - 1 < 0 || d - i - 1 > 4) Debug.LogError("D : " + d + " i : " + i + " curTick : " + _tick + " latestTick : " + clientTick);
+        for (int i = 0; i < 4 && i <= d; i++) {
+            CurUserCmd.msec = (float)tables[d - i][(int)CMD.MSec];
+            CurUserCmd.Horizontal = (float)tables[d - i][(int)CMD.Horizontal];
+            CurUserCmd.Vertical = (float)tables[d - i][(int)CMD.Vertical];
+            CurUserCmd.ViewAngle = (float)tables[d - i][(int)CMD.ViewAngle];
 
-            CurUserCmd.msec = (float)tables[d - i - 1][(int)CMD.MSec];
-            CurUserCmd.Horizontal = (float)tables[d - i - 1][(int)CMD.Horizontal];
-            CurUserCmd.Vertical = (float)tables[d - i - 1][(int)CMD.Vertical];
-            CurUserCmd.ViewAngle = (float)tables[d - i - 1][(int)CMD.ViewAngle];
-
-            byte button = (byte)tables[d - i - 1][(int)CMD.ButtonByte];
+            byte button = (byte)tables[d - i][(int)CMD.ButtonByte];
             Array.Copy(ConvertByteToBoolArray(button), 0, CurUserCmd.Buttons, 0, 2);
             //CurUserCmd.Buttons = ConvertByteToBoolArray(button);
 
@@ -106,8 +114,9 @@ public class HandleInputs : MonoBehaviour {
 
             _tick = (_tick + 1) % 1024;
 
-            Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position + ", msec : " + CurUserCmd.msec
+            Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position + " Calculated from msec : " + CurUserCmd.msec
                       + ", hor : " + CurUserCmd.Horizontal + ", ver :" + CurUserCmd.Vertical + ", space : " + CurUserCmd.Buttons[(int)Button.Space]);
+            //Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position);
         }
 
         //_tick = clientTick;
@@ -181,7 +190,7 @@ public class HandleInputs : MonoBehaviour {
 
             _tick = (_tick + 1) % 1024;
 
-            Debug.Log("Client tick : " + _tick +", Pos : "+ transform.position + ", msec : "+CurUserCmd.msec + ", hor : "+CurUserCmd.Horizontal + ", ver : "+CurUserCmd.Vertical);
+            Debug.Log("Client tick : " + _tick +", Pos : "+ transform.position + "Calculated from : msec : "+CurUserCmd.msec + ", hor : "+CurUserCmd.Horizontal + ", ver : "+CurUserCmd.Vertical);
         }
     }
 
@@ -212,6 +221,9 @@ public class HandleInputs : MonoBehaviour {
 
             Vector3 prePos = transform.position;
 
+
+
+
             Debug.Log("***Force pos : " + position + " on tick : " + tmpTick + " diff : " + Vector3.Distance(historyPositions[tick], position));
 
             //Adjust
@@ -223,13 +235,13 @@ public class HandleInputs : MonoBehaviour {
             while (tmpTick != this._tick) {
                 ProcessInputs(historyUserCmds[tmpTick]);
 
-                //Debug.Log("Calculated from : " + historyUserCmds[tmpTick].msec +
-                //          "ms , hor : " + historyUserCmds[tmpTick].Horizontal + " , ver : " +
-                //          historyUserCmds[tmpTick].Vertical + " space : " + historyUserCmds[tmpTick].Buttons[(int)Button.Space]);
+                Debug.Log("Calculated from : " + historyUserCmds[tmpTick].msec +
+                          "ms , hor : " + historyUserCmds[tmpTick].Horizontal + " , ver : " +
+                          historyUserCmds[tmpTick].Vertical + " space : " + historyUserCmds[tmpTick].Buttons[(int)Button.Space]);
 
                 tmpTick = (tmpTick + 1) % 1024;
 
-                //Debug.Log("=> Tick : " + tmpTick + " Pos : " + transform.position);
+                Debug.Log("=> Tick : " + tmpTick + " Pos : " + transform.position);
 
                 historyPositions[tmpTick] = transform.position;
             }

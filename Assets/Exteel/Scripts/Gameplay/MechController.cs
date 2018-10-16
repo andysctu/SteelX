@@ -275,7 +275,8 @@ public class MechController : Photon.MonoBehaviour {
         } else{
             JumpMoveInAir(xzDirNormalized.x, xzDirNormalized.y, userCmd.msec);
 
-            ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool(_animatorVars.BoostHash)) ? 0 : Gravity  * userCmd.msec * 40 ;
+            //ySpeed -= (ySpeed < maxDownSpeed || _mainAnimator.GetBool(_animatorVars.BoostHash)) ? 0 : Gravity  * userCmd.msec * 40 ;
+            ySpeed -= ySpeed < maxDownSpeed ? 0 : Gravity * userCmd.msec * 40;
         }
 
 
@@ -293,7 +294,7 @@ public class MechController : Photon.MonoBehaviour {
     private void FixedUpdate() {
         //if (PhotonNetwork.isMasterClient) {
             if (_mainAnimator.GetBool("Boost")) {
-                _mechCombat.DecrementEN(Time.fixedDeltaTime);
+                //_mechCombat.DecrementEN(Time.fixedDeltaTime);
             } else {
                 _mechCombat.IncrementEN(Time.fixedDeltaTime);
             }
@@ -390,6 +391,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void VerticalBoost() {
+        Debug.Log("this gets called");
         if (v_boost_start_yPos == 0) {
             v_boost_start_yPos = transform.position.y;
             ySpeed = movementVariables.verticalBoostSpeed;
@@ -432,7 +434,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void JumpMoveInAir(float horizontal_nor, float vertical_nor, float msec) {
-        if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
+        if (curboostingSpeed >= movementVariables.moveSpeed) {//not in transition to boost
             curboostingSpeed -= movementVariables.deceleration * msec * 10;
 
             xSpeed = (horizontal_nor * curboostingSpeed * transform.right).x + (vertical_nor * curboostingSpeed * transform.forward).x;
@@ -441,6 +443,16 @@ public class MechController : Photon.MonoBehaviour {
             xSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.x + movementVariables.moveSpeed * vertical_nor * transform.forward.x;
             zSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.z + movementVariables.moveSpeed * vertical_nor * transform.forward.z;
         }
+
+        //if (curboostingSpeed >= movementVariables.moveSpeed && !_mainAnimator.GetBool(_animatorVars.BoostHash)) {//not in transition to boost
+        //    curboostingSpeed -= movementVariables.deceleration * msec * 10;
+
+        //    xSpeed = (horizontal_nor * curboostingSpeed * transform.right).x + (vertical_nor * curboostingSpeed * transform.forward).x;
+        //    zSpeed = (horizontal_nor * curboostingSpeed * transform.right).z + (vertical_nor * curboostingSpeed * transform.forward).z;
+        //} else {
+        //    xSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.x + movementVariables.moveSpeed * vertical_nor * transform.forward.x;
+        //    zSpeed = movementVariables.moveSpeed * horizontal_nor * transform.right.z + movementVariables.moveSpeed * vertical_nor * transform.forward.z;
+        //}
     }
 
     public void Boost(bool b, float horizontal_nor, float vertical_nor, float msec) {//TODO : improve this using animator bool to decide open/close
@@ -458,7 +470,7 @@ public class MechController : Photon.MonoBehaviour {
             }
         }
         if (b) {
-            if (grounded) {
+            //if (grounded) {
                 if (Mathf.Abs(vertical_nor) < 0.1f && Mathf.Abs(horizontal_nor) < 0.1f) {//boosting but not moving => decrease current boosting speed
                     if (curboostingSpeed >= movementVariables.minBoostSpeed)
                         curboostingSpeed -= movementVariables.acceleration * msec * 10;
@@ -493,11 +505,11 @@ public class MechController : Photon.MonoBehaviour {
                 }
                 //run_xzDir.x = horizontal_nor;
                 //run_xzDir.y = vertical_nor;
-            } else {//boost in air
-                float inAirSpeed = movementVariables.maxHorizontalBoostSpeed * InAirSpeedCoeff;
-                xSpeed = inAirSpeed * horizontal_nor * transform.right.x + inAirSpeed * vertical_nor * transform.forward.x;
-                zSpeed = inAirSpeed * horizontal_nor * transform.right.z + inAirSpeed * vertical_nor * transform.forward.z;
-            }
+            //} else {//boost in air
+            //    float inAirSpeed = movementVariables.maxHorizontalBoostSpeed * InAirSpeedCoeff;
+            //    xSpeed = inAirSpeed * horizontal_nor * transform.right.x + inAirSpeed * vertical_nor * transform.forward.x;
+            //    zSpeed = inAirSpeed * horizontal_nor * transform.right.z + inAirSpeed * vertical_nor * transform.forward.z;
+            //}
         }
     }
 

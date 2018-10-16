@@ -104,9 +104,11 @@ public class TestModeManager : GameManager {
         }
 
         Mech m = new Mech();
+        Vector3 tmp = new Vector3(StartPos.x, 0.2f, StartPos.z);
 
-        PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
-        Debug.Log("start pos : "+ StartPos);
+
+        PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, tmp, StartRot, 0);
+        Debug.Log("start pos : "+ tmp);
         BuildMech mechBuilder = PlayerMech.GetComponent<BuildMech>();
         mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
