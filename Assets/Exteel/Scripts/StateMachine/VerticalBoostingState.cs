@@ -15,16 +15,25 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (!PhotonNetwork.isMasterClient || !cc.enabled) return;
 
-		//animator.SetFloat(SpeedHash, mctrl.speed);
-		//animator.SetFloat(DirectionHash, mctrl.direction);
+	    if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
-		//if ( mcbt.IsENEmpty() || !HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space]) {
-		//	//mctrl.Boost (false);
-		//	//animator.SetFloat(SpeedHash, 0);
-		//	animator.SetBool(BoostHash, false);
-		//}else{
-		//	mctrl.VerticalBoost();
-		//}
-	}
+	    animator.SetFloat(SpeedHash, mctrl.Speed);
+	    animator.SetFloat(DirectionHash, mctrl.Direction);
+
+
+	    animator.SetBool(BoostHash, mctrl.IsBoosting);
+
+	    if (mctrl.Grounded){
+            animator.SetBool(GroundedHash, true);
+	    }
+
+        //if ( mcbt.IsENEmpty() || !HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space]) {
+        //	//mctrl.Boost (false);
+        //	//animator.SetFloat(SpeedHash, 0);
+        //	animator.SetBool(BoostHash, false);
+        //}else{
+        //	mctrl.VerticalBoost();
+        //}
+    }
 }
 	

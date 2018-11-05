@@ -17,7 +17,7 @@ public class SlashDetector : MonoBehaviour {
     private bool on_original_place = false;
 
     private void Update() {
-        if (!mctrl.grounded) {
+        if (!mctrl.Grounded) {
             on_original_place = false;
             clamped_cam_angle_x = Mathf.Clamp(cam.GetCamAngle(), -clampAngle, clampAngle);
             transform.parent.localPosition = new Vector3(transform.parent.localPosition.x, mech_Midpoint, transform.parent.localPosition.z);

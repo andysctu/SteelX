@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 public class JumpedState : MechStateMachineBehaviour {
-    public static bool jumpReleased = false;
     public bool isFirstjump = false;
 
     private bool _playedOnLandingAction;
@@ -14,8 +13,6 @@ public class JumpedState : MechStateMachineBehaviour {
 
         if (isFirstjump) {
             mctrl.OnJumpAction();
-        } else if (!animator.GetBool("Jump")) {//dir falling
-            jumpReleased = true;
         }
 
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
@@ -24,18 +21,23 @@ public class JumpedState : MechStateMachineBehaviour {
         animator.SetBool(GroundedHash, false);
         animator.SetBool(BoostHash, false);//avoid shift+space directly vertically boost
 
-        if (isFirstjump) {
-            jumpReleased = false;
-        } else if (!animator.GetBool(JumpHash)) {//dir falling
+        if (!animator.GetBool(JumpHash)) {//dir falling
             animator.SetBool(JumpHash, true);
-            jumpReleased = true;
         }
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         if (!cc.enabled) return;
 
-        if (!isFirstjump && animator.GetBool("Grounded")) {
+        if (mctrl.Grounded){
+            animator.SetBool(JumpHash, false);
+            animator.SetBool(GroundedHash, true);
+            return;
+        }
+
+        animator.SetBool(JumpHash, true);
+
+        if (!isFirstjump && animator.GetBool("Grounded")) {//TODO : consider move this part to groundedstate
             if (!_playedOnLandingAction) {
                 _playedOnLandingAction = true;
                 mctrl.OnLandingAction();
@@ -44,25 +46,11 @@ public class JumpedState : MechStateMachineBehaviour {
 
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
-        //if (!mctrl.Buttons[(int)HandleInputs.Button.Space]) {
-        //    jumpReleased = true;
-        //}
+        animator.SetFloat(SpeedHash, mctrl.Speed);
+        animator.SetFloat(DirectionHash, mctrl.Direction);
 
-        //if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(BoostHash)) {//the first jump is on ground
-        //    //mctrl.grounded = true;
-        //    animator.SetBool(GroundedHash, true);
-        //    animator.SetBool(JumpHash, false);
-        //    //mctrl.SetCanVerticalBoost(false);
-        //    return;
-        //} else {
-        //    //mctrl.JumpMoveInAir();
-        //}
-
-        //if (mctrl.Buttons[(int)HandleInputs.Button.Space] && jumpReleased && mctrl.CanVerticalBoost()) {
-        //    mctrl.SetCanVerticalBoost(false);
-        //    jumpReleased = false;
-        //    animator.SetBool(BoostHash, true);
-        //    //mctrl.Boost(true);
-        //}
+        if (mctrl.IsBoosting){
+            animator.SetBool(BoostHash, true);
+        }
     }
 }

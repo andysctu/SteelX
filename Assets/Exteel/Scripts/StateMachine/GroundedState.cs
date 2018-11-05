@@ -16,24 +16,33 @@ public class GroundedState : MechStateMachineBehaviour {
         
         //TODO : implement these elsewhere
         //doubleButtonDown = false;
-        //mctrl.grounded = true;
         //mcbt.CanMeleeAttack = true;
-        //isBoosting = false;
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
+        animator.SetFloat(SpeedHash, mctrl.Speed);
+        animator.SetFloat(DirectionHash, mctrl.Direction);
+
         if (animator.GetBool(JumpHash)) {
             return;
         }
 
-        //if (!mctrl.CheckIsGrounded()) {//check not jumping but is falling
-            //mctrl.grounded = false;
-        //    mctrl.SetCanVerticalBoost(true);
-        //    animator.SetBool(GroundedHash, false);
-        //    return;
-        //}
+        if (!mctrl.Grounded) {//check not jumping but is falling
+            animator.SetBool(GroundedHash, false);
+            return;
+        }
+
+        if (mctrl.IsJumping){
+            animator.SetBool(GroundedHash, false);
+            animator.SetBool(JumpHash, true);
+            return;
+        }
+
+        if (mctrl.IsBoosting){
+            animator.SetBool(BoostHash,true);
+        }
 
         //CheckDoubleButtonDown();
 

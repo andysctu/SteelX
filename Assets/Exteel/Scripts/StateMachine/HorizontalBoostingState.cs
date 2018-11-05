@@ -24,19 +24,19 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 		EffectController.UpdateBoostingDust ();
 		if (!PhotonNetwork.isMasterClient || !cc.enabled)return;
 
-		animator.SetFloat(SpeedHash, mctrl.speed);
-		animator.SetFloat(DirectionHash, mctrl.direction);
+		animator.SetFloat(SpeedHash, mctrl.Speed);
+		animator.SetFloat(DirectionHash, mctrl.Direction);
 
 		if(animator.GetBool(JumpHash))return;
 
-		if(!mctrl.CheckIsGrounded()){//falling
-			mctrl.SetCanVerticalBoost (true);
-			mctrl.grounded = false;
-			animator.SetBool (GroundedHash, false);
-			animator.SetBool (BoostHash, false);//avoid dir go to next state (the transition interrupts by next state)
-			//mctrl.Boost (false);
-			return;
-		}
+		//if(!mctrl.CheckIsGrounded()){//falling
+		//	mctrl.SetCanVerticalBoost (true);
+		//	//mctrl.grounded = false;
+		//	animator.SetBool (GroundedHash, false);
+		//	animator.SetBool (BoostHash, false);//avoid dir go to next state (the transition interrupts by next state)
+		//	//mctrl.Boost (false);
+		//	return;
+		//}
 
         //if (Input.GetKeyUp(KeyCode.LeftShift)) {
         //    isBoostingUsingShift = false;
@@ -55,7 +55,7 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
         //}               
 
         if (HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space]) {
-            mctrl.grounded = false;
+            //mctrl.grounded = false;
             animator.SetBool(GroundedHash, false);
 
             mctrl.SetCanVerticalBoost(true);

@@ -309,7 +309,7 @@ public class SkillController : MonoBehaviour {
 
         bool hasPlayerAnimation = (skills[skill_num].GetPlayerAniamtion() != null);
 
-        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.grounded) && !mainAnimator.GetBool("OnMelee");
+        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.Grounded) && !mainAnimator.GetBool("OnMelee");
     }
 
     private bool CheckIfEnergyEnough(int energyCost) {

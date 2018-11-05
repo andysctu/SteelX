@@ -59,14 +59,14 @@ public class SmashState : MechStateMachineBehaviour {
             }
 
             mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
-            if (mctrl.CheckIsGrounded()) {
-                detectedGrounded = true;
-                mctrl.grounded = true;
-                mctrl.SetCanVerticalBoost(false);
-                animator.SetBool(JumpHash, false);
-                animator.SetBool(GroundedHash, true);
-                //mctrl.Boost(false);
-            }
+            //if (mctrl.CheckIsGrounded()) {
+            //    detectedGrounded = true;
+            //    //mctrl.grounded = true;
+            //    mctrl.SetCanVerticalBoost(false);
+            //    animator.SetBool(JumpHash, false);
+            //    animator.SetBool(GroundedHash, true);
+            //    //mctrl.Boost(false);
+            //}
         }
     }
 

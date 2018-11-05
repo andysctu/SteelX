@@ -190,7 +190,7 @@ public class HandleInputs : MonoBehaviour {
 
             _tick = (_tick + 1) % 1024;
 
-            Debug.Log("Client tick : " + _tick +", Pos : "+ transform.position + "Calculated from : msec : "+CurUserCmd.msec + ", hor : "+CurUserCmd.Horizontal + ", ver : "+CurUserCmd.Vertical);
+            //Debug.Log("Client tick : " + _tick +", Pos : "+ transform.position + "Calculated from : msec : "+CurUserCmd.msec + ", hor : "+CurUserCmd.Horizontal + ", ver : "+CurUserCmd.Vertical);
         }
     }
 

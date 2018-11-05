@@ -168,7 +168,7 @@ public class AnimationEventController : MonoBehaviour {
 
         if (speed > 0) {
             List<Transform> targets = SlashDetector.getCurrentTargets();
-            if (targets.Count == 0 || !MechController.grounded) {
+            if (targets.Count == 0 || !MechController.Grounded) {
                 MechController.SetMoving(speed);//complete move
             } else {
                 //check if there is any target in front & the distance between is higher than a number
@@ -196,6 +196,6 @@ public class AnimationEventController : MonoBehaviour {
     }
 
     public void CallJump() {
-        MechController.Jump();
+        //MechController.Jump();
     }
 }

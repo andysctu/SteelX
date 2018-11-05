@@ -87,13 +87,13 @@ namespace Weapons
                 }
             }
 
-            if (Input.GetKey(KeyCode.Mouse0) && !_onPose && !_onShoot && _bulletNum >= 1 && Mctrl.grounded){
+            if (Input.GetKey(KeyCode.Mouse0) && !_onPose && !_onShoot && _bulletNum >= 1 && Mctrl.Grounded){
                 AnimationEventController.CnPose();
                 MechAnimator.SetBool(AnimatorVars.CnPoseHash, true);
             }
 
             if (Time.time - TimeOfLastUse >= 1 / Rate && _onPose){
-                if (Input.GetKey(KeyCode.Mouse0) || !MechAnimator.GetBool(AnimatorVars.CnPoseHash) || !Mctrl.grounded) return;
+                if (Input.GetKey(KeyCode.Mouse0) || !MechAnimator.GetBool(AnimatorVars.CnPoseHash) || !Mctrl.Grounded) return;
 
                 IsFiring = true;
 

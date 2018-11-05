@@ -419,7 +419,7 @@ public class MechCombat : Combat {
     }
 
     public void DecrementEN(float msec) {
-        if (MechController.grounded)
+        if (MechController.Grounded)
             CurrentEN -= energyProperties.dashENDrain * msec;
         else
             CurrentEN -= energyProperties.jumpENDrain * msec;
