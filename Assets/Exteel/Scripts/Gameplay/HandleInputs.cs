@@ -4,31 +4,30 @@ using UnityEngine;
 
 public class HandleInputs : MonoBehaviour {
     [SerializeField] private PhotonView _rootPv;
-    private MechController mctrl;
-    private GameManager gm;
+    private MechController _mechController;
+    private MechCombat _mechCombat;
+    private GameManager _gameManager;
 
     private int _actorId;//For master client to check if inputs are sent from this
 
+    //Client
+    private enum ClientData { MSec, Horizontal, Vertical, ViewAngle, Tick, ButtonByte };
+    private readonly Hashtable[] _commandsToSend = new Hashtable[4];
+    private UserCmd _curUserCmd;
+    public float SendRate = 0.03f;
+    private float _preSendTime;
+
+    //Master
+    private enum ConfirmData { Position, Speed, State, IsVerBoostAvailable, VerBoostStartYPos, JumpReleased, CurBoostingSpeed, IsBoosting, EN, Tick};
     private readonly Hashtable _confirmInfo = new Hashtable();
-    private enum CONFIRM { Position, Tick };
+    public float SendConfirmRate = 0.05f;
+    private float _preConfirmTime;
 
-    private enum CMD { MSec, Horizontal, Vertical, ViewAngle, Tick, ButtonByte };
-
-    public UserCmd CurUserCmd;
-    private bool spaceIsPressed = false;
     public enum Button { Space, LeftShift };
 
-    private readonly UserCmd[] historyUserCmds = new UserCmd[1024];
-    private readonly Vector3[] historyPositions = new Vector3[1024];
-    private int _tick = 0;
-
-    public float SendRate = 0.03f;
-    private float preSendTime;
-
-    public float SendConfirmRate = 0.05f;
-    private float preConfirmTime;
-
-    private readonly Hashtable[] _commandsToSend = new Hashtable[4];
+    private readonly UserCmd[] _historyUserCmds = new UserCmd[1024];
+    private readonly Vector3[] _historyPositions = new Vector3[1024];
+    private int _tick;
 
     public struct UserCmd {
         public float msec;
@@ -43,23 +42,24 @@ public class HandleInputs : MonoBehaviour {
             RegisterInputEvent();
         }
 
-        mctrl = GetComponent<MechController>();
-        CurUserCmd.Buttons = new bool[2];
+        _mechController = GetComponent<MechController>();
+        _mechCombat = GetComponent<MechCombat>();
+
+        _curUserCmd.Buttons = new bool[2];
 
         _actorId = _rootPv.ownerId;
-        enabled = _rootPv.isMine;
-    }
-
-    private void Start() {
-        gm = FindObjectOfType<GameManager>();
-
-        for (int i = 0; i < _commandsToSend.Length; i++) {
-            _commandsToSend[i] = new Hashtable();
-        }
+        enabled = _rootPv.isMine;//enable determine whether to send the client data to master
     }
 
     private void RegisterInputEvent() {
         PhotonNetwork.OnEventCall += this.OnPhotonEvent;
+    }
+
+    private void Start() {
+        _gameManager = FindObjectOfType<GameManager>();
+
+        for (int i = 0; i < _commandsToSend.Length; i++)
+            _commandsToSend[i] = new Hashtable();
     }
 
     protected void OnPhotonEvent(byte eventCode, object content, int senderId) {
@@ -68,10 +68,7 @@ public class HandleInputs : MonoBehaviour {
             UpdateCurInputs((Hashtable[])content, senderId);
             break;
             case GameEventCode.POS_CONFIRM:
-            int tick = (int)((Hashtable)content)[(int)CONFIRM.Tick];
-            Vector3 position = (Vector3)((Hashtable)content)[(int)CONFIRM.Position];
-
-            ConfirmPosition(tick, position);
+            ConfirmPosition((Hashtable)content);
             break;
         }
     }
@@ -79,81 +76,84 @@ public class HandleInputs : MonoBehaviour {
     private void UpdateCurInputs(Hashtable[] tables, int senderId) {
         if (senderId != _actorId) return;//this is not his mech
 
-        int clientTick = (int)tables[0][(int)CMD.Tick];
+        int clientTick = (int)tables[0][(int)ClientData.Tick];
 
-        int d = 0;
+        int unProcessedPackageCount = 0;
 
         if (clientTick - _tick < 0) {
-            d = 1024 - _tick + clientTick;
-            if (d >= 4) {
-                Debug.LogError("Package loss");
-
-                _tick = (clientTick - 3) % 1024;
-                d = 3;
+            unProcessedPackageCount = 1024 - _tick + clientTick;
+            if (unProcessedPackageCount >= 4) {
+                Debug.LogError("Package loss : "+ (1024 - _tick + clientTick - 3));
+                unProcessedPackageCount = 3;
             }
         } else if (clientTick - _tick < 4) {
-            d = clientTick - _tick;
-        } else if (clientTick != _tick) {
-            Debug.LogError("Package loss");
-
-            _tick = (clientTick - 3) % 1024;
-            d = 3;
+            unProcessedPackageCount = clientTick - _tick;
+        } else if (clientTick - _tick >= 4) {
+            Debug.LogError("Package loss : "+(clientTick - _tick - 3));
+            unProcessedPackageCount = 3;
         }
 
-        for (int i = 0; i < 4 && i <= d; i++) {
-            CurUserCmd.msec = (float)tables[d - i][(int)CMD.MSec];
-            CurUserCmd.Horizontal = (float)tables[d - i][(int)CMD.Horizontal];
-            CurUserCmd.Vertical = (float)tables[d - i][(int)CMD.Vertical];
-            CurUserCmd.ViewAngle = (float)tables[d - i][(int)CMD.ViewAngle];
+        _tick = (clientTick - unProcessedPackageCount) % 1024;
 
-            byte button = (byte)tables[d - i][(int)CMD.ButtonByte];
-            Array.Copy(ConvertByteToBoolArray(button), 0, CurUserCmd.Buttons, 0, 2);
-            //CurUserCmd.Buttons = ConvertByteToBoolArray(button);
+        for (int i = 0; i <= unProcessedPackageCount; i++) {
+            _curUserCmd.msec = (float)tables[unProcessedPackageCount - i][(int)ClientData.MSec];
+            _curUserCmd.Horizontal = (float)tables[unProcessedPackageCount - i][(int)ClientData.Horizontal];
+            _curUserCmd.Vertical = (float)tables[unProcessedPackageCount - i][(int)ClientData.Vertical];
+            _curUserCmd.ViewAngle = (float)tables[unProcessedPackageCount - i][(int)ClientData.ViewAngle];
 
-            ProcessInputs(CurUserCmd);
+            byte button = (byte)tables[unProcessedPackageCount - i][(int)ClientData.ButtonByte];
+            Array.Copy(ConvertByteToBoolArray(button), 0, _curUserCmd.Buttons, 0, 2);
+
+            ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
 
-            Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position + " Calculated from msec : " + CurUserCmd.msec
-                      + ", hor : " + CurUserCmd.Horizontal + ", ver :" + CurUserCmd.Vertical + ", space : " + CurUserCmd.Buttons[(int)Button.Space]);
+            //Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position + " Calculated from msec : " + _curUserCmd.msec
+            //          + ", hor : " + _curUserCmd.Horizontal + ", ver :" + _curUserCmd.Vertical + ", space : " + _curUserCmd.Buttons[(int)Button.Space]);
             //Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position);
         }
 
-        //_tick = clientTick;
+        if (Time.time - _preConfirmTime > SendConfirmRate){
+            _preConfirmTime = Time.time;
+            
+            //Send new pos back to the client
+            _confirmInfo[(int)ConfirmData.Tick] = _tick;
+            _confirmInfo[(int)ConfirmData.Position] = transform.position;
+            _confirmInfo[(int)ConfirmData.Speed] = new Vector3(_mechController.XSpeed, _mechController.YSpeed, _mechController.ZSpeed);
+            _confirmInfo[(int)ConfirmData.EN] = _mechCombat.CurrentEN;
+            _confirmInfo[(int)ConfirmData.IsVerBoostAvailable] = _mechController.IsAvailableVerBoost;
+            _confirmInfo[(int)ConfirmData.State] = _mechController.CurMovementState != null && _mechController.CurMovementState == _mechController.JumpState ? 1 : 0;
+            _confirmInfo[(int)ConfirmData.VerBoostStartYPos] = _mechController.VerticalBoostStartYPos;
+            _confirmInfo[(int)ConfirmData.JumpReleased] = _mechController.JumpReleased;
+            _confirmInfo[(int)ConfirmData.CurBoostingSpeed] = _mechController.CurBoostingSpeed;
+            _confirmInfo[(int)ConfirmData.IsBoosting] = _mechController.IsBoosting;
 
 
-        if (Time.time - preConfirmTime < SendConfirmRate) return;
-
-        preConfirmTime = Time.time;
-
-        //Send new pos back to the client
-        _confirmInfo[(int)CONFIRM.Tick] = _tick;
-        _confirmInfo[(int)CONFIRM.Position] = transform.position;
-
-        RaiseEventOptions options = new RaiseEventOptions();
-        options.TargetActors = new[] { _actorId };
-        PhotonNetwork.RaiseEvent(GameEventCode.POS_CONFIRM, _confirmInfo, false, options);
+            RaiseEventOptions options = new RaiseEventOptions();
+            options.TargetActors = new[] { _actorId };
+            PhotonNetwork.RaiseEvent(GameEventCode.POS_CONFIRM, _confirmInfo, false, options);
+        }
     }
 
     private void Update() {
         GetInputs();
 
         //Override inputs if blocking
-        if (gm.BlockInput) {
-            CurUserCmd.Horizontal = 0;
-            CurUserCmd.Vertical = 0;
-            CurUserCmd.Buttons[(int)Button.Space] = false;
-            CurUserCmd.Buttons[(int)Button.LeftShift] = false;
+        if (_gameManager.BlockInput) {
+            _curUserCmd.Horizontal = 0;
+            _curUserCmd.Vertical = 0;
+            _curUserCmd.Buttons[(int)Button.Space] = false;
+            _curUserCmd.Buttons[(int)Button.LeftShift] = false;
         }
 
-        historyPositions[_tick] = transform.position;
-        historyUserCmds[_tick] = CurUserCmd;
-        historyUserCmds[_tick].Buttons = new bool[2];
-        CurUserCmd.Buttons.CopyTo(historyUserCmds[_tick].Buttons, 0);
+        _historyPositions[_tick] = transform.position;
+        _historyUserCmds[_tick] = _curUserCmd;
+        _historyUserCmds[_tick].Buttons = new bool[2];
+        _curUserCmd.Buttons.CopyTo(_historyUserCmds[_tick].Buttons, 0);
 
         //Client send inputs to master
-        if (!PhotonNetwork.isMasterClient && Time.time - preSendTime > SendRate) {
-            preSendTime = Time.time;
+        if (!PhotonNetwork.isMasterClient && Time.time - _preSendTime > SendRate) {
+            _preSendTime = Time.time;
 
             RaiseEventOptions options = new RaiseEventOptions();
             options.Receivers = ReceiverGroup.MasterClient;
@@ -162,31 +162,29 @@ public class HandleInputs : MonoBehaviour {
             for (int i = 0; i < 4; i++) {
                 index = _tick - i < 0 ? 1024 - i + _tick : _tick - i;
 
-
-                if (historyUserCmds[index].msec != 0) {
-                    Byte button = ConvertBoolArrayToByte(historyUserCmds[index].Buttons);
-                    _commandsToSend[i][(int)CMD.MSec] = historyUserCmds[index].msec;
-                    _commandsToSend[i][(int)CMD.Horizontal] = historyUserCmds[index].Horizontal;
-                    _commandsToSend[i][(int)CMD.Vertical] = historyUserCmds[index].Vertical;
-                    _commandsToSend[i][(int)CMD.ViewAngle] = historyUserCmds[index].ViewAngle;
-                    _commandsToSend[i][(int)CMD.Tick] = index;
-                    _commandsToSend[i][(int)CMD.ButtonByte] = button;
-                } else {
+                if (_historyUserCmds[index].msec != 0) {
+                    Byte button = ConvertBoolArrayToByte(_historyUserCmds[index].Buttons);
+                    _commandsToSend[i][(int)ClientData.MSec] = _historyUserCmds[index].msec;
+                    _commandsToSend[i][(int)ClientData.Horizontal] = _historyUserCmds[index].Horizontal;
+                    _commandsToSend[i][(int)ClientData.Vertical] = _historyUserCmds[index].Vertical;
+                    _commandsToSend[i][(int)ClientData.ViewAngle] = _historyUserCmds[index].ViewAngle;
+                    _commandsToSend[i][(int)ClientData.Tick] = index;
+                    _commandsToSend[i][(int)ClientData.ButtonByte] = button;
+                } else {//stacked packages not enough => filled with empty
                     Byte button = ConvertBoolArrayToByte(new bool[2] { false, false });
-                    _commandsToSend[i][(int)CMD.MSec] = 0;
-                    _commandsToSend[i][(int)CMD.Horizontal] = 0;
-                    _commandsToSend[i][(int)CMD.Vertical] = 0;
-                    _commandsToSend[i][(int)CMD.ViewAngle] = 0;
-                    _commandsToSend[i][(int)CMD.Tick] = index;
-                    _commandsToSend[i][(int)CMD.ButtonByte] = button;
+                    _commandsToSend[i][(int)ClientData.MSec] = 0;
+                    _commandsToSend[i][(int)ClientData.Horizontal] = 0;
+                    _commandsToSend[i][(int)ClientData.Vertical] = 0;
+                    _commandsToSend[i][(int)ClientData.ViewAngle] = 0;
+                    _commandsToSend[i][(int)ClientData.Tick] = index;
+                    _commandsToSend[i][(int)ClientData.ButtonByte] = button;
                 }
-
             }
             PhotonNetwork.RaiseEvent(GameEventCode.INPUT, _commandsToSend, false, options);
         }
 
         if (_rootPv.isMine) {
-            ProcessInputs(CurUserCmd);
+            ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
 
@@ -195,25 +193,30 @@ public class HandleInputs : MonoBehaviour {
     }
 
     private void GetInputs() {
-        CurUserCmd.Horizontal = Input.GetAxis("Horizontal");
-        CurUserCmd.Vertical = Input.GetAxis("Vertical");
-        CurUserCmd.ViewAngle = transform.rotation.eulerAngles.y;
-        CurUserCmd.msec = Time.deltaTime;
+        _curUserCmd.Horizontal = Input.GetAxis("Horizontal");
+        _curUserCmd.Vertical = Input.GetAxis("Vertical");
+        _curUserCmd.ViewAngle = transform.rotation.eulerAngles.y;
+        _curUserCmd.msec = Time.deltaTime;
 
-        CurUserCmd.Buttons[(int)Button.Space] = Input.GetKey(KeyCode.Space);
-        CurUserCmd.Buttons[(int)Button.LeftShift] = Input.GetKey(KeyCode.LeftShift);
+        _curUserCmd.Buttons[(int)Button.Space] = Input.GetKey(KeyCode.Space);
+        _curUserCmd.Buttons[(int)Button.LeftShift] = Input.GetKey(KeyCode.LeftShift);
     }
 
     private void ProcessInputs(UserCmd userCmd) {
         transform.Rotate(Vector3.up, userCmd.ViewAngle - transform.rotation.eulerAngles.y);
 
-        mctrl.UpdatePosition(userCmd);
+        _mechController.UpdatePosition(userCmd);
     }
 
-    public float threshold = 0.1f;
+    public float AdjustPositionThreshold = 0.1f;
 
-    private void ConfirmPosition(int tick, Vector3 position) {
-        if (Vector3.Distance(historyPositions[tick], position) > threshold) {
+    private void ConfirmPosition(Hashtable hashtable) {
+        int tick = (int)hashtable[(int)ConfirmData.Tick];
+        Vector3 position = (Vector3)hashtable[(int)ConfirmData.Position];
+        
+        //TODO : EN
+
+        if (Vector3.Distance(_historyPositions[tick], position) > AdjustPositionThreshold) {
             //Debug.Log("Tick " + tick +" has dif : " + Vector3.Distance(historyPositions[tick], position) + " curTick : "+_tick);
             //Debug.Log("History : "+ historyPositions[tick] + " serverPos : "+position);
             //Rewind
@@ -221,32 +224,36 @@ public class HandleInputs : MonoBehaviour {
 
             Vector3 prePos = transform.position;
 
-
-
-
-            Debug.Log("***Force pos : " + position + " on tick : " + tmpTick + " diff : " + Vector3.Distance(historyPositions[tick], position));
+            Debug.Log("***Force pos : " + position + " on tick : " + tmpTick + " diff : " + Vector3.Distance(_historyPositions[tick], position));
 
             //Adjust
-            historyPositions[tmpTick] = position;
-            transform.position = historyPositions[tmpTick];
+            _historyPositions[tmpTick] = position;
+            transform.position = _historyPositions[tmpTick];
 
-            
+            _mechController.SetMovementState((int)hashtable[(int)ConfirmData.State] == 0 ? (MechController.MovementState)_mechController.GroundedState : _mechController.JumpState );
+            _mechController.SetVerBoostStartPos((float)hashtable[(int)ConfirmData.VerBoostStartYPos]);
+            _mechController.SetAvailableToBoost((bool)hashtable[(int)ConfirmData.IsVerBoostAvailable]);
+            _mechController.SetSpeed((Vector3)hashtable[(int)ConfirmData.Speed]);
+            _mechController.JumpReleased = (bool)hashtable[(int)ConfirmData.JumpReleased];
+
+            _mechController.CurBoostingSpeed = (float)hashtable[(int)ConfirmData.CurBoostingSpeed];
+            _mechController.IsBoosting = (bool)hashtable[(int)ConfirmData.IsBoosting];
 
             while (tmpTick != this._tick) {
-                ProcessInputs(historyUserCmds[tmpTick]);
+                ProcessInputs(_historyUserCmds[tmpTick]);
 
-                Debug.Log("Calculated from : " + historyUserCmds[tmpTick].msec +
-                          "ms , hor : " + historyUserCmds[tmpTick].Horizontal + " , ver : " +
-                          historyUserCmds[tmpTick].Vertical + " space : " + historyUserCmds[tmpTick].Buttons[(int)Button.Space]);
+                Debug.Log("Calculated from : " + _historyUserCmds[tmpTick].msec +
+                          "ms , hor : " + _historyUserCmds[tmpTick].Horizontal + " , ver : " +
+                          _historyUserCmds[tmpTick].Vertical + " space : " + _historyUserCmds[tmpTick].Buttons[(int)Button.Space]);
 
                 tmpTick = (tmpTick + 1) % 1024;
 
                 Debug.Log("=> Tick : " + tmpTick + " Pos : " + transform.position);
 
-                historyPositions[tmpTick] = transform.position;
+                _historyPositions[tmpTick] = transform.position;
             }
 
-            Vector3 afterPos = transform.position;
+            //Vector3 afterPos = transform.position;
 
             //transform.position = Vector3.Lerp(prePos, afterPos, Time.deltaTime * 8);
         }

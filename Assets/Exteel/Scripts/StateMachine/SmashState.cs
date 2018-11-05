@@ -75,7 +75,7 @@ public class SmashState : MechStateMachineBehaviour {
 
         if (cc == null || !cc.enabled) return;
 
-        mctrl.SetCanVerticalBoost(false);
+        //mctrl.SetCanVerticalBoost(false);
 
         if (inAir) {//exiting from jump melee attack
             animator.SetBool(animatorVars.OnMeleeHash, false);
