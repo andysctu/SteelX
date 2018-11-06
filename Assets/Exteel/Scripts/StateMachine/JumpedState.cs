@@ -29,6 +29,9 @@ public class JumpedState : MechStateMachineBehaviour {
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         if (!cc.enabled) return;
 
+        animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
+        animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+
         if (mctrl.Grounded){
             animator.SetBool(JumpHash, false);
             animator.SetBool(GroundedHash, true);
@@ -45,9 +48,6 @@ public class JumpedState : MechStateMachineBehaviour {
         }
 
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
-
-        animator.SetFloat(SpeedHash, mctrl.Speed);
-        animator.SetFloat(DirectionHash, mctrl.Direction);
 
         if (mctrl.IsBoosting){
             animator.SetBool(BoostHash, true);

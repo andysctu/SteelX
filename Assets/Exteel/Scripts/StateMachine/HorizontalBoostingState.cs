@@ -11,10 +11,10 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
 
 		if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled)return;
 
-		animator.SetFloat(SpeedHash, mctrl.Speed);
-		animator.SetFloat(DirectionHash, mctrl.Direction);
+        animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
+        animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
 
-	    if (!mctrl.Grounded){
+        if (!mctrl.Grounded){
             animator.SetBool(GroundedHash, false);
 	    }
 

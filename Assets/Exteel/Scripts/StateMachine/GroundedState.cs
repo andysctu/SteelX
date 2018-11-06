@@ -13,8 +13,12 @@ public class GroundedState : MechStateMachineBehaviour {
 
         if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
-        animator.SetFloat(SpeedHash, mctrl.Speed);
-        animator.SetFloat(DirectionHash, mctrl.Direction);
+        //Debug.Log("set speed,dir : " + Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15) +"," +  Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+
+        animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
+        animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+
+        
 
         if (mctrl.IsJumping){
             animator.SetBool(GroundedHash, false);

@@ -11,6 +11,7 @@ public class CrosshairController : MonoBehaviour {
     [SerializeField] private SkillController SkillController;
     [SerializeField] private Transform crosshairParent;
 
+    private Transform PanelCanvas;
     private MechCombat _mechCombat;
     private PhotonView _playerPv;
 
@@ -50,6 +51,15 @@ public class CrosshairController : MonoBehaviour {
         RegisterOnWeaponSwitched();
         RegisterOnMechEnabled();
         RegisterOnSkill();
+
+        foreach (var canvas in FindObjectsOfType<Canvas>()){
+            if (canvas.name == "PanelCanvas"){
+                PanelCanvas = canvas.transform;
+                break;
+            }
+        }
+
+        crosshairParent.SetParent(PanelCanvas);
     }
 
     private void RegisterOnWeaponBuilt() {

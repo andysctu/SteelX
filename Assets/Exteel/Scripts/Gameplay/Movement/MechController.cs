@@ -72,9 +72,9 @@ public class MechController : Photon.MonoBehaviour {
 
     //Rotate legs
     private Transform _pelvis, _spine1;
-    private float _rLPelvisDegree = 30, _rLSpineDegree = -45, _rLLerpSpeed = 10, _rLDir;
+    private float _rLPelvisDegree, _rLSpineDegree, _rLLerpSpeed = 8, _rLDir, _rotateLegPreSpeed;
 
-    public bool onSkillMoving = false, onInstantMoving = false, IsJumping = false, isVerticalBoosting = false;
+    public bool onSkillMoving = false, onInstantMoving = false, IsJumping = false;
     public bool JumpReleased;
 
     private void Awake() {
@@ -290,6 +290,9 @@ public class MechController : Photon.MonoBehaviour {
             //Apply gravity
             YSpeed = -_characterController.stepOffset * userCmd.msec * 40;
         } else{
+            IsBoosting = false;
+            JumpReleased = false;
+            IsAvailableVerBoost = true;
             CurMovementState = JumpState;
         }
     }
@@ -488,17 +491,30 @@ public class MechController : Photon.MonoBehaviour {
 
     private void RotateLegs(){
         _rLDir = _mainAnimator.GetFloat("Direction");
-        if (_mainAnimator.GetFloat("Speed") < 0) _rLDir *= -1;
 
-        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, -30, _rLLerpSpeed * Time.deltaTime);
+        if (_rotateLegPreSpeed < 0){
+            if ((_rotateLegPreSpeed = _mainAnimator.GetFloat("Speed")) < -0.05f)
+                _rLDir *= -1;
+            else{
+                //reset 
+                _rLSpineDegree = 0;
+                _rLPelvisDegree = 0;
+            }
+        } else{
+            if ((_rotateLegPreSpeed = _mainAnimator.GetFloat("Speed")) < -0.05f){
+                _rLDir *= -1;
+
+                //reset 
+                _rLSpineDegree = 0;
+                _rLPelvisDegree = 0;
+            }
+        }
+
+        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!_mainAnimator.GetBool("Grounded"))? -60 : -30, _rLLerpSpeed * Time.deltaTime);
+        _rLPelvisDegree = Mathf.Lerp(_rLPelvisDegree, 30, _rLLerpSpeed * Time.deltaTime);
 
         _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
         _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
-    }
-
-    private void Jump() {
-        VerticalBoostStartYPos = 0;
-        YSpeed = movementVariables.jumpPower;
     }
 
     public void ResetCurBoostingSpeed() {

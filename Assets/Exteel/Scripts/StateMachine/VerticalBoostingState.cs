@@ -17,10 +17,10 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 
 	    if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
-	    animator.SetFloat(SpeedHash, mctrl.Speed);
-	    animator.SetFloat(DirectionHash, mctrl.Direction);
+	    animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
+	    animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
 
-	    animator.SetBool(BoostHash, mctrl.IsBoosting);
+        animator.SetBool(BoostHash, mctrl.IsBoosting);
 
 	    animator.SetBool(GroundedHash, mctrl.Grounded);
     }
