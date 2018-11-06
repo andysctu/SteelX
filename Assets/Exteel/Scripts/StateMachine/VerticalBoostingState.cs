@@ -15,7 +15,7 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (!cc.enabled) return;
 
-	    mctrl.EnableBoostFlame(animator.GetBool(BoostHash));
+	    mctrl.EnableBoostFlame(animator.GetBool("Boost"));
 
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 

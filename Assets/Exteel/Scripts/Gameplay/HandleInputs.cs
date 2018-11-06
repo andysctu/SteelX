@@ -14,7 +14,7 @@ public class HandleInputs : MonoBehaviour {
     private enum ClientData { MSec, Horizontal, Vertical, ViewAngle, Tick, ButtonByte };
     private readonly Hashtable[] _commandsToSend = new Hashtable[4];
     private UserCmd _curUserCmd;
-    public float SendRate = 0.03f;
+    public float SendRate = 0.03f, AdjustPositionThreshold = 0.1f, AdjustSpeed = 8;
     private float _preSendTime;
 
     //Master
@@ -23,7 +23,7 @@ public class HandleInputs : MonoBehaviour {
     public float SendConfirmRate = 0.05f;
     private float _preConfirmTime;
 
-    public enum Button { Space, LeftShift };
+    public enum Button { Space, LeftShift, LeftMouse, RightMouse };
 
     private readonly UserCmd[] _historyUserCmds = new UserCmd[1024];
     private readonly Vector3[] _historyPositions = new Vector3[1024];
@@ -45,7 +45,7 @@ public class HandleInputs : MonoBehaviour {
         _mechController = GetComponent<MechController>();
         _mechCombat = GetComponent<MechCombat>();
 
-        _curUserCmd.Buttons = new bool[2];
+        _curUserCmd.Buttons = new bool[4];
 
         _actorId = _rootPv.ownerId;
         enabled = _rootPv.isMine;//enable determine whether to send the client data to master
@@ -102,15 +102,11 @@ public class HandleInputs : MonoBehaviour {
             _curUserCmd.ViewAngle = (float)tables[unProcessedPackageCount - i][(int)ClientData.ViewAngle];
 
             byte button = (byte)tables[unProcessedPackageCount - i][(int)ClientData.ButtonByte];
-            Array.Copy(ConvertByteToBoolArray(button), 0, _curUserCmd.Buttons, 0, 2);
+            Array.Copy(ConvertByteToBoolArray(button), 0, _curUserCmd.Buttons, 0, 4);
 
             ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
-
-            //Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position + " Calculated from msec : " + _curUserCmd.msec
-            //          + ", hor : " + _curUserCmd.Horizontal + ", ver :" + _curUserCmd.Vertical + ", space : " + _curUserCmd.Buttons[(int)Button.Space]);
-            //Debug.Log("Server tick : " + _tick + ", Pos : " + transform.position);
         }
 
         if (Time.time - _preConfirmTime > SendConfirmRate){
@@ -144,11 +140,13 @@ public class HandleInputs : MonoBehaviour {
             _curUserCmd.Vertical = 0;
             _curUserCmd.Buttons[(int)Button.Space] = false;
             _curUserCmd.Buttons[(int)Button.LeftShift] = false;
+            _curUserCmd.Buttons[(int)Button.LeftMouse] = false;
+            _curUserCmd.Buttons[(int)Button.RightMouse] = false;
         }
 
         _historyPositions[_tick] = transform.position;
         _historyUserCmds[_tick] = _curUserCmd;
-        _historyUserCmds[_tick].Buttons = new bool[2];
+        _historyUserCmds[_tick].Buttons = new bool[4];
         _curUserCmd.Buttons.CopyTo(_historyUserCmds[_tick].Buttons, 0);
 
         //Client send inputs to master
@@ -171,7 +169,7 @@ public class HandleInputs : MonoBehaviour {
                     _commandsToSend[i][(int)ClientData.Tick] = index;
                     _commandsToSend[i][(int)ClientData.ButtonByte] = button;
                 } else {//stacked packages not enough => filled with empty
-                    Byte button = ConvertBoolArrayToByte(new bool[2] { false, false });
+                    Byte button = ConvertBoolArrayToByte(new bool[4] { false, false, false, false });
                     _commandsToSend[i][(int)ClientData.MSec] = 0;
                     _commandsToSend[i][(int)ClientData.Horizontal] = 0;
                     _commandsToSend[i][(int)ClientData.Vertical] = 0;
@@ -180,6 +178,7 @@ public class HandleInputs : MonoBehaviour {
                     _commandsToSend[i][(int)ClientData.ButtonByte] = button;
                 }
             }
+
             PhotonNetwork.RaiseEvent(GameEventCode.INPUT, _commandsToSend, false, options);
         }
 
@@ -187,8 +186,6 @@ public class HandleInputs : MonoBehaviour {
             ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
-
-            //Debug.Log("Client tick : " + _tick +", Pos : "+ transform.position + "Calculated from : msec : "+CurUserCmd.msec + ", hor : "+CurUserCmd.Horizontal + ", ver : "+CurUserCmd.Vertical);
         }
     }
 
@@ -200,6 +197,8 @@ public class HandleInputs : MonoBehaviour {
 
         _curUserCmd.Buttons[(int)Button.Space] = Input.GetKey(KeyCode.Space);
         _curUserCmd.Buttons[(int)Button.LeftShift] = Input.GetKey(KeyCode.LeftShift);
+        _curUserCmd.Buttons[(int)Button.LeftMouse] = Input.GetMouseButton(0);
+        _curUserCmd.Buttons[(int)Button.RightMouse] = Input.GetMouseButton(1);
     }
 
     private void ProcessInputs(UserCmd userCmd) {
@@ -208,8 +207,6 @@ public class HandleInputs : MonoBehaviour {
         _mechController.UpdatePosition(userCmd);
     }
 
-    public float AdjustPositionThreshold = 0.1f;
-
     private void ConfirmPosition(Hashtable hashtable) {
         int tick = (int)hashtable[(int)ConfirmData.Tick];
         Vector3 position = (Vector3)hashtable[(int)ConfirmData.Position];
@@ -217,8 +214,6 @@ public class HandleInputs : MonoBehaviour {
         //TODO : EN
 
         if (Vector3.Distance(_historyPositions[tick], position) > AdjustPositionThreshold) {
-            //Debug.Log("Tick " + tick +" has dif : " + Vector3.Distance(historyPositions[tick], position) + " curTick : "+_tick);
-            //Debug.Log("History : "+ historyPositions[tick] + " serverPos : "+position);
             //Rewind
             int tmpTick = tick;
 
@@ -242,10 +237,6 @@ public class HandleInputs : MonoBehaviour {
             while (tmpTick != this._tick) {
                 ProcessInputs(_historyUserCmds[tmpTick]);
 
-                Debug.Log("Calculated from : " + _historyUserCmds[tmpTick].msec +
-                          "ms , hor : " + _historyUserCmds[tmpTick].Horizontal + " , ver : " +
-                          _historyUserCmds[tmpTick].Vertical + " space : " + _historyUserCmds[tmpTick].Buttons[(int)Button.Space]);
-
                 tmpTick = (tmpTick + 1) % 1024;
 
                 Debug.Log("=> Tick : " + tmpTick + " Pos : " + transform.position);
@@ -253,9 +244,9 @@ public class HandleInputs : MonoBehaviour {
                 _historyPositions[tmpTick] = transform.position;
             }
 
-            //Vector3 afterPos = transform.position;
+            Vector3 afterPos = transform.position;
 
-            //transform.position = Vector3.Lerp(prePos, afterPos, Time.deltaTime * 8);
+            transform.position = Vector3.Lerp(prePos, afterPos, Time.deltaTime * AdjustSpeed);
         }
     }
 

@@ -12,14 +12,14 @@ public class GroundedState : MechStateMachineBehaviour {
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 
-        mctrl.EnableBoostFlame(animator.GetBool(BoostHash));
+        mctrl.EnableBoostFlame(animator.GetBool("Boost"));
 
         if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
         animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
         animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
 
-        if (mctrl.IsJumping){
+        if (mctrl.IsJumping){//TODO : condition : you can't jump if playing melee attack
             animator.SetBool(GroundedHash, false);
             animator.SetBool(JumpHash, true);
             return;
@@ -33,13 +33,5 @@ public class GroundedState : MechStateMachineBehaviour {
         if (mctrl.IsBoosting){
             animator.SetBool(BoostHash,true);
         }
-
-        //if (HandleInputs.CurUserCmd.Buttons[(int)HandleInputs.Button.Space] && !animator.GetBool(animatorVars.OnMeleeHash)) {
-        //    mctrl.SetCanVerticalBoost(true);
-        //    mctrl.grounded = false;
-        //    animator.SetBool(GroundedHash, false);
-        //    animator.SetBool(JumpHash, true);
-        //    return;
-        //}
     }
 }
