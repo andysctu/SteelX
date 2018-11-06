@@ -421,7 +421,7 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
-    private void EnableBoostFlame(bool enable){
+    public void EnableBoostFlame(bool enable){
         if (enable != isBoostFlameOn) {
             isBoostFlameOn = enable;
 
@@ -510,7 +510,7 @@ public class MechController : Photon.MonoBehaviour {
             }
         }
 
-        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!_mainAnimator.GetBool("Grounded"))? -60 : -30, _rLLerpSpeed * Time.deltaTime);
+        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!_mainAnimator.GetBool("Grounded") && !_mainAnimator.GetBool("Boost")) ? -60 : -30, _rLLerpSpeed * Time.deltaTime);
         _rLPelvisDegree = Mathf.Lerp(_rLPelvisDegree, 30, _rLLerpSpeed * Time.deltaTime);
 
         _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);

@@ -15,7 +15,9 @@ public class VerticalBoostingState : MechStateMachineBehaviour {
 	override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		if (!cc.enabled) return;
 
-	    if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
+	    mctrl.EnableBoostFlame(animator.GetBool(BoostHash));
+
+        if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
 	    animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
 	    animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));

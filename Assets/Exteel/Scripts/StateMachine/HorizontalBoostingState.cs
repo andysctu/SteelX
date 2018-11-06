@@ -9,7 +9,9 @@ public class HorizontalBoostingState : MechStateMachineBehaviour {
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
 		EffectController.UpdateBoostingDust ();
 
-		if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled)return;
+        mctrl.EnableBoostFlame(animator.GetBool(BoostHash));
+
+        if ((!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) || !cc.enabled)return;
 
         animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
         animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));

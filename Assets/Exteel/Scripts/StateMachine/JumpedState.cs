@@ -18,8 +18,8 @@ public class JumpedState : MechStateMachineBehaviour {
         if (!animatorVars.RootPv.isMine && !PhotonNetwork.isMasterClient) return;
 
         //mctrl.Boost(false);
-        animator.SetBool(GroundedHash, false);
-        animator.SetBool(BoostHash, false);//avoid shift+space directly vertically boost
+        animator.SetBool(GroundedHash, mctrl.Grounded);
+        animator.SetBool(BoostHash, mctrl.IsBoosting);//avoid shift+space directly vertically boost
 
         if (!animator.GetBool(JumpHash)) {//dir falling
             animator.SetBool(JumpHash, true);
@@ -28,6 +28,8 @@ public class JumpedState : MechStateMachineBehaviour {
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         if (!cc.enabled) return;
+
+        mctrl.EnableBoostFlame(animator.GetBool(BoostHash));
 
         animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
         animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
