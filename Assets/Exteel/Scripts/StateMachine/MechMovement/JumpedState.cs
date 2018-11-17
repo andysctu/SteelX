@@ -22,13 +22,12 @@ public class JumpedState : MechStateMachineBehaviour {
         animator.SetBool(BoostHash, mctrl.IsBoosting);//avoid shift+space directly vertically boost
 
         if (!animator.GetBool(JumpHash)) {//dir falling
-            animator.SetBool(JumpHash, true);
+            animator.SetBool(JumpHash, mctrl.IsJumping);
         }
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         if (!cc.enabled) return;
-
         mctrl.EnableBoostFlame(animator.GetBool("Boost"));
 
         animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));

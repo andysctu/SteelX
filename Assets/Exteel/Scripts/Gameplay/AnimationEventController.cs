@@ -163,8 +163,8 @@ public class AnimationEventController : MonoBehaviour {
     }
 
     public void CallMoving(float speed) {//also called by Cn shoot with speed < 0
-        if (!pv.isMine)
-            return;
+        //if (!pv.isMine)
+        //    return;
 
         if (speed > 0) {
             List<Transform> targets = SlashDetector.getCurrentTargets();

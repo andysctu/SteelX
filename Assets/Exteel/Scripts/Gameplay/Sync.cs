@@ -10,7 +10,7 @@ public class Sync : Photon.MonoBehaviour {
 
     private void Update() {
         if (!PhotonNetwork.isMasterClient && !_rootPv.isMine) {
-            transform.position = Vector3.Lerp(transform.position, _trueLoc, Time.deltaTime * 10);
+            transform.position = Vector3.Lerp(transform.position, _trueLoc, Time.deltaTime * 10); //TODO : pass curPos in HandleInputs
             transform.rotation = Quaternion.Lerp(transform.rotation, _trueRot, Time.deltaTime * 10);
             _mainCam.rotation = _camTrueRot;
         }
@@ -31,6 +31,7 @@ public class Sync : Photon.MonoBehaviour {
             }
         } else {
             if (PhotonNetwork.isMasterClient) {
+                Debug.Log("send out : "+gameObject.name);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
                 stream.SendNext(_mainCam.rotation);

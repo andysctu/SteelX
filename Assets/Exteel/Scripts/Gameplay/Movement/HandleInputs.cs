@@ -18,7 +18,22 @@ public class HandleInputs : MonoBehaviour {
     private float _preSendTime;
 
     //Master
-    private enum ConfirmData { Position, Speed, State, IsVerBoostAvailable, VerBoostStartYPos, JumpReleased, CurBoostingSpeed, IsBoosting, EN, Tick};
+    private enum ConfirmData
+    {
+        Position,
+        Speed,
+        State,
+        IsVerBoostAvailable,
+        VerBoostStartYPos,
+        JumpReleased,
+        CurBoostingSpeed,
+        IsBoosting,
+        InstantMoveSpeed,
+        InstantMoveDir,
+        EN,
+        Tick
+    };
+
     private readonly Hashtable _confirmInfo = new Hashtable();
     public float SendConfirmRate = 0.05f;
     private float _preConfirmTime;
@@ -28,6 +43,8 @@ public class HandleInputs : MonoBehaviour {
     private readonly UserCmd[] _historyUserCmds = new UserCmd[1024];
     private readonly Vector3[] _historyPositions = new Vector3[1024];
     private int _tick;
+
+    private Vector3 _curPosition;
 
     public struct UserCmd {
         public float msec;
@@ -49,6 +66,8 @@ public class HandleInputs : MonoBehaviour {
 
         _actorId = _rootPv.ownerId;
         enabled = _rootPv.isMine;//enable determine whether to send the client data to master
+
+        _curPosition = transform.position;
     }
 
     private void RegisterInputEvent() {
@@ -109,12 +128,14 @@ public class HandleInputs : MonoBehaviour {
             _tick = (_tick + 1) % 1024;
         }
 
+        transform.position = _curPosition;
+
         if (Time.time - _preConfirmTime > SendConfirmRate){
             _preConfirmTime = Time.time;
             
             //Send new pos back to the client
             _confirmInfo[(int)ConfirmData.Tick] = _tick;
-            _confirmInfo[(int)ConfirmData.Position] = transform.position;
+            _confirmInfo[(int)ConfirmData.Position] = _curPosition;
             _confirmInfo[(int)ConfirmData.Speed] = new Vector3(_mechController.XSpeed, _mechController.YSpeed, _mechController.ZSpeed);
             _confirmInfo[(int)ConfirmData.EN] = _mechCombat.CurrentEN;
             _confirmInfo[(int)ConfirmData.IsVerBoostAvailable] = _mechController.IsAvailableVerBoost;
@@ -123,6 +144,7 @@ public class HandleInputs : MonoBehaviour {
             _confirmInfo[(int)ConfirmData.JumpReleased] = _mechController.JumpReleased;
             _confirmInfo[(int)ConfirmData.CurBoostingSpeed] = _mechController.CurBoostingSpeed;
             _confirmInfo[(int)ConfirmData.IsBoosting] = _mechController.IsBoosting;
+            _confirmInfo[(int)ConfirmData.InstantMoveSpeed] = _mechController.InstantMoveSpeed;
 
 
             RaiseEventOptions options = new RaiseEventOptions();
@@ -130,6 +152,8 @@ public class HandleInputs : MonoBehaviour {
             PhotonNetwork.RaiseEvent(GameEventCode.POS_CONFIRM, _confirmInfo, false, options);
         }
     }
+
+    public float LerpPosSpeed = 10;
 
     private void Update() {
         GetInputs();
@@ -144,7 +168,7 @@ public class HandleInputs : MonoBehaviour {
             _curUserCmd.Buttons[(int)Button.RightMouse] = false;
         }
 
-        _historyPositions[_tick] = transform.position;
+        _historyPositions[_tick] = _curPosition;
         _historyUserCmds[_tick] = _curUserCmd;
         _historyUserCmds[_tick].Buttons = new bool[4];
         _curUserCmd.Buttons.CopyTo(_historyUserCmds[_tick].Buttons, 0);
@@ -186,6 +210,8 @@ public class HandleInputs : MonoBehaviour {
             ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
+
+            transform.position = Vector3.Lerp(transform.position, _curPosition, Time.deltaTime * LerpPosSpeed);
         }
     }
 
@@ -204,7 +230,7 @@ public class HandleInputs : MonoBehaviour {
     private void ProcessInputs(UserCmd userCmd) {
         transform.Rotate(Vector3.up, userCmd.ViewAngle - transform.rotation.eulerAngles.y);
 
-        _mechController.UpdatePosition(userCmd);
+        _curPosition = _mechController.UpdatePosition(_curPosition,userCmd);
     }
 
     private void ConfirmPosition(Hashtable hashtable) {
@@ -217,20 +243,32 @@ public class HandleInputs : MonoBehaviour {
             //Rewind
             int tmpTick = tick;
 
-            Vector3 prePos = transform.position;
+            Vector3 prePos = _curPosition;
 
             Debug.Log("***Force pos : " + position + " on tick : " + tmpTick + " diff : " + Vector3.Distance(_historyPositions[tick], position));
 
             //Adjust
             _historyPositions[tmpTick] = position;
-            transform.position = _historyPositions[tmpTick];
+            _curPosition = _historyPositions[tmpTick];
 
-            _mechController.SetMovementState((int)hashtable[(int)ConfirmData.State] == 0 ? (MechController.MovementState)_mechController.GroundedState : _mechController.JumpState );
+            switch ((int) hashtable[(int) ConfirmData.State]) {
+                case 0:
+                    _mechController.SetMovementState(_mechController.GroundedState);
+                    break;
+                case 1:
+                    _mechController.SetMovementState(_mechController.JumpState);
+                    break;
+                case 2:
+                    _mechController.SetMovementState(_mechController.InstantMoveState);
+                    break;
+            }
+
             _mechController.SetVerBoostStartPos((float)hashtable[(int)ConfirmData.VerBoostStartYPos]);
             _mechController.SetAvailableToBoost((bool)hashtable[(int)ConfirmData.IsVerBoostAvailable]);
             _mechController.SetSpeed((Vector3)hashtable[(int)ConfirmData.Speed]);
             _mechController.JumpReleased = (bool)hashtable[(int)ConfirmData.JumpReleased];
-
+            _mechController.InstantMoveSpeed = (float)hashtable[(int)ConfirmData.InstantMoveSpeed];
+            
             _mechController.CurBoostingSpeed = (float)hashtable[(int)ConfirmData.CurBoostingSpeed];
             _mechController.IsBoosting = (bool)hashtable[(int)ConfirmData.IsBoosting];
 
@@ -241,12 +279,12 @@ public class HandleInputs : MonoBehaviour {
 
                 Debug.Log("=> Tick : " + tmpTick + " Pos : " + transform.position);
 
-                _historyPositions[tmpTick] = transform.position;
+                _historyPositions[tmpTick] = _curPosition;
             }
 
-            Vector3 afterPos = transform.position;
+            //Vector3 afterPos = _curPosition;
 
-            transform.position = Vector3.Lerp(prePos, afterPos, Time.deltaTime * AdjustSpeed);
+            //_curPosition = Vector3.Lerp(prePos, afterPos, Time.deltaTime * AdjustSpeed);
         }
     }
 

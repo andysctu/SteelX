@@ -633,8 +633,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rootPv: {fileID: 11416036}
-  EffectController: {fileID: 114512345716719972}
-  boosterBone: {fileID: 4073627584581096}
   movementVariables:
     verticalBoostSpeed: 0
     maxHorizontalBoostSpeed: 60
@@ -643,22 +641,34 @@ MonoBehaviour:
     minBoostSpeed: 50
     acceleration: 2
     deceleration: 50
+  boosterBone: {fileID: 4073627584581096}
+  EffectController: {fileID: 114512345716719972}
   JumpEffectPrefab: {fileID: 1305019011058480, guid: aac78789ceae6734692c66c4172209f7,
     type: 2}
   LandingSound: {fileID: 8300000, guid: 63e984269ad984aeaa7cf1d65265e28d, type: 3}
   JumpSound: {fileID: 8300000, guid: 972b545b178aa445fba0f2cf616b9075, type: 3}
-  Gravity: 4
+  Speed: 0
+  Direction: 0
+  CurBoostingSpeed: 0
+  VerticalBoostStartYPos: 0
+  XSpeed: 0
+  YSpeed: 0
+  ZSpeed: 0
+  Gravity: 5
   maxDownSpeed: -140
   InAirSpeedCoeff: 0.55
   lerpCam_coeff: 2
-  grounded: 1
+  Grounded: 0
+  IsBoosting: 0
+  IsAvailableVerBoost: 0
   onSkill: 0
   LocalxOffset: -4
   cam_orbitradius: 19
   cam_angleoffset: 33
   onSkillMoving: 0
   onInstantMoving: 0
-  isJumping: 0
+  IsJumping: 0
+  JumpReleased: 0
 --- !u!114 &11463820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4417,7 +4427,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rootPv: {fileID: 11416036}
-  threshold: 0.1
+  SendRate: 0.03
+  AdjustPositionThreshold: 0.1
+  AdjustSpeed: 8
+  SendConfirmRate: 0.05
+  LerpPosSpeed: 10
 --- !u!114 &114437314829428946
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -42206,7 +42220,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 208}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224389569800701214
