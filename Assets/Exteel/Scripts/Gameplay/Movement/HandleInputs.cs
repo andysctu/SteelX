@@ -3,19 +3,20 @@ using ExitGames.Client.Photon;
 using UnityEngine;
 
 public class HandleInputs : MonoBehaviour {
-    [SerializeField] private PhotonView _rootPv;
+    private GameManager _gameManager;
     private MechController _mechController;
     private MechCombat _mechCombat;
-    private GameManager _gameManager;
 
-    private int _actorId;//For master client to check if inputs are sent from this
+    private int _senderID;//The actorID of player sending inputs
+    private PhotonPlayer _sender;
 
-    //Client
-    private enum ClientData { MSec, Horizontal, Vertical, ViewAngle, Tick, ButtonByte };
-    private readonly Hashtable[] _commandsToSend = new Hashtable[4];
-    private UserCmd _curUserCmd;
-    public float SendRate = 0.03f, AdjustPositionThreshold = 0.1f, AdjustSpeed = 8;
+    private readonly usercmd[] _cmdsToSend = new usercmd[4];//a series of commands (including history commands) every update
+    private usercmd _curUserCmd = new usercmd(){buttons = new bool[4]};
+    public float SendRate = 0.03f;
+    public float AdjustPositionThreshold = 0.1f, AdjustSpeed = 8;
     private float _preSendTime;
+
+    private bool _init;
 
     //Master
     private enum ConfirmData
@@ -38,36 +39,31 @@ public class HandleInputs : MonoBehaviour {
     public float SendConfirmRate = 0.05f;
     private float _preConfirmTime;
 
-    public enum Button { Space, LeftShift, LeftMouse, RightMouse };
-
-    private readonly UserCmd[] _historyUserCmds = new UserCmd[1024];
+    private readonly usercmd[] _historyUserCmds = new usercmd[1024];
     private readonly Vector3[] _historyPositions = new Vector3[1024];
     private int _tick;
 
     private Vector3 _curPosition;
 
-    public struct UserCmd {
-        public float msec;
-        public float Horizontal;
-        public float Vertical;
-        public float ViewAngle;
-        public bool[] Buttons;
+    private void Awake() {
+        InitComponents();
     }
 
-    private void Awake() {
-        if (PhotonNetwork.isMasterClient || _rootPv.isMine) {
+    public void Init(PhotonPlayer sender){
+        _senderID = sender.ID;
+        _sender = sender;
+
+        if (PhotonNetwork.isMasterClient || sender.IsLocal) {
             RegisterInputEvent();
         }
 
+        enabled = sender.IsLocal;
+        _init = true;
+    }
+
+    private void InitComponents(){
         _mechController = GetComponent<MechController>();
         _mechCombat = GetComponent<MechCombat>();
-
-        _curUserCmd.Buttons = new bool[4];
-
-        _actorId = _rootPv.ownerId;
-        enabled = _rootPv.isMine;//enable determine whether to send the client data to master
-
-        _curPosition = transform.position;
     }
 
     private void RegisterInputEvent() {
@@ -75,16 +71,15 @@ public class HandleInputs : MonoBehaviour {
     }
 
     private void Start() {
-        _gameManager = FindObjectOfType<GameManager>();
+        _gameManager = FindObjectOfType<GameManager>();//TODO : make sure game manager is exist
 
-        for (int i = 0; i < _commandsToSend.Length; i++)
-            _commandsToSend[i] = new Hashtable();
+        _curPosition = transform.position;
     }
 
     protected void OnPhotonEvent(byte eventCode, object content, int senderId) {
         switch (eventCode) {
             case GameEventCode.INPUT:
-            UpdateCurInputs((Hashtable[])content, senderId);
+            UpdateCurInputs((usercmd[])content, senderId);
             break;
             case GameEventCode.POS_CONFIRM:
             ConfirmPosition((Hashtable)content);
@@ -92,11 +87,10 @@ public class HandleInputs : MonoBehaviour {
         }
     }
 
-    private void UpdateCurInputs(Hashtable[] tables, int senderId) {
-        if (senderId != _actorId) return;//this is not his mech
+    private void UpdateCurInputs(usercmd[] usercmds, int senderID) {//Received by master
+        if (senderID != this._senderID) return;//this is not sender's mech
 
-        int clientTick = (int)tables[0][(int)ClientData.Tick];
-
+        int clientTick = (int)usercmds[0].Tick;
         int unProcessedPackageCount = 0;
 
         if (clientTick - _tick < 0) {
@@ -115,14 +109,7 @@ public class HandleInputs : MonoBehaviour {
         _tick = (clientTick - unProcessedPackageCount) % 1024;
 
         for (int i = 0; i <= unProcessedPackageCount; i++) {
-            _curUserCmd.msec = (float)tables[unProcessedPackageCount - i][(int)ClientData.MSec];
-            _curUserCmd.Horizontal = (float)tables[unProcessedPackageCount - i][(int)ClientData.Horizontal];
-            _curUserCmd.Vertical = (float)tables[unProcessedPackageCount - i][(int)ClientData.Vertical];
-            _curUserCmd.ViewAngle = (float)tables[unProcessedPackageCount - i][(int)ClientData.ViewAngle];
-
-            byte button = (byte)tables[unProcessedPackageCount - i][(int)ClientData.ButtonByte];
-            Array.Copy(ConvertByteToBoolArray(button), 0, _curUserCmd.Buttons, 0, 4);
-
+            _curUserCmd = usercmds[unProcessedPackageCount - i];
             ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
@@ -133,6 +120,7 @@ public class HandleInputs : MonoBehaviour {
         if (Time.time - _preConfirmTime > SendConfirmRate){
             _preConfirmTime = Time.time;
             
+            //TODO : improve this
             //Send new pos back to the client
             _confirmInfo[(int)ConfirmData.Tick] = _tick;
             _confirmInfo[(int)ConfirmData.Position] = _curPosition;
@@ -148,7 +136,7 @@ public class HandleInputs : MonoBehaviour {
 
 
             RaiseEventOptions options = new RaiseEventOptions();
-            options.TargetActors = new[] { _actorId };
+            options.TargetActors = new[] { this._senderID };
             PhotonNetwork.RaiseEvent(GameEventCode.POS_CONFIRM, _confirmInfo, false, options);
         }
     }
@@ -156,22 +144,17 @@ public class HandleInputs : MonoBehaviour {
     public float LerpPosSpeed = 10;
 
     private void Update() {
-        GetInputs();
+        if(!_init)return;
 
-        //Override inputs if blocking
-        if (_gameManager.BlockInput) {
-            _curUserCmd.Horizontal = 0;
-            _curUserCmd.Vertical = 0;
-            _curUserCmd.Buttons[(int)Button.Space] = false;
-            _curUserCmd.Buttons[(int)Button.LeftShift] = false;
-            _curUserCmd.Buttons[(int)Button.LeftMouse] = false;
-            _curUserCmd.Buttons[(int)Button.RightMouse] = false;
-        }
+        if(!_gameManager.BlockInput)
+            GetInputs();
+        else//Override inputs if blocking
+            _curUserCmd = new usercmd(){buttons = new bool[UserCmd.ButtonsLength] };
 
         _historyPositions[_tick] = _curPosition;
         _historyUserCmds[_tick] = _curUserCmd;
-        _historyUserCmds[_tick].Buttons = new bool[4];
-        _curUserCmd.Buttons.CopyTo(_historyUserCmds[_tick].Buttons, 0);
+        _historyUserCmds[_tick].buttons = new bool[UserCmd.ButtonsLength];
+        _curUserCmd.buttons.CopyTo(_historyUserCmds[_tick].buttons, 0);
 
         //Client send inputs to master
         if (!PhotonNetwork.isMasterClient && Time.time - _preSendTime > SendRate) {
@@ -184,29 +167,13 @@ public class HandleInputs : MonoBehaviour {
             for (int i = 0; i < 4; i++) {
                 index = _tick - i < 0 ? 1024 - i + _tick : _tick - i;
 
-                if (_historyUserCmds[index].msec != 0) {
-                    Byte button = ConvertBoolArrayToByte(_historyUserCmds[index].Buttons);
-                    _commandsToSend[i][(int)ClientData.MSec] = _historyUserCmds[index].msec;
-                    _commandsToSend[i][(int)ClientData.Horizontal] = _historyUserCmds[index].Horizontal;
-                    _commandsToSend[i][(int)ClientData.Vertical] = _historyUserCmds[index].Vertical;
-                    _commandsToSend[i][(int)ClientData.ViewAngle] = _historyUserCmds[index].ViewAngle;
-                    _commandsToSend[i][(int)ClientData.Tick] = index;
-                    _commandsToSend[i][(int)ClientData.ButtonByte] = button;
-                } else {//stacked packages not enough => filled with empty
-                    Byte button = ConvertBoolArrayToByte(new bool[4] { false, false, false, false });
-                    _commandsToSend[i][(int)ClientData.MSec] = 0;
-                    _commandsToSend[i][(int)ClientData.Horizontal] = 0;
-                    _commandsToSend[i][(int)ClientData.Vertical] = 0;
-                    _commandsToSend[i][(int)ClientData.ViewAngle] = 0;
-                    _commandsToSend[i][(int)ClientData.Tick] = index;
-                    _commandsToSend[i][(int)ClientData.ButtonByte] = button;
-                }
+                _cmdsToSend[i] = _historyUserCmds[index];
             }
 
-            PhotonNetwork.RaiseEvent(GameEventCode.INPUT, _commandsToSend, false, options);
+            PhotonNetwork.RaiseEvent(GameEventCode.INPUT, _cmdsToSend, false, options);
         }
 
-        if (_rootPv.isMine) {
+        if (_sender.IsLocal) {
             ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
@@ -216,21 +183,21 @@ public class HandleInputs : MonoBehaviour {
     }
 
     private void GetInputs() {
-        _curUserCmd.Horizontal = Input.GetAxis("Horizontal");
-        _curUserCmd.Vertical = Input.GetAxis("Vertical");
-        _curUserCmd.ViewAngle = transform.rotation.eulerAngles.y;
+        _curUserCmd.horizontal = Input.GetAxis("Horizontal");
+        _curUserCmd.vertical = Input.GetAxis("Vertical");
+        _curUserCmd.viewAngle = transform.rotation.eulerAngles.y;//TODO : improve this
         _curUserCmd.msec = Time.deltaTime;
 
-        _curUserCmd.Buttons[(int)Button.Space] = Input.GetKey(KeyCode.Space);
-        _curUserCmd.Buttons[(int)Button.LeftShift] = Input.GetKey(KeyCode.LeftShift);
-        _curUserCmd.Buttons[(int)Button.LeftMouse] = Input.GetMouseButton(0);
-        _curUserCmd.Buttons[(int)Button.RightMouse] = Input.GetMouseButton(1);
+        _curUserCmd.buttons[(int)UserButton.Space] = Input.GetKey(KeyCode.Space);
+        _curUserCmd.buttons[(int)UserButton.LeftShift] = Input.GetKey(KeyCode.LeftShift);
+        _curUserCmd.buttons[(int)UserButton.LeftMouse] = Input.GetMouseButton(0);
+        _curUserCmd.buttons[(int)UserButton.RightMouse] = Input.GetMouseButton(1);
     }
 
-    private void ProcessInputs(UserCmd userCmd) {
-        transform.Rotate(Vector3.up, userCmd.ViewAngle - transform.rotation.eulerAngles.y);
+    private void ProcessInputs(usercmd userCmd) {
+        transform.Rotate(Vector3.up, userCmd.viewAngle - transform.rotation.eulerAngles.y);
 
-        _curPosition = _mechController.UpdatePosition(_curPosition,userCmd);
+        _curPosition = _mechController.UpdatePosition(_curPosition, userCmd);
     }
 
     private void ConfirmPosition(Hashtable hashtable) {
@@ -286,37 +253,6 @@ public class HandleInputs : MonoBehaviour {
 
             //_curPosition = Vector3.Lerp(prePos, afterPos, Time.deltaTime * AdjustSpeed);
         }
-    }
-
-    private static byte ConvertBoolArrayToByte(bool[] source) {
-        byte result = 0;
-        // This assumes the array never contains more than 8 elements!
-        int index = 0;
-
-        // Loop through the array
-        foreach (bool b in source) {
-            // if the element is 'true' set the bit at that position
-            if (b)
-                result |= (byte)(1 << (7 - index));
-
-            index++;
-        }
-
-        return result;
-    }
-
-    private static bool[] ConvertByteToBoolArray(byte b) {
-        // prepare the return result
-        bool[] result = new bool[8];
-
-        // check each bit in the byte. if 1 set to true, if 0 set to false
-        for (int i = 0; i < 8; i++)
-            result[i] = (b & (1 << i)) == 0 ? false : true;
-
-        // reverse the array
-        Array.Reverse(result);
-
-        return result;
     }
 }
 

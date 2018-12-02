@@ -67,7 +67,7 @@ public class MechController : Photon.MonoBehaviour {
     public bool onSkill = false; //changes with animator bool "grounded";
     public float LocalxOffset = -4, cam_orbitradius = 19, cam_angleoffset = 33;
 
-    public delegate void MovementState(HandleInputs.UserCmd userCmd);
+    public delegate void MovementState(usercmd cmd);
     public MovementState CurMovementState;
 
     //Rotate legs
@@ -84,6 +84,9 @@ public class MechController : Photon.MonoBehaviour {
         RegisterOnWeaponSwitched();
         RegisterOnSkill();
         RegisterOnMechEnabled();
+
+        //TODO : temp put here
+        GetComponent<HandleInputs>().Init(photonView.owner);
     }
 
     private void InitComponents() {
@@ -218,25 +221,25 @@ public class MechController : Photon.MonoBehaviour {
         //EnableBoostFlame(IsBoosting);
     }
 
-    public Vector3 UpdatePosition(Vector3 curPos, HandleInputs.UserCmd userCmd){
+    public Vector3 UpdatePosition(Vector3 curPos, usercmd cmd){
         Vector3 beforePos = transform.position;
         transform.position = curPos;
 
         //Rotate mech so the transform.right/forward are correct directions
-        float rotateDelta = userCmd.ViewAngle - transform.eulerAngles.y;
+        float rotateDelta = cmd.viewAngle - transform.eulerAngles.y;
         transform.Rotate(new Vector3(0, rotateDelta, 0));
 
-        Speed = (userCmd.Vertical > -MarginOfError && userCmd.Vertical < MarginOfError) ? 0 : userCmd.Vertical;
-        Direction = (userCmd.Horizontal > -MarginOfError && userCmd.Horizontal < MarginOfError) ? 0 : userCmd.Horizontal;
+        Speed = (cmd.vertical > -MarginOfError && cmd.vertical < MarginOfError) ? 0 : cmd.vertical;
+        Direction = (cmd.horizontal > -MarginOfError && cmd.horizontal < MarginOfError) ? 0 : cmd.horizontal;
         _xzDirNormalized = new Vector2(Direction, Speed).normalized;
 
         if (CurMovementState != null)
-            CurMovementState(userCmd);
+            CurMovementState(cmd);
 
         //Apply the speed
-        _move = Vector3.right * XSpeed * userCmd.msec;
-        _move += Vector3.forward * ZSpeed * userCmd.msec;
-        _move.y += YSpeed * userCmd.msec;
+        _move = Vector3.right * XSpeed * cmd.msec;
+        _move += Vector3.forward * ZSpeed * cmd.msec;
+        _move.y += YSpeed * cmd.msec;
 
         _characterController.Move(_move);
 
@@ -271,7 +274,7 @@ public class MechController : Photon.MonoBehaviour {
         CurMovementState = state;
     }
 
-    public void GroundedState(HandleInputs.UserCmd userCmd) {
+    public void GroundedState(usercmd cmd) {
         Grounded = CheckIsGrounded();
 
         if (IsJumping){
@@ -279,16 +282,16 @@ public class MechController : Photon.MonoBehaviour {
         }
 
         if (Grounded) {
-            if (userCmd.Buttons[(int)HandleInputs.Button.LeftShift] && _mechCombat.IsENAvailable()) {
-                HorizontalBoosting(_xzDirNormalized.x, _xzDirNormalized.y, userCmd.msec);
+            if (cmd.buttons[(int)UserButton.LeftShift] && _mechCombat.IsENAvailable()) {
+                HorizontalBoosting(_xzDirNormalized.x, _xzDirNormalized.y, cmd.msec);
             } else{
                 IsBoosting = false;
 
-                Run(_xzDirNormalized.x, _xzDirNormalized.y, userCmd.msec);
+                Run(_xzDirNormalized.x, _xzDirNormalized.y, cmd.msec);
             }
 
             //Detect jump
-            if (userCmd.Buttons[(int)HandleInputs.Button.Space]) {
+            if (cmd.buttons[(int)UserButton.Space]) {
                 Debug.Log("detect jump");
                 IsJumping = true;
                 JumpReleased = false;
@@ -302,7 +305,7 @@ public class MechController : Photon.MonoBehaviour {
             }
 
             //Apply gravity
-            YSpeed = -_characterController.stepOffset * userCmd.msec * 40;
+            YSpeed = -_characterController.stepOffset * cmd.msec * 40;
         } else{
             IsBoosting = false;
             JumpReleased = false;
@@ -368,7 +371,7 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
-    public void JumpState(HandleInputs.UserCmd userCmd){
+    public void JumpState(usercmd cmd){
         Grounded = CheckIsGrounded() && YSpeed <= 0;
 
         if (Grounded){
@@ -381,14 +384,14 @@ public class MechController : Photon.MonoBehaviour {
         }
 
         //Apply gravity
-        YSpeed -= (YSpeed < maxDownSpeed || IsBoosting) ? 0 : Gravity * userCmd.msec * 40;
+        YSpeed -= (YSpeed < maxDownSpeed || IsBoosting) ? 0 : Gravity * cmd.msec * 40;
 
-        if (!userCmd.Buttons[(int) HandleInputs.Button.Space]){
+        if (!cmd.buttons[(int) UserButton.Space]){
             JumpReleased = true;
             IsBoosting = false;
         }
 
-        if (JumpReleased && IsAvailableVerBoost && userCmd.Buttons[(int)HandleInputs.Button.Space]) {
+        if (JumpReleased && IsAvailableVerBoost && cmd.buttons[(int)UserButton.Space]) {
 
             if (IsAvailableVerBoost){
                 //First call
@@ -402,9 +405,9 @@ public class MechController : Photon.MonoBehaviour {
         }
 
         if (IsBoosting){
-            VerticalBoost(_xzDirNormalized.x, _xzDirNormalized.y, userCmd.msec);
+            VerticalBoost(_xzDirNormalized.x, _xzDirNormalized.y, cmd.msec);
         } else{
-            JumpMoveInAir(_xzDirNormalized.x, _xzDirNormalized.y, userCmd.msec);
+            JumpMoveInAir(_xzDirNormalized.x, _xzDirNormalized.y, cmd.msec);
         }
     }
 
@@ -432,7 +435,7 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
-    public void InstantMoveState(HandleInputs.UserCmd userCmd) {
+    public void InstantMoveState(usercmd cmd) {
         //if (curInstantMoveSpeed == InstantMoveSpeed)//the first time inside this function
         //    _getJumpWhenSlash = false;
 
