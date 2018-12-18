@@ -6,7 +6,8 @@ public struct usercmd {
     public float msec;
     public float horizontal;
     public float vertical;
-    public float viewAngle;
+    public float viewAngle;//mech angle
+    public Vector3 rot;//cam rot
     public bool[] buttons;
     public int Tick;
 }
@@ -20,7 +21,7 @@ public static class UserCmd {
         PhotonPeer.RegisterType(typeof(usercmd), (byte)'I', SerializeUserCmd, DeserializeUserCmd);
     }
 
-    private static readonly byte[] memUserCmd = new byte[4 * 4 + 2 + 4];
+    private static readonly byte[] memUserCmd = new byte[7 * 4 + 2 + 4];
     private static short SerializeUserCmd(StreamBuffer outStream, object customobject) {
         usercmd cmd = (usercmd)customobject;
 
@@ -31,32 +32,38 @@ public static class UserCmd {
             Protocol.Serialize(cmd.horizontal, bytes, ref index);
             Protocol.Serialize(cmd.vertical, bytes, ref index);
             Protocol.Serialize(cmd.viewAngle, bytes, ref index);
+            Protocol.Serialize(cmd.rot.x, bytes, ref index);
+            Protocol.Serialize(cmd.rot.y, bytes, ref index);
+            Protocol.Serialize(cmd.rot.z, bytes, ref index);
 
-            byte button = ConvertBoolArrayToByte(cmd.buttons);
+            short button = ConvertBoolArrayToShort(cmd.buttons);
             Protocol.Serialize(button, bytes, ref index);
 
             Protocol.Serialize(cmd.Tick, bytes, ref index);
 
-            outStream.Write(bytes, 0, 4 * 4 + 2 + 4);
+            outStream.Write(bytes, 0, 7 * 4 + 2 + 4);
         }
 
-        return 4 * 4 + 2 + 4;
+        return 7 * 4 + 2 + 4;
     }
 
     private static object DeserializeUserCmd(StreamBuffer inStream, short length) {
         usercmd cmd = new usercmd();
 
         lock (memUserCmd) {
-            inStream.Read(memUserCmd, 0, 4 * 4 + 2 + 4);
+            inStream.Read(memUserCmd, 0, 7 * 4 + 2 + 4);
             int index = 0;
             Protocol.Deserialize(out cmd.msec, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.horizontal, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.vertical, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.viewAngle, memUserCmd, ref index);
+            Protocol.Deserialize(out cmd.rot.x, memUserCmd, ref index);
+            Protocol.Deserialize(out cmd.rot.y, memUserCmd, ref index);
+            Protocol.Deserialize(out cmd.rot.z, memUserCmd, ref index);
 
             short button;
             Protocol.Deserialize(out button, memUserCmd, ref index);
-            cmd.buttons = ConvertByteToBoolArray((byte)button);
+            cmd.buttons = ConvertShortToBoolArray(button);
 
             Protocol.Deserialize(out cmd.Tick, memUserCmd, ref index);
         }
@@ -64,16 +71,16 @@ public static class UserCmd {
         return cmd;
     }
 
-    private static byte ConvertBoolArrayToByte(bool[] source) {
-        byte result = 0;
-        // This assumes the array never contains more than 8 elements!
+    private static short ConvertBoolArrayToShort(bool[] source) {
+        short result = 0;
+        // This assumes the array never contains more than 16 elements!
         int index = 0;
 
         // Loop through the array
         foreach (bool b in source) {
             // if the element is 'true' set the bit at that position
             if (b)
-                result |= (byte)(1 << (7 - index));
+                result |= (short)(1 << (15 - index));
 
             index++;
         }
@@ -81,18 +88,28 @@ public static class UserCmd {
         return result;
     }
 
-    private static bool[] ConvertByteToBoolArray(byte b) {
+    private static bool[] ConvertShortToBoolArray(short b) {
         // prepare the return result
-        bool[] result = new bool[8];
+        bool[] result = new bool[16];
 
         // check each bit in the byte. if 1 set to true, if 0 set to false
-        for (int i = 0; i < 8; i++)
-            result[i] = (b & (1 << i)) == 0 ? false : true;
+        for (int i = 0; i < 16; i++)
+            result[i] = (b & (1 << i)) != 0;
 
         // reverse the array
         Array.Reverse(result);
 
         return result;
+    }
+
+    public static void CloneUsercmd(usercmd from, ref usercmd to){
+        to.msec = from.msec;
+        to.horizontal = from.horizontal;
+        to.vertical = from.vertical;
+        to.viewAngle = from.viewAngle;
+        to.rot = from.rot;
+        Array.Copy(from.buttons, to.buttons, ButtonsLength);
+        to.Tick = from.Tick;
     }
 }
 
