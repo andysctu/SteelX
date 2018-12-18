@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Utility;
 
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
@@ -39,8 +40,9 @@ public class MechController : Photon.MonoBehaviour {
     private const float slowDownDuration = 0.3f, slowDownCoeff = 0.2f;
     private Coroutine slowDownCoroutine = null;
 
-    public float InstantMoveSpeed, curInstantMoveSpeed;
-    private Vector3 instantMoveDir;
+    public float InstantMoveSpeed = 120;
+    public float InstantMoveRemainingTime, InstantMoveRemainingDistance;
+    public Vector3 InstantMoveDir;
 
     // Animation
     public float Speed;
@@ -49,10 +51,8 @@ public class MechController : Photon.MonoBehaviour {
     public float CurBoostingSpeed;//global space
     private Vector3 _move = Vector3.zero;
 
-    private bool _getJumpWhenSlash;
     public float VerticalBoostStartYPos;
     private float _slashTeleportMinDistance = 3f;
-
 
     //Movement states
     private const float MarginOfError = 0.1f;
@@ -111,7 +111,7 @@ public class MechController : Photon.MonoBehaviour {
         TransformExtension.SetLocalTransform(_jumpEffect.transform);
 
         GetLayerMask();
-        AddAudioSource();
+        _audioSource = AudioSourceBuilder.Build(gameObject, 0.8f, minDistance: 20, maxDistance: 250);
 
         CurMovementState = GroundedState;
     }
@@ -185,18 +185,6 @@ public class MechController : Photon.MonoBehaviour {
         //jump boost speed
         movementVariables.verticalBoostSpeed = _buildMech.MechProperty.VerticalBoostSpeed;
         //jump speed
-    }
-
-    private void AddAudioSource() {
-        _audioSource = gameObject.AddComponent<AudioSource>();
-
-        //Init AudioSource
-        _audioSource.spatialBlend = 1;
-        _audioSource.dopplerLevel = 0;
-        _audioSource.volume = 0.8f;
-        _audioSource.playOnAwake = false;
-        _audioSource.minDistance = 20;
-        _audioSource.maxDistance = 250;
     }
 
     private void InitCam(float radius, float offset) {
@@ -279,6 +267,11 @@ public class MechController : Photon.MonoBehaviour {
 
         if (IsJumping){
             Debug.LogWarning("in grounded , isJumping true");
+        }
+
+        if (IsInstantMoving()){
+            InstantMove(cmd);
+            return;
         }
 
         if (Grounded) {
@@ -374,8 +367,12 @@ public class MechController : Photon.MonoBehaviour {
     public void JumpState(usercmd cmd){
         Grounded = CheckIsGrounded() && YSpeed <= 0;
 
+        if (IsInstantMoving()){
+            InstantMove(cmd);
+            return;
+        }
+
         if (Grounded){
-            Debug.Log("detect grounded");
             IsJumping = false;
             IsBoosting = false;
             
@@ -411,6 +408,38 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
+    private void InstantMove(usercmd cmd){
+        InstantMoveRemainingTime -= Time.deltaTime;
+
+        if (InstantMoveRemainingTime > 0) {
+            YSpeed = 0;
+            XSpeed = 0;
+            ZSpeed = 0;
+        } else {
+            if (CheckIsGrounded()) {
+                IsJumping = false;
+                IsBoosting = false;
+            }
+
+            return;
+        }
+
+        if(InstantMoveRemainingDistance > 0){
+            _characterController.Move(InstantMoveDir * InstantMoveSpeed * cmd.msec);
+            InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed * cmd.msec).magnitude;
+        }
+
+        //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
+        RaycastHit hit;
+        if (!IsJumping && Physics.Raycast(transform.position, -Vector3.up, out hit, _terrainMask)) {
+            if (Vector3.Distance(hit.point, transform.position) >= _slashTeleportMinDistance && !Physics.CheckSphere(hit.point + new Vector3(0, 2.1f, 0), _characterController.radius, _terrainMask)) {
+                transform.position = hit.point;
+
+                //TODO : map edge case
+            }
+        }
+    }
+
     private void VerticalBoost(float horizontal_nor, float vertical_nor, float msec) {
         if (transform.position.y >= VerticalBoostStartYPos + movementVariables.verticalBoostSpeed * 1.25f) {//max height
             YSpeed = 0;
@@ -435,44 +464,8 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
-    public void InstantMoveState(usercmd cmd) {
-        //if (curInstantMoveSpeed == InstantMoveSpeed)//the first time inside this function
-        //    _getJumpWhenSlash = false;
-
-        InstantMoveSpeed /= 1.6f;//1.6 : decrease coeff.
-
-        if (Mathf.Abs(InstantMoveSpeed) > 0.001f) {
-            YSpeed = 0;
-            XSpeed = 0;
-            ZSpeed = 0;
-        } else{
-            if (CheckIsGrounded()){
-                IsJumping = false;
-                IsBoosting = false;
-                SetMovementState(GroundedState);
-            } else{
-                SetMovementState(JumpState);
-            }
-
-            return;
-        }
-
-        _characterController.Move(instantMoveDir * InstantMoveSpeed);
-        //_move.x = 0;
-        //_move.z = 0;
-
-        //if (_mainAnimator.GetBool(_animatorVars.JumpHash))
-        //    _getJumpWhenSlash = true;
-
-        //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
-        RaycastHit hit;
-        if (!_getJumpWhenSlash && Physics.Raycast(transform.position, -Vector3.up, out hit, _terrainMask)) {
-            if (Vector3.Distance(hit.point, transform.position) >= _slashTeleportMinDistance && !Physics.CheckSphere(hit.point + new Vector3(0, 2.1f, 0), _characterController.radius, _terrainMask)) {
-                transform.position = hit.point;
-
-                //TODO : map edge case
-            }
-        }
+    public bool IsInstantMoving(){
+        return InstantMoveRemainingTime > 0;
     }
 
     public bool CheckIsGrounded() {//TODO : improve this
@@ -501,61 +494,47 @@ public class MechController : Photon.MonoBehaviour {
         ZSpeed = speed.z;
     }
 
-    public void SetMoving(float speed) {//called by animation
-        Debug.Log("set moving");
-        InstantMoveSpeed = speed;
-        instantMoveDir = _camTransform.forward;
-        if (CheckIsGrounded()) instantMoveDir = new Vector3(instantMoveDir.x, 0, instantMoveDir.z);// make sure not slashing to the sky
-        curInstantMoveSpeed = InstantMoveSpeed;
+    public void SetInstantMoving(Vector3 dir, float distance, float duration){
+        //The speed is independent of duration
+        InstantMoveRemainingDistance = distance;
+        InstantMoveRemainingTime = duration;
+        InstantMoveDir = dir;//Note : may have problem
 
-        SetMovementState(InstantMoveState);
+        if (CheckIsGrounded()) InstantMoveDir = new Vector3(InstantMoveDir.x, 0, InstantMoveDir.z);// make sure not slashing to the sky
     }
 
-    public void SetInstantMove(float speed , Vector3 dir){
-        instantMoveDir = dir;
-        InstantMoveSpeed = speed;
-        curInstantMoveSpeed = speed;
-    }
-
-    public void SkillSetMoving(Vector3 v) {
-        onInstantMoving = true;
-        InstantMoveSpeed = v.magnitude;
-        instantMoveDir = v;
-        curInstantMoveSpeed = InstantMoveSpeed;
-    }
-
-    private void LateUpdate() {
+    private void LateUpdate() {//TODO : improve this
         if(_mechCombat.IsMeleePlaying() || onSkill)return;
 
         RotateLegs();//Other player has to run this 
     }
 
     private void RotateLegs(){
-        _rLDir = _mainAnimator.GetFloat("Direction");
+        //_rLDir = _mainAnimator.GetFloat("Direction");
 
-        if (_rotateLegPreSpeed < 0){
-            if ((_rotateLegPreSpeed = _mainAnimator.GetFloat("Speed")) < -0.05f)
-                _rLDir *= -1;
-            else{
-                //reset 
-                _rLSpineDegree = 0;
-                _rLPelvisDegree = 0;
-            }
-        } else{
-            if ((_rotateLegPreSpeed = _mainAnimator.GetFloat("Speed")) < -0.05f){
-                _rLDir *= -1;
+        //if (_rotateLegPreSpeed < 0){
+        //    if ((_rotateLegPreSpeed = _mainAnimator.GetFloat("Speed")) < -0.05f)
+        //        _rLDir *= -1;
+        //    else{
+        //        //reset 
+        //        _rLSpineDegree = 0;
+        //        _rLPelvisDegree = 0;
+        //    }
+        //} else{
+        //    if ((_rotateLegPreSpeed = _mainAnimator.GetFloat("Speed")) < -0.05f){
+        //        _rLDir *= -1;
 
-                //reset 
-                _rLSpineDegree = 0;
-                _rLPelvisDegree = 0;
-            }
-        }
+        //        //reset 
+        //        _rLSpineDegree = 0;
+        //        _rLPelvisDegree = 0;
+        //    }
+        //}
 
-        _rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!_mainAnimator.GetBool("Grounded") && !_mainAnimator.GetBool("Boost")) ? -60 : -30, _rLLerpSpeed * Time.deltaTime);
-        _rLPelvisDegree = Mathf.Lerp(_rLPelvisDegree, 30, _rLLerpSpeed * Time.deltaTime);
+        //_rLSpineDegree = Mathf.Lerp(_rLSpineDegree, (!_mainAnimator.GetBool("Grounded") && !_mainAnimator.GetBool("Boost")) ? -60 : -30, _rLLerpSpeed * Time.deltaTime);
+        //_rLPelvisDegree = Mathf.Lerp(_rLPelvisDegree, 30, _rLLerpSpeed * Time.deltaTime);
 
-        _pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
-        _spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
+        //_pelvis.rotation = Quaternion.Euler(_pelvis.rotation.eulerAngles.x, _pelvis.rotation.eulerAngles.y + _rLDir * _rLPelvisDegree, _pelvis.rotation.eulerAngles.z);
+        //_spine1.rotation = Quaternion.Euler(_spine1.rotation.eulerAngles.x, _spine1.rotation.eulerAngles.y + _rLDir * _rLSpineDegree, _spine1.rotation.eulerAngles.z);
     }
 
     public void ResetCurBoostingSpeed() {
@@ -653,6 +632,10 @@ public class MechController : Photon.MonoBehaviour {
         }
     }
 
+    public Vector3 GetForwardVector(){
+        return _mechCam.transform.forward;
+    }
+
     [System.Serializable]
     public struct MovementVariables {
         public float verticalBoostSpeed;
@@ -666,18 +649,34 @@ public class MechController : Photon.MonoBehaviour {
     }
 }
 
-//TODO : implement these
-//if (onInstantMoving) {
-//    InstantMove();
-//    return;
-//}
-
 //if (isSlowDown) {
 //    move.x = move.x * slowDownCoeff;
 //    move.z = move.z * slowDownCoeff;
 //}
 
-//if (!gm.GameIsBegin) {//player can't move but can rotate
-//    move.x = 0;
-//    move.z = 0;
-//}
+/*
+ *
+ *     public void CallMoving(float speed) {//also called by Cn shoot with speed < 0
+    //if (!pv.isMine)
+    //    return;
+
+    if (speed > 0) {
+        List<Transform> targets = SlashDetector.getCurrentTargets();
+        if (targets.Count == 0 || !MechController.Grounded) {
+            MechController.SetMoving(speed);//complete move
+        } else {
+            //check if there is any target in front & the distance between is higher than a number
+            foreach (Transform t in targets) {
+                if (t == null || (t.tag != "Drone" && t.root.GetComponent<MechCombat>().isDead))
+                    continue;
+
+                if (Vector3.Distance(transform.position, t.position) >= minCallMoveDistance) {
+                    MechController.SetMoving(speed / 2);//not getting too far
+                }
+            }
+        }
+    } else if (speed < 0) {
+        MechController.SetMoving(speed);
+    }
+}
+ */
