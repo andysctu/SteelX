@@ -4,7 +4,6 @@ using Utility;
 
 // MechController controls the position of the player
 public class MechController : Photon.MonoBehaviour {
-    [SerializeField] private PhotonView _rootPv;
     [SerializeField] public MovementVariables movementVariables = new MovementVariables();
     private BuildMech _buildMech;
     private MechCombat _mechCombat;
@@ -13,7 +12,7 @@ public class MechController : Photon.MonoBehaviour {
     private SkillController _skillController;
     private Transform _camTransform;
     private AnimatorVars _animatorVars;
-    private Animator _mainAnimator;
+    private Animator _animator;
     private LayerMask _terrainMask;
 
     //Booster 
@@ -77,6 +76,8 @@ public class MechController : Photon.MonoBehaviour {
     public bool onSkillMoving = false, onInstantMoving = false, IsJumping = false;
     public bool JumpReleased;
 
+    private PhotonPlayer _owner;
+
     private void Awake() {
         InitComponents();
 
@@ -84,15 +85,12 @@ public class MechController : Photon.MonoBehaviour {
         RegisterOnWeaponSwitched();
         RegisterOnSkill();
         RegisterOnMechEnabled();
-
-        //TODO : temp put here
-        GetComponent<HandleInputs>().Init(photonView.owner);
     }
 
     private void InitComponents() {
         Transform currentMech = transform.Find("CurrentMech");
-        _animatorVars = currentMech.GetComponent<AnimatorVars>();
-        _mainAnimator = currentMech.GetComponent<Animator>();
+        _animatorVars = GetComponent<AnimatorVars>();
+        _animator = GetComponent<Animator>();
         _mechCombat = GetComponent<MechCombat>();
         _mechCam = GetComponentInChildren<MechCamera>();
         _camTransform = _mechCam.transform;
@@ -100,9 +98,6 @@ public class MechController : Photon.MonoBehaviour {
 
         _characterController = GetComponent<CharacterController>();
         _skillController = GetComponent<SkillController>();
-
-        //Disable animation & pos sync TODO : move this elsewhere
-        if (_rootPv.isMine && !PhotonNetwork.isMasterClient) currentMech.GetComponent<PhotonView>().ObservedComponents.Clear();
 
         _pelvis = transform.Find("CurrentMech/Bip01/Bip01_Pelvis");
         _spine1 = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1");
@@ -120,14 +115,18 @@ public class MechController : Photon.MonoBehaviour {
         _terrainMask = LayerMask.GetMask("Terrain");
     }
 
-    private void Start() {
+    private void Init(){
+        _owner = _buildMech.GetOwner();
+        _mechCam.Init(_owner);
+        GetComponent<Sync>().Init(_owner);
+        FindBoosterController();
+        InitControllerVar();
         InitCam(cam_orbitradius, cam_angleoffset);
     }
 
     private void RegisterOnMechBuilt() {
         if ((_buildMech = GetComponent<BuildMech>()) != null) {
-            _buildMech.OnMechBuilt += FindBoosterController;
-            _buildMech.OnMechBuilt += InitControllerVar;
+            _buildMech.OnMechBuilt += Init;
         }
     }
 
@@ -163,8 +162,8 @@ public class MechController : Photon.MonoBehaviour {
         isSlowDown = false;
         _mechCam.LockMechRotation(false);
         CurBoostingSpeed = movementVariables.moveSpeed;
-        _mainAnimator.SetBool("Boost", false);
-        _mainAnimator.SetBool("Jump", false);
+        _animator.SetBool("Boost", false);
+        _animator.SetBool("Jump", false);
     }
 
     private void FindBoosterController() {
@@ -188,7 +187,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void InitCam(float radius, float offset) {
-        if (!_rootPv.isMine){
+        if (!_owner.IsLocal) {
             _mechCam.orbitRadius = radius;
             _mechCam.angleOffset = offset;
         }
@@ -197,11 +196,11 @@ public class MechController : Photon.MonoBehaviour {
     private void Update() {
         //TODO : remake this (test use)
         if (_isFootStepVarPositive){
-            if (_mainAnimator.GetFloat("FootStep") < 0) {
+            if (_animator.GetFloat("FootStep") < 0) {
                 _isFootStepVarPositive = false;
                 _sounds.PlayWalk();
             }
-        }else if (_mainAnimator.GetFloat("FootStep") > 0) {
+        }else if (_animator.GetFloat("FootStep") > 0) {
             _isFootStepVarPositive = true;
             _sounds.PlayWalk();
         }
@@ -241,7 +240,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if (PhotonNetwork.isMasterClient || _rootPv.isMine) {//TODO : jump boost -en rate different
+        if (PhotonNetwork.isMasterClient || (_owner!=null && _owner.IsLocal)) {//TODO : jump boost -en rate different
             //if (IsBoosting) {
             //    _mechCombat.DecrementEN(Time.fixedDeltaTime);
             //} else {
@@ -249,8 +248,8 @@ public class MechController : Photon.MonoBehaviour {
             //}
         }
 
-        if (_rootPv.isMine) {
-            if (_mainAnimator.GetBool(_animatorVars.BoostHash)) {
+        if ((_owner != null && _owner.IsLocal)) {
+            if (_animator.GetBool(_animatorVars.BoostHash)) {
                 DynamicCam();
             } else {
                 ResetCam();
@@ -646,6 +645,10 @@ public class MechController : Photon.MonoBehaviour {
 
         public float acceleration;
         public float deceleration;
+    }
+
+    public PhotonPlayer GetOwner(){
+        return _owner;
     }
 }
 

@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 
 public class Sync : Photon.MonoBehaviour {
-    [Tooltip("RootPv is owned by the player who instantiated this mech")]
-    [SerializeField] private PhotonView _rootPv;
     [SerializeField] private Transform _mainCam;
 
     private Vector3 _trueLoc;
     private Quaternion _trueRot = Quaternion.identity, _camTrueRot;
 
+    private PhotonPlayer _owner;
+
+    public void Init(PhotonPlayer owner){
+        _owner = owner;
+    }
+
     private void Update() {
-        if (!PhotonNetwork.isMasterClient && !_rootPv.isMine) {
+        if (!PhotonNetwork.isMasterClient && _owner != null && !_owner.IsLocal) {
             transform.position = Vector3.Lerp(transform.position, _trueLoc, Time.deltaTime * 10); //TODO : pass curPos in HandleInputs
             transform.rotation = Quaternion.Lerp(transform.rotation, _trueRot, Time.deltaTime * 10);
             _mainCam.rotation = _camTrueRot;
@@ -19,9 +23,11 @@ public class Sync : Photon.MonoBehaviour {
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
         if (stream.isReading) {
             if (!PhotonNetwork.isMasterClient){
+                if(_owner==null)return;
+
                 this._trueLoc = (Vector3)stream.ReceiveNext();
 
-                if (!_rootPv.isMine){
+                if (!_owner.IsLocal){
                     this._trueRot = (Quaternion)stream.ReceiveNext();
                     this._camTrueRot = (Quaternion)stream.ReceiveNext();
                 } else{
@@ -31,7 +37,6 @@ public class Sync : Photon.MonoBehaviour {
             }
         } else {
             if (PhotonNetwork.isMasterClient) {
-                Debug.Log("send out : "+gameObject.name);
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
                 stream.SendNext(_mainCam.rotation);

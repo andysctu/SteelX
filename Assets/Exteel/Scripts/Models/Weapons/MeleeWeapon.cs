@@ -11,7 +11,6 @@ namespace Weapons
         protected ParticleSystem HitEffectPrefab;
 
         private const int DetectShieldMaxDistance = 50; //the ray which checks if hitting shield max distance
-        public float Threshold;
 
         public enum StateCallBackType
         {

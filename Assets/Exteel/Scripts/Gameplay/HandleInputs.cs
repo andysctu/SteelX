@@ -32,20 +32,31 @@ public class HandleInputs : MonoBehaviour
     private Vector3 _curPosition;
 
     private void Awake(){
+        RegisterOnMechBuilt();
         InitComponents();
     }
 
-    public void Init(PhotonPlayer sender){
-        _senderID = sender.ID;
-        _sender = sender;
+    private void RegisterOnMechBuilt() {
+        if (GetComponent<BuildMech>() != null) {
+            GetComponent<BuildMech>().OnMechBuilt += Init;
+        }
+    }
 
-        if (PhotonNetwork.isMasterClient || sender.IsLocal){
+    private void Init() {
+        Debug.Log("get init");
+        PhotonPlayer owner = GetComponent<BuildMech>().GetOwner();
+        _senderID = owner.ID;
+        _sender = owner;
+        _curPosition = transform.position;
+        Debug.Log("pos : " + transform.position);
+
+        if (PhotonNetwork.isMasterClient || owner.IsLocal) {
             RegisterInputEvent();
             UserCmd.RegisterType();
             ConfirmData.RegisterType();
         }
 
-        enabled = sender.IsLocal;
+        enabled = owner.IsLocal;
         _init = true;
     }
 
@@ -61,8 +72,6 @@ public class HandleInputs : MonoBehaviour
 
     private void Start(){
         _gameManager = FindObjectOfType<GameManager>(); //TODO : make sure game manager is exist
-
-        _curPosition = transform.position;
     }
 
     protected void OnPhotonEvent(byte eventCode, object content, int senderId){
@@ -221,7 +230,7 @@ public class HandleInputs : MonoBehaviour
 
                 tmpTick = (tmpTick + 1) % 1024;
 
-                Debug.Log("=> Tick : " + tmpTick + " Pos : " + transform.position);
+                Debug.Log("=> Tick : " + tmpTick + " Pos : " + _curPosition);
 
                 _historyPositions[tmpTick] = _curPosition;
             }

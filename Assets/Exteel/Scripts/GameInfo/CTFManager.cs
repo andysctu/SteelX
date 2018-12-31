@@ -93,11 +93,18 @@ public class CTFManager : GameManager {
     }
 
     public override void InstantiatePlayer() {
+        //tell master to build it
+        Mech m = new Mech();
+        photonView.RPC("MasterInstantiatePlayer", PhotonTargets.MasterClient, PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+    }
+
+    [PunRPC]
+    private void MasterInstantiatePlayer(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
         Vector3 StartPos;
         Quaternion StartRot;
 
-        if (PhotonNetwork.player.GetTeam() == PunTeams.Team.blue || PhotonNetwork.player.GetTeam() == PunTeams.Team.none) {
-            if (PhotonNetwork.player.GetTeam() == PunTeams.Team.none && !Offline) {
+        if (owner.GetTeam() == PunTeams.Team.blue || owner.GetTeam() == PunTeams.Team.none) {
+            if (owner.GetTeam() == PunTeams.Team.none && !Offline) {
                 Debug.LogWarning("This player's team is none");
             }
             SetRespawnPoint(BlueBaseIndex);//set default
@@ -110,11 +117,12 @@ public class CTFManager : GameManager {
             StartRot = Quaternion.Euler(new Vector3(0, Random.Range(0, 180), 0));
         }
 
-        Mech m = (Offline) ? new Mech() : UserData.myData.Mech[0];//Default 0  //TODO : remove offline check
+        Mech m = new Mech();
+        Vector3 tmp = new Vector3(StartPos.x, 0.2f, StartPos.z);
 
-        PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
+        PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, tmp, StartRot, 0);
         BuildMech mechBuilder = PlayerMech.GetComponent<BuildMech>();
-        mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+        mechBuilder.Build(owner, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
 
         FindPlayerMainCameras(PlayerMech);
     }

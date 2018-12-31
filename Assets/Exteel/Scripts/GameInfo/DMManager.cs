@@ -58,6 +58,13 @@ public class DMManager : GameManager {
     }
 
     public override void InstantiatePlayer() {
+        //tell master to build it
+        Mech m = new Mech();
+        photonView.RPC("MasterInstantiatePlayer", PhotonTargets.MasterClient, PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+    }
+
+    [PunRPC]
+    private void MasterInstantiatePlayer(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
         Vector3 StartPos;
         Quaternion StartRot;
 
@@ -72,7 +79,7 @@ public class DMManager : GameManager {
 
         PlayerMech = PhotonNetwork.Instantiate(MechPrefab.name, StartPos, StartRot, 0);
         BuildMech mechBuilder = PlayerMech.GetComponent<BuildMech>();
-        mechBuilder.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+        mechBuilder.Build(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
         FindPlayerMainCameras(PlayerMech);
     }

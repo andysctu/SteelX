@@ -8,7 +8,7 @@ public class SkillController : MonoBehaviour {
     [SerializeField] private BuildMech bm;
     [SerializeField] private MechCombat mechcombat;
     [SerializeField] private MechController mechController;
-    [SerializeField] private Animator skillAnimator, mainAnimator, skillcamAnimator;
+    [SerializeField] private Animator animator, skillcamAnimator;
     [SerializeField] private Camera mainCam, skillCam;
     [SerializeField] private SkillConfig[] skills = new SkillConfig[4];
     [SerializeField] private Sounds Sounds;
@@ -261,8 +261,8 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitSkillAnimatorControllers() {
-        animatorOverrideController = new AnimatorOverrideController(skillAnimator.runtimeAnimatorController);
-        skillAnimator.runtimeAnimatorController = animatorOverrideController;
+        animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        animator.runtimeAnimatorController = animatorOverrideController;
 
         clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
         animatorOverrideController.GetOverrides(clipOverrides);
@@ -309,7 +309,9 @@ public class SkillController : MonoBehaviour {
 
         bool hasPlayerAnimation = (skills[skill_num].GetPlayerAniamtion() != null);
 
-        return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.Grounded) && !mainAnimator.GetBool("OnMelee");
+        //todo : check this
+        return true;
+        //return skill_isMatchRequirements[skill_num] && CheckIfSkillHasCooldown(skill_num) && CheckIfEnergyEnough(skills[skill_num].GeneralSkillParams.energyCost) && !mechcombat.IsSwitchingWeapon && (!hasPlayerAnimation || mechController.Grounded) && !mainAnimator.GetBool("OnMelee");
     }
 
     private bool CheckIfEnergyEnough(int energyCost) {
@@ -336,24 +338,24 @@ public class SkillController : MonoBehaviour {
     }
 
     private void SwitchToSkillAnimator(bool b) {
-        ResetMainAnimatorState();
+        //ResetMainAnimatorState();
 
-        if (!b) {//only call update when the skill end , in case shoot animation event gets called
-            mainAnimator.Update(0);
-        }
+        //if (!b) {//only call update when the skill end , in case shoot animation event gets called
+        //    mainAnimator.Update(0);
+        //}
 
-        skillAnimator.enabled = b;
-        mainAnimator.enabled = !b;
+        //animator.enabled = b;
+        //mainAnimator.enabled = !b;
     }
 
     private void ResetMainAnimatorState() {
-        mainAnimator.SetBool("Boost", false);
-        mainAnimator.SetFloat("Speed", 0);
-        mainAnimator.SetFloat("Direction", 0);
+        //mainAnimator.SetBool("Boost", false);
+        //mainAnimator.SetFloat("Speed", 0);
+        //mainAnimator.SetFloat("Direction", 0);
 
-        mainAnimator.Play("Walk", 0);
-        mainAnimator.Play("Idle", 1);
-        mainAnimator.Play("Idle", 2);
+        //mainAnimator.Play("Walk", 0);
+        //mainAnimator.Play("Idle", 1);
+        //mainAnimator.Play("Idle", 2);
     }
 
     //private void UpdateWeaponAnimators() {
@@ -382,7 +384,7 @@ public class SkillController : MonoBehaviour {
         PlaySkillCamAnimation(skill_num);
         OnSkill(true);
 
-        skillAnimator.Play("sk" + skill_num);
+        animator.Play("sk" + skill_num);
     }
 
     public void PlayerBoosterAnimation(int skill_num) {
@@ -412,7 +414,7 @@ public class SkillController : MonoBehaviour {
             PlaySkillCamAnimation(-1);//-1 : target animation
         }
         SwitchToSkillAnimator(true);
-        skillAnimator.Play(Target_Animation_Name);
+        animator.Play(Target_Animation_Name);
         StartCoroutine(ReturnDefaultStateWhenEnd(Target_Animation_Name));
     }
 
@@ -469,7 +471,7 @@ public class SkillController : MonoBehaviour {
 
     private IEnumerator ReturnDefaultStateWhenEnd(string stateToWait) {//TODO : improve this so not using string
         yield return new WaitForSeconds(0.2f);//TODO : remake this logic
-        yield return new WaitWhile(() => skillAnimator.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
+        yield return new WaitWhile(() => animator.GetCurrentAnimatorStateInfo(0).IsName(stateToWait));
         OnSkill(false);
         if (!isDrone) SwitchToSkillCam(false);
     }
@@ -480,7 +482,7 @@ public class SkillController : MonoBehaviour {
         SwitchToSkillCam(true);
         OnSkill(true);
 
-        skillAnimator.Play("Skill_Cancel_01");
+        animator.Play("Skill_Cancel_01");
         Sounds.PlayClip(sorry);
     }
 

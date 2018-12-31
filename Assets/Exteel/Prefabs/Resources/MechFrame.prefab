@@ -102,11 +102,14 @@ GameObject:
   - component: {fileID: 11445986}
   - component: {fileID: 114000012410893822}
   - component: {fileID: 114718916726667884}
-  - component: {fileID: 95953646033232842}
   - component: {fileID: 114666270378404098}
   - component: {fileID: 114715354567852064}
   - component: {fileID: 114927918550711304}
   - component: {fileID: 114369657553542572}
+  - component: {fileID: 95305905742212722}
+  - component: {fileID: 114215802574563724}
+  - component: {fileID: 114873611239810726}
+  - component: {fileID: 114802227920568792}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -122,13 +125,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 437684}
-  - component: {fileID: 9563454}
-  - component: {fileID: 11496946}
-  - component: {fileID: 11418256}
   - component: {fileID: 114000010976113334}
   - component: {fileID: 82000013355623540}
-  - component: {fileID: 114895722533198232}
-  - component: {fileID: 114137985907184306}
   - component: {fileID: 82915054223986856}
   - component: {fileID: 114093068494878398}
   - component: {fileID: 114999884067279722}
@@ -394,23 +392,6 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 113264}
   m_Enabled: 0
---- !u!95 &9563454
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 144000}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: b848883c094479749b393acdef398cdd, type: 3}
-  m_Controller: {fileID: 9100000, guid: d5ef38c1143364a358f4df7b42b2979f, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &11415780
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -423,7 +404,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMech: {fileID: 144000}
-  animator: {fileID: 9563454}
   SkillController: {fileID: 114715354567852064}
   lockPlayerRot: 0
   lockCamRotation: 0
@@ -445,101 +425,18 @@ MonoBehaviour:
   group: 0
   OwnerShipWasTransfered: 0
   prefixBackup: -1
-  synchronization: 0
+  synchronization: 3
   onSerializeTransformOption: 3
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 0}
+  - {fileID: 114215802574563724}
+  - {fileID: 114000012410893822}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!114 &11418256
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 144000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 1
-    SynchronizeType: 2
-    Name: Speed
-  - Type: 1
-    SynchronizeType: 2
-    Name: Direction
-  - Type: 4
-    SynchronizeType: 1
-    Name: Jump
-  - Type: 4
-    SynchronizeType: 2
-    Name: Boost
-  - Type: 4
-    SynchronizeType: 1
-    Name: Grounded
-  - Type: 4
-    SynchronizeType: 1
-    Name: ENGShootL
-  - Type: 4
-    SynchronizeType: 1
-    Name: ENGShootR
-  - Type: 4
-    SynchronizeType: 0
-    Name: OnMelee
-  - Type: 1
-    SynchronizeType: 0
-    Name: slashTime
-  - Type: 4
-    SynchronizeType: 0
-    Name: RCLShoot
-  - Type: 4
-    SynchronizeType: 0
-    Name: CanExit
-  - Type: 4
-    SynchronizeType: 2
-    Name: Slash
-  - Type: 1
-    SynchronizeType: 0
-    Name: SpeedLCoeff
-  - Type: 1
-    SynchronizeType: 0
-    Name: SpeedRCoeff
-  - Type: 4
-    SynchronizeType: 0
-    Name: AtkL
-  - Type: 4
-    SynchronizeType: 0
-    Name: AtkR
-  - Type: 4
-    SynchronizeType: 1
-    Name: CnShoot
-  - Type: 4
-    SynchronizeType: 2
-    Name: CnPose
-  - Type: 4
-    SynchronizeType: 1
-    Name: CnLoad
-  - Type: 4
-    SynchronizeType: 0
-    Name: FinalSlash
-  - Type: 1
-    SynchronizeType: 0
-    Name: FootStep
-  m_SynchronizeLayers:
-  - SynchronizeType: 1
-    LayerIndex: 0
-  - SynchronizeType: 1
-    LayerIndex: 1
-  - SynchronizeType: 1
-    LayerIndex: 2
 --- !u!114 &11418416
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -632,7 +529,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d4da55d06b81438e862d42830040393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rootPv: {fileID: 11416036}
   movementVariables:
     verticalBoostSpeed: 0
     maxHorizontalBoostSpeed: 60
@@ -647,6 +543,10 @@ MonoBehaviour:
     type: 2}
   LandingSound: {fileID: 8300000, guid: 63e984269ad984aeaa7cf1d65265e28d, type: 3}
   JumpSound: {fileID: 8300000, guid: 972b545b178aa445fba0f2cf616b9075, type: 3}
+  InstantMoveSpeed: 120
+  InstantMoveRemainingTime: 0
+  InstantMoveRemainingDistance: 0
+  InstantMoveDir: {x: 0, y: 0, z: 0}
   Speed: 0
   Direction: 0
   CurBoostingSpeed: 0
@@ -706,33 +606,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &11496946
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 144000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ownerId: 0
-  group: 0
-  OwnerShipWasTransfered: 0
-  prefixBackup: -1
-  synchronization: 3
-  onSerializeTransformOption: 3
-  onSerializeRigidBodyOption: 2
-  ownershipTransfer: 2
-  ObservedComponents:
-  - {fileID: 11418256}
-  - {fileID: 114000012410893822}
-  ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
-  currentMasterID: -1
-  isRuntimeInstantiated: 0
 --- !u!124 &12423242
 Behaviour:
   m_ObjectHideFlags: 1
@@ -4016,6 +3889,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!95 &95305905742212722
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: b848883c094479749b393acdef398cdd, type: 3}
+  m_Controller: {fileID: 9100000, guid: d5ef38c1143364a358f4df7b42b2979f, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!95 &95367388477678554
 Animator:
   serializedVersion: 3
@@ -4026,23 +3916,6 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7ef6b00267c1b9c49b9ae8beb6e12999, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
---- !u!95 &95953646033232842
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 0
-  m_Avatar: {fileID: 9000000, guid: b848883c094479749b393acdef398cdd, type: 3}
-  m_Controller: {fileID: 9100000, guid: faaa136a868701141aaad7e781f105a1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -4154,7 +4027,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 218d5efc91e564a5e814a0d53b76151a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pv: {fileID: 11496946}
+  pv: {fileID: 0}
   Lock: {fileID: 8300000, guid: 507058c7a769247af8b05ba69a6ec6ac, type: 3}
   OnLocked: {fileID: 8300000, guid: 115719052282d4f18b5f0c4593b31fdf, type: 3}
   SwitchWeapon: {fileID: 8300000, guid: 84d99c67996f64160bc4b71eec9969c4, type: 3}
@@ -4172,7 +4045,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c15faef08202c475bb9c4b68055cf909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rootPv: {fileID: 11416036}
   _mainCam: {fileID: 405268}
 --- !u!114 &114033848892960072
 MonoBehaviour:
@@ -4353,39 +4225,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Player001
---- !u!114 &114137985907184306
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 144000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cc: {fileID: 0}
-  Mcbt: {fileID: 0}
-  Mctrl: {fileID: 0}
-  HandleInputs: {fileID: 0}
-  Sounds: {fileID: 0}
-  MechIK: {fileID: 0}
-  EffectController: {fileID: 0}
-  RootPv: {fileID: 11416036}
-  BoostHash: 0
-  GroundedHash: 0
-  JumpHash: 0
-  SpeedHash: 0
-  DirectionHash: 0
-  OnMeleeHash: 0
-  BlockLHash: 0
-  BlockRHash: 0
-  SlashHash: 0
-  FinalSlashHash: 0
-  CnPoseHash: 0
-  CnShootHash: 0
-  CnLoadHash: 0
-  inHangar: 0
 --- !u!114 &114161801815670764
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4397,6 +4236,90 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f54e05a484f6014ba4b549fed201e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114215802574563724
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 1
+    SynchronizeType: 2
+    Name: Speed
+  - Type: 1
+    SynchronizeType: 2
+    Name: Direction
+  - Type: 4
+    SynchronizeType: 1
+    Name: Jump
+  - Type: 4
+    SynchronizeType: 2
+    Name: Boost
+  - Type: 4
+    SynchronizeType: 1
+    Name: Grounded
+  - Type: 4
+    SynchronizeType: 1
+    Name: ENGShootL
+  - Type: 4
+    SynchronizeType: 1
+    Name: ENGShootR
+  - Type: 4
+    SynchronizeType: 0
+    Name: OnMelee
+  - Type: 1
+    SynchronizeType: 0
+    Name: slashTime
+  - Type: 4
+    SynchronizeType: 0
+    Name: RCLShoot
+  - Type: 4
+    SynchronizeType: 0
+    Name: CanExit
+  - Type: 4
+    SynchronizeType: 2
+    Name: Slash
+  - Type: 1
+    SynchronizeType: 0
+    Name: SpeedLCoeff
+  - Type: 1
+    SynchronizeType: 0
+    Name: SpeedRCoeff
+  - Type: 4
+    SynchronizeType: 0
+    Name: AtkL
+  - Type: 4
+    SynchronizeType: 0
+    Name: AtkR
+  - Type: 4
+    SynchronizeType: 1
+    Name: CnShoot
+  - Type: 4
+    SynchronizeType: 2
+    Name: CnPose
+  - Type: 4
+    SynchronizeType: 1
+    Name: CnLoad
+  - Type: 4
+    SynchronizeType: 0
+    Name: FinalSlash
+  - Type: 1
+    SynchronizeType: 0
+    Name: FootStep
+  m_SynchronizeLayers:
+  - SynchronizeType: 1
+    LayerIndex: 0
+  - SynchronizeType: 1
+    LayerIndex: 1
+  - SynchronizeType: 1
+    LayerIndex: 2
 --- !u!114 &114328570908798246
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4426,12 +4349,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26d45b9f8bbc63e429b72912c81bed5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rootPv: {fileID: 11416036}
   SendRate: 0.03
   AdjustPositionThreshold: 0.1
   AdjustSpeed: 8
-  SendConfirmRate: 0.05
   LerpPosSpeed: 10
+  SendConfirmRate: 0.05
 --- !u!114 &114437314829428946
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4504,8 +4426,8 @@ MonoBehaviour:
   respawnEffect: {fileID: 198733366336531302}
   damageless: {fileID: 198420398624275908}
   Sounds: {fileID: 114000010976113334}
-  Animator: {fileID: 9563454}
-  AnimatorVars: {fileID: 114137985907184306}
+  Animator: {fileID: 95305905742212722}
+  AnimatorVars: {fileID: 114873611239810726}
   Hands:
   - {fileID: 4595148408848882}
   - {fileID: 4779431409734004}
@@ -4554,7 +4476,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138214}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b819f2c2dda201148a1f5363f8ea3e43, type: 3}
   m_Name: 
@@ -4562,8 +4484,7 @@ MonoBehaviour:
   bm: {fileID: 11422958}
   mechcombat: {fileID: 11445986}
   mechController: {fileID: 11462782}
-  skillAnimator: {fileID: 95953646033232842}
-  mainAnimator: {fileID: 9563454}
+  animator: {fileID: 95305905742212722}
   skillcamAnimator: {fileID: 95367388477678554}
   mainCam: {fileID: 2087740}
   skillCam: {fileID: 20202144477786866}
@@ -4587,6 +4508,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97063224de75cef43bb01020b1f6d1ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114802227920568792
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 138214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MechCombat: {fileID: 11445986}
+  bm: {fileID: 11422958}
+  MechController: {fileID: 11462782}
+  MechCamera: {fileID: 11415780}
+  Animator: {fileID: 95305905742212722}
+  AnimatorVars: {fileID: 114873611239810726}
+  SlashDetector: {fileID: 114057908317756476}
 --- !u!114 &114804190747194500
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4641,24 +4580,38 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114895722533198232
+--- !u!114 &114873611239810726
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 144000}
+  m_GameObject: {fileID: 138214}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
+  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MechCombat: {fileID: 11445986}
-  bm: {fileID: 11422958}
-  MechController: {fileID: 11462782}
-  MechCamera: {fileID: 11415780}
-  Animator: {fileID: 9563454}
-  AnimatorVars: {fileID: 114137985907184306}
-  SlashDetector: {fileID: 114057908317756476}
+  cc: {fileID: 0}
+  Mcbt: {fileID: 0}
+  Mctrl: {fileID: 0}
+  HandleInputs: {fileID: 0}
+  Sounds: {fileID: 0}
+  MechIK: {fileID: 0}
+  EffectController: {fileID: 0}
+  BoostHash: 0
+  GroundedHash: 0
+  JumpHash: 0
+  SpeedHash: 0
+  DirectionHash: 0
+  OnMeleeHash: 0
+  BlockLHash: 0
+  BlockRHash: 0
+  SlashHash: 0
+  FinalSlashHash: 0
+  CnPoseHash: 0
+  CnShootHash: 0
+  CnLoadHash: 0
+  inHangar: 0
 --- !u!114 &114927918550711304
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -42368,6 +42321,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0032498967, y: 0.3400004}
+  m_AnchoredPosition: {x: -0.003250122, y: 0.34000015}
   m_SizeDelta: {x: 19.712502, y: 17}
   m_Pivot: {x: 0.5, y: 0.5}

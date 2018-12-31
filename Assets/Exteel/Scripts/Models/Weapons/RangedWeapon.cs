@@ -70,7 +70,7 @@ public abstract class RangedWeapon : Weapon {
         TransformExtension.SetLocalTransform(Muzzle.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
     }
 
-    public override void HandleCombat() {
+    public override void HandleCombat(usercmd cmd) {
         if (!Input.GetKey(BUTTON) || IsOverHeat()) return;
 
         if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;

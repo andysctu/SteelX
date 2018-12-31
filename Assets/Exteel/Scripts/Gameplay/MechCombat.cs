@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using StateMachine;
 using UnityEngine;
 using Weapons;
 
@@ -32,6 +33,8 @@ public class MechCombat : Combat {
     //Movement clips
     private MovementClips defaultMovementClips, TwoHandedMovementClips;
 
+    private PhotonPlayer _owner;
+
     protected override void Awake() {
         Debug.Log("Mcbt awake : "+gameObject.name);
         base.Awake();
@@ -45,12 +48,10 @@ public class MechCombat : Combat {
     }
 
     private void InitComponents() {
-        Transform currentMech = transform.Find("CurrentMech");
-
         bm = GetComponent<BuildMech>();
         SkillController = GetComponent<SkillController>();
         MechController = GetComponent<MechController>();
-        animator = currentMech.GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         _crosshairController = (MainCam == null) ? null : MainCam.GetComponent<CrosshairController>();
         HUD = GetComponent<HUD>();
     }
@@ -75,6 +76,8 @@ public class MechCombat : Combat {
     }
 
     private void OnMechBuilt() {
+        _owner = bm.GetOwner();
+
         LoadMechProperties();
         InitCombatVariables();
         InitMechStats();
@@ -137,7 +140,7 @@ public class MechCombat : Combat {
     public void InitCombatVariables() {// this will be called also when respawn
         SyncWeaponOffset();
 
-        if (photonView.isMine) {
+        if (_owner.IsLocal) {
             SetWeaponOffsetProperty(weaponOffset);
             animator.Play("Walk", 0);
         }
@@ -150,11 +153,11 @@ public class MechCombat : Combat {
     }
 
     private void SyncWeaponOffset() {
-        if (photonView.owner == null) return;
+        if (_owner == null) return;
 
-        if (!photonView.isMine && !isWeaponOffsetSynced) {
-            if (photonView.owner.CustomProperties["weaponOffset"] != null) {
-                weaponOffset = int.Parse(photonView.owner.CustomProperties["weaponOffset"].ToString());
+        if (!_owner.IsLocal && !isWeaponOffsetSynced) {
+            if (_owner.CustomProperties["weaponOffset"] != null) {
+                weaponOffset = int.Parse(_owner.CustomProperties["weaponOffset"].ToString());
             } else//the player may just initialize
                 weaponOffset = 0;
 
@@ -169,6 +172,10 @@ public class MechCombat : Combat {
         RangedWeapon rangedWeapon = bm.Weapons[weapPos] as RangedWeapon;
         if (rangedWeapon == null) { Debug.LogWarning("Cannot cast from source type to RangedWeapon."); return; }
         rangedWeapon.Shoot(direction, targetPvID, targetWeapPos);
+    }
+
+    public void Attack(int weapPos){
+
     }
 
     [PunRPC]
@@ -236,22 +243,21 @@ public class MechCombat : Combat {
 
     [PunRPC]
     private void OnLocked() {
-        if (photonView.isMine) _crosshairController.ShowLocked();
+        if (_owner.IsLocal) _crosshairController.ShowLocked();
     }
 
     public void Skill_KnockBack(float length) {//TODO : check this
         Transform skillUser = SkillController.GetSkillUser();
-
-        MechController.SkillSetMoving((skillUser != null) ? (transform.position - skillUser.position).normalized * length : -transform.forward * length);
+        Debug.LogError("no implemented");
     }
 
     [PunRPC]
     protected override void DisablePlayer(PhotonPlayer shooter, string weapon) {
-        gm.OnPlayerDead(photonView.owner, shooter, weapon);//Broadcast msg
+        gm.OnPlayerDead(_owner, shooter, weapon);//Broadcast msg
 
         isDead = true;
 
-        if (photonView.isMine) {
+        if (_owner.IsLocal) {
             gm.SetBlockInput(BlockInputSet.Elements.PlayerIsDead, true);
         }
 
@@ -269,7 +275,7 @@ public class MechCombat : Combat {
     private IEnumerator DisablePlayerWhenNotOnSkill() {
         yield return new WaitWhile(() => onSkill);
 
-        if (photonView.isMine) {
+        if (_owner.IsLocal) {
             CurrentHP = 0;
             gm.EnableRespawnPanel(true);
         }
@@ -288,9 +294,9 @@ public class MechCombat : Combat {
         bm.SetMechNum(mech_num);
         animator.enabled = true;
 
-        if (photonView.isMine) { // build mech also init MechCombat
+        if (_owner.IsLocal) { // build mech also init MechCombat //todo :check this
             Mech m = UserData.myData.Mech[mech_num];
-            bm.Build(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+            bm.Build(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
 
             gm.SetBlockInput(BlockInputSet.Elements.PlayerIsDead, false);
         }
@@ -307,22 +313,22 @@ public class MechCombat : Combat {
         EffectController.RespawnEffect();//TODO : remake this
     }
 
-    protected override void Update() {
-        base.Update();
-
-        if (!photonView.isMine || gm.IsGameEnding() || !gm.GameIsBegin) return; //TODO : improve these checks
-        if (onSkill || gm.BlockInput || IsSwitchingWeapon) return;
-
-        if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].HandleCombat();
-        if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].HandleCombat();
-
-        HandleSkillInput();
-        HandleSwitchWeapon();
-    }
-
     private void LateUpdate() {
         if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].HandleAnimation();
         if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].HandleAnimation();
+    }
+
+    public void ProcessInputs(usercmd cmd){
+        base.Update();
+
+        if (gm == null || gm.IsGameEnding() || !gm.GameIsBegin) return; //TODO : improve these checks
+        //if (onSkill || gm.BlockInput || IsSwitchingWeapon) return;
+
+        if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].HandleCombat(cmd);
+        if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].HandleCombat(cmd);
+
+        HandleSkillInput();
+        HandleSwitchWeapon(cmd);
     }
 
     private void HandleSkillInput() {
@@ -337,12 +343,12 @@ public class MechCombat : Combat {
         }
     }
 
-    private void HandleSwitchWeapon() {
-        if (Input.GetKeyDown(KeyCode.R) && !IsSwitchingWeapon && !isDead) {//TODO : anti-hack en
-            CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
+    private void HandleSwitchWeapon(usercmd cmd) {
+        //if (Input.GetKeyDown(cmd.buttons[(int)UserButton.R]) && !IsSwitchingWeapon && !isDead) {//TODO : anti-hack en
+        //    CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
 
-            photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
-        }
+        //    photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
+        //}
     }
 
     [PunRPC]
@@ -351,7 +357,7 @@ public class MechCombat : Combat {
         IsSwitchingWeapon = true;
         SwitchWeaponCoroutine = StartCoroutine(SwitchWeaponsBegin());
 
-        if (photonView.isMine) SetWeaponOffsetProperty(weaponOffset);
+        if (_owner.IsLocal) SetWeaponOffsetProperty(weaponOffset);
     }
 
     private IEnumerator SwitchWeaponsBegin() {
@@ -373,7 +379,7 @@ public class MechCombat : Combat {
     private void SetWeaponOffsetProperty(int weaponOffset) {
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("weaponOffset", weaponOffset);
-        photonView.owner.SetCustomProperties(h);
+        _owner.SetCustomProperties(h);
     }
 
     private void ActivateWeapons() {//Not using SetActive because it causes weapon Animator to bind the wrong rotation if the weapon animation is not finished (SMG reload)

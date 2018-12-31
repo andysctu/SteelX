@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using StateMachine;
+using UnityEngine;
 
 namespace Weapons
 {
@@ -72,7 +73,7 @@ namespace Weapons
             MechAnimator.Play("Cn", 2);
         }
 
-        public override void HandleCombat(){
+        public override void HandleCombat(usercmd cmd) {
             if (Input.GetKeyDown(KeyCode.Mouse1) || IsOverHeat()){
                 _isCanceled = true;
                 MechAnimator.SetBool(AnimatorVars.CnPoseHash, false);

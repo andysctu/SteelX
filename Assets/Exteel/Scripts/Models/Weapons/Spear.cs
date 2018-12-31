@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using StateMachine;
+using StateMachine.Attack;
+using UnityEngine;
 
 namespace Weapons
 {
@@ -27,7 +29,7 @@ namespace Weapons
         //    if (WeaponTrail != null) WeaponTrail.Deactivate();
         //}
 
-        public override void HandleCombat(){
+        public override void HandleCombat(usercmd cmd) {
             if (!Input.GetKeyDown(BUTTON) || IsOverHeat()){
                 return;
             }

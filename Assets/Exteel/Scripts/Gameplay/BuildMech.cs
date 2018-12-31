@@ -36,6 +36,8 @@ public class BuildMech : Photon.MonoBehaviour {
     public int Mech_Num = 0;
     public bool onPanel = false;
 
+    private PhotonPlayer _owner;
+
     public delegate void BuildWeaponAction();
     public event BuildWeaponAction OnMechBuilt;
 
@@ -73,15 +75,15 @@ public class BuildMech : Photon.MonoBehaviour {
 
     private void InitComponents() {
         Transform CurrentMech = transform.Find("CurrentMech");
-        animator = CurrentMech.GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         MechCombat = GetComponent<MechCombat>();
         MechIK = CurrentMech.GetComponent<MechIK>();
         SkillController = GetComponent<SkillController>();
     }
 
     private void FindHands() {
-        Transform shoulderL = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle");
-        Transform shoulderR = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
+        Transform shoulderL = animator.GetBoneTransform(HumanBodyBones.LeftShoulder);
+        Transform shoulderR = animator.GetBoneTransform(HumanBodyBones.RightShoulder);
 
         hands = new Transform[2];
         hands[0] = shoulderL.Find("Bip01_L_UpperArm/Bip01_L_ForeArm/Bip01_L_Hand/Weapon_lft_Bone");
@@ -132,16 +134,23 @@ public class BuildMech : Photon.MonoBehaviour {
         gm.RegisterPlayer(player);
     }
 
-    public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
-        photonView.RPC("buildMech", PhotonTargets.AllBuffered, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
+    public void Build(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
+        photonView.RPC("buildMech", PhotonTargets.AllBuffered, owner, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
     }
 
     private void buildMech(Mech m) {
-        buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+        buildMech(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
     }
 
     [PunRPC]
-    public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {
+    public void buildMech(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {
+        _owner = owner;
+
+        if (_owner.IsLocal && !PhotonNetwork.isMasterClient){
+            photonView.ObservedComponents.Clear();
+            photonView.synchronization = ViewSynchronization.Off;
+        }
+
         string[] parts = new string[9] { c, a, l, h, b, w1l, w1r, w2l, w2r };
 
         for (int i = 0; i < parts.Length - 4; i++) {
@@ -207,7 +216,7 @@ public class BuildMech : Photon.MonoBehaviour {
 
         if (!buildLocally) {
             UpdateMechCombatVars();
-        } else if (!onPanel) {//display properties
+        } else if (!onPanel) {//display properties //todo : move this elsewhere
             OperatorStatsUI OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
             if (OperatorStatsUI != null) {
                 OperatorStatsUI.DisplayMechProperties();
@@ -496,16 +505,20 @@ public class BuildMech : Photon.MonoBehaviour {
         isDataGetSaved = (SceneManagerHelper.ActiveSceneName != StoreManager._sceneName);
     }
 
-    private void OnPhotonInstantiate(PhotonMessageInfo info) {
-        //TODO : move it to other place
-        //Transfer owner ship
-        if (PhotonNetwork.isMasterClient) {
-            foreach (var Var in GetComponentsInChildren<PhotonView>()) {
-                if(Var == GetComponent<PhotonView>())continue;
-                Var.TransferOwnership(PhotonNetwork.masterClient);
-            }
-        }
-
-        info.sender.TagObject = gameObject;
+    public PhotonPlayer GetOwner(){
+        return _owner;
     }
+
+    //private void OnPhotonInstantiate(PhotonMessageInfo info) {
+    //    //TODO : move it to other place
+    //    //Transfer owner ship
+    //    if (PhotonNetwork.isMasterClient) {
+    //        foreach (var Var in GetComponentsInChildren<PhotonView>()) {
+    //            if(Var == GetComponent<PhotonView>())continue;
+    //            Var.TransferOwnership(PhotonNetwork.masterClient);
+    //        }
+    //    }
+
+    //    info.sender.TagObject = gameObject;
+    //}
 }

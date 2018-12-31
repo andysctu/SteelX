@@ -17,14 +17,6 @@ public class AnimationEventController : MonoBehaviour {
         pv = GetComponent<PhotonView>();
     }
 
-    public void CallLMeleePlaying(int isPlaying) {//this can control the drop time when attacking in air
-        MechCombat.SetMeleePlaying(isPlaying == 1);
-    }
-
-    public void CallRMeleePlaying(int isPlaying) {
-        MechCombat.SetMeleePlaying(isPlaying == 1);
-    }
-
     public void CallShowTrailL(int show) {
         Sword sword = bm.Weapons[MechCombat.GetCurrentWeaponOffset()] as Sword;
         if(sword != null)sword.EnableWeaponTrail(show == 1);
@@ -42,14 +34,18 @@ public class AnimationEventController : MonoBehaviour {
             } else {
                 if (!Animator.GetBool(AnimatorVars.OnMeleeHash)) {
                     if (Animator.GetBool(AnimatorVars.GroundedHash)) {
-                        pv.RPC("SlashRPC", PhotonTargets.All, 0, 0);
+                        if(PhotonNetwork.isMasterClient)pv.RPC("SlashRPC", PhotonTargets.All, 0, 0);
+                        else { SlashLocal(0, 0);}
                     } else {
                         if (MechCamera.GetCamAngle() <= -10)
-                            pv.RPC("SlashRPC", PhotonTargets.All, 0, 1);
+                            if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 0, 1);
+                            else { SlashLocal(0, 1); } 
                         else if (MechCamera.GetCamAngle() >= 10)
-                            pv.RPC("SlashRPC", PhotonTargets.All, 0, 3);
+                                if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 0, 3);
+                                else { SlashLocal(0, 3); }
                         else
-                            pv.RPC("SlashRPC", PhotonTargets.All, 0, 2);
+                                if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 0, 2);
+                                else { SlashLocal(0, 2); }
                     }
                 } else {
                     Animator.SetBool(AnimatorVars.SlashHash, true);
@@ -61,14 +57,18 @@ public class AnimationEventController : MonoBehaviour {
             } else {
                 if (!Animator.GetBool(AnimatorVars.OnMeleeHash)) {
                     if (Animator.GetBool(AnimatorVars.GroundedHash)) {
-                        pv.RPC("SlashRPC", PhotonTargets.All, 1, 0);
+                        if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 1, 0);
+                        else { SlashLocal(1, 0); }
                     } else {
                         if (MechCamera.GetCamAngle() <= -10)
-                            pv.RPC("SlashRPC", PhotonTargets.All, 1, 1);
+                            if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 1, 1);
+                            else { SlashLocal(1, 1); }
                         else if (MechCamera.GetCamAngle() >= 10)
-                            pv.RPC("SlashRPC", PhotonTargets.All, 1, 3);
+                                if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 1, 3);
+                                else { SlashLocal(1, 3); }
                         else
-                            pv.RPC("SlashRPC", PhotonTargets.All, 1, 2);
+                                if (PhotonNetwork.isMasterClient) pv.RPC("SlashRPC", PhotonTargets.All, 1, 2);
+                                else { SlashLocal(1, 2); }
                     }
                 } else {
                     Animator.SetBool(AnimatorVars.SlashHash, true);
@@ -92,8 +92,44 @@ public class AnimationEventController : MonoBehaviour {
         }
     }
 
+    private void SlashLocal(int hand, int mode){
+        if (hand == 0) {
+            switch (mode) {
+                case 0:
+                    Animator.Play("SlashL");
+                    break;
+                case 1:
+                    Animator.Play("SlashLlow");
+                    break;
+                case 2:
+                    Animator.Play("SlashLmiddle");
+                    break;
+                case 3:
+                    Animator.Play("SlashLhigh");
+                    break;
+            }
+        } else {
+            switch (mode) {
+                case 0:
+                    Animator.Play("SlashR");
+                    break;
+                case 1:
+                    Animator.Play("SlashRlow");
+                    break;
+                case 2:
+                    Animator.Play("SlashRmiddle");
+                    break;
+                case 3:
+                    Animator.Play("SlashRhigh");
+                    break;
+            }
+        }
+    }
+
     [PunRPC]
     private void SlashRPC(int hand, int mode) {//0 : Slash 1 , 1 : Slash low , 2 : Slash middle , 3 : Slash high
+        if(transform.root.GetComponent<PhotonView>().isMine && !PhotonNetwork.isMasterClient)return;
+
         if (hand == 0) {
             switch (mode) {
                 case 0:
@@ -159,30 +195,6 @@ public class AnimationEventController : MonoBehaviour {
                 Animator.Play("SmashRhigh");
                 break;
             }
-        }
-    }
-
-    public void CallMoving(float speed) {//also called by Cn shoot with speed < 0
-        //if (!pv.isMine)
-        //    return;
-
-        if (speed > 0) {
-            List<Transform> targets = SlashDetector.getCurrentTargets();
-            if (targets.Count == 0 || !MechController.Grounded) {
-                MechController.SetMoving(speed);//complete move
-            } else {
-                //check if there is any target in front & the distance between is higher than a number
-                foreach (Transform t in targets) {
-                    if (t == null || (t.tag != "Drone" && t.root.GetComponent<MechCombat>().isDead))
-                        continue;
-
-                    if (Vector3.Distance(transform.position, t.position) >= minCallMoveDistance) {
-                        MechController.SetMoving(speed / 2);//not getting too far
-                    }
-                }
-            }
-        } else if (speed < 0) {
-            MechController.SetMoving(speed);
         }
     }
 

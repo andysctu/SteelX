@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using StateMachine;
+using UnityEngine;
 
 namespace Weapons
 {
@@ -62,7 +63,7 @@ namespace Weapons
             MechAnimator.Play("SHS", 1 + Hand);
         }
 
-        public override void HandleCombat(){
+        public override void HandleCombat(usercmd cmd) {
             if (!Input.GetKey(BUTTON) || IsOverHeat()){
                 IsFiring = false;
                 return;

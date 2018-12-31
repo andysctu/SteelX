@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using StateMachine;
+using UnityEngine;
 
 namespace Weapons
 {
@@ -10,6 +11,7 @@ namespace Weapons
         //Components
         protected Transform WeaponTransform;
         protected Combat Cbt;
+        protected MechController Mctrl;
         protected PhotonView PlayerPv;
         protected HeatBar HeatBar;
         protected Animator MechAnimator, WeaponAnimator;
@@ -50,6 +52,7 @@ namespace Weapons
             this.WeaponTransform = WeapPos;
             this.Hand = pos % 2;
             this.WeapPos = pos;
+            Mctrl = this.Cbt.GetComponent<MechController>();
 
             BUTTON = (Hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
 
@@ -120,7 +123,7 @@ namespace Weapons
             data.SwitchAnimationClips(WeaponAnimator);
         }
 
-        public abstract void HandleCombat(); //Process Input
+        public abstract void HandleCombat(usercmd cmd); //Process Input
         public abstract void HandleAnimation();
 
         public virtual void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
@@ -208,6 +211,8 @@ namespace Weapons
             return attackType;
         }
 
-        public abstract void OnStateCallBack(int type, MechStateMachineBehaviour state); //Animation call back
+        public virtual void OnStateCallBack(int type, MechStateMachineBehaviour state){
+
+        }
     }
 }

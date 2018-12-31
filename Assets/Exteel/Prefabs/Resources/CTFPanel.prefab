@@ -172,8 +172,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224044339413925140}
-  - component: {fileID: 114344626185868480}
   - component: {fileID: 82309099937772558}
+  - component: {fileID: 114934696832832880}
   m_Layer: 5
   m_Name: CTFMsgDisplayer
   m_TagString: Untagged
@@ -991,21 +991,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114344626185868480
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1160762511638068}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b31dc56a761b1a46ae85f0d5dc9eafd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Msg: {fileID: 1601135929881464}
-  WaitOtherPlayer: {fileID: 114154677225034952}
-  Ping: {fileID: 114873181995264604}
-  ObjectiveAnimator: {fileID: 95232808961122676}
 --- !u!114 &114344679449640804
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1659,6 +1644,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: We are attempting to neutralize the enemy's Aerogate.
+--- !u!114 &114934696832832880
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1160762511638068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d19f48e1ed76d8e4793270cb1061c94e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Msg: {fileID: 1365047873506290}
+  WaitOtherPlayer: {fileID: 114154677225034952}
+  Ping: {fileID: 114873181995264604}
+  ObjectiveAnimator: {fileID: 95232808961122676}
 --- !u!114 &114936091768310122
 MonoBehaviour:
   m_ObjectHideFlags: 1
