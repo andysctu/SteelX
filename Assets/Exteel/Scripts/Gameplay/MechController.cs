@@ -27,7 +27,7 @@ public class MechController : Photon.MonoBehaviour {
 	public float maxDownSpeed = -140f;
 	public float InAirSpeedCoeff = 0.7f;
 	public float xSpeed = 0f, ySpeed = 0f, zSpeed = 0f;
-	private float curboostingSpeed;//global space
+	private float curboostingSpeed; //global space
 	private Vector2 xzDir;
 	private Vector2 run_xzDir;
 	private bool startBoosting = false;
@@ -48,16 +48,17 @@ public class MechController : Photon.MonoBehaviour {
 	private bool canVerticalBoost = false;
 	private float v_boost_start_yPos;
 	private float v_boost_upperbound ;
-	private float boostStartTime = 0;//this is for jump delay
+	private float boostStartTime = 0; //this is for jump delay
 	private float slashTeleportMinDistance = 5f;
-	// Animation
+	
+    // Animation
 	private float speed;
 	private float direction;
 	public bool grounded = true; //changes with animator bool "grounded"
 	public bool jump;
 	public bool on_BCNShoot = false;
 
-	private bool slashInJump = false;//temp
+	private bool slashInJump = false; //temp
 
 	// Use this for initialization
 	void Start () {

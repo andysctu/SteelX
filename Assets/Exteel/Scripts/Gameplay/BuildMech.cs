@@ -71,7 +71,8 @@ public class BuildMech : Photon.MonoBehaviour {
 		if (UserData.myData.Mech == null) {
 			UserData.myData.Mech = new Mech[Total_Mech];
 		}
-		for(int i=0;i<Total_Mech;i++){//init all datas
+
+		for(int i=0;i< UserData.myData.Mech.Length; i++){//init all datas
 			SetMechDefaultIfEmpty (i);
 		}
 
@@ -790,33 +791,33 @@ public class BuildMech : Photon.MonoBehaviour {
 		animatorOverrideController.ApplyOverrides (clipOverrides);
 	}
 
-	void SetMechDefaultIfEmpty(int mehc_num){
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Core)){
-			UserData.myData.Mech[mehc_num].Core = defaultParts [0];
+void SetMechDefaultIfEmpty(int mechNum){
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Core)){
+			UserData.myData.Mech[mechNum].Core = defaultParts [0];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Arms)){
-			UserData.myData.Mech[mehc_num].Arms = defaultParts [1];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Arms)){
+			UserData.myData.Mech[mechNum].Arms = defaultParts [1];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Legs)){
-			UserData.myData.Mech[mehc_num].Legs = defaultParts [2];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Legs)){
+			UserData.myData.Mech[mechNum].Legs = defaultParts [2];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Head)){
-			UserData.myData.Mech[mehc_num].Head = defaultParts [3];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Head)){
+			UserData.myData.Mech[mechNum].Head = defaultParts [3];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Booster)){
-			UserData.myData.Mech[mehc_num].Booster = defaultParts [4];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Booster)){
+			UserData.myData.Mech[mechNum].Booster = defaultParts [4];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1L)){
-			UserData.myData.Mech[mehc_num].Weapon1L = defaultParts [5];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon1L)){
+			UserData.myData.Mech[mechNum].Weapon1L = defaultParts [5];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon1R)){
-			UserData.myData.Mech[mehc_num].Weapon1R = defaultParts [5];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon1R)){
+			UserData.myData.Mech[mechNum].Weapon1R = defaultParts [5];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2L)){
-			UserData.myData.Mech[mehc_num].Weapon2L = defaultParts [5];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon2L)){
+			UserData.myData.Mech[mechNum].Weapon2L = defaultParts [5];
 		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mehc_num].Weapon2R)){
-			UserData.myData.Mech[mehc_num].Weapon2R = defaultParts [11];
+		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon2R)){
+			UserData.myData.Mech[mechNum].Weapon2R = defaultParts [11];
 		}
 	}
 

@@ -456,7 +456,7 @@ public class MechCombat : Combat {
 			return;
 		}
 		if(isSlowDown && photonView.isMine){
-			mechController.SlowDown ();
+			mechController.SlowDown();
 		}
 			
 		currentHP -= d;

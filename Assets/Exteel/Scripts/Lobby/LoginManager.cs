@@ -10,6 +10,9 @@ public class LoginManager : MonoBehaviour {
 	public InputField[] fields;
 	public GameObject error;
 
+    // DEBUG - you can set SkipLogin to true in the inspector to automatically login with a default account
+    public bool SkipLogin;
+
 	private int focus = 0;
 
 	void Awake() {
@@ -33,7 +36,18 @@ public class LoginManager : MonoBehaviour {
 	}
 
 	public void Login(){
-		/*WWWForm form = new WWWForm();
+        if (SkipLogin) {
+            // for debug
+            UserData.myData.Mech = new Mech[4]; // receiving Json will set the array to null
+            for (int i = 0; i < 4; i++) {
+              UserData.myData.Mech [i].PopulateParts ();
+            }
+            PhotonNetwork.playerName = fields [0].text;
+            Application.LoadLevel (1);
+            return;
+        }
+
+        WWWForm form = new WWWForm();
 
 		if (fields [0].text.Length == 0) {
 			fields [0].text = "andysctu";
@@ -50,10 +64,11 @@ public class LoginManager : MonoBehaviour {
 
 		print ("PlayerName :" + PhotonNetwork.playerName);
 
+        // TODO: make this async
 		while (!www.isDone) {}
-		foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
-			Debug.Log(entry.Key + ": " + entry.Value);
-		}
+		//foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
+		//	Debug.Log(entry.Key + ": " + entry.Value);
+		//}
 
 		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
 			string json = www.text;
@@ -65,19 +80,8 @@ public class LoginManager : MonoBehaviour {
 			PhotonNetwork.playerName = fields [0].text;
 			Application.LoadLevel (1);
 		} else {
-			//error.SetActive(true);
-		}*/
-
-		// for debug
-		UserData.myData.Mech = new Mech[4]; // receiving Json will set the array to null
-		for (int i = 0; i < 4; i++) {
-			UserData.myData.Mech [i].PopulateParts ();
+			error.SetActive(true);
 		}
-		PhotonNetwork.playerName = fields [0].text;
-		Application.LoadLevel (1);
-
-
-
 	}
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Tab)) {
