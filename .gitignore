@@ -1,12 +1,19 @@
 # =============== #
 # Unity generated #
 # =============== #
-Temp/
-Obj/
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Bb]uilt/
 UnityGenerated/
-Library/
+UWP/
+WindowsStore/
+WS/
+UnityVS/
 Assets/AssetStoreTools*
-Built/
+node_modules/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -14,13 +21,17 @@ Built/
 ExportedObj/
 *.svd
 *.userprefs
-*.csproj
+#*.csproj
 *.pidb
 *.suo
 *.user
 *.unityproj
 *.booproj
 .vs/
+.vscode/
+#*.sln
+*.tmp
+*.pdb
 
 # ============ #
 # OS generated #
@@ -33,12 +44,40 @@ ExportedObj/
 Icon?
 ehthumbs.db
 Thumbs.db
+Thumbs.db.meta
 
 # ============ #
 # Custom       #
 # ============ #
-
 Assets/Infinita*
 UnityPackageManager/
 Demo/
 Demo.rar
+
+# ============ #
+# Builds       #
+# ============ #
+#*.apk
+*.unitypackage
+*.obb
+
+# ============ #
+# UnitTester   #
+# ============ #
+[Ss]teel[Xx].[Uu]nit[Tt]est/bin/*
+[Ss]teel[Xx].[Uu]nit[Tt]est/bin/[Dd]ebug/*
+[Ss]teel[Xx].[Uu]nit[Tt]est/bin/[Dd]ebug/*.dll
+[Ss]teel[Xx].[Uu]nit[Tt]est/bin/[Dd]ebug/*.xml
+[Ss]teel[Xx].[Uu]nit[Tt]est/*.dll
+[Ss]teel[Xx].[Uu]nit[Tt]est/*.xml
+
+# ============ #
+# Unity3D generated meta files
+# ============ #
+*.pidb.meta
+UnityVS.meta
+
+# ============ #
+# Unity3D Generated File On Crash Reports
+# ============ #
+sysinfo.txt
