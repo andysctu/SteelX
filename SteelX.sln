@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2017
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX", "SteelX.csproj", "{7F301B70-A41F-B6D2-423B-F85962F66BB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX.Plugins", "SteelX.Plugins.csproj", "{1B981990-1DDA-603D-6852-90BF93477FED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX.Editor", "SteelX.Editor.csproj", "{9F09C186-E2C0-A880-1D55-93FA4C52C720}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F301B70-A41F-B6D2-423B-F85962F66BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F301B70-A41F-B6D2-423B-F85962F66BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F301B70-A41F-B6D2-423B-F85962F66BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F301B70-A41F-B6D2-423B-F85962F66BB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B981990-1DDA-603D-6852-90BF93477FED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B981990-1DDA-603D-6852-90BF93477FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B981990-1DDA-603D-6852-90BF93477FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B981990-1DDA-603D-6852-90BF93477FED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F09C186-E2C0-A880-1D55-93FA4C52C720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F09C186-E2C0-A880-1D55-93FA4C52C720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F09C186-E2C0-A880-1D55-93FA4C52C720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F09C186-E2C0-A880-1D55-93FA4C52C720}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
