@@ -11,12 +11,10 @@ namespace SteelX.UnitTest
 		//So UnitTesting any Individual Mechnaught set or player build will acknowledge group of pieces
 
 		[TestMethod]
-		//ToDo: Get MaxDurability, CurrentDurability, if any part has expired
 		public void Mechanaughts_Get_Durability()
 		{
 		}
 		[TestMethod]
-		//ToDo: Get MaxWeight, CurrentWeight
 		public void Mechanaughts_Get_Weight()
 		{
 		}
@@ -79,7 +77,7 @@ namespace SteelX.UnitTest
 		{
 		}
 		[TestMethod]
-		public void Mechanaughts_Part_Get_Rank()
+		public void Mechanaughts_Part_Get_RankReqired()
 		{
 		}
 		[TestMethod]
