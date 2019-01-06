@@ -609,7 +609,6 @@ public class CTFManager : GameManager {
         } else {
             winTeam = PunTeams.Team.none;
         }
-
         photonView.RPC("EndGame", PhotonTargets.All, (int)winTeam);
     }
 
@@ -630,6 +629,12 @@ public class CTFManager : GameManager {
 
     protected override IEnumerator PlayFinalGameScene() {
         yield break;
+    }
+
+    protected override IEnumerator SaveGameStats()
+    {
+        Debug.Log("CTF stats not implemented yet");
+        yield return null;
     }
 
     protected override void OnEndGameRelease() {

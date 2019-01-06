@@ -48,7 +48,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     public string GameStatsURL = "https://afternoon-temple-1885.herokuapp.com/game_history";
     //public string GameStatsURL = "localhost:3001/game_history";
-    private string dateTimeFormat = "MM/dd/yyyy HH:mm:ss";
+    protected string dateTimeFormat = "MM/dd/yyyy HH:mm:ss";
 
     protected GameManager() {
         gameIsBegin = false;
@@ -245,6 +245,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         //Master check end game condition
         if (PhotonNetwork.isMasterClient && !gameEnding) {
             if (CheckEndGameCondition()) {
+                StartCoroutine(SaveGameStats());
                 gameEnding = true;
                 SetBlockInput(BlockInputSet.Elements.GameEnding, true);
                 MasterOnGameOverAction();
@@ -332,6 +333,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected abstract IEnumerator PlayFinalGameScene();
+
+    protected abstract IEnumerator SaveGameStats();
 
     protected virtual void OnGameStart() {
     }

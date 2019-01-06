@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class DMPanelManager : MonoBehaviour {
+public class DMPanelManager : MonoBehaviour
+{
     private GameManager gm;
     [SerializeField] private GameObject PlayerStat;
     [SerializeField] private GameObject Panel, ScorePanel;
@@ -10,13 +11,15 @@ public class DMPanelManager : MonoBehaviour {
     private Dictionary<string, GameObject> playerScorePanels = new Dictionary<string, GameObject>();
     private Dictionary<string, Score> playerScores;
 
-    private void Start() {
+    private void Start()
+    {
         gm = FindObjectOfType<GameManager>();
 
         AssignMapRenderTexture();
     }
 
-    private void AssignMapRenderTexture() {
+    private void AssignMapRenderTexture()
+    {
         GameObject Map = gm.GetMap();
         MapPanelController MapPanelController = Map.GetComponentInChildren<MapPanelController>();
         Camera MapCamera = Map.GetComponentInChildren<Camera>();
@@ -24,8 +27,10 @@ public class DMPanelManager : MonoBehaviour {
         MapRawImage.rectTransform.sizeDelta = new Vector2(MapPanelController.Width, MapPanelController.Height);
     }
 
-    public void RegisterPlayer(PhotonPlayer player) {
-        if (playerScores == null) {
+    public void RegisterPlayer(PhotonPlayer player)
+    {
+        if (playerScores == null)
+        {
             playerScores = new Dictionary<string, Score>();
         }
 
@@ -43,7 +48,7 @@ public class DMPanelManager : MonoBehaviour {
 
         score.Kills = int.Parse(kills);
         score.Deaths = int.Parse(deaths);
-        
+
         playerScores.Add(player.NickName, score);
 
         //Parent player stat to scorepanel
@@ -56,7 +61,8 @@ public class DMPanelManager : MonoBehaviour {
         playerScorePanels.Add(player.NickName, ps);
     }
 
-    public void RegisterKill(string shooter_name, int newKills) {
+    public void RegisterKill(string shooter_name, int newKills)
+    {
         Score newShooterScore = new Score();
         newShooterScore.Kills = newKills;
         newShooterScore.Deaths = playerScores[shooter_name].Deaths;
@@ -65,7 +71,8 @@ public class DMPanelManager : MonoBehaviour {
         playerScorePanels[shooter_name].transform.Find("Kills").GetComponent<Text>().text = newKills.ToString();
     }
 
-    public void RegisterDeath(string victim_name, int newDeaths) {
+    public void RegisterDeath(string victim_name, int newDeaths)
+    {
         Score newVictimScore = new Score();
         newVictimScore.Kills = playerScores[victim_name].Kills;
         newVictimScore.Deaths = newDeaths;
@@ -73,37 +80,47 @@ public class DMPanelManager : MonoBehaviour {
         playerScorePanels[victim_name].transform.Find("Deaths").GetComponent<Text>().text = newDeaths.ToString();
     }
 
-    public int GetPlayerKillCount(string name) {
+    public int GetPlayerKillCount(string name)
+    {
         return playerScores[name].Kills;
     }
 
-    public int GetPlayerDeathCount(string name) {
+    public int GetPlayerDeathCount(string name)
+    {
         return playerScores[name].Deaths;
     }
 
 
-    public void ShowPanel(bool b) {
+    public void ShowPanel(bool b)
+    {
         ScorePanel.SetActive(b);
     }
 
-    public void PlayerDisconnected(PhotonPlayer player) {
+    public void PlayerDisconnected(PhotonPlayer player)
+    {
         RemovePlayerDataFromScorePanel(player);
     }
 
-    private void RemovePlayerDataFromScorePanel(PhotonPlayer player) {
+    private void RemovePlayerDataFromScorePanel(PhotonPlayer player)
+    {
         playerScorePanels.Remove(player.NickName);
         playerScores.Remove(player.NickName);
 
         //Remove datas from scoreboard
         Text[] Ts = ScorePanel.GetComponentsInChildren<Text>();
-        foreach (Text text in Ts) {
-            if (text.text == player.NickName) {
+        foreach (Text text in Ts)
+        {
+            if (text.text == player.NickName)
+            {
                 Destroy(text.transform.parent.gameObject);
                 break;
             }
         }
     }
 
+    public Dictionary<string, Score> PlayerScores() {
+        return playerScores;
+    }
     /*
 if (PhotonNetwork.isMasterClient) {
             ExitGames.Client.Photon.Hashtable h2 = new ExitGames.Client.Photon.Hashtable();

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 public class DMManager : GameManager {
     TerritoryController[] territoryControllers;
@@ -9,6 +10,7 @@ public class DMManager : GameManager {
     private DMPanelManager DMPanelManager;
     private GameObject Map;
     private int MaxKills = 2, CurrentMaxKills = 0;
+    private string CurrentLeader = ""; // TODO: change to playerID
     private bool game_environment_is_built = false;
 
     DMManager() {
@@ -192,7 +194,8 @@ public class DMManager : GameManager {
     }
 
     public override void RegisterKill(PhotonPlayer victim, PhotonPlayer shooter) {
-        int shooter_newKills = DMPanelManager.GetPlayerKillCount(shooter.NickName) + 1, victime_newDeaths = DMPanelManager.GetPlayerDeathCount(victim.NickName) + 1;
+        int shooter_newKills = DMPanelManager.GetPlayerKillCount(shooter.NickName) + 1;
+        int victim_newDeaths = DMPanelManager.GetPlayerDeathCount(victim.NickName) + 1;
 
         //only master update the player properties
         if (PhotonNetwork.isMasterClient) {
@@ -200,7 +203,7 @@ public class DMManager : GameManager {
             h2.Add("Kills", shooter_newKills);
 
             ExitGames.Client.Photon.Hashtable h3 = new ExitGames.Client.Photon.Hashtable();
-            h3.Add("Deaths", victime_newDeaths);
+            h3.Add("Deaths", victim_newDeaths);
 
             shooter.SetCustomProperties(h2);
             victim.SetCustomProperties(h3);
@@ -209,9 +212,10 @@ public class DMManager : GameManager {
         //Update max kills
         if (shooter_newKills > CurrentMaxKills) {
             CurrentMaxKills = shooter_newKills;
+            CurrentLeader = shooter.NickName;
         }
 
-        photonView.RPC("UpdateScores", PhotonTargets.All, shooter, shooter_newKills, victim, victime_newDeaths);
+        photonView.RPC("UpdateScores", PhotonTargets.All, shooter, shooter_newKills, victim, victim_newDeaths);
     }
 
     [PunRPC]
@@ -248,6 +252,37 @@ public class DMManager : GameManager {
 
     protected override IEnumerator PlayFinalGameScene() {
         yield break;
+    }
+
+    protected override IEnumerator SaveGameStats()
+    {
+        Debug.Log("Saving game stats");
+
+        WWWForm form = new WWWForm();
+
+        // Infer game start time with current time - match duration
+        System.DateTime now = System.DateTime.Now;
+        System.DateTime start = now.AddMinutes(-GameInfo.MaxTimeInMinutes);
+        form.AddField("start_time", start.ToString(dateTimeFormat));
+        form.AddField("end_time", now.ToString(dateTimeFormat));
+
+        form.AddField("game_type", GameInfo.GameMode);
+        form.AddField("victor", CurrentLeader);
+
+        string playerHistories = JsonConvert.SerializeObject(DMPanelManager.PlayerScores(), Formatting.Indented);
+        Debug.Log(playerHistories);
+        form.AddField("player_histories", playerHistories);
+
+        WWW www = new WWW(GameStatsURL, form);
+
+        while (!www.isDone)
+        {
+            yield return null;
+        }
+        foreach (KeyValuePair<string, string> entry in www.responseHeaders)
+        {
+            Debug.Log(entry.Key + ": " + entry.Value);
+        }
     }
 
     protected override void OnEndGameRelease() {
