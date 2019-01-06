@@ -18,12 +18,19 @@ namespace SteelX.UnitTest
 			//(i could be wrong, and it's probably one pilot in player profile, and you switch between them before and after games)
 			//a full mech (1 of each part: arm, leg, core, head, booster)
 			//4 weapons (or any combination and set that totals up to a LH/RH twice -- to switch between)
-			//Weapon sets also contain 4 skills (so switching weapons changes skills)
+			//Weapon sets also contain 4 skills (so switching weapons enables/disables skills)
 			//Active mech color (mech is purchased, and color is applied to it afterwards, so dont need a separate class for it -- paint color is on a rent timer)
 		}
 		[TestMethod]
 		public void Player_Get_Experience()
 		{
+		}
+		[TestMethod]
+		public void Player_Get_Skills_CanUse()
+		{
+			//returns a yes or no on if skill can be activated 
+			//depends on active weapons, and amount of skill energy collected
+			//also some skills have a range-lock, so it can only be used if within a certain distance, and if locked-on
 		}
 		[TestMethod]
 		public void Player_Get_Rank()
