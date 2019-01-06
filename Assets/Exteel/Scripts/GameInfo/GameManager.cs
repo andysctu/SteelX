@@ -92,7 +92,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected virtual void LoadGameInfo() {
         GameInfo.Map = PhotonNetwork.room.CustomProperties["Map"].ToString();
         GameInfo.GameMode = PhotonNetwork.room.CustomProperties["GameMode"].ToString();
-        GameInfo.MaxTime = int.Parse(PhotonNetwork.room.CustomProperties["MaxTime"].ToString());
+        GameInfo.MaxTimeInMinutes = int.Parse(PhotonNetwork.room.CustomProperties["MaxTime"].ToString());
         GameInfo.MaxPlayers = PhotonNetwork.room.MaxPlayers;
 
         Debug.Log("Map : " + GameInfo.Map + " Gamemode :" + GameInfo.GameMode);
@@ -139,7 +139,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected void RegisterCloseRoomEvent() {
-        Timer.RegisterTimeEvent(GameInfo.MaxTime * 60 / 2, () => {
+        Timer.RegisterTimeEvent(GameInfo.MaxTimeInMinutes * 60 / 2, () => {
             if (PhotonNetwork.isMasterClient) {
                 PhotonNetwork.room.IsOpen = false;
             }
@@ -412,7 +412,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     private void LoadOfflineInfo() {
-        GameInfo.MaxTime = 1;
+        GameInfo.MaxTimeInMinutes = 1;
         GameInfo.Map = "Offline";
     }
 

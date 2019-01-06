@@ -65,8 +65,8 @@ public class Timer {
 
     public void MasterSyncTime() {
         int startTime = PhotonNetwork.ServerTimestamp;
-        ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", GameInfo.MaxTime * 60 } };
-        Debug.Log("startTime : " + startTime + ", duration : " + GameInfo.MaxTime * 60);
+        ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable() { { "startTime", startTime }, { "duration", GameInfo.MaxTimeInMinutes * 60 } };
+        Debug.Log("startTime : " + startTime + ", duration : " + GameInfo.MaxTimeInMinutes * 60);
         PhotonNetwork.room.SetCustomProperties(ht);
         currentTimer = storedDuration - (PhotonNetwork.ServerTimestamp - storedStartTime) / 1000;
     }

@@ -109,7 +109,7 @@ ModelImporter:
     400098: //RootNode
     400100: Weapon_lft_Bone
     400102: Weapon_rt_Bone
-    7400000: Run_new
+    7400000: Run
     9500000: //RootNode
   externalObjects: {}
   materials:
@@ -127,14 +127,19 @@ ModelImporter:
     rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: "\nClip 'Run' has import animation warnings that might
-      lower retargeting quality:\n\t'Bip01_Spine' has translation animation that will
-      be discarded.\n\t'Bip01_Spine' is inbetween humanoid transforms and has rotation
+      lower retargeting quality:\nNote: Activate translation DOF on avatar to improve
+      retargeting quality.\n\t'Bip01_Spine' has translation animation that will be
+      discarded.\n\t'Bip01_Spine' is inbetween humanoid transforms and has rotation
       animation that will be discarded.\n\t'Bip01_Spine2' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n"
+      and has rotation animation that will be discarded.\n\t'Bip01_L_Clavicle' has
+      translation animation that will be discarded.\n\t'Bip01_R_Clavicle' has translation
+      animation that will be discarded.\n\t'Bip01_L_Thigh' has translation animation
+      that will be discarded.\n\t'Bip01_R_Thigh' has translation animation that will
+      be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
-    animationCompression: 3
+    animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -143,7 +148,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Run_new
+      name: Run
       takeName: Run
       firstFrame: 0
       lastFrame: 23
@@ -168,7 +173,7 @@ ModelImporter:
       events: []
       transformMask: []
       maskType: 3
-      maskSource: {fileID: 31900000, guid: 415598e3ff7950f458f234eeaac7d1b5, type: 2}
+      maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
@@ -529,7 +534,7 @@ ModelImporter:
     - name: Bip01_Pelvis
       parentName: Bip01
       position: {x: 0.021393726, y: 0.012891473, z: 0.5031972}
-      rotation: {x: -0.685819, y: 0.07298925, z: 0.7220529, w: 0.054447487}
+      rotation: {x: -0.685819, y: 0.07298923, z: 0.7220529, w: 0.05444748}
       scale: {x: 0.99999994, y: 0.99999994, z: 1}
     - name: Bip01_Spine
       parentName: Bip01_Pelvis
@@ -594,12 +599,12 @@ ModelImporter:
     - name: Bip01_Spine2
       parentName: Bip01_Spine1
       position: {x: -0.028640112, y: -0.00014104032, z: 0.000008382785}
-      rotation: {x: -0.0079795895, y: 0.0039133616, z: 0.013605261, w: 0.999868}
+      rotation: {x: -0.026317092, y: 0.017524134, z: -0.14060031, w: 0.9895615}
       scale: {x: 1, y: 0.99999994, z: 1}
     - name: Bip01_Spine3
       parentName: Bip01_Spine2
       position: {x: -0.18474752, y: -0.00024245612, z: 0.0000012451783}
-      rotation: {x: 0.0077154282, y: -0.008601543, z: -0.0051731407, w: 0.9999199}
+      rotation: {x: 0.0034468789, y: -0.02696402, z: 0.13832475, w: 0.99001384}
       scale: {x: 1, y: 1.0000001, z: 1.0000001}
     - name: BackPack_Bone
       parentName: Bip01_Spine3
@@ -609,7 +614,7 @@ ModelImporter:
     - name: Bip01_Neck
       parentName: Bip01_Spine3
       position: {x: -0.21824864, y: -0.019203639, z: -0.0000009648501}
-      rotation: {x: -0.00015691762, y: 0.006603237, z: 0.0053411643, w: 0.99996394}
+      rotation: {x: 0.03054628, y: 0.006764066, z: 0.0051358766, w: 0.9994973}
       scale: {x: 1, y: 1.0000001, z: 1}
     - name: Bip01_Head
       parentName: Bip01_Neck
@@ -629,7 +634,7 @@ ModelImporter:
     - name: Bip01_L_Clavicle
       parentName: Bip01_Neck
       position: {x: 0.06924652, y: -0.052656412, z: 0.055133663}
-      rotation: {x: -0.70951444, y: 0.01571209, z: 0.70445216, w: 0.0094623165}
+      rotation: {x: -0.70953095, y: 0.014936623, z: 0.70444167, w: 0.010232146}
       scale: {x: 0.9999999, y: 1, z: 1}
     - name: Bip01_L_UpperArm
       parentName: Bip01_L_Clavicle
@@ -704,7 +709,7 @@ ModelImporter:
     - name: Bip01_R_Clavicle
       parentName: Bip01_Neck
       position: {x: 0.06458829, y: -0.057890166, z: -0.0555457}
-      rotation: {x: 0.7061978, y: 0.023468647, z: 0.70753604, w: 0.011256435}
+      rotation: {x: 0.706389, y: 0.016749987, z: 0.70761114, w: 0.0045255427}
       scale: {x: 0.99999994, y: 1, z: 0.9999999}
     - name: Bip01_R_UpperArm
       parentName: Bip01_R_Clavicle
@@ -714,7 +719,7 @@ ModelImporter:
     - name: Bip01_R_ForeArm
       parentName: Bip01_R_UpperArm
       position: {x: -0.23644921, y: -0.0000007287272, z: 0.0000000759319}
-      rotation: {x: 0.016979173, y: -0.00580455, z: 0.009272507, w: 0.999796}
+      rotation: {x: 0.01697917, y: -0.00580455, z: 0.0092725055, w: 0.999796}
       scale: {x: 1.0000001, y: 1, z: 1.0000001}
     - name: Bip01_R_Hand
       parentName: Bip01_R_ForeArm
@@ -785,7 +790,7 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
     rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
-    hasTranslationDoF: 1
+    hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 6bd5de1877cb15e4ca744307414c80e7,

@@ -17,6 +17,9 @@ public class LoginManager : IScene {
     public string LoginURL = "https://afternoon-temple-1885.herokuapp.com/login";
     public string gameVersion = "3.0";
 
+    // DEBUG - you can set SkipLogin to true in the inspector to automatically login with a default account
+    public bool SkipLogin;
+
     public override void StartScene() {
         base.StartScene();
         ResetInputFields();
@@ -28,50 +31,54 @@ public class LoginManager : IScene {
     }
 
     public void Login() {
-        /*WWWForm form = new WWWForm();
+        if (SkipLogin) {
+            // for debug
+            UserData.myData.Mech = new Mech[4];
+            UserData.region = FindRegionCode(region);
+            UserData.version = gameVersion;
+            for (int i = 0; i < 4; i++) UserData.myData.Mech[i].PopulateParts();
+            PhotonNetwork.playerName = (string.IsNullOrEmpty(fields[0].text)) ? "Guest" + Random.Range(0, 9999) : fields[0].text;
 
-		if (fields [0].text.Length == 0) {
-			fields [0].text = "andysctu";
-			fields [1].text = "password";
-		} else {
-			PhotonNetwork.playerName = fields [0].text;
-		}
-		form.AddField("username", fields[0].text);
-		form.AddField("password", fields[1].text);
+            ConnectToServerSelected();
+            StartCoroutine(LoadLobbyWhenConnected());
+            return;
+        }
 
-		WWW www = new WWW(LoginURL, form);
+        WWWForm form = new WWWForm();
 
-		Debug.Log("Authenticating...");
+        if (fields[0].text.Length == 0) {
+            fields[0].text = "andysctu";
+            fields[1].text = "password";
+        } else {
+            PhotonNetwork.playerName = fields[0].text;
+        }
+        form.AddField("username", fields[0].text);
+        form.AddField("password", fields[1].text);
 
-		print ("PlayerName :" + PhotonNetwork.playerName);
+        WWW www = new WWW(LoginURL, form);
 
-		while (!www.isDone) {}
-		foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
-			Debug.Log(entry.Key + ": " + entry.Value);
-		}
+        Debug.Log("Authenticating...");
 
-		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
-			string json = www.text;
-			//Data test = new Data();
-			//print(JsonUtility.ToJson (test));
-			Data d = JsonUtility.FromJson<Data>(json);
-			UserData.myData = d;
-			UserData.myData.Mech0.PopulateParts();
-			PhotonNetwork.playerName = fields [0].text;
-			Application.LoadLevel (1);
-		} else {
-			//error.SetActive(true);
-		}*/
+        print("PlayerName :" + PhotonNetwork.playerName);
+        StartCoroutine(login(www));
+    }
 
-        // for debug
-        UserData.myData.Mech = new Mech[4];
-        UserData.region = FindRegionCode(region);
-        UserData.version = gameVersion;
-        for (int i = 0; i < 4; i++)UserData.myData.Mech[i].PopulateParts();        
-        PhotonNetwork.playerName = (string.IsNullOrEmpty(fields[0].text)) ? "Guest" + Random.Range(0, 9999) : fields[0].text;        
-
-        ConnectToServerSelected();
-        StartCoroutine(LoadLobbyWhenConnected());
+    IEnumerator login(WWW www) {
+        while (!www.isDone) {
+            yield return null;
+        }
+        if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
+            string json = www.text;
+            //Data test = new Data();
+            //print(JsonUtility.ToJson (test));
+            Data d = JsonUtility.FromJson<Data>(json);
+            UserData.myData = d;
+            UserData.myData.Mech0.PopulateParts();
+            PhotonNetwork.playerName = fields[0].text;
+            Application.LoadLevel(1);
+        } else {
+            error.SetActive(true);
+        }
     }
 
     private IEnumerator LoadLobbyWhenConnected() {
