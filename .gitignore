@@ -1,12 +1,19 @@
 # =============== #
 # Unity generated #
 # =============== #
-Temp/
-Obj/
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Bb]uilt/
 UnityGenerated/
-Library/
+UWP/
+WindowsStore/
+WS/
+UnityVS/
 Assets/AssetStoreTools*
-Built/
+node_modules/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -14,12 +21,17 @@ Built/
 ExportedObj/
 *.svd
 *.userprefs
+#*.csproj
 *.pidb
 *.suo
 *.user
 *.unityproj
 *.booproj
 .vs/
+.vscode/
+#*.sln
+*.tmp
+*.pdb
 
 # ============ #
 # OS generated #
