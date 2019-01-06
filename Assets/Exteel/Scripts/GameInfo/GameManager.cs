@@ -76,8 +76,8 @@ public class GameManager : Photon.MonoBehaviour {
 	//debug use
 	public bool FreezeTime = false;
 
-    //public string GameStatsURL = "https://afternoon-temple-1885.herokuapp.com/game_history";
-    public string GameStatsURL = "localhost:3001/game_history";
+    public string GameStatsURL = "https://afternoon-temple-1885.herokuapp.com/game_history";
+    //public string GameStatsURL = "localhost:3001/game_history";
     private string dateTimeFormat = "MM/dd/yyyy HH:mm:ss";
 
     //TODO : player can choose target frame rate
