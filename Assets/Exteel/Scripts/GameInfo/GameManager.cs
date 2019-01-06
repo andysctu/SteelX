@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityStandardAssets.CrossPlatformInput;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 public class GameManager : Photon.MonoBehaviour {
 	public static bool isTeamMode;
@@ -28,7 +29,11 @@ public class GameManager : Photon.MonoBehaviour {
 
 	public int MaxTimeInSeconds = 300;
 	public int MaxKills = 2;
-	public int CurrentMaxKills = 0;
+	public int CurrentMaxKills = 0; // Highest # of kills
+
+    // Current player with highest kills
+    // TODO: Change this to playerID 
+    public string CurrentLeaderName = "";
 	public const int GREY_ZONE = 2;
 	public const int BLUE = 0, RED = 1, NONE = -1;
 	private int bluescore = 0, redscore = 0;
@@ -71,8 +76,12 @@ public class GameManager : Photon.MonoBehaviour {
 	//debug use
 	public bool FreezeTime = false;
 
-	//TODO : player can choose target frame rate
-	void Awake(){
+    //public string GameStatsURL = "https://afternoon-temple-1885.herokuapp.com/game_history";
+    public string GameStatsURL = "localhost:3001/game_history";
+    private string dateTimeFormat = "MM/dd/yyyy HH:mm:ss";
+
+    //TODO : player can choose target frame rate
+    void Awake(){
 		Application.targetFrameRate = 60;//60:temp
 	}
 
@@ -81,16 +90,16 @@ public class GameManager : Photon.MonoBehaviour {
 			PhotonNetwork.offlineMode = true;
 			PhotonNetwork.CreateRoom("offline");
 			GameInfo.MaxKills = 1;
-			GameInfo.MaxTime = 1;
+			GameInfo.MaxTimeInMinutes = 1;
 		}
 		//Load game info
 		GameInfo.Map = PhotonNetwork.room.CustomProperties ["Map"].ToString();
 		GameInfo.GameMode = PhotonNetwork.room.CustomProperties ["GameMode"].ToString();
 		GameInfo.MaxKills = int.Parse(PhotonNetwork.room.CustomProperties ["MaxKills"].ToString());
-		GameInfo.MaxTime =  int.Parse(PhotonNetwork.room.CustomProperties ["MaxTime"].ToString());
+		GameInfo.MaxTimeInMinutes =  int.Parse(PhotonNetwork.room.CustomProperties ["MaxTime"].ToString());
 		GameInfo.MaxPlayers = PhotonNetwork.room.MaxPlayers;
 		MaxKills = GameInfo.MaxKills;
-		MaxTimeInSeconds = GameInfo.MaxTime * 60;
+		MaxTimeInSeconds = GameInfo.MaxTimeInMinutes * 60;
 		InRoomChat.enabled = true;
 		playerScorePanels = new Dictionary<string, GameObject>();
 		RedFlagHolder = null;
@@ -201,7 +210,7 @@ public class GameManager : Photon.MonoBehaviour {
 		if(viewID == 2){//Drone
 			name = "Drone";
 		}else{
-			name = pv.owner.NickName;
+            name = pv.owner.NickName;
 		}
 
 		//bug : ini here in case not ini. in start ( happens all the time )
@@ -356,6 +365,9 @@ public class GameManager : Photon.MonoBehaviour {
 			if (GameOver () && !gameEnding) {
 				if (PhotonNetwork.isMasterClient) {
 					photonView.RPC ("EndGame", PhotonTargets.All);
+
+                    // Save game data here
+                    StartCoroutine(SaveGameStatsAsync());
 				}
 			}
 		}
@@ -404,7 +416,7 @@ public class GameManager : Photon.MonoBehaviour {
 			is_Time_init = true;
 	}
 
-	IEnumerator ExecuteAfterTime(float time)
+    IEnumerator LoadLobbyAfterSeconds(float time)
 	{
 		yield return new WaitForSeconds(time);
 
@@ -420,7 +432,42 @@ public class GameManager : Photon.MonoBehaviour {
 		Cursor.visible = true;
 	}
 
-	public void RegisterKill(int shooter_viewID, int victim_viewID) {
+    IEnumerator SaveGameStatsAsync()
+    {
+        print("saving game data");
+        WWWForm form = new WWWForm();
+
+        // Infer game start time with current time - match duration
+        System.DateTime now = System.DateTime.Now;
+        System.DateTime start = now.AddMinutes(-GameInfo.MaxTimeInMinutes);
+        form.AddField("start_time", start.ToString(dateTimeFormat));
+        form.AddField("end_time", now.ToString(dateTimeFormat));
+
+        form.AddField("game_type", GameInfo.GameMode);
+        form.AddField("victor", CurrentLeaderName);
+
+        foreach (KeyValuePair<string, Score> entry in playerScores)
+        {
+            Debug.Log(entry.Key + ": " + entry.Value.Kills);
+        }
+
+        string playerHistories = JsonConvert.SerializeObject(playerScores, Formatting.Indented);
+        Debug.Log(playerHistories);
+        form.AddField("player_histories", playerHistories);
+
+        WWW www = new WWW(GameStatsURL, form);
+
+        while (!www.isDone)
+        {
+            yield return null;
+        }
+        foreach (KeyValuePair<string, string> entry in www.responseHeaders)
+        {
+            Debug.Log(entry.Key + ": " + entry.Value);
+        }
+    }
+
+    public void RegisterKill(int shooter_viewID, int victim_viewID) {
 
 		if(victim_viewID == 2){//drone
 			return;
@@ -480,7 +527,11 @@ public class GameManager : Photon.MonoBehaviour {
 		playerScorePanels [shooter].transform.Find("Kills").GetComponent<Text>().text = playerScores[shooter].Kills.ToString();
 		playerScorePanels [victim].transform.Find("Deaths").GetComponent<Text>().text = playerScores[victim].Deaths.ToString();
 
-		if (newShooterScore.Kills > CurrentMaxKills) CurrentMaxKills = newShooterScore.Kills;
+        // TODO: resolve ties
+        if (newShooterScore.Kills > CurrentMaxKills) {
+            CurrentMaxKills = newShooterScore.Kills;
+            CurrentLeaderName = shooter;
+        }
 	}
 
 	public bool GameOver() {
@@ -760,7 +811,7 @@ public class GameManager : Photon.MonoBehaviour {
 		Cursor.lockState = CursorLockMode.None;
 		hud.ShowText(cam, cam.transform.position + new Vector3(0,0,0.5f), "GameOver");//every player's hud on Gamemanager is his
 		Scoreboard.SetActive(true);
-		StartCoroutine(ExecuteAfterTime(3));
+		StartCoroutine(LoadLobbyAfterSeconds(3));
 	}
 
 	[PunRPC]

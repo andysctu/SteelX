@@ -63,25 +63,7 @@ public class LoginManager : MonoBehaviour {
 		Debug.Log("Authenticating...");
 
 		print ("PlayerName :" + PhotonNetwork.playerName);
-
-        // TODO: make this async
-		while (!www.isDone) {}
-		//foreach (KeyValuePair<string,string> entry in www.responseHeaders) {
-		//	Debug.Log(entry.Key + ": " + entry.Value);
-		//}
-
-		if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK") {
-			string json = www.text;
-			//Data test = new Data();
-			//print(JsonUtility.ToJson (test));
-			Data d = JsonUtility.FromJson<Data>(json);
-			UserData.myData = d;
-			UserData.myData.Mech0.PopulateParts();
-			PhotonNetwork.playerName = fields [0].text;
-			Application.LoadLevel (1);
-		} else {
-			error.SetActive(true);
-		}
+        StartCoroutine(login(www));
 	}
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Tab)) {
@@ -95,6 +77,26 @@ public class LoginManager : MonoBehaviour {
 		}
 	}
 
+    IEnumerator login(WWW www) {
+        while (!www.isDone) {
+            yield return null;
+        }
+        if (www.responseHeaders["STATUS"] == "HTTP/1.1 200 OK")
+        {
+            string json = www.text;
+            //Data test = new Data();
+            //print(JsonUtility.ToJson (test));
+            Data d = JsonUtility.FromJson<Data>(json);
+            UserData.myData = d;
+            UserData.myData.Mech0.PopulateParts();
+            PhotonNetwork.playerName = fields[0].text;
+            Application.LoadLevel(1);
+        }
+        else
+        {
+            error.SetActive(true);
+        }
+    }
 	public void OnFailedToConnectToPhoton(object parameters)
 	{
 		Debug.Log("OnFailedToConnectToPhoton. StatusCode: " + parameters + " ServerAddress: " + PhotonNetwork.ServerAddress);
