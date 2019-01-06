@@ -46,6 +46,10 @@ public abstract class GameManager : Photon.MonoBehaviour {
     public bool Offline = false;
     public bool endGameImmediately = false;//debug use
 
+    public string GameStatsURL = "https://afternoon-temple-1885.herokuapp.com/game_history";
+    //public string GameStatsURL = "localhost:3001/game_history";
+    private string dateTimeFormat = "MM/dd/yyyy HH:mm:ss";
+
     protected GameManager() {
         gameIsBegin = false;
     }
