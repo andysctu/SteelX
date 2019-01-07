@@ -58,6 +58,8 @@
     <Compile Include="Assets\Exteel\Animations\UI\HUD.cs" />
     <Compile Include="Assets\Exteel\Animations\UI\HUDText.cs" />
     <Compile Include="Assets\Exteel\Animations\UI\UIManager.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Core\Enums.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Core\Weapons.cs" />
     <Compile Include="Assets\Exteel\Scripts\GameInfo\CTFManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\GameInfo\DDOL.cs" />
     <Compile Include="Assets\Exteel\Scripts\GameInfo\DMManager.cs" />
@@ -156,10 +158,10 @@
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\Arm.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\Booster.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\Core.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Models\Parts\Hand.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\Head.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\Leg.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\MechPartManager.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Core\Mechanaught.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Parts\Part.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\UserData.cs" />
     <Compile Include="Assets\Exteel\Scripts\Models\Weapons\Cannon.cs" />
