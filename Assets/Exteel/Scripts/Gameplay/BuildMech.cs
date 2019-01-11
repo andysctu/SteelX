@@ -1,860 +1,501 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using System;
-using System.Collections;
-using UnityEngine.Networking;
-using System.Collections.Generic;
-using XftWeapon;
 
 public class BuildMech : Photon.MonoBehaviour {
-
-	private string[] defaultParts = {"CES301","AES104","LTN411","HDS003", "PBS000", "SHL009", "APS403", "SHS309","RCL034", "BCN029","BRF025","SGN150","LMG012","ENG041", "ADR000" };
-																																								//eng : 13
-
-	[SerializeField]private GameObject RespawnPanel;
-	[SerializeField]private MechCombat mcbt = null;
-
-	private GameManager gm;
-	public AudioClip[] ShotSounds;
-	private Animator animator;
-	AnimatorOverrideController animatorOverrideController;
-	private AnimationClipOverrides clipOverrides;
-	MovementClips MovementClips;
-
-	private Transform shoulderL;
-	private Transform shoulderR;
-	private Transform[] hands;
-
-
-	public Weapon[] weaponScripts;
-	public GameObject[] weapons;
-	public GameObject[] bulletPrefabs;
-	public String[] curWeaponNames = new String[4]; //this is the weapon name array
-
-	private ParticleSystem Muz;
-	private int weaponOffset = 0;
-
-	private bool inHangar = false;
-	private bool inStore = false;
-	public bool onPanel = false;
-	public int Total_Mech = 4;
-	public int Mech_Num = 0;
-	private const int BLUE = 0, RED = 1;
-
-	//mech properties
-	int HP,EN,SP,MPU;
-	int ENOutputRate;
-	int MinENRequired;
-	int Size, Weight;
-	int EnergyDrain;
-
-	int MaxHeat, CooldownRate;
-	int Marksmanship;
-
-	int ScanRange;
-
-	int BasicSpeed;
-	int Capacity;
-	int Deceleration;
-
-	int DashOutput;
-	int DashENDrain, JumpENDrain;
-
-	void Start () {
-		if (SceneManagerHelper.ActiveSceneName == "Hangar" || SceneManagerHelper.ActiveSceneName == "Lobby" || onPanel) inHangar = true;
-
-		if (SceneManagerHelper.ActiveSceneName == "Store")inStore = true;
-
-		// If this is not me, don't build this mech. Someone else will RPC build it
-		if (!photonView.isMine && !inHangar && !inStore) return;
-
-		if (UserData.myData.Mech == null) {
-			UserData.myData.Mech = new Mech[Total_Mech];
-		}
-
-		for(int i=0;i< UserData.myData.Mech.Length; i++){//init all datas
-			SetMechDefaultIfEmpty (i);
-		}
-
-		// Get parts info
-		Data data = UserData.myData;
-		animator = transform.Find("CurrentMech").GetComponent<Animator> ();
-
-		MovementClips = GetComponent<MovementClips> ();
-		if(inHangar || inStore)//do not call this in game otherwise mechcombat gets null parameter
-			initAnimatorControllers ();
-
-
-		weaponOffset = 0;
-
-		if (inHangar || inStore) {
-			buildMech(data.Mech[Mech_Num]);
-		} else { // Register my name on all clients
-			photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.playerName);
-		}
-
-		if(onPanel){
-			gameObject.transform.SetParent (RespawnPanel.transform);
-		}
-	}
-
-	void initAnimatorControllers(){
-		animatorOverrideController = new AnimatorOverrideController (animator.runtimeAnimatorController);
-		animator.runtimeAnimatorController = animatorOverrideController;
-
-		clipOverrides = new AnimationClipOverrides (animatorOverrideController.overridesCount);
-		animatorOverrideController.GetOverrides (clipOverrides);
-	}
-
-	[PunRPC]
-	void SetName(string name) {
-		gameObject.name = name;
-		findGameManager();
-		gm.RegisterPlayer(photonView.viewID, (photonView.owner.GetTeam()==PunTeams.Team.red)? RED : BLUE);// blue & none team => set to blue
-	}
-		
-	public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
-		photonView.RPC("buildMech", PhotonTargets.AllBuffered, c, a, l, h, b, w1l, w1r, w2l, w2r);
-	}
-				
-	private void findHands() {
-		shoulderL = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.L");
-		shoulderR = transform.Find("CurrentMech/metarig/hips/spine/chest/shoulder.R");
-
-		hands = new Transform[2];
-		hands [0] = shoulderL.Find("upper_arm.L/forearm.L/hand.L");
-		hands [1] = shoulderR.Find("upper_arm.R/forearm.R/hand.R");
-	}
-
-	private void buildMech(Mech m) {
-		buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R);
-	}
-
-	[PunRPC]
-	public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r) {
-		findHands ();
-		string[] parts = new string[9]{ c, a, l, h, b, w1l, w1r, w2l, w2r };
-
-		//intentionally not checking if weapon is null 
-		for (int i = 0; i < parts.Length-4; i++) {
-			parts [i] = string.IsNullOrEmpty(parts[i])? defaultParts [i] : parts [i];
-		}
-			
-		// Create new array to store skinned mesh renderers 
-		SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[5];
-
-		Material[] materials = new Material[5];
-		for (int i = 0; i < 5; i++) {
-			// Load mech part
-			GameObject part = Resources.Load (parts [i], typeof(GameObject)) as GameObject;
-
-			// Extract Skinned Mesh
-			newSMR [i] = part.GetComponentInChildren<SkinnedMeshRenderer> () as SkinnedMeshRenderer;
-
-			// Load texture
-			materials [i] = Resources.Load (parts [i] + "mat", typeof(Material)) as Material;
-		}
-
-		// Replace all
-		SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer> ();
-
-		for (int i = 0; i < 5; i++) {
-			//Note the order of parts in MechFrame.prefab matters
-
-			if (newSMR[i] == null) Debug.LogError(i + " is null.");
-			curSMR[i].sharedMesh = newSMR[i].sharedMesh;
-			curSMR[i].material = materials[i];
-			curSMR[i].enabled = true;
-		}
-
-		//set all properties to 0
-		initMechProperties ();
-		//Load parts info
-		LoadCoreInfo (parts [0]);
-		LoadHandInfo (parts [1]);
-		LoadLegInfo (parts [2]);
-		LoadHeadInfo (parts [3]);
-		LoadBoosterInfo (parts [4]);
-
-		// Replace weapons
-		buildWeapons(new string[4]{parts[5],parts[6],parts[7],parts[8]});
-	}
-
-	private void initMechProperties(){
-		HP = EN = SP = MPU = 0;
-		ENOutputRate = 0;
-		MinENRequired = 0;
-		Size = Weight = 0;
-		EnergyDrain = 0;
-
-		MaxHeat = CooldownRate = 0;
-		Marksmanship = 0;
-
-		ScanRange = 0;
-
-		BasicSpeed = 0;
-		Capacity = 0;
-		Deceleration = 0;
-
-		DashOutput = 0;
-		DashENDrain = JumpENDrain = 0;
-	}
-
-	private void LoadCoreInfo(string part){
-		switch(part){
-		case "CES301":
-			CoreProperties (new CES301 ());
-			break;
-		}
-	}
-	private void CoreProperties(Core core){
-		EN += core.EN;
-		ENOutputRate += core.ENOutputRate;
-		MinENRequired += core.MinENRequired;
-		HP += core.HP;
-		Size += core.Size;
-		Weight += core.Weight;
-		EnergyDrain += core.EnergyDrain;
-	}
-
-	private void LoadHandInfo(string part){
-		switch(part){
-		case "AES104":
-			HandProperties (new AES104 ());
-			break;
-		}
-	}
-	private void HandProperties(Hand hand){
-		HP += hand.HP;
-		MaxHeat += hand.MaxHeat;
-		CooldownRate += hand.CooldownRate;
-		Marksmanship += hand.Marksmanship;
-		Size += hand.Size;
-		Weight += hand.Weight;
-	}
-
-	private void LoadHeadInfo(string part){
-		switch(part){
-		case "HDS003":
-			HeadProperties (new HDS003 ());
-			break;
-		}
-	}
-	private void HeadProperties(Head head){
-		SP += head.SP;
-		MPU += head.MPU;
-		ScanRange += head.ScanRange;
-		HP += head.HP;
-		Weight += head.Weight;
-		EnergyDrain += head.EnergyDrain;
-		Size += head.Size;
-	}
-
-	private void LoadLegInfo(string part){
-		switch(part){
-		case "LTN411":
-			LegProperties (new LTN411 ());
-			break;
-		}
-	}
-	private void LegProperties(Leg leg){
-		BasicSpeed += leg.BasicSpeed;
-		Capacity += leg.Capacity;
-		Deceleration += leg.Deceleration;
-		HP += leg.HP;
-		Size += leg.Size;
-		Weight += leg.Weight;
-	}
-
-	private void LoadBoosterInfo(string part){
-		switch(part){
-		case "PBS000":
-			BoosterProperties (new PBS000 ());
-			break;
-		}
-	}
-	private void BoosterProperties(Booster booster){
-		DashOutput += booster.DashOutput;
-		DashENDrain += booster.DashENDrain;
-		JumpENDrain += booster.JumpENDrain;
-		HP += booster.HP;
-		Size += booster.Size;
-		Weight += booster.Weight;
-		EnergyDrain += booster.EnergyDrain;
-	}
-
-	private void buildWeapons (string[] weaponNames) {
-		if (weapons != null) for (int i = 0; i < weapons.Length; i++) if (weapons[i] != null) Destroy(weapons[i]);
-		weapons = new GameObject[4];
-		weaponScripts = new Weapon[4];
-		bulletPrefabs = new GameObject[4];
-		ShotSounds = new AudioClip[4];
-
-		for (int i = 0; i < weaponNames.Length; i++) {
-			weapons [i] = Instantiate(Resources.Load(weaponNames [i]) as GameObject, Vector3.zero, transform.rotation) as GameObject;
-
-			if(onPanel){//resize
-				weapons [i].transform.localScale *=22f;
-			}else if(SceneManagerHelper.ActiveSceneName == "Lobby"){
-				weapons [i].transform.localScale *= 0.7f;
-			}else if(SceneManagerHelper.ActiveSceneName == "Hangar"){
-				
-			}
-
-			//turn off muz
-			Muz = weapons [i].GetComponentInChildren<ParticleSystem> ();
-			if (Muz != null) {
-				Muz.Stop ();
-				if (inHangar||inStore) {
-					Muz.gameObject.SetActive (false);
-				}
-			}
-				
-			switch (weaponNames[i]) {
-			case "APS403": {
-					weaponScripts [i] = new APS403 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (170, -90, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0.5f - weapons [i].transform.forward*0.1f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (170, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0.5f - weapons [i].transform.forward*0.1f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = Resources.Load ("APS403B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Planet_Fire 04") as AudioClip;
-					break;
-				}
-			case "SHL009": {
-					weaponScripts [i] = new SHL009 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.5f  + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.5f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = null;
-
-					//Load sound 
-					break;
-				}
-			case "ADR000": {
-					weaponScripts [i] = new ADR000 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f  + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f+ weapons [i].transform.forward * 0.35f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = null;
-
-					//Load sound 
-					break;
-				}
-			case "SHS309": {
-					weaponScripts [i] = new SHS309 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f  - weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 80, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f - weapons [i].transform.forward * 0.9f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = null;
-
-					//also set the child collider
-					GameObject collider = weapons [i].GetComponentInChildren<Collider> ().gameObject;
-					if(i % 2 == 0){
-						collider.transform.localRotation = Quaternion.Euler(0,5,10);
-						collider.transform.localPosition = new Vector3(0.10f,0,0);
-					}else{
-						collider.transform.localRotation = Quaternion.Euler(0,5,-10);
-						collider.transform.localPosition =  new Vector3(0.10f,0,0);
-					}
-
-
-					break;
-				}
-			case "LMG012": {
-					weaponScripts [i] = new LMG012 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f + weapons [i].transform.forward*0.6f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands [i % 2].position - weapons [i].transform.up*0f + weapons [i].transform.forward*0.6f - weapons [i].transform.right*0.2f;
-					}
-					bulletPrefabs [i] = Resources.Load ("LMG012B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/beam_fire 2") as AudioClip;
-					break;
-				}
-			case "BRF025": {
-					weaponScripts [i] = new BRF025 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, -90, 0));
-						weapons [i].transform.position = hands[i % 2].position - weapons [i].transform.up*0.5f + weapons [i].transform.forward*0.1f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-						weapons [i].transform.position = hands[i % 2].position - weapons [i].transform.up*0.5f + weapons [i].transform.forward*0.1f - weapons [i].transform.right*0.2f;
-					}
-
-					bulletPrefabs [i] = Resources.Load ("BRF025B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Zeus_Fire") as AudioClip;
-					break;
-				}
-			case "BCN029": {
-					weaponScripts[i] = new BCN029();
-					weapons [i].transform.rotation = hands [1].rotation;
-					weapons [i].transform.SetParent (hands [1]);
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f + weapons [i].transform.forward*0.2f;
-					bulletPrefabs [i] = Resources.Load ("BCN029B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/POSE_Fire") as AudioClip;
-
-					weaponScripts [i + 1] = new EmptyWeapon ();
-					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, Vector3.zero, transform.rotation) as GameObject;
-					weapons [i+1].transform.SetParent (hands [i % 2]);
-					weapons [i + 1].SetActive (false);
-					bulletPrefabs [i+1] = null;
-
-					i++;//skip the right hand
-					break;
-				}
-			case "SGN150": {
-					weaponScripts [i] = new SGN150 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f - weapons [i].transform.right*0.2f;
-					}
-
-					bulletPrefabs [i] = Resources.Load ("SGN150B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Spatter_Fire") as AudioClip;
-					break;
-				}
-			case "RCL034":{
-					weaponScripts [i] = new RCL034 ();
-					weapons [i].transform.rotation = hands [1].rotation;
-					weapons [i].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-					weapons [i].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-					weapons [i].transform.position = hands[1].position - weapons [i].transform.up*0.45f ;
-
-					bulletPrefabs [i] = Resources.Load ("RCL034B")  as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Hell_Fire") as AudioClip;
-
-					weaponScripts [i + 1] = new EmptyWeapon ();
-					weapons [i + 1] = Instantiate (Resources.Load ("EmptyWeapon") as GameObject, Vector3.zero, transform.rotation) as GameObject;
-					weapons [i+1].transform.SetParent (hands [i % 2]);
-					weapons [i + 1].SetActive (false);
-					bulletPrefabs [i+1] = null;
-
-					i++;//skip the right hand
-					break;
-				}
-			case "ENG041":{
-					weaponScripts [i] = new ENG041 ();
-					weapons [i].transform.rotation = hands [i % 2].rotation;
-					weapons [i].transform.SetParent (hands [i % 2]);
-					if(i % 2 == 0){
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f + weapons [i].transform.right*0.2f;
-					}else{
-						weapons [i].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-						weapons [i].transform.position = hands[i % 2].position + weapons [i].transform.forward*0.5f - weapons [i].transform.right*0.2f;
-					}
-
-					bulletPrefabs [i] = Resources.Load ("ENG041B") as GameObject;
-					ShotSounds [i] = Resources.Load ("Sounds/Heal_loop") as AudioClip;
-
-					break;
-				}
-			default:{
-					weaponScripts [i] = new EmptyWeapon ();
-					weapons [i].transform.SetParent (hands [i % 2]);
-			break;
-			}
-
-			}
-		}
-
-		UpdateCurWeaponNames (weaponNames);
-
-		animator = transform.Find("CurrentMech").GetComponent<Animator> ();//if in game , then animator is not ini. in start
-		if (animator != null && (inHangar || inStore))CheckAnimatorState ();
-
-		weapons [(weaponOffset+2)%4].SetActive (false);
-		weapons [(weaponOffset+3)%4].SetActive (false);
-
-		if(mcbt!=null)UpdateMechCombatVars ();//this will turn trail on ( enable all renderer)
-		for (int i = 0; i < 4; i++)//turn off trail
-			ShutDownTrail (weapons [i]);
-
-	}
-
-
-	public void EquipWeapon(string weapon, int weapPos) {
-		//if previous is two-handed => also destroy left hand 
-		if(weapPos==3){
-			if (weapons [2] != null) {
-				if (CheckIsTwoHanded(curWeaponNames [2])) {
-					if (!inStore)UserData.myData.Mech [Mech_Num].Weapon2L = "EmptyWeapon";
-
-					Destroy (weapons [2]);
-					curWeaponNames [2] = "EmptyWeapon";
-				}
-			}
-		}else if(weapPos==1){
-			if (weapons [0] != null) {
-				if (CheckIsTwoHanded(curWeaponNames [0])) {
-					if (!inStore)UserData.myData.Mech [Mech_Num].Weapon1L = "EmptyWeapon";
-
-					Destroy (weapons [0]);
-					curWeaponNames [0] = "EmptyWeapon";
-				}
-			}
-		}
-		//if the new one is two-handed => also destroy right hand
-		if(CheckIsTwoHanded(weapon)){
-			if(weapons[weapPos+1]!=null)
-				Destroy (weapons[weapPos + 1]);
-			if(weapPos==0){
-				if(!inStore)
-					UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-				curWeaponNames [1] = "EmptyWeapon";
-			}else if(weapPos==2){
-				if(!inStore)
-					UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-				curWeaponNames [3] = "EmptyWeapon";
-			}
-		}
-
-		//destroy the current weapon on the hand position
-		if (weapons [weapPos] != null) 
-			Destroy (weapons [weapPos]);
-
-		weapons [weapPos] = Instantiate(Resources.Load(weapon) as GameObject, Vector3.zero, transform.rotation) as GameObject;
-
-		switch (weapon) {
-		case "APS403":
-			{
-				weaponScripts [weapPos] = new APS403 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (170, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos%2].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (170, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos%2].position - weapons [weapPos].transform.up*0.5f - weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "SHL009":
-			{
-				weaponScripts [weapPos] = new SHL009 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f  + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.5f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "ADR000":
-			{
-				weaponScripts [weapPos] = new ADR000 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -80, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f  + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f+ weapons [weapPos].transform.forward * 0.35f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "SHS309":
-			{
-				weaponScripts [weapPos] = new SHS309 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -80, 180));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f  - weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f - weapons [weapPos].transform.forward * 0.9f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "LMG012": {
-				weaponScripts [weapPos] = new LMG012 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0f + weapons [weapPos].transform.forward*0.6f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "SGN150": {
-				weaponScripts [weapPos] = new SGN150 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "BRF025": {
-				weaponScripts [weapPos] = new BRF025 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (180, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position - weapons [weapPos].transform.up*0.5f + weapons [weapPos].transform.forward*0.1f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		case "BCN029":
-			{
-				weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
-
-				weaponScripts [weapPos] = new BCN029 ();
-				weapons [weapPos].transform.rotation = hands [1].rotation;
-				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f + weapons [weapPos].transform.forward*0.2f;
-
-				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
-				weaponScripts [weapPos + 1] = new EmptyWeapon ();
-				weapons [weapPos + 1].SetActive (false);
-
-				if (weapPos >= 2) {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-					curWeaponNames[3] = "EmptyWeapon";
-				} else {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-					curWeaponNames[1] = "EmptyWeapon";
-				}
-
-				break;
-			}
-		case "RCL034":
-			{
-				weapPos = (weapPos >= 2) ? 2 : 0; //script is on left hand
-
-				weaponScripts [weapPos] = new RCL034 ();
-				weapons [weapPos].transform.rotation = hands [1].rotation;
-				weapons [weapPos].transform.SetParent (hands [1]); //the parent is always set to right hand ( for nice look)
-				weapons [weapPos].transform.localRotation = Quaternion.Euler(new Vector3(195,90,0));
-				weapons [weapPos].transform.position = hands[1].position - weapons [weapPos].transform.up*0.45f ;
-
-				weapons [weapPos + 1] =  Instantiate(Resources.Load("EmptyWeapon") as GameObject, hands[0].position, transform.rotation) as GameObject;
-				weaponScripts [weapPos + 1] = new EmptyWeapon ();
-				weapons [weapPos + 1].SetActive (false);
-
-				if (weapPos >= 2) {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon2R = "EmptyWeapon";
-					curWeaponNames[3] = "EmptyWeapon";
-				} else {
-					if(!inStore)
-						UserData.myData.Mech [Mech_Num].Weapon1R = "EmptyWeapon";
-					curWeaponNames[1] = "EmptyWeapon";
-				}
-
-				break;
-			}
-
-		case "ENG041":{
-				weaponScripts [weapPos] = new LMG012 ();
-				weapons [weapPos].transform.rotation = hands [weapPos % 2].rotation;
-				weapons [weapPos].transform.SetParent (hands [weapPos % 2]);
-				if(weapPos % 2 == 0){
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, -90, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f + weapons [weapPos].transform.right*0.2f;
-				}else{
-					weapons [weapPos].transform.localRotation = Quaternion.Euler (new Vector3 (-90, 70, 0));
-					weapons [weapPos].transform.position = hands[weapPos % 2].position + weapons [weapPos].transform.forward*0.5f - weapons [weapPos].transform.right*0.2f;
-				}
-				break;
-			}
-		}
-			
-		weapons [weapPos].SetActive (weapPos == weaponOffset || weapPos == weaponOffset+1);
-
-		Muz = weapons [weapPos].GetComponentInChildren<ParticleSystem> ();
-		if (Muz != null) {
-			Muz.Stop ();
-			if (inHangar||inStore) {
-				Muz.gameObject.SetActive (false);
-			}
-		}
-			
-		curWeaponNames [weapPos] = weapon;
-		ShutDownTrail (weapons[weapPos]);
-		if(animator!=null)CheckAnimatorState ();
-	}
-		
-	private void findGameManager() {
-		if (gm == null) {
-			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-		}
-	}
-
-	public void DisplayFirstWeapons(){
-		weaponOffset = 0;
-
-		for(int i=0;i<4;i++)if(curWeaponNames[i]!="EmptyWeapon")EquipWeapon (curWeaponNames [i],i);
-	}
-
-	public void DisplaySecondWeapons(){
-		weaponOffset = 2;
-
-		for(int i=0;i<4;i++)if(curWeaponNames[i]!="EmptyWeapon")EquipWeapon (curWeaponNames [i],i);
-	}
-
-	public void UpdateCurWeaponNames(string[] weaponNames){
-		curWeaponNames [0] = weaponNames[0];
-		curWeaponNames [1] = weaponNames[1];
-		curWeaponNames [2] = weaponNames[2];
-		curWeaponNames [3] = weaponNames[3];
-	}
-
-	public void CheckAnimatorState(){
-		if (animator == null)
-			return;
-
-		int num = (weaponScripts [weaponOffset].isTwoHanded)? 1 : 0;
-
-		clipOverrides ["Idle"] = MovementClips.Idle [num];
-		clipOverrides ["Run_Left"] = MovementClips.Run_Left[num];
-		clipOverrides ["Run_Front"] = MovementClips.Run_Front[num];;
-		clipOverrides ["Run_Right"] = MovementClips.Run_Right[num];
-		clipOverrides ["BackWalk"] = MovementClips.BackWalk [num];
-
-		clipOverrides ["Hover_Back_01"] = MovementClips.Hover_Back_01[num];
-		clipOverrides ["Hover_Back_02"] = MovementClips.Hover_Back_02[num];
-		clipOverrides ["Hover_Back_03"] = MovementClips.Hover_Back_03[num];
-
-		clipOverrides ["Hover_Left_01"] = MovementClips.Hover_Left_01[num];
-		clipOverrides ["Hover_Left_02"] = MovementClips.Hover_Left_02[num];
-		clipOverrides ["Hover_Left_03"] = MovementClips.Hover_Left_03[num];
-		clipOverrides ["Hover_Right_01"] = MovementClips.Hover_Right_01[num];
-		clipOverrides ["Hover_Right_02"] = MovementClips.Hover_Right_02[num];
-		clipOverrides ["Hover_Right_03"] = MovementClips.Hover_Right_03[num];
-		clipOverrides ["Hover_Front_01"] = MovementClips.Hover_Front_01[num];
-		clipOverrides ["Hover_Front_02"] = MovementClips.Hover_Front_02[num];
-		clipOverrides ["Hover_Front_03"] = MovementClips.Hover_Front_03[num];
-
-		clipOverrides ["Jump01"] = MovementClips.Jump01[num];
-		clipOverrides ["Jump02"] = MovementClips.Jump02[num];
-		clipOverrides ["Jump03"] = MovementClips.Jump03[num];
-		clipOverrides ["Jump06"] = MovementClips.Jump06[num];
-		clipOverrides ["Jump07"] = MovementClips.Jump07[num];
-		clipOverrides ["Jump08"] = MovementClips.Jump08[num];
-
-		animatorOverrideController.ApplyOverrides (clipOverrides);
-	}
-
-void SetMechDefaultIfEmpty(int mechNum){
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Core)){
-			UserData.myData.Mech[mechNum].Core = defaultParts [0];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Arms)){
-			UserData.myData.Mech[mechNum].Arms = defaultParts [1];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Legs)){
-			UserData.myData.Mech[mechNum].Legs = defaultParts [2];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Head)){
-			UserData.myData.Mech[mechNum].Head = defaultParts [3];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Booster)){
-			UserData.myData.Mech[mechNum].Booster = defaultParts [4];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon1L)){
-			UserData.myData.Mech[mechNum].Weapon1L = defaultParts [5];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon1R)){
-			UserData.myData.Mech[mechNum].Weapon1R = defaultParts [5];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon2L)){
-			UserData.myData.Mech[mechNum].Weapon2L = defaultParts [5];
-		}
-		if(string.IsNullOrEmpty(UserData.myData.Mech[mechNum].Weapon2R)){
-			UserData.myData.Mech[mechNum].Weapon2R = defaultParts [11];
-		}
-	}
-
-	/*bool CheckIsWeapon(string name){
-		return (name.Contains ("BCN") || name.Contains ("RCL") || name.Contains ("ENG") || name.Contains ("BRF") || name.Contains ("SHL") || name.Contains ("LMG") || name.Contains ("APS") || name.Contains ("SHS") || name.Contains ("SGN"));
-	}*/
-	bool CheckIsTwoHanded(string name){
-		return (name.Contains ("RCL") || name.Contains ("MSR") || name.Contains ("LCN") || name.Contains ("BCN"));
-	}
-
-	public void SetMechNum(int num){
-		Mech_Num = num;
-	}
-
-	void ShutDownTrail(GameObject weapon){
-		XWeaponTrail trail = weapon.GetComponentInChildren<XWeaponTrail> ();
-
-		if (trail == null)
-			return;
-
-		trail.Deactivate ();
-	}
-
-	void UpdateMechCombatVars(){
-		if (mcbt == null || !mcbt.isInitFinished)
-			return;
-		mcbt.UpdateWeaponInfo ();
-		mcbt.initCombatVariables ();
-		mcbt.UpdateCurWeaponType ();
-		if(mcbt.crosshair!=null)
-			mcbt.crosshair.updateCrosshair (0);
-		mcbt.FindTrail();
-		mcbt.EnableAllRenderers (true);
-		mcbt.EnableAllColliders (true);
-		mcbt.UpdateMuz ();
-		mcbt.FindGunEnds ();
-
-		mcbt.ChangeMovementClips (((weaponScripts [weaponOffset].isTwoHanded) ? 1 : 0));
-	}
+    //Components
+    [SerializeField] private Transform RootBone;    
+    private MechCombat MechCombat;
+    private MechIK MechIK;
+    private WeaponDataManager WeaponDataManager;
+    private SkillManager SkillManager;
+    private MechPartManager MechPartManager;    
+    private SkillController SkillController;
+
+    private GameManager gm;
+    private OperatorStatsUI OperatorStatsUI;
+
+    //Weapons
+    [HideInInspector] public WeaponData[] WeaponDatas = new WeaponData[4];
+    [HideInInspector] public Weapon[] Weapons = new Weapon[4];
+    private int weaponOffset = 0;
+    private Transform[] hands;
+
+    //Mech parts
+    public Part[] curMechParts = new Part[5];
+    public MechProperty MechProperty;
+
+    //Mech animator settings
+    private Animator animator;
+    private AnimatorOverrideController animatorOverrideController;
+    private AnimationClipOverrides clipOverrides;
+    private MovementClips defaultMovementClips, TwoHandedMovementClips;
+
+    //Settings    
+    private bool buildLocally = false, isDataGetSaved = true;
+    private int Total_Mech = 4;
+    public int Mech_Num = 0;
+    public bool onPanel = false;
+
+    public delegate void BuildWeaponAction();
+    public event BuildWeaponAction OnMechBuilt;
+
+    private string[] defaultParts = { "CES301", "AES104", "LTN411", "HDS003", "PBS016", "SHL009", "SHL501", "APS043", "SHS309", "RCL034", "BCN029", "BRF025", "SGN150", "LMG012", "ENG041", "ADR000", "Empty" };
+
+    private void Awake() {
+        //For not starting from login
+        if (UserData.myData.Mech == null) {
+            GameObject g = new GameObject();
+            UserData u = g.AddComponent<UserData>();
+            if(UserData.myData.Mech == null)Debug.Log("user data null");
+        }
+
+        FindGameManager();
+        LoadMovementClips();
+        LoadManagers();
+        InitComponents();
+        FindHands();
+    }
+
+    private void FindGameManager() {
+        gm = FindObjectOfType<GameManager>();
+    }
+
+    private void LoadMovementClips() {
+        defaultMovementClips = Resources.Load<MovementClips>("Data/MovementClip/Default");
+        TwoHandedMovementClips = Resources.Load<MovementClips>("Data/MovementClip/TwoHanded");
+    }
+
+    private void LoadManagers() {
+        WeaponDataManager = Resources.Load<WeaponDataManager>("Data/Managers/WeaponDataManager");
+        SkillManager = Resources.Load<SkillManager>("Data/Managers/SkillManager");
+        MechPartManager = Resources.Load<MechPartManager>("Data/Managers/MechPartManager");
+    }
+
+    private void InitComponents() {
+        Transform CurrentMech = transform.Find("CurrentMech");        
+        animator = CurrentMech.GetComponent<Animator>();
+        MechCombat = GetComponent<MechCombat>();
+        MechIK = CurrentMech.GetComponent<MechIK>();
+        SkillController = GetComponent<SkillController>();
+    }
+
+    private void FindHands() {
+        Transform shoulderL = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle");
+        Transform shoulderR = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
+
+        hands = new Transform[2];
+        hands[0] = shoulderL.Find("Bip01_L_UpperArm/Bip01_L_ForeArm/Bip01_L_Hand/Weapon_lft_Bone");
+        hands[1] = shoulderR.Find("Bip01_R_UpperArm/Bip01_R_ForeArm/Bip01_R_Hand/Weapon_rt_Bone");
+    }
+
+    private void Start() {        
+        CheckIfBuildLocally();
+        CheckIsDataGetSaved();
+
+        // If this is not me, don't build this mech. Someone else will RPC build it
+        if (!buildLocally && !photonView.isMine && tag!="Drone") return;
+
+        InitMechData();
+        InitAnimatorControllers();
+
+        if (buildLocally || tag == "Drone") {//TODO : Drone build mech 
+            if(!onPanel)OperatorStatsUI = FindObjectOfType< OperatorStatsUI >();
+            buildMech(UserData.myData.Mech[0]);
+        } else{ // Register my name on all clients
+            photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player);
+        }
+    }
+
+    private void InitMechData() {
+        if (UserData.myData.Mech == null) {
+            UserData.myData.Mech = new Mech[Total_Mech];
+        }
+
+        for (int i = 0; i < Total_Mech; i++) {
+            SetMechDefaultIfEmpty(i);
+        }
+    }
+
+    private void InitAnimatorControllers() {//do not call this in game otherwise mechcombat gets null parameter
+        if (!buildLocally) return;
+
+        animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        animator.runtimeAnimatorController = animatorOverrideController;
+
+        clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+        animatorOverrideController.GetOverrides(clipOverrides);//write clips into clipOverrides
+    }
+
+    [PunRPC]
+    private void SetName(PhotonPlayer player) {//TODO : consider not putting here
+        gameObject.name = player.NickName;
+        gm.RegisterPlayer(player);
+    }
+
+    public void Build(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
+        photonView.RPC("buildMech", PhotonTargets.AllBuffered, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
+    }
+
+    private void buildMech(Mech m) {
+        buildMech(m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+    }
+
+    [PunRPC]
+    public void buildMech(string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {        
+        string[] parts = new string[9] { c, a, l, h, b, w1l, w1r, w2l, w2r };
+
+        for (int i = 0; i < parts.Length - 4; i++) {            
+            parts[i] = string.IsNullOrEmpty(parts[i]) ? defaultParts[i] : parts[i];
+        }
+
+        //set weapons if null (in offline)
+        if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[9];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[16];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[7];
+        if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[7];
+
+        if (skill_IDs == null) {//TODO : remake this
+            Debug.Log("skill_ids is null. Set defualt skills");
+            SkillManager.GetAllSkills();
+            skill_IDs = new int[4] { 0, 1, 3, 4 };
+        }
+
+        // Create new array to store skinned mesh renderers
+        SkinnedMeshRenderer[] newSMR = new SkinnedMeshRenderer[4];
+
+        for (int i = 0; i < 4; i++) {
+            // Load mech part & info
+            Part part = MechPartManager.FindData(parts[i]);
+            if (part != null) {
+                curMechParts[i] = part;
+            } else {
+                curMechParts[i] = null;
+                Debug.LogError("Can't find the part in MechPartManager");
+                continue;
+            }
+            // Extract Skinned Mesh
+            newSMR[i] = part.GetPartPrefab().GetComponentInChildren<SkinnedMeshRenderer>() as SkinnedMeshRenderer;
+        }
+
+        // Replace all
+        SkinnedMeshRenderer[] curSMR = GetComponentsInChildren<SkinnedMeshRenderer>();
+
+        for (int i = 0; i < 4; i++) {//TODO : remake the order part
+                                     //Note the order of parts in MechFrame.prefab matters
+            if (newSMR[i] == null) { Debug.LogError(i + " is null."); continue; }
+
+            ProcessBonedObject(newSMR[i], curSMR[i]);
+
+            curSMR[i].sharedMesh = newSMR[i].sharedMesh;
+
+            Material[] mats = new Material[2];
+            mats[0] = Resources.Load("MechPartMaterials/" + parts[i] + "mat", typeof(Material)) as Material;
+            mats[1] = Resources.Load("MechPartMaterials/" + parts[i] + "_2mat", typeof(Material)) as Material;
+            curSMR[i].materials = mats;
+
+            curSMR[i].enabled = true;
+        }
+
+        LoadBooster(parts[4]);
+
+        LoadAllPartInfo();
+
+        buildSkills(skill_IDs);
+
+        // Replace weapons
+        if(tag!="Drone")BuildWeapons(new string[4] { parts[5], parts[6], parts[7], parts[8] });
+
+        if (!buildLocally) {
+            UpdateMechCombatVars();
+        } else if(!onPanel) {//display properties            
+            OperatorStatsUI OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
+            if (OperatorStatsUI != null) {
+                OperatorStatsUI.DisplayMechProperties();
+            }
+        }
+    }
+
+    public void ProcessBonedObject(SkinnedMeshRenderer newPart, SkinnedMeshRenderer partToSwitch) {
+        Transform[] MyBones = new Transform[newPart.bones.Length];
+
+        for (var i = 0; i < newPart.bones.Length; i++) {
+            if (newPart.bones[i].name.Contains(newPart.name)) {
+                string boneName = newPart.bones[i].name.Remove(0, 6);
+                string boneToFind = "Bip01" + boneName;
+                MyBones[i] = TransformExtension.FindDeepChild(RootBone, boneToFind);
+            }
+
+            if (MyBones[i] == null) {
+                MyBones[i] = TransformExtension.FindDeepChild(RootBone.transform, newPart.bones[i].name, newPart.bones[i].parent.name);
+            }
+
+            if (MyBones[i] == null) {
+                Transform parent;
+                if (newPart.bones[i].parent.name == "Bip01") {//the root bone is not checked
+                    RootBone.transform.rotation = Quaternion.identity;
+                    parent = RootBone.transform;
+
+                    GameObject newbone = new GameObject(newPart.bones[i].name); //TODO : improve this (mesh on hip has rotation bug , temp. use this to solve)
+                    newbone.transform.parent = parent;
+                    newbone.transform.localPosition = Vector3.zero;
+                    newbone.transform.localRotation = Quaternion.Euler(0, 0, 90);
+                    newbone.transform.localScale = new Vector3(1, 1, 1);
+                    MyBones[i] = newbone.transform;
+                } else {
+                    parent = TransformExtension.FindDeepChild(RootBone.transform, newPart.bones[i].parent.name);
+                    MyBones[i] = parent;
+                }
+
+                if (parent == null) {
+                    Debug.LogError("Can't locate the bone : " + newPart.bones[i].name);
+                }
+            }
+        }
+        partToSwitch.bones = MyBones;
+    }
+
+    public void ReplaceMechPart(string toReplace, string newPart) {
+        Part p = MechPartManager.FindData(newPart);
+        if (p == null) {
+            Debug.LogError("Can't find the new part");
+            return;
+        }
+
+        for (int i = 0; i < 5; i++) {
+            if (curMechParts[i] != null) {
+                if (curMechParts[i].name == toReplace) {
+                    curMechParts[i] = p;
+                    LoadAllPartInfo();
+                    return;
+                }
+            }
+        }
+        Debug.Log("Fail to replace");
+    }
+
+    private void LoadAllPartInfo() {
+        MechProperty = new MechProperty();
+
+        for (int i = 0; i < 5; i++) {
+            if (curMechParts[i] != null) {
+                curMechParts[i].LoadPartInfo(ref MechProperty);
+            }
+        }
+    }
+
+    private void LoadBooster(string booster_name) {
+        Transform boosterbone = transform.Find("CurrentMech/Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/BackPack_Bone");
+        if (boosterbone == null) { Debug.LogError("boosterbone is null"); return; }
+
+        GameObject booster = (boosterbone.childCount == 0) ? null : boosterbone.GetChild(0).gameObject;
+        if (booster != null) {
+            DestroyImmediate(booster);
+        }
+        Part booster_part = MechPartManager.FindData(booster_name);
+        curMechParts[4] = booster_part;
+        if (booster_part == null) { Debug.Log("Can't find booster"); return; };
+
+        GameObject newBooster_prefab = booster_part.GetPartPrefab();
+
+        GameObject newBooster = Instantiate(newBooster_prefab, boosterbone);
+        newBooster.transform.localPosition = Vector3.zero;
+        newBooster.transform.localRotation = Quaternion.Euler(90, 0, 0);
+
+        //Load info
+        booster_part.LoadPartInfo(ref MechProperty);
+
+        //switch booster aniamtion clips
+        if (newBooster != null && newBooster.GetComponent<Animator>() != null && newBooster.GetComponent<Animator>().runtimeAnimatorController != null) {
+            AnimatorOverrideController boosterAnimtor_OC = new AnimatorOverrideController(newBooster.GetComponent<Animator>().runtimeAnimatorController);
+            newBooster.GetComponent<Animator>().runtimeAnimatorController = boosterAnimtor_OC;
+
+            AnimationClipOverrides boosterClipOverrides = new AnimationClipOverrides(boosterAnimtor_OC.overridesCount);
+            boosterAnimtor_OC.GetOverrides(boosterClipOverrides);
+
+            boosterClipOverrides["open"] = ((Booster)booster_part).GetOpenAnimation();
+            boosterClipOverrides["close"] = ((Booster)booster_part).GetCloseAnimation();
+
+            boosterAnimtor_OC.ApplyOverrides(boosterClipOverrides);
+        }
+    }
+
+    private void BuildWeapons(string[] weaponNames) {
+        //Destroy previous weapons
+        if (Weapons != null) {
+            for (int i = 0; i < Weapons.Length; i++) {
+                WeaponDatas[i] = null;
+                if (Weapons[i] != null) {
+                    Weapons[i].OnDestroy();
+                    Weapons[i] = null;
+                }
+            }
+        }
+
+        //Find and create corresponding weapon script
+        for (int i = 0; i < WeaponDatas.Length; i++) {
+            WeaponDatas[i] = (i >= weaponNames.Length || weaponNames[i] == "Empty" || string.IsNullOrEmpty(weaponNames[i])) ? null : WeaponDataManager.FindData(weaponNames[i]);
+
+            if (WeaponDatas[i] == null) {
+                if (i < weaponNames.Length && (weaponNames[i] != "Empty" || string.IsNullOrEmpty(weaponNames[i])))
+                    Debug.LogError("Can't find weapon data : " + weaponNames[i]);
+                continue;
+            }
+
+            Weapons[i] = (Weapon)(WeaponDatas[i].GetWeaponObject());
+        }
+
+        //Init weapon scripts
+        for(int i = 0; i < WeaponDatas.Length; i++) {
+            if(WeaponDatas[i]== null)continue;
+            Transform weapPos = (WeaponDatas[i].twoHanded) ? hands[(i + 1) % 2] : hands[i % 2];
+            Weapons[i].Init(WeaponDatas[i], i, weapPos, MechCombat, animator);
+        }
+
+        if (buildLocally) UpdateAnimatorState();
+
+        //Enable renderers
+        for(int i = 0; i < Weapons.Length; i++) {
+            if (Weapons[i] == null) continue;
+            Weapons[i].ActivateWeapon( (i == weaponOffset || i == weaponOffset +1) );
+        }
+    }
+
+    private void buildSkills(int[] skill_IDs) {
+        if (skill_IDs == null) {Debug.Log("skill_IDs is null");return;}
+        SkillConfig[] skills = new SkillConfig[4];
+        for (int i = 0; i < skill_IDs.Length; i++) {
+            skills[i] = SkillManager.GetSkillConfig(skill_IDs[i]);
+        }
+
+        if (SkillController != null) SkillController.SetSkills(skills);
+    }
+
+    public void EquipWeapon(string weapon, int pos) {
+        WeaponData data = WeaponDataManager.FindData(weapon);
+        if (data == null) {Debug.LogError("Can't find weapon data : " + weapon);return;}
+
+        //if previous is two-handed => also destroy left hand
+        if (pos == 3) {
+            if (Weapons[2] != null && WeaponDatas[2].twoHanded) {
+                if (isDataGetSaved) UserData.myData.Mech[Mech_Num].Weapon2L = "Empty";
+
+                Weapons[2].OnDestroy();
+                Weapons[2] = null;
+                WeaponDatas[2] = null;
+            }
+        } else if (pos == 1) {
+            if (Weapons[0] != null && WeaponDatas[0].twoHanded) {
+                if (isDataGetSaved) UserData.myData.Mech[Mech_Num].Weapon1L = "Empty";
+
+                Weapons[0].OnDestroy();
+                Weapons[0] = null;
+                WeaponDatas[0] = null;
+            }
+        }
+
+        //if the new one is two-handed => also destroy right hand
+        if (data.twoHanded) {
+            if (Weapons[pos + 1] != null) {
+                Weapons[pos + 1].OnDestroy();
+                Weapons[pos + 1] = null;
+            }
+
+            if (pos == 0) {
+                if (isDataGetSaved)UserData.myData.Mech[Mech_Num].Weapon1R = "Empty";
+                WeaponDatas[1] = null;
+            } else if (pos == 2) {
+                if (isDataGetSaved)UserData.myData.Mech[Mech_Num].Weapon2R = "Empty";
+                WeaponDatas[3] = null;
+            }
+        }
+
+        //destroy the current weapon on the hand position
+        if (Weapons[pos] != null) {
+            Weapons[pos].OnDestroy();
+            Weapons[pos] = null;
+        }
+
+        //Init
+        WeaponDatas[pos] = data;
+        Weapons[pos] = (Weapon)(WeaponDatas[pos].GetWeaponObject());
+        Transform weapPos = (WeaponDatas[pos].twoHanded) ? hands[(pos + 1) % 2] : hands[pos % 2];
+        Weapons[pos].Init(WeaponDatas[pos], pos % 2, weapPos, MechCombat, animator);
+
+        Weapons[pos].ActivateWeapon(pos == weaponOffset || pos == weaponOffset + 1);
+
+        UpdateAnimatorState();
+
+        if (buildLocally) {
+            MechIK.UpdateMechIK(weaponOffset);
+        } else {
+            UpdateMechCombatVars();
+        }
+
+        //Display properties
+        if (!onPanel && OperatorStatsUI != null) {//!onPanel : hargar,lobby,store
+            OperatorStatsUI.DisplayMechProperties();
+        }
+    }
+
+    public void DisplayWeapons(int weaponOffset) {
+        this.weaponOffset = weaponOffset;
+        for (int i = 0; i < 4; i++) if (Weapons[i] != null) Weapons[i].ActivateWeapon( i == weaponOffset || i == weaponOffset+1 );
+
+        if (!onPanel && OperatorStatsUI != null) {//!onPanel : hargar,lobby,store
+            OperatorStatsUI.DisplayMechProperties();
+        }
+    }
+
+    public int GetWeaponOffset() {
+        return weaponOffset;
+    }
+
+    public void UpdateAnimatorState() {
+        if (animator == null) { Debug.LogError("Animator is null"); return; };
+
+        MovementClips movementClips = (WeaponDatas[weaponOffset]!= null && WeaponDatas[weaponOffset].twoHanded) ? TwoHandedMovementClips : defaultMovementClips;
+        for (int i = 0; i < movementClips.clips.Length; i++) {
+            clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
+        }
+        animatorOverrideController.ApplyOverrides(clipOverrides);
+    }
+
+    private void SetMechDefaultIfEmpty(int mech_num) {
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Core))UserData.myData.Mech[mech_num].Core = defaultParts[0];    
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Arms))UserData.myData.Mech[mech_num].Arms = defaultParts[1];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Legs))UserData.myData.Mech[mech_num].Legs = defaultParts[2];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Head))UserData.myData.Mech[mech_num].Head = defaultParts[3];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Booster))UserData.myData.Mech[mech_num].Booster = defaultParts[4];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon1L))UserData.myData.Mech[mech_num].Weapon1L = defaultParts[5];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon1R))UserData.myData.Mech[mech_num].Weapon1R = defaultParts[5];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon2L))UserData.myData.Mech[mech_num].Weapon2L = defaultParts[5];
+        if (string.IsNullOrEmpty(UserData.myData.Mech[mech_num].Weapon2R)) UserData.myData.Mech[mech_num].Weapon2R = defaultParts[11];
+        if (UserData.myData.Mech[mech_num].skillIDs == null)UserData.myData.Mech[mech_num].skillIDs = new int[4] { -1, -1, -1, -1 };
+    }
+
+    public void SetMechNum(int num) {
+        Mech_Num = num;
+    }
+
+    private void UpdateMechCombatVars() {
+        if (MechCombat == null) return;
+
+        if (OnMechBuilt != null) OnMechBuilt();
+        if (MechCombat.OnWeaponSwitched != null) MechCombat.OnWeaponSwitched();
+
+        MechCombat.EnableAllRenderers(true);//TODO : check this
+        MechCombat.EnableAllColliders(true);
+    }
+
+    private void CheckIfBuildLocally() {
+        buildLocally = (SceneStateController.ActiveScene == HangarManager._sceneName ||
+            SceneStateController.ActiveScene == LobbyManager._sceneName || SceneStateController.ActiveScene == StoreManager._sceneName || onPanel);
+    }
+
+    private void CheckIsDataGetSaved() {
+        isDataGetSaved = (SceneManagerHelper.ActiveSceneName != StoreManager._sceneName);
+    }
+
+    private void OnPhotonInstantiate(PhotonMessageInfo info) {
+        info.sender.TagObject = gameObject;
+    }
 }

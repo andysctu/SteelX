@@ -1,58 +1,72 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Photon;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
+using System.Collections;
 
-[RequireComponent(typeof(PlayerInZone))]
 public class HealthPool : Photon.MonoBehaviour {
+    [SerializeField] private int healAmount = 250;
+    [SerializeField] private float healDeltaTime = 2;
+    [SerializeField] private GameObject barCanvas;
+    private DisplayInfo DisplayInfo;
+    private PlayerInZone PlayerInZone;
+    private SyncHealthPoolBar syncHealthPoolBar;
+    private MechCombat mechCombat;    
+    private float LastCheckTime;
 
-	[SerializeField]private int healAmount = 250;
-	[SerializeField]private float healDeltaTime = 2;
-	[SerializeField]GameObject barCanvas;
-	public GameObject player;
-	PlayerInZone PlayerInZone;
-	SyncHealthPoolBar syncHealthPoolBar;
-	Camera cam;
-	MechCombat mechCombat;
-	private float LastCheckTime;
+    private void Awake() {
+        InitComponents();        
+    }
 
-	public void Init(){
-		cam = player.GetComponentInChildren<Camera> ();
-		mechCombat = player.GetComponent<MechCombat> ();
-		PlayerInZone = GetComponent<PlayerInZone> ();
-		syncHealthPoolBar = GetComponent<SyncHealthPoolBar> ();
-		PlayerInZone.SetPlayerID(player.GetPhotonView ().viewID);
-	}
+    private void Start() {
+        GameManager gm = FindObjectOfType<GameManager>();
+        StartCoroutine(GetThePlayer(gm));
 
-	void Update () {
-		if (cam != null) {
-			barCanvas.transform.LookAt (new Vector3 (cam.transform.position.x, barCanvas.transform.position.y, cam.transform.position.z));
+        DisplayInfo.SetHeight(20);
+        DisplayInfo.SetName("HealthPool Infos");
+    }
 
-			//update scale
-			float distance = Vector3.Distance (transform.position, cam.transform.position);
-			distance = Mathf.Clamp (distance, 0, 200f);
-			barCanvas.transform.localScale = new Vector3 (0.02f + distance / 100 * 0.02f, 0.02f + distance / 100 * 0.02f, 1);
-		}
-	}
+    private IEnumerator GetThePlayer(GameManager gm) {
+        GameObject ThePlayer;
+        int request_times = 0;
+        while((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
+            request_times ++;
+            yield return new WaitForSeconds(0.5f);
+        }
 
-	void FixedUpdate(){
-		if(PlayerInZone.IsThePlayerInside()){
-			if(Time.time - LastCheckTime >= healDeltaTime){
-				if(!mechCombat.IsHpFull() && syncHealthPoolBar.isAvailable){
-					if(mechCombat.GetMaxHp() - mechCombat.CurrentHP() >= healAmount){
-						LastCheckTime = Time.time;
-						mechCombat.photonView.RPC ("OnHeal", PhotonTargets.All, 0, healAmount);
-					}else{
-						LastCheckTime = Time.time;
-						mechCombat.photonView.RPC ("OnHeal", PhotonTargets.All, 0, (mechCombat.GetMaxHp() - mechCombat.CurrentHP()));
-					}
-				}else{
-					LastCheckTime = Time.time;
-				}
-			}
-		}else{
-			LastCheckTime = Time.time;
-		}
-	}
+        if(request_times >= 15) {
+            Debug.LogError("Can't get the player");
+            yield break;
+        }
+
+        InitPlayerRelatedComponents(ThePlayer);
+        yield break;
+    }
+
+    private void InitComponents() {
+        PlayerInZone = GetComponentInChildren<PlayerInZone>();
+        syncHealthPoolBar = GetComponent<SyncHealthPoolBar>();
+        DisplayInfo = GetComponentInChildren<DisplayInfo>();
+    }
+
+    private void InitPlayerRelatedComponents(GameObject player) {
+        mechCombat = player.GetComponent<MechCombat>();
+    }
+
+    private void FixedUpdate() {//TODO :　improve anti-hack
+        if (PlayerInZone.IsThePlayerInside()) {
+            if (Time.time - LastCheckTime >= healDeltaTime) {
+                if (!mechCombat.IsHpFull() && syncHealthPoolBar.isAvailable) {
+                    if (mechCombat.MAX_HP - mechCombat.CurrentHP >= healAmount) {
+                        LastCheckTime = Time.time;
+                        mechCombat.photonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -healAmount);
+                    } else {
+                        LastCheckTime = Time.time;
+                        mechCombat.photonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -(mechCombat.MAX_HP - mechCombat.CurrentHP));
+                    }
+                } else {
+                    LastCheckTime = Time.time;
+                }
+            }
+        } else {
+            LastCheckTime = Time.time;
+        }
+    }
 }

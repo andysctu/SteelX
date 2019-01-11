@@ -1,0 +1,276 @@
+fileFormatVersion: 2
+guid: 6b25481b79c81f549aa2f9a11ca886b6
+timeCreated: 1529498698
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: BackPack_Bone
+    100002: Bip01
+    100004: Bip01_Head
+    100006: Bip01_HeadNub
+    100008: Bip01_L_Calf
+    100010: Bip01_L_Clavicle
+    100012: Bip01_L_Finger0
+    100014: Bip01_L_Finger01
+    100016: Bip01_L_Finger0Nub
+    100018: Bip01_L_Finger1
+    100020: Bip01_L_Finger11
+    100022: Bip01_L_Finger1Nub
+    100024: Bip01_L_Finger2
+    100026: Bip01_L_Finger21
+    100028: Bip01_L_Finger2Nub
+    100030: Bip01_L_Foot
+    100032: Bip01_L_ForeArm
+    100034: Bip01_L_Hand
+    100036: Bip01_L_Thigh
+    100038: Bip01_L_Toe0
+    100040: Bip01_L_Toe0Nub
+    100042: Bip01_L_UpperArm
+    100044: Bip01_Neck
+    100046: Bip01_Pelvis
+    100048: Bip01_R_Calf
+    100050: Bip01_R_Clavicle
+    100052: Bip01_R_Finger0
+    100054: Bip01_R_Finger01
+    100056: Bip01_R_Finger0Nub
+    100058: Bip01_R_Finger1
+    100060: Bip01_R_Finger11
+    100062: Bip01_R_Finger1Nub
+    100064: Bip01_R_Finger2
+    100066: Bip01_R_Finger21
+    100068: Bip01_R_Finger2Nub
+    100070: Bip01_R_Foot
+    100072: Bip01_R_ForeArm
+    100074: Bip01_R_Hand
+    100076: Bip01_R_Thigh
+    100078: Bip01_R_Toe0
+    100080: Bip01_R_Toe0Nub
+    100082: Bip01_R_UpperArm
+    100084: Bip01_Spine
+    100086: Bip01_Spine1
+    100088: Bip01_Spine2
+    100090: Bip01_Spine3
+    100092: GMM000
+    100094: //RootNode
+    100096: GMM000_head
+    100098: GMM000_L_Calf
+    100100: GMM000_L_Finger0
+    100102: GMM000_L_Finger01
+    100104: GMM000_L_Finger1
+    100106: GMM000_L_Finger11
+    100108: GMM000_L_Finger2
+    100110: GMM000_L_Finger21
+    100112: GMM000_L_Foot
+    100114: GMM000_L_ForeArm
+    100116: GMM000_L_Hand
+    100118: GMM000_L_Thigh
+    100120: GMM000_L_Toe0
+    100122: GMM000_L_UpperArm
+    100124: GMM000_Neck
+    100126: GMM000_Pelvis
+    100128: GMM000_R_Calf
+    100130: GMM000_R_Finger0
+    100132: GMM000_R_Finger01
+    100134: GMM000_R_Finger1
+    100136: GMM000_R_Finger11
+    100138: GMM000_R_Finger2
+    100140: GMM000_R_Finger21
+    100142: GMM000_R_Foot
+    100144: GMM000_R_ForeArm
+    100146: GMM000_R_Hand
+    100148: GMM000_R_Thigh
+    100150: GMM000_R_Toe0
+    100152: GMM000_R_UpperArm
+    100154: GMM000_Spine1
+    100156: GMM000_Spine3
+    100158: L_UpperArm_Bone
+    100160: R_UpperArm_Bone01
+    100162: Weapon_lft_Bone
+    100164: Weapon_rt_Bone
+    400000: BackPack_Bone
+    400002: Bip01
+    400004: Bip01_Head
+    400006: Bip01_HeadNub
+    400008: Bip01_L_Calf
+    400010: Bip01_L_Clavicle
+    400012: Bip01_L_Finger0
+    400014: Bip01_L_Finger01
+    400016: Bip01_L_Finger0Nub
+    400018: Bip01_L_Finger1
+    400020: Bip01_L_Finger11
+    400022: Bip01_L_Finger1Nub
+    400024: Bip01_L_Finger2
+    400026: Bip01_L_Finger21
+    400028: Bip01_L_Finger2Nub
+    400030: Bip01_L_Foot
+    400032: Bip01_L_ForeArm
+    400034: Bip01_L_Hand
+    400036: Bip01_L_Thigh
+    400038: Bip01_L_Toe0
+    400040: Bip01_L_Toe0Nub
+    400042: Bip01_L_UpperArm
+    400044: Bip01_Neck
+    400046: Bip01_Pelvis
+    400048: Bip01_R_Calf
+    400050: Bip01_R_Clavicle
+    400052: Bip01_R_Finger0
+    400054: Bip01_R_Finger01
+    400056: Bip01_R_Finger0Nub
+    400058: Bip01_R_Finger1
+    400060: Bip01_R_Finger11
+    400062: Bip01_R_Finger1Nub
+    400064: Bip01_R_Finger2
+    400066: Bip01_R_Finger21
+    400068: Bip01_R_Finger2Nub
+    400070: Bip01_R_Foot
+    400072: Bip01_R_ForeArm
+    400074: Bip01_R_Hand
+    400076: Bip01_R_Thigh
+    400078: Bip01_R_Toe0
+    400080: Bip01_R_Toe0Nub
+    400082: Bip01_R_UpperArm
+    400084: Bip01_Spine
+    400086: Bip01_Spine1
+    400088: Bip01_Spine2
+    400090: Bip01_Spine3
+    400092: GMM000
+    400094: //RootNode
+    400096: GMM000_head
+    400098: GMM000_L_Calf
+    400100: GMM000_L_Finger0
+    400102: GMM000_L_Finger01
+    400104: GMM000_L_Finger1
+    400106: GMM000_L_Finger11
+    400108: GMM000_L_Finger2
+    400110: GMM000_L_Finger21
+    400112: GMM000_L_Foot
+    400114: GMM000_L_ForeArm
+    400116: GMM000_L_Hand
+    400118: GMM000_L_Thigh
+    400120: GMM000_L_Toe0
+    400122: GMM000_L_UpperArm
+    400124: GMM000_Neck
+    400126: GMM000_Pelvis
+    400128: GMM000_R_Calf
+    400130: GMM000_R_Finger0
+    400132: GMM000_R_Finger01
+    400134: GMM000_R_Finger1
+    400136: GMM000_R_Finger11
+    400138: GMM000_R_Finger2
+    400140: GMM000_R_Finger21
+    400142: GMM000_R_Foot
+    400144: GMM000_R_ForeArm
+    400146: GMM000_R_Hand
+    400148: GMM000_R_Thigh
+    400150: GMM000_R_Toe0
+    400152: GMM000_R_UpperArm
+    400154: GMM000_Spine1
+    400156: GMM000_Spine3
+    400158: L_UpperArm_Bone
+    400160: R_UpperArm_Bone01
+    400162: Weapon_lft_Bone
+    400164: Weapon_rt_Bone
+    2100000: GMM_shd
+    2100002: GMM000_siren
+    2100004: GMM000_safety_g
+    2300000: GMM000
+    3300000: GMM000
+    4300000: GMM000
+    9500000: //RootNode
+    13700000: GMM000
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GMM000_safety_g
+    second: {fileID: 2100000, guid: 692ae05fbdc80d04d8f977c1ddd07384, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GMM000_siren
+    second: {fileID: 2100000, guid: 5a07dfbd568698f42a8e8ed6b8b588be, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GMM_shd
+    second: {fileID: 2100000, guid: a5c2466f01b45c34fa02e6696a08dcde, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 4
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 0
+    normalCalculationMode: 4
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

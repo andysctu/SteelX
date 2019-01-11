@@ -1,48 +1,46 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.Networking;
 
 public class SwitchWeapon : NetworkBehaviour {
-	private Transform[] hands;
-	private Transform[] weapons;
-	void Start() {
-		hands = new Transform[2];
-		hands[0] = transform.Find("mixamorig:Hips/mixamorig:Spine/mixamorig:Spine1/mixamorig:Spine2/mixamorig:RightShoulder/mixamorig:RightArm/mixamorig:RightForeArm/mixamorig:RightHand");
-		hands[1] = transform.Find("mixamorig:Hips/mixamorig:Spine/mixamorig:Spine1/mixamorig:Spine2/mixamorig:LeftShoulder/mixamorig:LeftArm/mixamorig:LeftForeArm/mixamorig:LeftHand");
+    private Transform[] hands;
+    private Transform[] weapons;
+    private void Start() {
+        hands = new Transform[2];
+        hands[0] = transform.Find("mixamorig:Hips/mixamorig:Spine/mixamorig:Spine1/mixamorig:Spine2/mixamorig:RightShoulder/mixamorig:RightArm/mixamorig:RightForeArm/mixamorig:RightHand");
+        hands[1] = transform.Find("mixamorig:Hips/mixamorig:Spine/mixamorig:Spine1/mixamorig:Spine2/mixamorig:LeftShoulder/mixamorig:LeftArm/mixamorig:LeftForeArm/mixamorig:LeftHand");
 
-		int r = hands[0].childCount;
-		int l = hands[1].childCount;
-		int w = r + l;
+        int r = hands[0].childCount;
+        int l = hands[1].childCount;
+        int w = r + l;
 
-		weapons = new Transform[w];
-		for (int i = 0; i < w; i++){
-			weapons[i] = hands[i%2].GetChild(i/2) as Transform;
-		}
-	
-	}
+        weapons = new Transform[w];
+        for (int i = 0; i < w; i++) {
+            weapons[i] = hands[i % 2].GetChild(i / 2) as Transform;
+        }
+    }
 
-	void Update () {
-		if (!isLocalPlayer) return;
-		if (Input.GetKeyDown(KeyCode.R)){
-			if (!isServer) { // Client
-				CmdToggleWeapon();
-			} else {
-				RpcToggleWeapon();
-			}
-		}
-	}
+    private void Update() {
+        if (!isLocalPlayer) return;
+        if (Input.GetKeyDown(KeyCode.R)) {
+            if (!isServer) { // Client
+                CmdToggleWeapon();
+            } else {
+                RpcToggleWeapon();
+            }
+        }
+    }
 
-	[Command]
-	void CmdToggleWeapon(){
-		RpcToggleWeapon();
-	}
+    [Command]
+    private void CmdToggleWeapon() {
+        RpcToggleWeapon();
+    }
 
-	[ClientRpc]
-	void RpcToggleWeapon(){
-		for (int i = 0; i < weapons.Length; i++) {
-			weapons[i].gameObject.SetActive(!weapons[i].gameObject.activeSelf);
-		}
-	}
+    [ClientRpc]
+    private void RpcToggleWeapon() {
+        for (int i = 0; i < weapons.Length; i++) {
+            weapons[i].gameObject.SetActive(!weapons[i].gameObject.activeSelf);
+        }
+    }
 }
 
 //public class SwitchWeapon : NetworkBehaviour {
@@ -84,12 +82,12 @@ public class SwitchWeapon : NetworkBehaviour {
 //		}
 //
 //	}
-//	
+//
 //	// Update is called once per frame
 //	void Update () {
 //		if (!isLocalPlayer) return;
 //		if (Input.GetKeyDown(KeyCode.R)){
-//		
+//
 //			for (int i = 0; i < weapons.Length; i++) {
 //				weapons[i].gameObject.SetActive(!weapons[i].gameObject.activeSelf);
 //			}

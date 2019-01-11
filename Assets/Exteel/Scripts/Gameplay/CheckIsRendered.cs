@@ -1,58 +1,60 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CheckIsRendered : MonoBehaviour {
+    private SkinnedMeshRenderer theMeshRenderer;
+    private Crosshair crosshair;//same player's crosshair for all mechs
 
-	SkinnedMeshRenderer theMeshRenderer;
-	public Crosshair crosshair;//set in buildmech , same player for all mechs
+    private bool isVisible = false;
+    private float lastRequestTime;
+    private float requestDeltaTime = 0.5f;
 
-	private bool isVisible = false;
-	private float lastRequestTime;
-	private float requestDeltaTime = 0.5f;
-	// Use this for initialization
-	void Start () {
-		if(GetComponent<PhotonView>().isMine && gameObject.tag!="Drone"){//not get msg from myself
-			enabled = false;
-		}
-		//find core
-		if (gameObject.tag != "Drone") {
-			SkinnedMeshRenderer[] meshRenderers = transform.Find ("CurrentMech").GetComponentsInChildren<SkinnedMeshRenderer> ();
-			theMeshRenderer = meshRenderers [0];
-		}else{
-			SkinnedMeshRenderer meshRenderer = GetComponentInChildren<SkinnedMeshRenderer> ();
-			theMeshRenderer = meshRenderer;
-		}
+    private void Start() {
+        if (GetComponent<PhotonView>().isMine && gameObject.tag != "Drone") {//not get msg from myself
+            enabled = false;
+        }
+        //find core
+        if (gameObject.tag != "Drone") {
+            SkinnedMeshRenderer[] meshRenderers = transform.Find("CurrentMech").GetComponentsInChildren<SkinnedMeshRenderer>();
+            theMeshRenderer = meshRenderers[0];
+        } else {
+            SkinnedMeshRenderer meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+            theMeshRenderer = meshRenderer;
+        }
+    }
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		if(crosshair == null){
-			if (Time.time - lastRequestTime >= requestDeltaTime) {
-				lastRequestTime = Time.time;
-				GameObject theplayer = GameObject.Find (PhotonNetwork.playerName);
-				if (theplayer != null)
-					crosshair = theplayer.GetComponentInChildren<Camera> ().GetComponent<Crosshair> ();
-				else {
-					crosshair = null;
-					return;
-				}
-			}else{
-				return;
-			}
-		}
+    public void SetCrosshair(Crosshair crosshair) {
+        this.crosshair = crosshair;
+    }
 
-		if(theMeshRenderer.isVisible){
-			if(!isVisible){
-				isVisible = true;
-				crosshair.Targets.Add (transform.root.gameObject);
-			}
-		}else{
-			if(isVisible){
-				isVisible = false;
-				crosshair.Targets.Remove (transform.root.gameObject);
-			}
-		}
-	}
+    // Update is called once per frame
+    private void Update() {
+        if (crosshair == null) {//TODO : improve this
+            if (Time.time - lastRequestTime >= requestDeltaTime) {
+                lastRequestTime = Time.time;
+                Camera[] cameras = (Camera[])GameObject.FindObjectsOfType<Camera>();
+                foreach (Camera cam in cameras) {
+                    if (cam.transform.root.name == "PlayerCam") {
+                        crosshair = cam.GetComponent<Crosshair>();
+                    }
+                }
+            }
+        } else {
+            if(theMeshRenderer == null) {//TODO : remake this
+                SkinnedMeshRenderer[] meshRenderers = transform.Find("CurrentMech").GetComponentsInChildren<SkinnedMeshRenderer>();
+                theMeshRenderer = meshRenderers[0];
+            }
+
+            if (theMeshRenderer.isVisible) {
+                if (!isVisible) {
+                    isVisible = true;
+                    crosshair.Targets.Add(transform.root.gameObject);
+                }
+            } else {
+                if (isVisible) {
+                    isVisible = false;
+                    crosshair.Targets.Remove(transform.root.gameObject);
+                }
+            }
+        }
+    }
 }

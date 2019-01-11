@@ -17,9 +17,9 @@ public class JumpedState : MechStateMachineBehaviour {
 			jumpReleased = false;
 			mctrl.grounded = false;
 			animator.SetBool (grounded_id, false);
-		}else if(!Input.GetKey(KeyCode.Space)){//dir falling
+		}else if(!animator.GetBool(jump_id)){//dir falling
 			mctrl.Boost (false);
-			animator.SetBool(boost_id, false);
+			animator.SetBool (boost_id, false);
 			animator.SetBool (jump_id, true);
 			animator.SetBool (grounded_id, false);
 			jumpReleased = true;
@@ -36,11 +36,16 @@ public class JumpedState : MechStateMachineBehaviour {
 		animator.SetFloat(speed_id, speed);
 		animator.SetFloat(direction_id, direction);
 
-		if (Input.GetKeyUp(KeyCode.Space)) {
+		if (!gm.BlockInput && Input.GetKeyUp(KeyCode.Space)) {
 			jumpReleased = true;
 		}
 
-		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(boost_id)) {
+		if (!isFirstjump && mctrl.CheckIsGrounded() && !animator.GetBool(boost_id)) {//the first jump is on ground
+            if (!mctrl.grounded) {
+                Debug.Log("On Landing action");
+                mctrl.OnLandingAction();
+            }
+
 			mctrl.grounded = true;
 			animator.SetBool(grounded_id, true);
 			animator.SetBool (jump_id, false);
@@ -50,7 +55,7 @@ public class JumpedState : MechStateMachineBehaviour {
 			mctrl.JumpMoveInAir ();
 		}
 
-		if (Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
+		if (!gm.BlockInput && Input.GetKey(KeyCode.Space) && jumpReleased && mctrl.CanVerticalBoost()) {
 			mctrl.SetCanVerticalBoost (false);
 			jumpReleased = false;
 			animator.SetBool(boost_id, true);

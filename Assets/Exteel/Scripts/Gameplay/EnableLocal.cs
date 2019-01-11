@@ -1,44 +1,20 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
 
 public class EnableLocal : MonoBehaviour {
+    [SerializeField] private GameObject mainCamera, crosshairImage,radar;
 
-	[SerializeField]Canvas canvas;//setting the screen space
-	[SerializeField]Camera cam;
-	// Use this for initialization
-	void Start () {
+    private void Awake() {
+        EnableComponents(GetComponent<PhotonView>().isMine);
+        Destroy(this);
+    }
 
-		if (!GetComponent<PhotonView> ().isMine)
-			return;
-		// Enable mech controller
-		GetComponent<MechController>().enabled = true;
+    private void EnableComponents(bool b) {
+        crosshairImage.SetActive(b);
+        mainCamera.GetComponent<Camera>().enabled = b;
+        mainCamera.GetComponent<MechCamera>().enabled = b;
+        mainCamera.GetComponentInChildren<Canvas>().enabled = b;
+        mainCamera.GetComponent<Crosshair>().enabled = b;
 
-		// Enable camera/radar
-		foreach (Camera c in GetComponentsInChildren<Camera>()){
-				c.enabled = true;
-		}
-
-		canvas = GameObject.Find("PanelCanvas").GetComponent<Canvas>();
-
-		GetComponentInChildren<MechCamera>().enabled = true;
-		GetComponentInChildren<AudioListener> ().enabled = true;
-//		GetComponent<NameTags>().enabled = true;
-//		GetComponentInChildren<AudioListener>().enabled = true;
-		// Enable crosshair
-		GetComponentInChildren<Crosshair>().enabled = true;
-		//GetComponentInChildren<HeatBar> ().enabled = true;
-		transform.Find ("Camera/Canvas/HeatBar").GetComponent<HeatBar> ().enabled = true;
-
-		canvas.worldCamera = cam;
-		canvas.planeDistance = 1;
-		
-		GameObject crossHairImage = transform.Find("Camera/Canvas/CrosshairImage").gameObject;
-		crossHairImage.SetActive(true);
-		GameObject HeatBar = transform.Find("Camera/Canvas/HeatBar").gameObject;
-		HeatBar.SetActive (true);
-
-		// Disable your own cube
-//		transform.Find("Cube").gameObject.SetActive(false);
-	}
+        radar.SetActive(b);
+    }
 }

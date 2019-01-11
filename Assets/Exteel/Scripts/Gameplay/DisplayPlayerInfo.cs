@@ -1,57 +1,77 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class DisplayPlayerInfo : MonoBehaviour {
-	[SerializeField]private TextMesh textMesh;
-	[SerializeField]Canvas barcanvas;
-	[SerializeField]Image bar;
+public class DisplayPlayerInfo : DisplayInfo{
+    private Text Text;
+    private Image bar;
+    private Combat Combat;
+    private PhotonView pv;
+    private string thisPlayerName;
 
-	MechCombat mcbt;
-	Camera cam;
-	GameObject player;
-	private string text ; //name
-	private float LastInitRequestTime;
-	private Color32 color_ally = new Color32 (223, 234, 11, 255);
-	void Start () {
-		mcbt = transform.root.GetComponent<MechCombat> ();
-		text = transform.root.GetComponent<PhotonView> ().owner.NickName;
-		textMesh.text = text;
+    protected override void Awake() {
+        InitComponents();
+        pv = Combat.photonView;
+        if (pv.isMine && tag != "Drone") {
+            return;
+        } else {
+            base.Awake();
+            RegisterOnMechEnabled();
+        }         
+    }
 
-		if(GameManager.isTeamMode){
-			if(PhotonNetwork.player.GetTeam() != transform.root.GetComponent<PhotonView> ().owner.GetTeam()){
-				bar.color = Color.red; //enemy
-				textMesh.color = Color.red; 
-			} else {
-				bar.color = color_ally;
-				textMesh.color = Color.white;
-			}
-		}else{
-			bar.color = Color.red; //enemy
-			textMesh.color = Color.red; 
-		}
-	}
-	
+    private void InitComponents() {
+        Combat = transform.root.GetComponent<Combat>();
+        Text = GetComponentInChildren<Text>();        
+        bar = FindBar();
+    }
 
-	void Update () {
-		if (cam != null) {
-			transform.LookAt (cam.transform);
+    private Image FindBar() {
+        Image[] child_images = GetComponentsInChildren<Image>();
+        foreach (Image i in child_images) {
+            if (i.type == Image.Type.Filled) {
+                return i;
+            }
+        }
+        Debug.LogError("Can't find hp bar");
+        return null;
+    }
 
-			//update scale
-			float distance = Vector3.Distance (transform.position, cam.transform.position);
-			distance = Mathf.Clamp (distance, 0, 200f);
-			transform.localScale = new Vector3 (1 + distance / 100 * 1.5f, 1 + distance / 100 * 1.5f, 1);
-		}else{
-			if (Time.time - LastInitRequestTime >0.5f) {
-				player = GameObject.Find (PhotonNetwork.playerName);
-				if (player != null)
-					cam = player.GetComponentInChildren<Camera> ();
-				LastInitRequestTime = Time.time;
-			}
-		}
+    private void RegisterOnMechEnabled() {
+        Combat.OnMechEnabled += OnMechEnabled;
+    }
 
-		//update bar value
-		bar.fillAmount = (float)mcbt.CurrentHP () / mcbt.GetMaxHp ();
-	}
+    private void OnMechEnabled(bool b) {
+        EnableDisplay(b);
+    }
+
+    protected override void Start() {       
+        //Do not show my name & hp bar
+        if(pv.isMine && tag != "Drone") {
+            gameObject.SetActive(false);
+            return;
+        } else {
+            gameObject.SetActive(true);
+        }
+        base.Start();
+
+        //Init name
+        thisPlayerName = (tag == "Drone") ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
+        Text.text = thisPlayerName;
+
+        //set the info name
+        SetName(thisPlayerName + "_Infos");
+
+        if (tag != "Drone" && GameManager.isTeamMode && PhotonNetwork.player.GetTeam() == pv.owner.GetTeam()) {
+            bar.color = Color.white;
+            Text.color = Color.white;
+        } else {
+            bar.color = Color.red; //enemy
+            Text.color = Color.red;
+        }        
+    }
+
+    private void Update() {
+        //update bar value
+        bar.fillAmount = (float)Combat.CurrentHP / Combat.MAX_HP;
+    }
 }

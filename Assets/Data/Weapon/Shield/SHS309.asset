@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22c5b9aebcecdf643b913bd4b2cf4458, type: 3}
+  m_Name: SHS309
+  m_EditorClassIdentifier: 
+  weaponPrefab_lft: {fileID: 1115578862501112, guid: 037ed19d13d6c475faf2a8443d14cc43,
+    type: 2}
+  weaponPrefab_rt: {fileID: 1104480446687680, guid: 5d277719c4b911348bdd44fcb8f8036f,
+    type: 2}
+  weaponName: SHS309
+  displayName: 
+  Grip:
+  - {fileID: 1096434313937498, guid: fabaae854be3ec44fbc03b02f6521703, type: 2}
+  - {fileID: 1096434313937498, guid: b99539039cf28c6428ab7c433efc0555, type: 2}
+  damage: 0
+  weight: 1450
+  Range: 0
+  minRange: 0
+  Rate: 0
+  radius: 0
+  heat_increase_amount: 20
+  slowDown: 0
+  twoHanded: 0
+  SPincreaseAmount: 0
+  skillAnimations: []
+  OnHitEffect: {fileID: 198083256526380310, guid: 8f645cb3acdaa234ba0eb582358d0ff7,
+    type: 2}
+  OverheatEffect: {fileID: 198636949724833354, guid: 226e969f7aa03d34b949fefe3742baf0,
+    type: 2}
+  OnHitSound: {fileID: 8300000, guid: 73b2c65fef38844db8d8ac1f2f8f7f7c, type: 3}
+  defend_melee_efficiency: 0.5
+  defend_ranged_efficiency: 0.5

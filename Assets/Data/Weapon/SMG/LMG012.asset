@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49cc4a4ca5a137842bc286cbc366681b, type: 3}
+  m_Name: LMG012
+  m_EditorClassIdentifier: 
+  weaponPrefab_lft: {fileID: 1316237739393798, guid: a056fdeacf902ca449e3d6b3cfd6b916,
+    type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponName: LMG012
+  displayName: 
+  Grip:
+  - {fileID: 1096434313937498, guid: 5b0b9c5a77b46624b948932ba204b4c6, type: 2}
+  - {fileID: 1096434313937498, guid: bfb15ce42fc23954ea62986df08c6f1b, type: 2}
+  damage: 200
+  weight: 6500
+  Range: 100
+  minRange: 10
+  Rate: 1.4
+  radius: 6
+  heat_increase_amount: 20
+  slowDown: 0
+  twoHanded: 0
+  SPincreaseAmount: 50
+  skillAnimations: []
+  bulletPrefab: {fileID: 1447274583941618, guid: 7d5466a4f2e6ad84f93549dc21836832,
+    type: 2}
+  muzzlePrefab: {fileID: 1461546803207808, guid: 9fb9fe44547341141befd5718b6d9f53,
+    type: 2}
+  shotSound: {fileID: 8300000, guid: a306b29fffc5e1b40b00efcf96bf9665, type: 3}
+  reload_sound: {fileID: 8300000, guid: f2e324f22f7f044d79a903cd2c96a372, type: 3}
+  Atk: {fileID: 0}
+  Reload: {fileID: 7400000, guid: 94226cc518ddf05469278303e2c1d059, type: 2}
+  bulletNum: 6

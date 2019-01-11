@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15bfd40a76a4b194f8d766f4dd4482a0, type: 3}
+  m_Name: WeaponDataManager
+  m_EditorClassIdentifier: 
+  Swords:
+  - {fileID: 11400000, guid: 3fdda974572785a4ebdd7662fede5f8e, type: 2}
+  - {fileID: 11400000, guid: ca135e461744aa847a0156894fba9714, type: 2}
+  Spears:
+  - {fileID: 11400000, guid: 2e1d362325d01f14689880fe76a24235, type: 2}
+  Shields:
+  - {fileID: 11400000, guid: d8f7cc03d7b8c354392142c04a7c395a, type: 2}
+  SMGs:
+  - {fileID: 11400000, guid: b4b20477f8cd7ab409b33735b455e37f, type: 2}
+  - {fileID: 11400000, guid: 8439d635b9ab61c458e9468b0a9c4c3f, type: 2}
+  Rifles:
+  - {fileID: 11400000, guid: c06bddc386666f24286a16a09f766511, type: 2}
+  Shotguns:
+  - {fileID: 11400000, guid: 3fce964049e71964aa47def7e8a86ea3, type: 2}
+  Rectifiers:
+  - {fileID: 11400000, guid: 932352d332efd734daae22e9f2cd0287, type: 2}
+  Rockets:
+  - {fileID: 11400000, guid: 1afeca9c0bc9d244aa087fe5294288ac, type: 2}
+  Cannons:
+  - {fileID: 11400000, guid: 667ec95283ed65145862560ee37f54bb, type: 2}

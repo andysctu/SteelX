@@ -23,9 +23,10 @@ public struct Mech {
 	public string Weapon2R;
 	public string Booster;
 	public bool isPrimary;
+    public int[] skillIDs;
 	public string[] Parts;
 
-	Mech(int u, string a, string l, string c, string h, string w1l, string w1r, string w2l, string w2r, string b, bool p) {
+	Mech(int u, string a, string l, string c, string h, string w1l, string w1r, string w2l, string w2r, string b, bool p, int[] skillIDs) {
 		Uid = u;
 		Arms = a;
 		Legs = l;
@@ -37,6 +38,7 @@ public struct Mech {
 		Weapon2R = w2r;
 		Booster = b;
 		isPrimary = p;
+        this.skillIDs = skillIDs;
 		Parts = new string[] {a,l,c,h,w1l,w1r,w2l,w2r,b};
 	}
 

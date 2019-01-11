@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 //Data uid , eid
 
-public class StoreManager : MonoBehaviour {
+public class StoreManager : IScene {
 
 	[SerializeField] GameObject[] Tabs;
 	[SerializeField] GameObject UIPart;
@@ -22,9 +22,10 @@ public class StoreManager : MonoBehaviour {
 	private string MechHandlerURL = "https://afternoon-temple-1885.herokuapp.com/purchase";
 	private int eid_to_pass;
 	public int Mech_Num = 0;
+    public static readonly string _sceneName = "Store";
 
-	void Start () {
-		Mech m = UserData.myData.Mech[Mech_Num];
+    void Start () {
+		//Mech m = UserData.myData.Mech[Mech_Num];
 
 		Button[] buttons = GameObject.FindObjectsOfType<Button>();
 		foreach (Button b in buttons) {
@@ -114,7 +115,7 @@ public class StoreManager : MonoBehaviour {
 			Debug.Log ("rotating");
 
 			//create the rotation we need to be in to look at the target
-			Quaternion newRot = Quaternion.Euler(new Vector3(Mech.transform.rotation.eulerAngles.x, Mech.transform.rotation.eulerAngles.y + 180, Mech.transform.rotation.eulerAngles.z));
+			//Quaternion newRot = Quaternion.Euler(new Vector3(Mech.transform.rotation.eulerAngles.x, Mech.transform.rotation.eulerAngles.y + 180, Mech.transform.rotation.eulerAngles.z));
 
 			Vector3 rot = Mech.transform.rotation.eulerAngles;
 			rot = new Vector3(rot.x,rot.y+180,rot.z);
@@ -244,5 +245,9 @@ public class StoreManager : MonoBehaviour {
 
 		return eid;
 	}
+
+    public override string GetSceneName() {
+        return _sceneName;
+    }
 }
 

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4d2c30f267a0741b992c9d84e4cc28, type: 3}
+  m_Name: PBS016
+  m_EditorClassIdentifier: 
+  part: {fileID: 1084778899190008, guid: 5c7619c48a7a3bf4ab967b0d190e374b, type: 2}
+  displayName: Flanker
+  Weight: 5100
+  HP: 80
+  EnergyDrain: 35
+  Size: 1480
+  DashOutput: 500
+  DashENDrain: 330
+  JumpENDrain: 290
+  open: {fileID: 7400008, guid: de0a42e36d1d3ed4fb8f530e5963df27, type: 3}
+  close: {fileID: 7400006, guid: de0a42e36d1d3ed4fb8f530e5963df27, type: 3}

@@ -1,27 +1,111 @@
 ﻿using UnityEngine;
 
 public class Combat : Photon.MonoBehaviour {
-	public const int MAX_HP = 2000;
-	public const float MAX_FUEL = 2000.0f;
+    protected GameManager gm;
 
-	protected int currentHP;
+    //Combat variable
+    public int MAX_HP { get { return max_hp; } protected set { max_hp = value; } }
+    public int CurrentHP { get; protected set; }
+    private int max_hp = 2000;
 
-	protected GameManager gm;
+    [SerializeField] protected EnergyProperties energyProperties = new EnergyProperties();
+    public float MAX_EN { get { return max_EN; } protected set { max_EN = value; } }
+    public float CurrentEN { get; protected set; }
+    private float max_EN = 2000;
+    protected bool isENAvailable = true;
 
-	[PunRPC]
-	public virtual void OnHit(int d, int shooter_viewID, string weapon, bool isSlowDown) {}
+    protected bool isMeleePlaying = false;
+    public bool IsSwitchingWeapon { get; protected set; }
+    public bool CanMeleeAttack = true;//This is false after melee attack in air
+    [HideInInspector] public bool isDead;
 
-	protected void findGameManager() {
-		if (gm == null) {
-			gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-		}
-	}
+    //Game variables
+    protected const int playerlayer = 8, ignoreRayCastLayer = 2, default_layer = 0;
+    protected int TerrainLayerMask, PlayerLayerMask;
 
-	public int CurrentHP() {
-		return currentHP;
-	}
+    //Mech action
+    public delegate void EnablePlayerAction(bool b);
+    public EnablePlayerAction OnMechEnabled;
 
-	public int GetMaxHp(){
-		return MAX_HP;
-	}
+    //For Debug
+    public bool forceDead = false;
+
+    protected virtual void Awake() {
+    }
+
+    protected virtual void Start() {
+        FindGameManager();
+        InitGameVariables();
+    }
+
+    protected void FindGameManager() {
+        gm = FindObjectOfType<GameManager>();
+    }
+
+    protected void InitGameVariables() {
+        TerrainLayerMask = LayerMask.GetMask("Terrain");
+        PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
+    }
+
+    protected virtual void Update() {
+        if (forceDead) {//Debug use
+            forceDead = false;
+            photonView.RPC("OnHit", PhotonTargets.All, 10000, PhotonNetwork.player, -1, -1, -1);
+        }
+    }
+
+    public virtual float GetAnimationLength(string name) {//TODO : improve this.
+        return 1;
+    }
+
+    public virtual Weapon GetWeapon(int weapPos) {
+        return null;
+    }
+
+    public virtual WeaponData GetWeaponData(int weaponPos) {
+        return null;
+    }
+
+    [PunRPC]
+    public virtual void OnHit(int damage, PhotonPlayer shooter, int shooter_pvID, int weapPos, int targetWeapPos) {
+    }
+
+    [PunRPC]
+    protected virtual void EnablePlayer() {
+        OnMechEnabled(true);
+    }
+
+    [PunRPC]
+    protected virtual void DisablePlayer(PhotonPlayer shooter, string weapon) {
+        OnMechEnabled(false);
+    }
+
+    public bool IsHpFull() {
+        return (CurrentHP >= MAX_HP);
+    }
+
+    public void SetMaxEN(int EN) {
+        MAX_EN = EN;
+        if (CurrentEN > MAX_EN) {
+            CurrentEN = MAX_EN;
+        }
+    }
+
+    public virtual Camera GetCamera() {
+        return null;
+    }
+
+    public virtual void IncreaseSP(int amount) {
+    }
+
+    public virtual void SetMeleePlaying(bool b) {
+        isMeleePlaying = b;
+    }
+
+    [System.Serializable]
+    protected struct EnergyProperties {
+        public float jumpENDrain, dashENDrain;
+        public float energyOutput;
+        public float minENRequired;
+    }
 }

@@ -1,50 +1,49 @@
 ﻿using UnityEngine;
-using Photon;
-using System.Collections;
 
 public class Sync : Photon.MonoBehaviour {
+    [SerializeField] private PhotonView pv;
+    [SerializeField] private SkillController SkillController;
+    [SerializeField] private Camera cam;
 
-	//sync vals
-	Vector3 trueLoc;
-	Quaternion trueRot;
+    //sync vals
+    private Vector3 trueLoc;
+    private Quaternion trueRot;
 
-	[SerializeField]
-	PhotonView pv; // if use getcomponent, pv sometimes is null (don't know why , too slow? )
-	[SerializeField]
-	MechCombat mcbt;
-	[SerializeField]
-	Camera cam;
-	// Use this for initialization
-	void Start () {
-		//pv = GetComponent<PhotonView>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		if(!pv.isMine){
-			transform.position = Vector3.Lerp(transform.position, trueLoc, Time.deltaTime * 5);
-			transform.rotation = Quaternion.Lerp(transform.rotation, trueRot, Time.deltaTime * 5);
-		}
-	}
+    private bool onSkill = false;
 
-	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-	{
-		//we are reicieving data
-		if (stream.isReading)
-		{
-			if(!pv.isMine){
-				this.trueLoc = (Vector3)stream.ReceiveNext();
-				this.trueRot = (Quaternion)stream.ReceiveNext();
-				cam.transform.rotation = (Quaternion)stream.ReceiveNext ();
-				mcbt.SetCurrentHp((int)stream.ReceiveNext());
-			}
-		}else{
-			if(pv.isMine){
-				stream.SendNext(transform.position);
-				stream.SendNext(transform.rotation);
-				stream.SendNext (cam.transform.rotation);
-				stream.SendNext (mcbt.CurrentHP ());
-			}
-		}
-	}
+    private void Awake() {
+        RegisterOnSkill();
+    }
+
+    private void RegisterOnSkill() {
+        if (SkillController != null) SkillController.OnSkill += OnSkill;
+    }
+
+    public void OnSkill(bool b) {
+        enabled = !b;
+    }
+
+    private void Update() {
+        if (!pv.isMine) {
+            transform.position = Vector3.Lerp(transform.position, trueLoc, Time.deltaTime * 5);
+            transform.rotation = Quaternion.Lerp(transform.rotation, trueRot, Time.deltaTime * 5);
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
+        //we are reicieving data
+        if (stream.isReading) {
+            if (!pv.isMine) {
+                this.trueLoc = (Vector3)stream.ReceiveNext();
+                this.trueRot = (Quaternion)stream.ReceiveNext();
+                cam.transform.rotation = (Quaternion)stream.ReceiveNext();
+            }
+        } else {
+            if (pv.isMine) {
+                stream.SendNext(transform.position);
+                stream.SendNext(transform.rotation);
+                stream.SendNext(cam.transform.rotation);
+            }
+        }
+    }
 }

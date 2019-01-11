@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3db6e56de6a83b46b17b6b80e4d56c5, type: 3}
+  m_Name: LSS001
+  m_EditorClassIdentifier: 
+  part: {fileID: 100112, guid: 1c5846a975abdf44186b001b11fc5d5b, type: 3}
+  displayName: GammaRay
+  Weight: 19000
+  HP: 620
+  EnergyDrain: 20
+  Size: 4350
+  BasicSpeed: 600
+  Capacity: 70000
+  Deceleration: 93300
+  legType: 0

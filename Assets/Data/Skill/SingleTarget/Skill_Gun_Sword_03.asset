@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64d4bcbb9d6ef9c4a9f5140a84623a65, type: 3}
+  m_Name: Skill_Gun_Sword_03
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300130, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  icon_grey: {fileID: 21300228, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  weaponTypeL: SMG
+  weaponTypeR: Sword
+  playerAnimation: {fileID: 7400000, guid: 600bcb65566ba594388feb3ac0fe71ca, type: 2}
+  cameraAnimation: {fileID: 7400000, guid: b89be1ee61396dc40b3b0bc42296e33b, type: 2}
+  target_CamAnimation: {fileID: 0}
+  hasWeaponAnimation: 1
+  hasBoosterAnimation: 0
+  weaponAnimationL: {fileID: 7400000, guid: 5275d117fe3b59f41b1d583f7dc65d1f, type: 2}
+  weaponAnimationR: {fileID: 7400000, guid: 9a95c4fa209092e46a6d49b310732d15, type: 2}
+  boosterAnimation: {fileID: 0}
+  playerEffects: []
+  targetEffects: []
+  weaponLEffects:
+  - {fileID: 1130398100609976, guid: bf5c847bc8d28b6409db157daf3f452b, type: 2}
+  weaponREffects:
+  - {fileID: 1858837074824632, guid: d19715694a106894ea2b3c55852b1a64, type: 2}
+  skill_sound: {fileID: 0}
+  mech_sound: {fileID: 0}
+  GeneralSkillParams:
+    IsDamageLessWhenUsing: 1
+    energyCost: 50
+    damage: 250
+    cooldown: 5
+  targetAnimation_front: {fileID: 7400000, guid: 3b3b6e020de85fa44a8c2da295558165,
+    type: 3}
+  targetAnimation_back: {fileID: 7400000, guid: b84c3a5e7d5ea3640a881275f748a9a3,
+    type: 3}
+  SingleTargetSkillParams:
+    crosshairRadius: 20
+    detectRange: 40
+    distance: 16

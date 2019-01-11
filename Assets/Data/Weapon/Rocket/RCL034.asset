@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00551e588bdf89042b6cb7d07951cc32, type: 3}
+  m_Name: RCL034
+  m_EditorClassIdentifier: 
+  weaponPrefab_lft: {fileID: 1088236672148428, guid: 4324dd40bb697ba43a8322fae7edeab8,
+    type: 2}
+  weaponPrefab_rt: {fileID: 0}
+  weaponName: RCL034
+  displayName: 
+  Grip:
+  - {fileID: 0}
+  - {fileID: 1096434313937498, guid: e17e069a6ee40824aaa63b9784736718, type: 2}
+  damage: 300
+  weight: 34000
+  Range: 600
+  minRange: 0
+  Rate: 0.8
+  radius: 2
+  heat_increase_amount: 20
+  slowDown: 1
+  twoHanded: 1
+  SPincreaseAmount: 0
+  skillAnimations:
+  - {fileID: 7400000, guid: bde7d16dbdef71a4cb5cb061079a813e, type: 2}
+  bulletPrefab: {fileID: 1346241026468800, guid: 45a2af6408f32d2469f4db65ae68552e,
+    type: 2}
+  muzzlePrefab: {fileID: 1727601093187584, guid: 2c0036c7cc91a004ba8537e94c8a8d93,
+    type: 2}
+  shotSound: {fileID: 8300000, guid: 6618481c1a17b4cfd8ab5c9f5477d947, type: 3}
+  reload_sound: {fileID: 8300000, guid: ff2f8fc1c91074b40b366159e6b969bb, type: 3}
+  Atk: {fileID: 7400004, guid: 942f89d9154223c4497d80148382823b, type: 3}
+  Reload: {fileID: 7400006, guid: 942f89d9154223c4497d80148382823b, type: 3}
+  impact_radius: 6
+  bullet_speed: 200

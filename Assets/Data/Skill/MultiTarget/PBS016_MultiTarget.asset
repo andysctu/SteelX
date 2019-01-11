@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca0008a717bb31b4b9c1182a64095063, type: 3}
+  m_Name: PBS016_MultiTarget
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300108, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  icon_grey: {fileID: 21300112, guid: 00429edee359949d9955d2393313fad6, type: 3}
+  weaponTypeL: 
+  weaponTypeR: 
+  BoosterName: PBS016
+  playerAnimation: {fileID: 0}
+  cameraAnimation: {fileID: 0}
+  target_CamAnimation: {fileID: 0}
+  hasWeaponAnimation: 0
+  hasBoosterAnimation: 1
+  weaponAnimationL: {fileID: 0}
+  weaponAnimationR: {fileID: 0}
+  boosterAnimation: {fileID: 7400000, guid: 49d8a323c5137714587d17303c420c9a, type: 2}
+  playerEffects: []
+  targetEffects: []
+  weaponLEffects: []
+  weaponREffects: []
+  skill_sound: {fileID: 8300000, guid: b2b3e3f125ec37140b683d84f2076ca7, type: 3}
+  mech_sound: {fileID: 0}
+  GeneralSkillParams:
+    IsDamageLessWhenUsing: 0
+    energyCost: 100
+    damage: 250
+    cooldown: 2
+  boosterEffects:
+  - {fileID: 1130398100609976, guid: 81a19723f4647114a8fee35e991ae7dd, type: 2}
+  MultiTargetSkillParams:
+    crosshairRadius: 50
+    detectRange: 150
+    max_target: 5
