@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameLobbyManager : IScene {
+public class GameLobbyManager : SceneManager {
     [SerializeField] private GameObject LobbyPlayer;
     [SerializeField] private GameObject Team1, Team2, MenuBar, MapInfo;
     [SerializeField] private Dropdown Map, GameMode, MaxKills, MaxPlayers, MaxTime;

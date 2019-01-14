@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class GameSceneManager : IScene {
+public class GameSceneManager : SceneManager {
     [SerializeField]private GameObject EscPanel;    
     private AudioClip gameMusic;
     private MusicManager MusicManager;

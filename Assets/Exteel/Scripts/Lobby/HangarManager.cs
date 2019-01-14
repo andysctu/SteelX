@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class HangarManager : IScene {
+public class HangarManager : SceneManager {
     [SerializeField] private GameObject[] Tabs;
     [SerializeField] private GameObject UIPart, UIWeap, UISkill;
     [SerializeField] private GameObject Mech;
