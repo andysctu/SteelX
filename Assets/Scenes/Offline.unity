@@ -8845,8 +8845,6 @@ GameObject:
   - component: {fileID: 137140124}
   - component: {fileID: 137140128}
   - component: {fileID: 137140123}
-  - component: {fileID: 137140122}
-  - component: {fileID: 137140126}
   - component: {fileID: 137140121}
   - component: {fileID: 137140120}
   - component: {fileID: 137140119}
@@ -9035,24 +9033,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &137140122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 137140117}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MechCombat: {fileID: 1040290883}
-  bm: {fileID: 1040290884}
-  MechController: {fileID: 1040290886}
-  MechCamera: {fileID: 1838689759}
-  Animator: {fileID: 137140127}
-  AnimatorVars: {fileID: 137140126}
-  SlashDetector: {fileID: 450901501}
 --- !u!82 &137140123
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9181,9 +9161,6 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 0
     Name: CanExit
-  - Type: 4
-    SynchronizeType: 2
-    Name: Slash
   - Type: 1
     SynchronizeType: 0
     Name: SpeedLCoeff
@@ -9205,9 +9182,6 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: CnLoad
-  - Type: 4
-    SynchronizeType: 0
-    Name: FinalSlash
   - Type: 1
     SynchronizeType: 0
     Name: FootStep
@@ -9244,38 +9218,6 @@ MonoBehaviour:
   instantiationId: 4
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!114 &137140126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 137140117}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cc: {fileID: 0}
-  Mcbt: {fileID: 0}
-  Mctrl: {fileID: 0}
-  HandleInputs: {fileID: 0}
-  Sounds: {fileID: 0}
-  MechIK: {fileID: 0}
-  EffectController: {fileID: 0}
-  BoostHash: 0
-  GroundedHash: 0
-  JumpHash: 0
-  SpeedHash: 0
-  DirectionHash: 0
-  OnMeleeHash: 0
-  BlockLHash: 0
-  BlockRHash: 0
-  SlashHash: 0
-  FinalSlashHash: 0
-  CnPoseHash: 0
-  CnShootHash: 0
-  CnLoadHash: 0
-  inHangar: 0
 --- !u!95 &137140127
 Animator:
   serializedVersion: 3
@@ -20748,7 +20690,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 329.0003, y: 0.00018310547}
+  m_AnchoredPosition: {x: 329.0003, y: 0.00012207031}
   m_SizeDelta: {x: 100, y: -980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &515623522
@@ -32660,7 +32602,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 199.20001
+      value: -56.3
       objectReference: {fileID: 0}
     - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
       propertyPath: m_LocalPosition.y
@@ -32668,7 +32610,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 83.5
+      value: 59.9
       objectReference: {fileID: 0}
     - target: {fileID: 4022721137121296, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
       propertyPath: m_LocalRotation.x
@@ -32727,6 +32669,26 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1903318460581744, guid: db76baff42fe4a54c9d07c657343e5fd, type: 2}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224649008760685942, guid: db76baff42fe4a54c9d07c657343e5fd,
+        type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224173614416853730, guid: db76baff42fe4a54c9d07c657343e5fd,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.003250122
+      objectReference: {fileID: 0}
+    - target: {fileID: 224173614416853730, guid: db76baff42fe4a54c9d07c657343e5fd,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.34000015
+      objectReference: {fileID: 0}
+    - target: {fileID: 95074033248614360, guid: db76baff42fe4a54c9d07c657343e5fd,
+        type: 2}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -37827,6 +37789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51c64ed2d7faf4438d65afa21abce14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Scene: {fileID: 0}
   EscPanel: {fileID: 0}
   test: 1
 --- !u!114 &729886547
@@ -54897,6 +54860,7 @@ MonoBehaviour:
   InstantMoveDir: {x: 0, y: 0, z: 0}
   Speed: 0
   Direction: 0
+  Angle: 0
   CurBoostingSpeed: 0
   VerticalBoostStartYPos: 0
   XSpeed: 0
@@ -54914,7 +54878,6 @@ MonoBehaviour:
   cam_orbitradius: 19
   cam_angleoffset: 33
   onSkillMoving: 0
-  onInstantMoving: 0
   IsJumping: 0
   JumpReleased: 0
 --- !u!143 &1040290887
@@ -60759,7 +60722,6 @@ MonoBehaviour:
   damageless: {fileID: 1637815545}
   Sounds: {fileID: 137140128}
   Animator: {fileID: 137140127}
-  AnimatorVars: {fileID: 137140126}
   Hands:
   - {fileID: 1419619390}
   - {fileID: 1746497824}
@@ -65210,8 +65172,6 @@ GameObject:
   - component: {fileID: 1386687642}
   - component: {fileID: 1386687641}
   - component: {fileID: 1386687640}
-  - component: {fileID: 1386687639}
-  - component: {fileID: 1386687638}
   - component: {fileID: 1386687637}
   - component: {fileID: 1386687636}
   - component: {fileID: 1386687635}
@@ -65400,58 +65360,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &1386687638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114903171848031198, guid: 88435440533553745b39521db63f864e,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1386687633}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cc: {fileID: 0}
-  Mcbt: {fileID: 0}
-  Mctrl: {fileID: 0}
-  HandleInputs: {fileID: 0}
-  Sounds: {fileID: 0}
-  MechIK: {fileID: 0}
-  EffectController: {fileID: 0}
-  BoostHash: 0
-  GroundedHash: 0
-  JumpHash: 0
-  SpeedHash: 0
-  DirectionHash: 0
-  OnMeleeHash: 0
-  BlockLHash: 0
-  BlockRHash: 0
-  SlashHash: 0
-  FinalSlashHash: 0
-  CnPoseHash: 0
-  CnShootHash: 0
-  CnLoadHash: 0
-  inHangar: 0
---- !u!114 &1386687639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114271684801052568, guid: 88435440533553745b39521db63f864e,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1386687633}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee327063e8256a3439b10ebff2c3fd4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MechCombat: {fileID: 0}
-  bm: {fileID: 0}
-  MechController: {fileID: 0}
-  MechCamera: {fileID: 0}
-  Animator: {fileID: 1386687634}
-  AnimatorVars: {fileID: 1386687638}
-  SlashDetector: {fileID: 0}
 --- !u!82 &1386687640
 AudioSource:
   m_ObjectHideFlags: 0
@@ -65584,28 +65492,10 @@ MonoBehaviour:
     Name: Grounded
   - Type: 4
     SynchronizeType: 1
-    Name: ShootL
-  - Type: 4
-    SynchronizeType: 1
-    Name: ShootR
-  - Type: 4
-    SynchronizeType: 2
-    Name: BlockR
-  - Type: 4
-    SynchronizeType: 2
-    Name: BlockL
-  - Type: 4
-    SynchronizeType: 1
     Name: SlashR
   - Type: 4
     SynchronizeType: 1
     Name: SlashL
-  - Type: 4
-    SynchronizeType: 1
-    Name: BCNPose
-  - Type: 4
-    SynchronizeType: 0
-    Name: OnBCN
   - Type: 4
     SynchronizeType: 1
     Name: ENGShootL
@@ -65613,29 +65503,8 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: ENGShootR
   - Type: 4
-    SynchronizeType: 1
-    Name: SlashL2
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL3
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR2
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR3
-  - Type: 4
     SynchronizeType: 0
     Name: OnMelee
-  - Type: 4
-    SynchronizeType: 1
-    Name: BCNLoad
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashL4
-  - Type: 4
-    SynchronizeType: 1
-    Name: SlashR4
   - Type: 1
     SynchronizeType: 0
     Name: slashTime
@@ -65644,16 +65513,40 @@ MonoBehaviour:
     Name: RCLShoot
   - Type: 4
     SynchronizeType: 0
-    Name: BCNShoot
-  - Type: 4
-    SynchronizeType: 0
     Name: CanExit
   - Type: 1
     SynchronizeType: 0
-    Name: rateL
+    Name: Angle
+  - Type: 4
+    SynchronizeType: 0
+    Name: CnShoot
+  - Type: 4
+    SynchronizeType: 0
+    Name: CnPose
+  - Type: 4
+    SynchronizeType: 0
+    Name: CnLoad
   - Type: 1
     SynchronizeType: 0
-    Name: rateR
+    Name: SpeedLCoeff
+  - Type: 1
+    SynchronizeType: 0
+    Name: SpeedRCoeff
+  - Type: 4
+    SynchronizeType: 0
+    Name: AtkL
+  - Type: 4
+    SynchronizeType: 0
+    Name: AtkR
+  - Type: 1
+    SynchronizeType: 0
+    Name: FootStep
+  - Type: 4
+    SynchronizeType: 0
+    Name: SmashL
+  - Type: 4
+    SynchronizeType: 0
+    Name: SmashR
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
@@ -65661,6 +65554,8 @@ MonoBehaviour:
     LayerIndex: 1
   - SynchronizeType: 1
     LayerIndex: 2
+  - SynchronizeType: 0
+    LayerIndex: 3
 --- !u!114 &1386687643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91181,7 +91076,6 @@ MonoBehaviour:
   damageless: {fileID: 1422825198}
   Sounds: {fileID: 0}
   Animator: {fileID: 0}
-  AnimatorVars: {fileID: 0}
   Hands:
   - {fileID: 1400328118}
   - {fileID: 192977658}
