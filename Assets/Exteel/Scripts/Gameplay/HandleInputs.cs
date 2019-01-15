@@ -13,7 +13,7 @@ public class HandleInputs : MonoBehaviour
     private PhotonPlayer _sender;
 
     private readonly usercmd[] _cmdsToSend = new usercmd[4]; //a series of commands (including history commands) every update
-    private usercmd _curUserCmd = new usercmd(){buttons = new bool[4]};
+    private usercmd _curUserCmd = new usercmd(){buttons = new bool[5]};
     public float SendRate = 0.03f;
     public float AdjustPositionThreshold = 0.1f, AdjustSpeed = 8;
     public float LerpPosSpeed = 10;//lerp from transform position to "_curPosition"
@@ -43,12 +43,10 @@ public class HandleInputs : MonoBehaviour
     }
 
     private void Init() {
-        Debug.Log("get init");
         PhotonPlayer owner = GetComponent<BuildMech>().GetOwner();
         _senderID = owner.ID;
         _sender = owner;
         _curPosition = transform.position;
-        Debug.Log("pos : " + transform.position);
 
         if (PhotonNetwork.isMasterClient || owner.IsLocal) {
             RegisterInputEvent();
@@ -188,6 +186,7 @@ public class HandleInputs : MonoBehaviour
 
         _curUserCmd.buttons[(int) UserButton.Space] = Input.GetKey(KeyCode.Space);
         _curUserCmd.buttons[(int) UserButton.LeftShift] = Input.GetKey(KeyCode.LeftShift);
+        _curUserCmd.buttons[(int)UserButton.R] = Input.GetKey(KeyCode.R);
         _curUserCmd.buttons[(int) UserButton.LeftMouse] = Input.GetMouseButton(0);
         _curUserCmd.buttons[(int) UserButton.RightMouse] = Input.GetMouseButton(1);
     }

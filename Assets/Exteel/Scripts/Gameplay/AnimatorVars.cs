@@ -14,12 +14,13 @@ public class AnimatorVars : MonoBehaviour {
     [HideInInspector] public int JumpHash;
     [HideInInspector] public int SpeedHash;
     [HideInInspector] public int DirectionHash;
-    [HideInInspector] public int OnMeleeHash;
+    [HideInInspector] public int AngleHash;
 
     [HideInInspector] public int BlockLHash;
     [HideInInspector] public int BlockRHash;
 
-    [HideInInspector] public int SlashHash, FinalSlashHash;
+    [HideInInspector] public int SlashLHash, SlashRHash;
+    [HideInInspector] public int SmashLHash, SmashRHash;
 
     [HideInInspector] public int CnPoseHash;
     [HideInInspector] public int CnShootHash;
@@ -28,7 +29,6 @@ public class AnimatorVars : MonoBehaviour {
     public bool inHangar = false;//in Store also manually set this to TRUE
 
     private void Awake() {
-        if(inHangar)return;
         FindComponents();
         HashAnimatorVars();
     }
@@ -50,14 +50,16 @@ public class AnimatorVars : MonoBehaviour {
         GroundedHash = Animator.StringToHash("Grounded");
         JumpHash = Animator.StringToHash("Jump");
         DirectionHash = Animator.StringToHash("Direction");
-        OnMeleeHash = Animator.StringToHash("OnMelee");
         SpeedHash = Animator.StringToHash("Speed");
+        AngleHash = Animator.StringToHash("Angle");
 
         BlockLHash = Animator.StringToHash("BlockL");
         BlockRHash = Animator.StringToHash("BlockR");
 
-        SlashHash = Animator.StringToHash("Slash");
-        FinalSlashHash = Animator.StringToHash("FinalSlash");
+        SlashLHash = Animator.StringToHash("SlashL");
+        SlashRHash = Animator.StringToHash("SlashR");
+        SmashLHash = Animator.StringToHash("SmashL");
+        SmashRHash = Animator.StringToHash("SmashR");
 
         CnPoseHash = Animator.StringToHash("CnPose");
         CnShootHash = Animator.StringToHash("CnShoot");

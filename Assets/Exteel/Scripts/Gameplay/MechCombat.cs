@@ -36,7 +36,6 @@ public class MechCombat : Combat {
     private PhotonPlayer _owner;
 
     protected override void Awake() {
-        Debug.Log("Mcbt awake : "+gameObject.name);
         base.Awake();
         InitComponents();
         LoadMovementClips();
@@ -109,7 +108,6 @@ public class MechCombat : Combat {
     protected override void Start() {
         base.Start();
         InitGameObjects();
-        Debug.Log("Mcbt start : "+gameObject.name);
     }
 
     private void LoadMechProperties() {
@@ -344,11 +342,11 @@ public class MechCombat : Combat {
     }
 
     private void HandleSwitchWeapon(usercmd cmd) {
-        //if (Input.GetKeyDown(cmd.buttons[(int)UserButton.R]) && !IsSwitchingWeapon && !isDead) {//TODO : anti-hack en
-        //    CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
+        if (cmd.buttons[(int)UserButton.R] && !IsSwitchingWeapon && !isDead) {//TODO : anti-hack en
+            CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
 
-        //    photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
-        //}
+            photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
+        }
     }
 
     [PunRPC]
@@ -496,16 +494,6 @@ public class MechCombat : Combat {
 
     public override float GetAnimationLength(string name) {//TODO : improve this.
         return clipOverrides[name].length;
-    }
-
-    public override void SetMeleePlaying(bool isPlaying) {
-        isMeleePlaying = isPlaying;
-
-        MechController.onInstantMoving = isPlaying;
-    }
-
-    public bool IsMeleePlaying() {
-        return isMeleePlaying;
     }
 
     public void OnWeaponStateCallBack<T>(int hand, MechStateMachineBehaviour state, int type) {

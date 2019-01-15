@@ -15,7 +15,6 @@ public abstract class Combat : Photon.MonoBehaviour {
     private float max_EN = 2000;
     protected bool isENAvailable = true;
 
-    protected bool isMeleePlaying = false;
     public bool IsSwitchingWeapon { get; protected set; }
     public bool CanMeleeAttack = true;//This is false after melee attack in air
     [HideInInspector] public bool isDead;
@@ -124,10 +123,6 @@ public abstract class Combat : Photon.MonoBehaviour {
     }
 
     public virtual void IncreaseSP(int amount) {
-    }
-
-    public virtual void SetMeleePlaying(bool b) {
-        isMeleePlaying = b;
     }
 
     [System.Serializable]

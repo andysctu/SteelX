@@ -44,8 +44,7 @@ public class MechController : Photon.MonoBehaviour {
     public Vector3 InstantMoveDir;
 
     // Animation
-    public float Speed;
-    public float Direction;
+    public float Speed, Direction, Angle;
 
     public float CurBoostingSpeed;//global space
     private Vector3 _move = Vector3.zero;
@@ -73,7 +72,7 @@ public class MechController : Photon.MonoBehaviour {
     private Transform _pelvis, _spine1;
     private float _rLPelvisDegree, _rLSpineDegree, _rLLerpSpeed = 8, _rLDir, _rotateLegPreSpeed;
 
-    public bool onSkillMoving = false, onInstantMoving = false, IsJumping = false;
+    public bool onSkillMoving = false, IsJumping = false;
     public bool JumpReleased;
 
     private PhotonPlayer _owner;
@@ -92,7 +91,7 @@ public class MechController : Photon.MonoBehaviour {
         _animatorVars = GetComponent<AnimatorVars>();
         _animator = GetComponent<Animator>();
         _mechCombat = GetComponent<MechCombat>();
-        _mechCam = GetComponentInChildren<MechCamera>();
+        _mechCam = GetComponentInChildren<MechCamera>(true);
         _camTransform = _mechCam.transform;
         _sounds = currentMech.GetComponent<Sounds>();
 
@@ -149,7 +148,7 @@ public class MechController : Photon.MonoBehaviour {
         onSkill = b;
 
         if (!b) {
-            CallLockMechRot(false); //on skill when slashing & smashing
+            LockMechRot(false); //on skill when slashing & smashing
         }
     }
 
@@ -158,7 +157,6 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void InitControllerVar() {
-        onInstantMoving = false;
         isSlowDown = false;
         _mechCam.LockMechRotation(false);
         CurBoostingSpeed = movementVariables.moveSpeed;
@@ -194,6 +192,10 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void Update() {
+        if (!GetOwner().IsLocal && !PhotonNetwork.isMasterClient)return;
+
+        
+
         //TODO : remake this (test use)
         if (_isFootStepVarPositive){
             if (_animator.GetFloat("FootStep") < 0) {
@@ -218,6 +220,7 @@ public class MechController : Photon.MonoBehaviour {
 
         Speed = (cmd.vertical > -MarginOfError && cmd.vertical < MarginOfError) ? 0 : cmd.vertical;
         Direction = (cmd.horizontal > -MarginOfError && cmd.horizontal < MarginOfError) ? 0 : cmd.horizontal;
+        Angle = _mechCam.GetCamAngle();
         _xzDirNormalized = new Vector2(Direction, Speed).normalized;
 
         if (CurMovementState != null)
@@ -408,7 +411,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void InstantMove(usercmd cmd){
-        InstantMoveRemainingTime -= Time.deltaTime;
+        InstantMoveRemainingTime -= cmd.msec;
 
         if (InstantMoveRemainingTime > 0) {
             YSpeed = 0;
@@ -503,7 +506,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     private void LateUpdate() {//TODO : improve this
-        if(_mechCombat.IsMeleePlaying() || onSkill)return;
+        if(onSkill)return;
 
         RotateLegs();//Other player has to run this 
     }
@@ -615,7 +618,7 @@ public class MechController : Photon.MonoBehaviour {
         _audioSource.PlayOneShot(LandingSound);
     }
 
-    public void CallLockMechRot(bool b) {
+    public void LockMechRot(bool b) {
         _mechCam.LockMechRotation(b);
     }
 
@@ -625,7 +628,6 @@ public class MechController : Photon.MonoBehaviour {
             ResetCurSpeed();
             //Boost(false);
         } else {
-            onInstantMoving = false;
             ResetCurBoostingSpeed();
             ResetCurSpeed();
         }

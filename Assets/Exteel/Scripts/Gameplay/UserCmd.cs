@@ -12,10 +12,10 @@ public struct usercmd {
     public int Tick;
 }
 
-public enum UserButton { LeftShift, Space, LeftMouse, RightMouse, Num1, Num2, Num3, Num4};
+public enum UserButton { LeftShift, Space, LeftMouse, RightMouse, R, Num1, Num2, Num3, Num4};
 
 public static class UserCmd {
-    public const int ButtonsLength = 4;
+    public const int ButtonsLength = 5;
 
     public static void RegisterType() {
         PhotonPeer.RegisterType(typeof(usercmd), (byte)'I', SerializeUserCmd, DeserializeUserCmd);
