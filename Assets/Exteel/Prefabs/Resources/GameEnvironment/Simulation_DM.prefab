@@ -332,7 +332,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4580551127363592}
-  - component: {fileID: 114654640355559306}
+  - component: {fileID: 114746057868276090}
   m_Layer: 2
   m_Name: RespawnPoint (2)
   m_TagString: Untagged
@@ -365,7 +365,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4600467781595830}
-  - component: {fileID: 114182467227425160}
+  - component: {fileID: 114898296319101818}
   m_Layer: 2
   m_Name: RespawnPoint (4)
   m_TagString: Untagged
@@ -430,7 +430,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4892136536767504}
-  - component: {fileID: 114089017698749282}
+  - component: {fileID: 114212787710085886}
   m_Layer: 2
   m_Name: RespawnPoint (3)
   m_TagString: Untagged
@@ -463,7 +463,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4234740436297854}
-  - component: {fileID: 114136027635896004}
+  - component: {fileID: 114007634643153024}
   m_Layer: 2
   m_Name: RespawnPoint
   m_TagString: Untagged
@@ -546,7 +546,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4050247321820372}
-  - component: {fileID: 114095819045228446}
+  - component: {fileID: 114297491560032670}
   m_Layer: 2
   m_Name: RespawnPoint (1)
   m_TagString: Untagged
@@ -802,6 +802,32 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114007634643153024
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1737338986190572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Territory_ID: 0
+  interactable: 0
+  curTerritoryState: 0
+  bar: {fileID: 0}
+  mark: {fileID: 0}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114020657991569738
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -873,58 +899,6 @@ MonoBehaviour:
   bar_red: {fileID: 21300106, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_blue: {fileID: 21300104, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_red: {fileID: 21300102, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
---- !u!114 &114089017698749282
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1688537881605914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 3
-  interactable: 0
-  curTerritoryState: 2
-  bar: {fileID: 0}
-  mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 0}
---- !u!114 &114095819045228446
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1802121820790502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 1
-  interactable: 0
-  curTerritoryState: 2
-  bar: {fileID: 0}
-  mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 0}
 --- !u!114 &114119843885358144
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -952,32 +926,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114136027635896004
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1737338986190572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 0
-  interactable: 0
-  curTerritoryState: 2
-  bar: {fileID: 0}
-  mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 0}
 --- !u!114 &114174781677470676
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1005,31 +953,31 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114182467227425160
+--- !u!114 &114212787710085886
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1532825013103448}
+  m_GameObject: {fileID: 1688537881605914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Territory_ID: 4
+  Territory_ID: 3
   interactable: 0
-  curTerritoryState: 2
+  curTerritoryState: 0
   bar: {fileID: 0}
   mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
   Infos: {fileID: 0}
 --- !u!114 &114225675991815608
 MonoBehaviour:
@@ -1113,6 +1061,32 @@ MonoBehaviour:
   bar_red: {fileID: 21300106, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_blue: {fileID: 21300104, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_red: {fileID: 21300102, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
+--- !u!114 &114297491560032670
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1802121820790502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Territory_ID: 1
+  interactable: 0
+  curTerritoryState: 0
+  bar: {fileID: 0}
+  mark: {fileID: 0}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114310424648335134
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1432,32 +1406,6 @@ MonoBehaviour:
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!114 &114654640355559306
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1524948446802826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 2
-  interactable: 0
-  curTerritoryState: 2
-  bar: {fileID: 0}
-  mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 0}
 --- !u!114 &114666352538075324
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1545,6 +1493,32 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 0
+--- !u!114 &114746057868276090
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1524948446802826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Territory_ID: 2
+  interactable: 0
+  curTerritoryState: 0
+  bar: {fileID: 0}
+  mark: {fileID: 0}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114795835541758404
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1632,6 +1606,32 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114898296319101818
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1532825013103448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Territory_ID: 4
+  interactable: 0
+  curTerritoryState: 0
+  bar: {fileID: 0}
+  mark: {fileID: 0}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114937197448842344
 MonoBehaviour:
   m_ObjectHideFlags: 1
