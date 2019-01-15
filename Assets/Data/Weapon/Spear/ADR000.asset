@@ -29,10 +29,14 @@ MonoBehaviour:
   HeatIncreaseAmount: 10
   Slowdown: 1
   IsTwoHanded: 0
+  IsTargetAlly: 0
   SpIncreaseAmount: 175
   skillAnimations: []
   hitEffect: {fileID: 198872138408486710, guid: df018eb7e8623f34faea00b7f78c954c,
     type: 2}
   Atk: {fileID: 7400002, guid: 197ab111b6ad3704e993dcec748e0585, type: 3}
-  smash_sound: {fileID: 8300000, guid: 40eb2b923855066499b4dc9e045a4d76, type: 3}
-  smash_hit_sound: {fileID: 0}
+  SmashSound: {fileID: 8300000, guid: c04f75ca7962145f6a5401eae0dcb99f, type: 3}
+  HitSound: {fileID: 0}
+  AnimationLengths:
+  - 1
+  - 0.6

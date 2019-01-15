@@ -29,14 +29,20 @@ MonoBehaviour:
   HeatIncreaseAmount: 10
   Slowdown: 1
   IsTwoHanded: 0
+  IsTargetAlly: 0
   SpIncreaseAmount: 100
   skillAnimations: []
   hitEffect: {fileID: 198872138408486710, guid: 27062e9c680405643b487a299c5c04a4,
     type: 2}
-  threshold: 1
-  slash_sound:
-  - {fileID: 8300000, guid: 812d6118b8e1149e1b880601dc6d7384, type: 3}
-  - {fileID: 8300000, guid: 22c37275b10de49ceb10346eb0af6125, type: 3}
-  - {fileID: 8300000, guid: 812d6118b8e1149e1b880601dc6d7384, type: 3}
-  - {fileID: 8300000, guid: 22c37275b10de49ceb10346eb0af6125, type: 3}
-  slash_hit_sound: {fileID: 8300000, guid: e559b1a52c1394932a74fb40db267421, type: 3}
+  AttackAnimationLengths:
+  - 0.8
+  - 0.8
+  - 1.3
+  - 0.8
+  - 0.6
+  SlashSounds:
+  - {fileID: 8300000, guid: e559b1a52c1394932a74fb40db267421, type: 3}
+  - {fileID: 8300000, guid: e559b1a52c1394932a74fb40db267421, type: 3}
+  - {fileID: 8300000, guid: 9ff28172d4d734086a981b761903c2e9, type: 3}
+  - {fileID: 8300000, guid: e559b1a52c1394932a74fb40db267421, type: 3}
+  HitSound: {fileID: 8300000, guid: 9ff28172d4d734086a981b761903c2e9, type: 3}
