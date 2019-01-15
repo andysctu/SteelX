@@ -21,6 +21,7 @@ namespace StateMachine
         protected int JumpHash;
         protected int SpeedHash;
         protected int DirectionHash;
+        protected int AngleHash;
 
         private bool _isInit = false;
 
@@ -43,8 +44,17 @@ namespace StateMachine
             JumpHash = animatorVars.JumpHash;
             DirectionHash = animatorVars.DirectionHash;
             SpeedHash = animatorVars.SpeedHash;
+            AngleHash = animatorVars.AngleHash;
 
             _isInit = true;
+        }
+
+        public void UpdateAnimatorParameters(Animator animator) {
+            if(!_isInit)return;
+
+            animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
+            animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+            animator.SetFloat(AngleHash, Mathf.Clamp(mctrl.Angle/90,-1,1));
         }
     }
 }

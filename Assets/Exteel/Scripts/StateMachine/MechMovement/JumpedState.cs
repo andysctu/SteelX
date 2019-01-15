@@ -23,27 +23,19 @@ namespace StateMachine.MechMovement
             //mctrl.Boost(false);
             animator.SetBool(GroundedHash, mctrl.Grounded);
             animator.SetBool(BoostHash, mctrl.IsBoosting); //avoid shift+space directly vertically boost
-
-            if (!animator.GetBool(JumpHash)){
-                //dir falling
-                animator.SetBool(JumpHash, mctrl.IsJumping);
-            }
         }
 
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (!cc.enabled) return;
             mctrl.EnableBoostFlame(animator.GetBool("Boost"));
 
-            animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
-            animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+            UpdateAnimatorParameters(animator);
 
-            if (mctrl.Grounded){
+            if (!mctrl.IsJumping && mctrl.Grounded){
                 animator.SetBool(JumpHash, false);
                 animator.SetBool(GroundedHash, true);
                 return;
             }
-
-            animator.SetBool(JumpHash, true);
 
             if (!isFirstjump && animator.GetBool("Grounded")){
                 //TODO : consider move this part to groundedstate

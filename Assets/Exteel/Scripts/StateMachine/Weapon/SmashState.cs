@@ -5,94 +5,51 @@ namespace StateMachine.Attack
 {
     public class SmashState : MechStateMachineBehaviour
     {
-        private bool inAir = false, detectedGrounded;
-        private int hand;
+        private bool _inAir, _detectedGrounded;
 
-        override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             base.Init(animator);
-
-            hand = (stateInfo.IsTag("L")) ? 0 : 1;
-            mcbt.OnWeaponStateCallBack<Spear>(hand, this, (int) MeleeWeapon.StateCallBackType.AttackStateEnter); //threshold is set in this
 
             if (cc == null || !cc.enabled) return;
 
-            animator.SetBool(animatorVars.OnMeleeHash, true);
+            animator.SetBool(animatorVars.SmashRHash, false);
+            animator.SetBool(animatorVars.SmashLHash, false);
             animator.SetBool(BoostHash, false);
-            inAir = animator.GetBool(JumpHash);
+            _inAir = mctrl.IsJumping;
 
-            detectedGrounded = false;
+            _detectedGrounded = false;
 
             mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
-            mcbt.SetMeleePlaying(true);
             mctrl.ResetCurBoostingSpeed();
 
-            if (inAir){
+            if (_inAir){
                 //mctrl.Boost(true);
             } else{
                 //mctrl.Boost(false);
             }
         }
 
-        // OnStateMachineExit is called when exiting a statemachine via its Exit Node
-        override public void OnStateMachineExit(Animator animator, int stateMachinePathHash){
-            mcbt.OnWeaponStateCallBack<Spear>(hand, this, (int) MeleeWeapon.StateCallBackType.AttackStateMachineExit);
-
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (cc == null || !cc.enabled) return;
-            mcbt.CanMeleeAttack = true;
-            mcbt.SetMeleePlaying(false);
 
-            animator.SetBool(animatorVars.OnMeleeHash, false);
-        }
+            mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
 
-        override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            if (cc == null || !cc.enabled) return;
-            mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
+            if (stateInfo.normalizedTime > 0.5f && !_detectedGrounded){
+                //if (b){
+                    //mctrl.Boost(false);
+                //}
 
-            bool b = (inAir && !mcbt.IsMeleePlaying());
-
-            if (b){
-                //mctrl.JumpMoveInAir();
-            }
-
-            mctrl.CallLockMechRot(!animator.IsInTransition(0));
-
-            if (stateInfo.normalizedTime > 0.5f && !detectedGrounded){
-                if (b){
+                if (mctrl.Grounded) {
+                    _detectedGrounded = true;
                     //mctrl.Boost(false);
                 }
-
-                mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
-                //if (mctrl.CheckIsGrounded()) {
-                //    detectedGrounded = true;
-                //    //mctrl.grounded = true;
-                //    mctrl.SetCanVerticalBoost(false);
-                //    animator.SetBool(JumpHash, false);
-                //    animator.SetBool(GroundedHash, true);
-                //    //mctrl.Boost(false);
-                //}
             }
         }
 
-        override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            mcbt.OnWeaponStateCallBack<Spear>(hand, this, (int) MeleeWeapon.StateCallBackType.AttackStateExit);
-
+        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (cc == null || !cc.enabled) return;
 
-            //mctrl.SetCanVerticalBoost(false);
-
-            if (inAir){
-                //exiting from jump melee attack
-                animator.SetBool(animatorVars.OnMeleeHash, false);
-                mcbt.SetMeleePlaying(false);
-            } else{
-                mcbt.CanMeleeAttack = true; //sometimes OnstateMachineExit does not ensure canslash set to true ( called before update )
-            }
-
-            mctrl.CallLockMechRot(false);
-        }
-
-        public bool IsInAir(){
-            return inAir;
+            mctrl.LockMechRot(false);
         }
     }
 }

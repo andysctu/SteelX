@@ -22,8 +22,7 @@ namespace StateMachine.MechMovement
 
             if (mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
 
-            animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
-            animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+            UpdateAnimatorParameters(animator);
 
             animator.SetBool(BoostHash, mctrl.IsBoosting);
 
