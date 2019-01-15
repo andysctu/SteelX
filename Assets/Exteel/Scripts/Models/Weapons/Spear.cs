@@ -1,19 +1,25 @@
-﻿using StateMachine;
-using StateMachine.Attack;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Weapons
 {
     public class Spear : MeleeWeapon
     {
-        private AudioClip smashSound;
+        private AudioClip _smashSound;
+        private bool _receiveNextSMash, _prepareToAttack;
+        //_receiveNextSlash : Is waiting for the next combo (button)
+        //_prepareToAttack : process next combo when current one end
 
-        public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator){
-            base.Init(data, pos, handTransform, Cbt, Animator);
+        private float _curComboEndTime;//AttackEnd is called when time exceeds curComboEndTime
+        private float _instantMoveDistanceInAir = 25, _instantMoveDistanceOnGround = 19;
+
+        private float[] _attackAnimationLengths;
+        private enum SmashType { NormalAttack, AirAttack };
+
+        public override void Init(WeaponData data, int pos, Transform handTransform, Combat cbt, Animator animator){
+            base.Init(data, pos, handTransform, cbt, animator);
             InitComponents();
-            //threshold = ((SpearData)data).threshold;
 
-            //UpdateSmashAnimationThreshold();
+            _attackAnimationLengths = (float[])((SpearData) data).AnimationLengths.Clone(); ;
         }
 
         private void InitComponents(){
@@ -21,7 +27,7 @@ namespace Weapons
         }
 
         protected override void LoadSoundClips(){
-            smashSound = ((SpearData) data).smash_sound;
+            _smashSound = ((SpearData) data).SmashSound;
         }
 
         //private void FindTrail(GameObject weapon) {
@@ -30,38 +36,58 @@ namespace Weapons
         //}
 
         public override void HandleCombat(usercmd cmd) {
-            if (!Input.GetKeyDown(BUTTON) || IsOverHeat()){
+            if (Mctrl.Grounded) Cbt.CanMeleeAttack = true;
+
+            if (_prepareToAttack) {
+                if (Time.time > _curComboEndTime) {
+                    _prepareToAttack = false;
+                    AttackStartAction();
+                }
+            } else if (IsFiring && Time.time > _curComboEndTime) {
+                AttackEndAction();
+            }
+
+            if (!(Hand == LEFT_HAND ? cmd.buttons[(int)UserButton.LeftMouse] : cmd.buttons[(int)UserButton.RightMouse]) || IsOverHeat()) {
                 return;
             }
 
             if (Time.time - TimeOfLastUse >= 1 / Rate){
-                if (!Cbt.CanMeleeAttack){
-                    return;
-                }
+                if (!Cbt.CanMeleeAttack)return;
 
                 if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-                Cbt.CanMeleeAttack = false;
-                TimeOfLastUse = Time.time;
-
-                IncreaseHeat(data.HeatIncreaseAmount);
-
-                //Play Animation
-                AnimationEventController.Smash(Hand);
+                _prepareToAttack = true;
+                //IncreaseHeat(data.HeatIncreaseAmount);
             }
         }
 
-        public override void HandleAnimation(){
+        protected virtual void AttackStartAction() {
+            IsFiring = true;
+            TimeOfLastUse = Time.time;
+            _curComboEndTime = Time.time + ((Mctrl.IsJumping) ? _attackAnimationLengths[(int)SmashType.AirAttack] : _attackAnimationLengths[(int)SmashType.NormalAttack]);
+
+            Smash(Hand);
+            MeleeAttack(Hand);//todo : check this
+            Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), (Mctrl.IsJumping) ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, Mctrl.IsJumping ? _attackAnimationLengths[(int)SmashType.AirAttack] * 0.8f : _attackAnimationLengths[(int)SmashType.NormalAttack]);
+
+            if (_smashSound != null) WeaponAudioSource.PlayOneShot(_smashSound);
+
+            Cbt.CanMeleeAttack = Mctrl.Grounded;
+            Mctrl.ResetCurBoostingSpeed();
+        }
+
+        protected virtual void AttackEndAction() {//This is being called once after combo end
+            IsFiring = false;
+            Mctrl.LockMechRot(false);
         }
 
         protected override void ResetMeleeVars(){
             //this is called when on skill or init
             base.ResetMeleeVars();
 
-            if (!Cbt.photonView.isMine) return;
-
             Cbt.CanMeleeAttack = true;
-            Cbt.SetMeleePlaying(false);
+            MechAnimator.SetBool("SmashL", false);
+            MechAnimator.SetBool("SmashR", false);
         }
 
         //public void EnableWeaponTrail(bool b) {
@@ -83,53 +109,7 @@ namespace Weapons
             }
         }
 
-        public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
-            switch ((StateCallBackType) type){
-                case StateCallBackType.AttackStateEnter:
-                    OnAttackStateEnter(state);
-                    break;
-                case StateCallBackType.AttackStateExit:
-                    OnAttackStateExit(state);
-                    break;
-                case StateCallBackType.AttackStateMachineExit:
-                    OnAttackStateMachineExit(state);
-                    break;
-            }
-        }
-
-        private void OnAttackStateEnter(MechStateMachineBehaviour state){
-            //other player will also execute this
-            //((SmashState)state).SetThreshold(threshold);//the state is confirmed SmashState in mechCombat      
-
-            WeaponAnimator.SetTrigger("Atk");
-
-            //Play slash sound
-            if (smashSound != null) AudioSource.PlayClipAtPoint(smashSound, weapon.transform.position);
-
-            if (PlayerPv != null && PlayerPv.isMine){
-                //TODO : master check this
-                IsFiring = true;
-
-                MeleeAttack(Hand);
-            }
-        }
-
-        private void OnAttackStateMachineExit(MechStateMachineBehaviour state){
-            IsFiring = false;
-        }
-
-        private void OnAttackStateExit(MechStateMachineBehaviour state){
-            if (((SmashState) state).IsInAir()){
-                IsFiring = false;
-            }
-        }
-
-        private void UpdateSlashAnimationThreshold(){
-            //threshold = ((SpearData)data).threshold;
-        }
-
         public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-
             if (isShield){
                 if (targetWeapon != null) targetWeapon.PlayOnHitEffect();
             } else{
@@ -144,7 +124,10 @@ namespace Weapons
                 ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
                 TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
             }
+        }
 
+        public void Smash(int hand) {
+            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorVars.SmashLHash : AnimatorVars.SmashRHash, true);
         }
     }
 }

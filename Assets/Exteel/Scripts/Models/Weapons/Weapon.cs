@@ -17,7 +17,7 @@ namespace Weapons
         protected Animator MechAnimator, WeaponAnimator;
         protected AnimationEventController AnimationEventController;
         protected AnimatorVars AnimatorVars;
-        protected AudioSource AudioSource;
+        protected AudioSource WeaponAudioSource;
 
         //Another weapon
         protected Weapon AnotherWeapon;
@@ -101,15 +101,15 @@ namespace Weapons
         }
 
         protected virtual void AddAudioSource(GameObject weapon){
-            AudioSource = weapon.AddComponent<AudioSource>();
+            WeaponAudioSource = weapon.AddComponent<AudioSource>();
 
             //Init AudioSource
-            AudioSource.spatialBlend = 1;
-            AudioSource.dopplerLevel = 0;
-            AudioSource.volume = 0.8f;
-            AudioSource.playOnAwake = false;
-            AudioSource.minDistance = 20;
-            AudioSource.maxDistance = 250;
+            WeaponAudioSource.spatialBlend = 1;
+            WeaponAudioSource.dopplerLevel = 0;
+            WeaponAudioSource.volume = 0.8f;
+            WeaponAudioSource.playOnAwake = false;
+            WeaponAudioSource.minDistance = 20;
+            WeaponAudioSource.maxDistance = 250;
         }
 
         protected abstract void LoadSoundClips();
@@ -124,7 +124,8 @@ namespace Weapons
         }
 
         public abstract void HandleCombat(usercmd cmd); //Process Input
-        public abstract void HandleAnimation();
+        public virtual void HandleAnimation(){
+        }
 
         public virtual void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
             //This is called in onHit rpc

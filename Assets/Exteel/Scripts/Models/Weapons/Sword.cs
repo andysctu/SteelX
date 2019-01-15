@@ -1,6 +1,4 @@
-﻿using StateMachine;
-using StateMachine.Attack;
-using UnityEngine;
+﻿using UnityEngine;
 using XftWeapon;
 
 namespace Weapons
@@ -10,16 +8,23 @@ namespace Weapons
         private XWeaponTrail _weaponTrail;
         private AudioClip[] _slashSounds = new AudioClip[4];
 
-        private bool _receiveNextSlash, _isAnotherWeaponSword, _prepareToAttack, _isAttacking;
+        private bool _receiveNextSlash, _isAnotherWeaponSword, _prepareToAttack;
+        //_receiveNextSlash : Is waiting for the next combo (button)
+        //_prepareToAttack : process next combo when current one end
+
         private int _curCombo;
-        private float _attackStartTime;
+        private float _curComboEndTime;//AttackEnd is called when time exceeds curComboEndTime
+        private const float ReceiveNextAttackThreshold = 0.2f;//receiving the input after attacking start time + this
+        private float _instantMoveDistanceInAir = 22, _instantMoveDistanceOnGround = 17;
 
-        private float _attackLength = 0.8f, _finalAttackLength = 1.3f, _multiSwordAttackLength = 0.8f, _airAttackLength = 0.6f;//TODO : remake this part
+        private float[] _attackAnimationLengths;
+        private enum SlashType { FirstAttack, SecondAttack, ThirdAttack, MultiAttack, AirAttack};
 
-        public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator){
-            base.Init(data, pos, handTransform, Cbt, Animator);
+        public override void Init(WeaponData data, int pos, Transform handTransform, Combat cbt, Animator animator){
+            base.Init(data, pos, handTransform, cbt, animator);
+            _attackAnimationLengths = (float[])((SwordData) data).AttackAnimationLengths.Clone();
+
             InitComponents();
-
             CheckIsAnotherWeaponSword();
         }
 
@@ -32,7 +37,7 @@ namespace Weapons
         }
 
         protected override void LoadSoundClips(){
-            _slashSounds = ((SwordData) data).slash_sound;
+            _slashSounds = ((SwordData) data).SlashSounds;
         }
 
         private void FindTrail(GameObject weapon){
@@ -43,13 +48,12 @@ namespace Weapons
         public override void HandleCombat(usercmd cmd){
             if (Mctrl.Grounded)Cbt.CanMeleeAttack = true;
 
-            if (_prepareToAttack){// combo attack
-                if (Time.time > _attackStartTime){
+            if (_prepareToAttack){
+                if (Time.time > _curComboEndTime) {
                     _prepareToAttack = false;
                     AttackStartAction();
                 }
-            }else if (Time.time > _attackStartTime + _attackLength && _isAttacking) {//todo check this
-                _isAttacking = false;
+            }else if (IsFiring && Time.time > _curComboEndTime) {
                 AttackEndAction();
             }
 
@@ -57,87 +61,62 @@ namespace Weapons
                 return;
             }
 
-            if (Time.time - TimeOfLastUse >= 1 / Rate && !_prepareToAttack) {
-                if (!_receiveNextSlash || !Cbt.CanMeleeAttack){
+            if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack) {
+                if (!_receiveNextSlash || !Cbt.CanMeleeAttack)return;
+                if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
+
+                //waiting for next combo ?
+                if (_curCombo < 4){
+                    if(_curCombo == 3 && !_isAnotherWeaponSword) {//combo 3 is only available for two swords
+                        _receiveNextSlash = false;
+                        return;
+                    } else{
+                        _receiveNextSlash = true;
+                    }
+                } else{
+                    _receiveNextSlash = false;
                     return;
                 }
 
-                if (_curCombo == 3 && !_isAnotherWeaponSword) return;
-                if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
-
-                Cbt.CanMeleeAttack = false;
-                _receiveNextSlash = false;
                 TimeOfLastUse = Time.time;
+                _prepareToAttack = true;
 
-                if (_curCombo >= 1) { // combo attack
-                    _prepareToAttack = true;
-                    _attackStartTime += _attackLength * 0.8f;//todo : check this
-                } else {//first attack
-                    _attackStartTime = Time.time;
-                    AttackStartAction();
-                }
-                _isAttacking = true;
-
-                //IncreaseHeat(data.HeatIncreaseAmount);
+                //IncreaseHeat(data.HeatIncreaseAmount);//TODO : check master sync this 
             }
         }
 
         protected virtual void AttackStartAction(){
-            AnimationEventController.Slash(Hand, _curCombo);
-
-            Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), (Mctrl.IsJumping) ? 22 : 15, (Mctrl.IsJumping) ? 0.45f : 0.75f);
-
-            //Play slash sound
-            if (_slashSounds != null && _slashSounds[_curCombo] != null) AudioSource.PlayClipAtPoint(_slashSounds[_curCombo], weapon.transform.position);
-
-            //TODO : master check this
             IsFiring = true;
+            TimeOfLastUse = Time.time;
 
-            //If not final slash
-            if (_curCombo != 4) _receiveNextSlash = true;
-
+            PlaySlashAnimation(Hand);
             MeleeAttack(Hand);//todo : check this
+            Mctrl.SetInstantMoving(Mctrl.GetForwardVector(),  (Mctrl.IsJumping) ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, Mctrl.IsJumping ? _attackAnimationLengths[(int)SlashType.AirAttack] * 0.8f : _attackAnimationLengths[_curCombo]);
 
-            Cbt.CanMeleeAttack = !Mctrl.IsJumping;
-            Cbt.SetMeleePlaying(true);
+            if (_slashSounds != null && _slashSounds[_curCombo] != null) WeaponAudioSource.PlayOneShot(_slashSounds[_curCombo]);
+
+            Cbt.CanMeleeAttack = Mctrl.Grounded;
             Mctrl.ResetCurBoostingSpeed();
 
+            _curComboEndTime = Time.time + ((Mctrl.IsJumping) ? _attackAnimationLengths[(int) SlashType.AirAttack] : _attackAnimationLengths[_curCombo]);
             _curCombo++;
         }
 
-        protected virtual void AttackEndAction() {
-            //state machine
-            if(Mctrl.Grounded){
-                IsFiring = false;
-                _receiveNextSlash = true;
-                _curCombo = 0;
-            }
+        protected virtual void AttackEndAction() {//This is being called once after combo end
+            _curCombo = 0;
+            _receiveNextSlash = true;
+            IsFiring = false;
 
-            //normal state
-            if (!Mctrl.Grounded) {
-                IsFiring = false;
-                _receiveNextSlash = true;
-                _curCombo = 0;
-                Cbt.SetMeleePlaying(false);
-            } else {
-                Cbt.CanMeleeAttack = true;
-            }
-
-            Mctrl.CallLockMechRot(false);
+            Mctrl.LockMechRot(false);
         }
 
-        public override void HandleAnimation(){
-        }
-
-        protected override void ResetMeleeVars(){
-            //this is called when on skill or init
+        protected override void ResetMeleeVars(){//this is called when on skill or init
             base.ResetMeleeVars();
             _curCombo = 0;
-
             _receiveNextSlash = true;
 
-            Cbt.SetMeleePlaying(false);
-            MechAnimator.SetBool("Slash", false);
+            MechAnimator.SetBool("SlashL", false);
+            MechAnimator.SetBool("SlashR", false);
         }
 
         public void EnableWeaponTrail(bool b){
@@ -162,7 +141,6 @@ namespace Weapons
         }
 
         public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-
             if (isShield){
                 if (targetWeapon != null){
                     targetWeapon.PlayOnHitEffect();
@@ -179,6 +157,10 @@ namespace Weapons
                 ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
                 TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
             }
+        }
+
+        public void PlaySlashAnimation(int hand){
+            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorVars.SlashLHash : AnimatorVars.SlashRHash, true);
         }
     }
 }

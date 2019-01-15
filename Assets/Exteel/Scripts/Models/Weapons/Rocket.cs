@@ -130,7 +130,7 @@ namespace Weapons
             if (enter){
                 //Stop effects playing when entering
                 Muzzle.Stop();
-                AudioSource.Stop();
+                WeaponAudioSource.Stop();
             }
         }
 
@@ -139,7 +139,7 @@ namespace Weapons
 
             if (!isThisWeaponActivated){
                 Muzzle.Stop();
-                AudioSource.Stop();
+                WeaponAudioSource.Stop();
             }
         }
 
@@ -147,11 +147,11 @@ namespace Weapons
             switch ((StateCallBackType) type){
                 case StateCallBackType.AttackStateEnter:
                     Muzzle.Play();
-                    AudioSource.PlayOneShot(_shotSound);
+                    WeaponAudioSource.PlayOneShot(_shotSound);
                     break;
                 case StateCallBackType.AttackStateExit:
                     WeaponAnimator.SetTrigger("Reload");
-                    if (_reloadSound != null) AudioSource.PlayOneShot(_reloadSound);
+                    if (_reloadSound != null) WeaponAudioSource.PlayOneShot(_reloadSound);
                     break;
             }
         }

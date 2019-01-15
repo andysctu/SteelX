@@ -57,9 +57,9 @@ namespace Weapons
             //Debug.Log("Update ik");
             if (CurTarget != null){
                 //Face the target
-                Debug.DrawRay(Cbt.transform.position, Spine1.up * 10, Color.red, 1);
+                //Debug.DrawRay(Cbt.transform.position, Spine1.up * 10, Color.red, 1);
 
-                Debug.DrawRay(Cbt.transform.position, CurTarget.transform.position - Cbt.transform.position, Color.red, 1);
+                //Debug.DrawRay(Cbt.transform.position, CurTarget.transform.position - Cbt.transform.position, Color.red, 1);
 
                 //Debug.Log("Angle between : "+ Vector3.Angle(Spine1.up, CurTarget.transform.position - Cbt.transform.position));
             }
@@ -110,7 +110,7 @@ namespace Weapons
         private void StopBulletTrace(){
             if (_bulletTrace != null) _bulletTrace.Stop();
             Muzzle.Stop();
-            AudioSource.Stop();
+            WeaponAudioSource.Stop();
         }
 
         public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
@@ -121,7 +121,7 @@ namespace Weapons
                 case StateCallBackType.AttackStateUpdate:
                     if (Time.time - _lastPlayShotSoundTime >= _animationLength / _speedCoeff){
                         _lastPlayShotSoundTime = Time.time;
-                        AudioSource.PlayOneShot(_shotSound);
+                        WeaponAudioSource.PlayOneShot(_shotSound);
                         WeaponAnimator.SetTrigger("Atk");
                         if (PlayerPv.isMine) {
                             if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
@@ -133,7 +133,7 @@ namespace Weapons
                     break;
                 case StateCallBackType.ReloadStateEnter:
                     WeaponAnimator.SetTrigger("Reload");
-                    AudioSource.PlayOneShot(_reloadSound);
+                    WeaponAudioSource.PlayOneShot(_reloadSound);
                     break;
             }
         }

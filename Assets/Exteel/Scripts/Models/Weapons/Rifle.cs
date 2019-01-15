@@ -53,7 +53,7 @@ public class Rifle : RangedWeapon {
         base.OnSkillAction(enter);
         if (enter) {//Stop effects playing when entering
             Muzzle.Stop();
-            AudioSource.Stop();
+            WeaponAudioSource.Stop();
         }
     }
 
@@ -62,7 +62,7 @@ public class Rifle : RangedWeapon {
 
         if (!isThisWeaponActivated) {
             Muzzle.Stop();
-            AudioSource.Stop();
+            WeaponAudioSource.Stop();
         }
     }
 
@@ -76,12 +76,12 @@ public class Rifle : RangedWeapon {
                 _bullet.Play();
                 _bullet = null;
                 Muzzle.Play();
-                AudioSource.PlayOneShot(_shotSound);
+                WeaponAudioSource.PlayOneShot(_shotSound);
             }
             break;
             case StateCallBackType.ReloadStateEnter:
             WeaponAnimator.SetTrigger("Reload");
-            if(_reloadSound!=null)AudioSource.PlayOneShot(_reloadSound);
+            if(_reloadSound!=null)WeaponAudioSource.PlayOneShot(_reloadSound);
             break;
         }
     }

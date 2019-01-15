@@ -15,16 +15,16 @@ public class Rectifier : RangedWeapon
     }
 
     protected override void AddAudioSource(GameObject weapon){
-        AudioSource = weapon.AddComponent<AudioSource>();
+        WeaponAudioSource = weapon.AddComponent<AudioSource>();
 
         //Init AudioSource
-        AudioSource.spatialBlend = 1;
-        AudioSource.dopplerLevel = 0;
-        AudioSource.volume = 1f;
-        AudioSource.loop = true;
-        AudioSource.playOnAwake = false;
-        AudioSource.minDistance = 20;
-        AudioSource.maxDistance = 250;
+        WeaponAudioSource.spatialBlend = 1;
+        WeaponAudioSource.dopplerLevel = 0;
+        WeaponAudioSource.volume = 1f;
+        WeaponAudioSource.loop = true;
+        WeaponAudioSource.playOnAwake = false;
+        WeaponAudioSource.minDistance = 20;
+        WeaponAudioSource.maxDistance = 250;
     }
 
     private void InstantiateBullet(){
@@ -45,7 +45,7 @@ public class Rectifier : RangedWeapon
                 if (atkAnimationIsPlaying){
                     atkAnimationIsPlaying = false;
                     MechAnimator.SetBool(AtkAnimHash, false);
-                    AudioSource.Stop();
+                    WeaponAudioSource.Stop();
                 }
             } else{
                 if (!atkAnimationIsPlaying){
@@ -104,7 +104,7 @@ public class Rectifier : RangedWeapon
             DisplayBullet(direction, null, null);
         }
 
-        AudioSource.Play();
+        WeaponAudioSource.Play();
     }
 
     protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
@@ -117,13 +117,13 @@ public class Rectifier : RangedWeapon
         if (enter){
             //Stop effects playing when entering
             Muzzle.Stop();
-            AudioSource.Stop();
+            WeaponAudioSource.Stop();
         }
     }
 
     protected override void LoadSoundClips(){
         _shotSound = ((RectifierData) data).shotSound;
-        AudioSource.clip = _shotSound;
+        WeaponAudioSource.clip = _shotSound;
     }
 
     protected override void UpdateMechArmState(){
@@ -138,7 +138,7 @@ public class Rectifier : RangedWeapon
             case (int) StateCallBackType.AttackStateExit:
                 if (_bullet != null) _bullet.Stop();
                 Muzzle.Stop();
-                AudioSource.Stop();
+                WeaponAudioSource.Stop();
                 break;
         }
     }

@@ -98,7 +98,7 @@ namespace Weapons
         }
 
         public override void PlayOnHitEffect(){
-            AudioSource.PlayOneShot(_onHitSound);
+            WeaponAudioSource.PlayOneShot(_onHitSound);
 
             _onHitEffect.Play();
         }

@@ -12,13 +12,6 @@ namespace Weapons
 
         private const int DetectShieldMaxDistance = 50; //the ray which checks if hitting shield max distance
 
-        public enum StateCallBackType
-        {
-            AttackStateEnter,
-            AttackStateExit,
-            AttackStateMachineExit
-        }
-
         public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator){
             base.Init(data, hand, handTransform, Cbt, Animator);
             InitComponents();
@@ -65,25 +58,23 @@ namespace Weapons
             }
         }
 
-        public virtual void MeleeAttack(int hand){
-            //TODO : check this again
+        public virtual void MeleeAttack(int hand){//TODO : check this
             if ((TargetsInCollider = SlashDetector.getCurrentTargets()).Count != 0){
                 int damage = data.damage;
 
                 foreach (Transform target in TargetsInCollider){
-                    if (target == null){
-                        continue;
-                    }
+                    if (target == null)continue;
 
                     //cast a ray to check if hitting shield
                     bool isHitShield = false, isTerrainBlocksTheWay = false;
-                    RaycastHit[] hitpoints;
                     Transform t = target;
 
-                    hitpoints = Physics.RaycastAll(Cbt.transform.position + new Vector3(0, 5, 0), target.transform.root.position - Cbt.transform.position, DetectShieldMaxDistance, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
+                    var hitpoints = Physics.RaycastAll(Cbt.transform.position + new Vector3(0, 5, 0), 
+                        target.transform.root.position - Cbt.transform.position, DetectShieldMaxDistance, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
+
                     foreach (RaycastHit hit in hitpoints){
                         if (hit.transform.root == target){
-                            if (hit.collider.transform.tag[0] == 'S'){
+                            if (hit.collider.transform.tag[0] == 'S'){//todo : improve this
                                 isHitShield = true;
                                 t = hit.collider.transform;
                             }

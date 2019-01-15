@@ -142,7 +142,7 @@ namespace Weapons
 
             _bullet.Play();
             Muzzle.Play();
-            AudioSource.PlayOneShot(_shotSound);
+            WeaponAudioSource.PlayOneShot(_shotSound);
         }
 
         public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
@@ -160,8 +160,8 @@ namespace Weapons
                     _onReload = true;
                     WeaponAnimator.SetTrigger("Reload");
                     if (_reloadSound != null){
-                        AudioSource.clip = _reloadSound;
-                        AudioSource.PlayDelayed(0.2f); //To match the reload animation
+                        WeaponAudioSource.clip = _reloadSound;
+                        WeaponAudioSource.PlayDelayed(0.2f); //To match the reload animation
                     }
 
                     break;

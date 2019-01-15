@@ -1,30 +1,18 @@
 ﻿using UnityEngine;
 using Weapons;
-using Weapons.Crosshairs;
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Sword", order = 0)]
+[CreateAssetMenu(fileName = "New Sword", menuName = "WeaponDatas/Sword", order = 0)]
 public class SwordData : MeleeWeaponData {
-    [Tooltip("When can the slash animations exit in normalized time?")]
-    [Range(0.75f, 1)]
-    public float threshold = 1;
+    public float[] AttackAnimationLengths = { 0.8f, 0.8f, 1.3f, 0.8f, 0.6f };// FirstAttack, SecondAttack, ThirdAttack, MultiAttack, AirAttack
+    public AudioClip[] SlashSounds = new AudioClip[4]; 
+    public AudioClip HitSound = new AudioClip();
 
-    public AudioClip[] slash_sound = new AudioClip[4]; 
-    public AudioClip slash_hit_sound = new AudioClip();
-
-    SwordData() {
+    private SwordData() {
         WeaponType = typeof(Sword);
         attackType = Weapon.AttackType.Melee;
         AllowBothWeaponUsing = false;
         Slowdown = true;
         IsTwoHanded = false;
-    }
-
-    public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        return;
-    }
-
-    public override Crosshair GetCrosshair() {
-        return null;
     }
 
     public override object GetWeaponObject() {
