@@ -3194,7 +3194,7 @@ public static class PhotonNetwork
 
         PhotonNetwork.isMessageQueueRunning = false;
         networkingPeer.loadingLevelAndPausedNetwork = true;
-        SceneManager.LoadScene(levelNumber);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(levelNumber);
     }
 
     /// <summary>Wraps loading a level to pause the network mesage-queue. Optionally syncs the loaded level in a room.</summary>
@@ -3220,7 +3220,7 @@ public static class PhotonNetwork
 
         PhotonNetwork.isMessageQueueRunning = false;
         networkingPeer.loadingLevelAndPausedNetwork = true;
-        SceneManager.LoadScene(levelName);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(levelName);
     }
 
 
