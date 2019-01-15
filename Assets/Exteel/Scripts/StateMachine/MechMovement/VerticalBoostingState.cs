@@ -18,15 +18,15 @@ namespace StateMachine.MechMovement
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (!cc.enabled) return;
 
-            mctrl.EnableBoostFlame(animator.GetBool("Boost"));
+            Mctrl.EnableBoostFlame(animator.GetBool(AnimatorHashVars.BoostHash));
 
-            if (mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
+            if (Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
 
             UpdateAnimatorParameters(animator);
 
-            animator.SetBool(BoostHash, mctrl.IsBoosting);
+            animator.SetBool(AnimatorHashVars.BoostHash, Mctrl.IsBoosting);
 
-            animator.SetBool(GroundedHash, mctrl.Grounded);
+            animator.SetBool(AnimatorHashVars.GroundedHash, Mctrl.Grounded);
         }
     }
 }

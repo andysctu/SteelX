@@ -79,6 +79,7 @@ public class BuildMech : Photon.MonoBehaviour {
         MechCombat = GetComponent<MechCombat>();
         MechIK = CurrentMech.GetComponent<MechIK>();
         SkillController = GetComponent<SkillController>();
+        AnimatorHashVars.HashAnimatorVars();
     }
 
     private void FindHands() {

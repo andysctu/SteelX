@@ -127,7 +127,7 @@ namespace Weapons
         }
 
         public void Smash(int hand) {
-            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorVars.SmashLHash : AnimatorVars.SmashRHash, true);
+            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorHashVars.SmashLHash : AnimatorHashVars.SmashRHash, true);
         }
     }
 }

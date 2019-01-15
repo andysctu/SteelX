@@ -12,15 +12,14 @@ namespace StateMachine.Attack
 
             if (cc == null || !cc.enabled) return;
 
-            animator.SetBool(animatorVars.SmashRHash, false);
-            animator.SetBool(animatorVars.SmashLHash, false);
-            animator.SetBool(BoostHash, false);
-            _inAir = mctrl.IsJumping;
+            animator.SetBool(AnimatorHashVars.SmashRHash, false);
+            animator.SetBool(AnimatorHashVars.SmashLHash, false);
+            animator.SetBool(AnimatorHashVars.BoostHash, false);
+            _inAir = Mctrl.IsJumping;
 
             _detectedGrounded = false;
 
-            mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
-            mctrl.ResetCurBoostingSpeed();
+            Mctrl.ResetCurBoostingSpeed();
 
             if (_inAir){
                 //mctrl.Boost(true);
@@ -32,14 +31,14 @@ namespace StateMachine.Attack
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (cc == null || !cc.enabled) return;
 
-            mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
+            Mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
 
             if (stateInfo.normalizedTime > 0.5f && !_detectedGrounded){
                 //if (b){
                     //mctrl.Boost(false);
                 //}
 
-                if (mctrl.Grounded) {
+                if (Mctrl.Grounded) {
                     _detectedGrounded = true;
                     //mctrl.Boost(false);
                 }
@@ -49,7 +48,7 @@ namespace StateMachine.Attack
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (cc == null || !cc.enabled) return;
 
-            mctrl.LockMechRot(false);
+            Mctrl.LockMechRot(false);
         }
     }
 }

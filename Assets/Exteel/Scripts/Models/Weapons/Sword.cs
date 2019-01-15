@@ -160,7 +160,10 @@ namespace Weapons
         }
 
         public void PlaySlashAnimation(int hand){
-            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorVars.SlashLHash : AnimatorVars.SlashRHash, true);
+            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorHashVars.SlashLHash : AnimatorHashVars.SlashRHash, true);
+        }
+
+        public override void WeaponAnimationEvent(int hand, string s){
         }
     }
 }

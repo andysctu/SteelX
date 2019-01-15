@@ -76,7 +76,7 @@ namespace Weapons
         public override void HandleCombat(usercmd cmd) {
             if (Input.GetKeyDown(KeyCode.Mouse1) || IsOverHeat()){
                 _isCanceled = true;
-                MechAnimator.SetBool(AnimatorVars.CnPoseHash, false);
+                MechAnimator.SetBool(AnimatorHashVars.CnPoseHash, false);
                 return;
             }
 
@@ -89,12 +89,12 @@ namespace Weapons
             }
 
             if (Input.GetKey(KeyCode.Mouse0) && !_onPose && !_onShoot && _bulletNum >= 1 && Mctrl.Grounded){
-                AnimationEventController.CnPose();
-                MechAnimator.SetBool(AnimatorVars.CnPoseHash, true);
+                //AnimationEventController.CnPose();
+                MechAnimator.SetBool(AnimatorHashVars.CnPoseHash, true);
             }
 
             if (Time.time - TimeOfLastUse >= 1 / Rate && _onPose){
-                if (Input.GetKey(KeyCode.Mouse0) || !MechAnimator.GetBool(AnimatorVars.CnPoseHash) || !Mctrl.Grounded) return;
+                if (Input.GetKey(KeyCode.Mouse0) || !MechAnimator.GetBool(AnimatorHashVars.CnPoseHash) || !Mctrl.Grounded) return;
 
                 IsFiring = true;
 
@@ -184,3 +184,14 @@ namespace Weapons
         }
     }
 }
+
+/*
+ * public void CnPose() {
+        pv.RPC("CnPoseRPC", PhotonTargets.All);
+    }
+
+    [PunRPC]
+    public void CnPoseRPC() {
+        Animator.Play("CnPoseStart");
+    }
+ */

@@ -496,6 +496,17 @@ public class MechCombat : Combat {
         return clipOverrides[name].length;
     }
 
+    //tmp put here , todo : improve these events
+    public void CallShowTrailL(int show) {
+        Sword sword = bm.Weapons[weaponOffset] as Sword;
+        if (sword != null) sword.EnableWeaponTrail(show == 1);
+    }
+
+    public void CallShowTrailR(int show) {
+        Sword sword = bm.Weapons[weaponOffset + 1] as Sword;
+        if (sword != null) sword.EnableWeaponTrail(show == 1);
+    }
+
     public void OnWeaponStateCallBack<T>(int hand, MechStateMachineBehaviour state, int type) {
         if (bm.Weapons[weaponOffset + hand] != null && bm.Weapons[weaponOffset + hand] is T) {
             bm.Weapons[weaponOffset + hand].OnStateCallBack(type, state);

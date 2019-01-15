@@ -11,7 +11,6 @@ public class MechController : Photon.MonoBehaviour {
     private CharacterController _characterController;
     private SkillController _skillController;
     private Transform _camTransform;
-    private AnimatorVars _animatorVars;
     private Animator _animator;
     private LayerMask _terrainMask;
 
@@ -88,7 +87,6 @@ public class MechController : Photon.MonoBehaviour {
 
     private void InitComponents() {
         Transform currentMech = transform.Find("CurrentMech");
-        _animatorVars = GetComponent<AnimatorVars>();
         _animator = GetComponent<Animator>();
         _mechCombat = GetComponent<MechCombat>();
         _mechCam = GetComponentInChildren<MechCamera>(true);
@@ -252,7 +250,7 @@ public class MechController : Photon.MonoBehaviour {
         }
 
         if ((_owner != null && _owner.IsLocal)) {
-            if (_animator.GetBool(_animatorVars.BoostHash)) {
+            if (_animator.GetBool(AnimatorHashVars.BoostHash)) {
                 DynamicCam();
             } else {
                 ResetCam();

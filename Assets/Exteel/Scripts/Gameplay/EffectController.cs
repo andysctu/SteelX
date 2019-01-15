@@ -8,7 +8,6 @@ public class EffectController : MonoBehaviour {
     [SerializeField] private ParticleSystem boostingDust, respawnEffect, damageless;
     [SerializeField] private Sounds Sounds;
     [SerializeField] private Animator Animator;
-    [SerializeField] private AnimatorVars AnimatorVars;
     [SerializeField] private Transform[] Hands;
 
     private MechCombat mcbt;

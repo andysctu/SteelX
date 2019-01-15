@@ -15,8 +15,7 @@ namespace Weapons
         protected PhotonView PlayerPv;
         protected HeatBar HeatBar;
         protected Animator MechAnimator, WeaponAnimator;
-        protected AnimationEventController AnimationEventController;
-        protected AnimatorVars AnimatorVars;
+        protected AnimatorHashVars AnimatorHashVars;
         protected AudioSource WeaponAudioSource;
 
         //Another weapon
@@ -83,8 +82,6 @@ namespace Weapons
         private void InitComponents(){
             PlayerPv = Cbt.GetComponent<PhotonView>();
             HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
-            AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
-            AnimatorVars = Cbt.GetComponentInChildren<AnimatorVars>();
             AddAudioSource(weapon);
         }
 
@@ -189,6 +186,9 @@ namespace Weapons
             weapon.transform.SetParent(WeaponTransform);
             weapon.transform.localRotation = Quaternion.Euler(90, 0, 0);
             weapon.transform.localPosition = Vector3.zero;
+        }
+
+        public virtual void WeaponAnimationEvent(int hand, string s){
         }
 
         public virtual void OnDestroy(){

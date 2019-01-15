@@ -15,12 +15,12 @@ namespace StateMachine.Attack
 
             if (cc == null || !cc.enabled) return;
 
-            inAir = mctrl.IsJumping;
+            inAir = Mctrl.IsJumping;
             detectedGrounded = false;
             
-            animator.SetBool(animatorVars.SlashLHash, false);
-            animator.SetBool(animatorVars.SlashRHash, false);
-            animator.SetBool(BoostHash, false);
+            animator.SetBool(AnimatorHashVars.SlashLHash, false);
+            animator.SetBool(AnimatorHashVars.SlashRHash, false);
+            animator.SetBool(AnimatorHashVars.BoostHash, false);
 
             //Boost Effect
             if (inAir){
@@ -39,15 +39,14 @@ namespace StateMachine.Attack
 
             if (cc == null || !cc.enabled) return;
 
-            mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
+            Mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
 
             if (stateInfo.normalizedTime > 0.5f && !detectedGrounded){
                 //if (b){
                     //mctrl.Boost(false);
                 //}
 
-                mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
-                if (mctrl.Grounded) {
+                if (Mctrl.Grounded) {
                     detectedGrounded = true;
                     //mctrl.Boost(false);
                 }

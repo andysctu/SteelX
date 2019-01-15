@@ -12,21 +12,21 @@ namespace StateMachine.MechMovement
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             EffectController.UpdateBoostingDust();
 
-            mctrl.EnableBoostFlame(animator.GetBool("Boost"));
+            Mctrl.EnableBoostFlame(animator.GetBool(AnimatorHashVars.BoostHash));
 
-            if ((mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            if ((Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
             UpdateAnimatorParameters(animator);
 
-            if (!mctrl.Grounded){
-                animator.SetBool(GroundedHash, false);
+            if (!Mctrl.Grounded){
+                animator.SetBool(AnimatorHashVars.GroundedHash, false);
             }
 
-            if (mctrl.IsJumping){
-                animator.SetBool(JumpHash, true);
+            if (Mctrl.IsJumping){
+                animator.SetBool(AnimatorHashVars.JumpHash, true);
             }
 
-            animator.SetBool(BoostHash, mctrl.IsBoosting);
+            animator.SetBool(AnimatorHashVars.BoostHash, Mctrl.IsBoosting);
         }
     }
 }

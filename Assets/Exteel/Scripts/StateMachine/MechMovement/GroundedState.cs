@@ -6,31 +6,31 @@ namespace StateMachine.MechMovement
         override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
             base.Init(animator);
 
-            if ((mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            if ((Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
-            animator.SetBool(GroundedHash, true);
+            animator.SetBool(AnimatorHashVars.GroundedHash, true);
         }
 
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-            mctrl.EnableBoostFlame(animator.GetBool("Boost"));
+            Mctrl.EnableBoostFlame(animator.GetBool(AnimatorHashVars.BoostHash));
 
-            if ((mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            if ((Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
 
             UpdateAnimatorParameters(animator);
 
-            if (mctrl.IsJumping && !mctrl.Grounded) {//TODO : condition : you can't jump if playing melee attack
-                animator.SetBool(GroundedHash, false);
-                animator.SetBool(JumpHash, true);
+            if (Mctrl.IsJumping && !Mctrl.Grounded) {//TODO : condition : you can't jump if playing melee attack
+                animator.SetBool(AnimatorHashVars.GroundedHash, false);
+                animator.SetBool(AnimatorHashVars.JumpHash, true);
                 return;
             }
 
-            if (!mctrl.Grounded) {//check not jumping but is falling
-                animator.SetBool(GroundedHash, false);
+            if (!Mctrl.Grounded) {//check not jumping but is falling
+                animator.SetBool(AnimatorHashVars.GroundedHash, false);
                 return;
             }
 
-            if (mctrl.IsBoosting) {
-                animator.SetBool(BoostHash, true);
+            if (Mctrl.IsBoosting) {
+                animator.SetBool(AnimatorHashVars.BoostHash, true);
             }
         }
     }

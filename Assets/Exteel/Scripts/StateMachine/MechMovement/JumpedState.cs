@@ -15,40 +15,40 @@ namespace StateMachine.MechMovement
             _playedOnLandingAction = false;
 
             if (isFirstjump){
-                mctrl.OnJumpAction();
+                Mctrl.OnJumpAction();
             }
 
-            if (mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
+            if (Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
 
             //mctrl.Boost(false);
-            animator.SetBool(GroundedHash, mctrl.Grounded);
-            animator.SetBool(BoostHash, mctrl.IsBoosting); //avoid shift+space directly vertically boost
+            animator.SetBool(AnimatorHashVars.GroundedHash, Mctrl.Grounded);
+            animator.SetBool(AnimatorHashVars.BoostHash, Mctrl.IsBoosting); //avoid shift+space directly vertically boost
         }
 
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (!cc.enabled) return;
-            mctrl.EnableBoostFlame(animator.GetBool("Boost"));
+            Mctrl.EnableBoostFlame(animator.GetBool(AnimatorHashVars.BoostHash));
 
             UpdateAnimatorParameters(animator);
 
-            if (!mctrl.IsJumping && mctrl.Grounded){
-                animator.SetBool(JumpHash, false);
-                animator.SetBool(GroundedHash, true);
+            if (!Mctrl.IsJumping && Mctrl.Grounded){
+                animator.SetBool(AnimatorHashVars.JumpHash, false);
+                animator.SetBool(AnimatorHashVars.GroundedHash, true);
                 return;
             }
 
-            if (!isFirstjump && animator.GetBool("Grounded")){
-                //TODO : consider move this part to groundedstate
+            if (!isFirstjump && animator.GetBool(AnimatorHashVars.GroundedHash)){
+                //TODO : consider move this part to grounded state
                 if (!_playedOnLandingAction){
                     _playedOnLandingAction = true;
-                    mctrl.OnLandingAction();
+                    Mctrl.OnLandingAction();
                 }
             }
 
-            if (mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
+            if (Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
 
-            if (mctrl.IsBoosting){
-                animator.SetBool(BoostHash, true);
+            if (Mctrl.IsBoosting){
+                animator.SetBool(AnimatorHashVars.BoostHash, true);
             }
         }
     }
