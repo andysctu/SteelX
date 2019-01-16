@@ -4,21 +4,7 @@
 	{
 		#region Variables
 		public Weapon WeaponId { get; private set; }
-		public WeaponType Class
-		{
-			get
-			{
-				//if (WeaponId == Weapon.NONE)
-				//	return WeaponType.NONE;
-				//else 
-					switch (WeaponId)
-				{
-					case Weapon.NONE:
-					default:
-						return WeaponType.NONE;
-				}
-			}
-		}
+		public WeaponType Class { get { return GetWeapType(WeaponId); } }
 
 
 		/// <summary>
@@ -66,6 +52,21 @@
 		/// 
 		/// </summary>
 		public int Description { get; set; }
+		#endregion
+
+		#region Methods
+		public static WeaponType GetWeapType(Weapon weap)
+		{
+			//if (WeaponId == Weapon.NONE)
+			//	return WeaponType.NONE;
+			//else 
+			switch (weap)
+			{
+				case Weapon.NONE:
+				default:
+					return WeaponType.NONE;
+			}
+		}
 		#endregion
 
 		#region Database
