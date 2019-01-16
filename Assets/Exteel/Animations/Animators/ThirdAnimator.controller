@@ -8,12 +8,6 @@ AnimatorController:
   m_Name: ThirdAnimator
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: slashTime
-    m_Type: 1
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 0}
   - m_Name: CanExit
     m_Type: 4
     m_DefaultFloat: 0
@@ -55,12 +49,6 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 1
-    m_Controller: {fileID: 0}
-  - m_Name: OnMelee
-    m_Type: 4
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
     m_Controller: {fileID: 0}
   - m_Name: RCLShoot
     m_Type: 4
@@ -790,7 +778,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0801fd2fb810e7d4ab2a14d31d5690d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isFirstjump: 1
+  isFirstJump: 0
 --- !u!114 &114147608594540934
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1075,7 +1063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0801fd2fb810e7d4ab2a14d31d5690d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isFirstjump: 1
+  isFirstJump: 0
 --- !u!114 &114625306755726312
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1111,7 +1099,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0801fd2fb810e7d4ab2a14d31d5690d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isFirstjump: 0
+  isFirstJump: 0
 --- !u!114 &114651622854694322
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1202,7 +1190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0801fd2fb810e7d4ab2a14d31d5690d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isFirstjump: 0
+  isFirstJump: 0
 --- !u!114 &114765016269845596
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -3647,9 +3635,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: SlashL
     m_EventTreshold: 0
-  - m_ConditionMode: 3
-    m_ConditionEvent: slashTime
-    m_EventTreshold: 0.46
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102848109539274534}
   m_Solo: 0
@@ -4953,9 +4938,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: SlashL
     m_EventTreshold: 0
-  - m_ConditionMode: 3
-    m_ConditionEvent: slashTime
-    m_EventTreshold: 0.75
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102704428689021496}
   m_Solo: 0
@@ -6600,9 +6582,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: SlashR
     m_EventTreshold: 0
-  - m_ConditionMode: 3
-    m_ConditionEvent: slashTime
-    m_EventTreshold: 0.75
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102877593147698310}
   m_Solo: 0
@@ -7185,9 +7164,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: SlashL
     m_EventTreshold: 0
-  - m_ConditionMode: 3
-    m_ConditionEvent: slashTime
-    m_EventTreshold: 0.75
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102372192665576740}
   m_Solo: 0
@@ -7314,9 +7290,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: SlashR
     m_EventTreshold: 0
-  - m_ConditionMode: 3
-    m_ConditionEvent: slashTime
-    m_EventTreshold: 0.46
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102901174581686530}
   m_Solo: 0
@@ -7500,9 +7473,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: SlashR
     m_EventTreshold: 0
-  - m_ConditionMode: 3
-    m_ConditionEvent: slashTime
-    m_EventTreshold: 0.75
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 1102870359215765946}
   m_Solo: 0
