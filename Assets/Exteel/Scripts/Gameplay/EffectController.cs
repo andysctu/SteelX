@@ -66,7 +66,7 @@ public class EffectController : MonoBehaviour {
         switchWeaponEffectR.Play();
     }
 
-    public void BoostingDustEffect(bool b) {//controlled by horizontal boosting state
+    public void BoostingDustEffect(bool b) {
         if (b) {
             if (!isBoostingDustPlaying) {
                 boostingDust.Play();

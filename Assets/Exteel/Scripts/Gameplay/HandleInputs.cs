@@ -1,6 +1,4 @@
-﻿using System;
-using ExitGames.Client.Photon;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class HandleInputs : MonoBehaviour
 {

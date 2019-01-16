@@ -68,6 +68,9 @@ public abstract class Combat : Photon.MonoBehaviour {
 
     public abstract int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon);
 
+    public virtual void Attack(int weapPos, int[] additionalFields = null) {
+    }
+
     [PunRPC]
     public virtual void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
     }

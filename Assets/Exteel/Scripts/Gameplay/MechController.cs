@@ -3,7 +3,7 @@ using UnityEngine;
 using Utility;
 
 // MechController controls the position of the player
-public class MechController : Photon.MonoBehaviour {
+public class MechController : Photon.MonoBehaviour, IPunObservable {
     [SerializeField] public MovementVariables movementVariables = new MovementVariables();
     private BuildMech _buildMech;
     private MechCombat _mechCombat;
@@ -17,7 +17,6 @@ public class MechController : Photon.MonoBehaviour {
     //Booster 
     [SerializeField] private Transform boosterBone;
     private BoosterController _boosterController;
-    private bool isBoostFlameOn = false;
 
     //To remake
     [SerializeField] private EffectController EffectController;
@@ -285,7 +284,6 @@ public class MechController : Photon.MonoBehaviour {
 
             //Detect jump
             if (cmd.buttons[(int)UserButton.Space]) {
-                Debug.Log("detect jump");
                 IsJumping = true;
                 JumpReleased = false;
                 IsAvailableVerBoost = true;
@@ -426,7 +424,7 @@ public class MechController : Photon.MonoBehaviour {
 
         if(InstantMoveRemainingDistance > 0){
             _characterController.Move(InstantMoveDir * InstantMoveSpeed * cmd.msec);
-            InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed * cmd.msec).magnitude;
+            InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed).magnitude * cmd.msec;
         }
 
         //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
@@ -473,11 +471,7 @@ public class MechController : Photon.MonoBehaviour {
     }
 
     public void EnableBoostFlame(bool enable){
-        if (enable != isBoostFlameOn) {
-            isBoostFlameOn = enable;
-
-            BoostFlame(enable, Grounded);
-        }
+        BoostFlame(enable, Grounded);
     }
 
     public void SetVerBoostStartPos(float pos){
@@ -498,7 +492,7 @@ public class MechController : Photon.MonoBehaviour {
         //The speed is independent of duration
         InstantMoveRemainingDistance = distance;
         InstantMoveRemainingTime = duration;
-        InstantMoveDir = dir;//Note : may have problem
+        InstantMoveDir = dir.normalized;//Note : may have problem
 
         if (CheckIsGrounded()) InstantMoveDir = new Vector3(InstantMoveDir.x, 0, InstantMoveDir.z);// make sure not slashing to the sky
     }
@@ -599,8 +593,7 @@ public class MechController : Photon.MonoBehaviour {
     private void BoostFlame(bool boost, bool boostdust) {
         if (boost) {
             _boosterController.StartBoost();
-            if (boostdust)
-                EffectController.BoostingDustEffect(true);
+            if (boostdust)EffectController.BoostingDustEffect(true);
         } else {
             _boosterController.StopBoost();
             EffectController.BoostingDustEffect(false);
@@ -649,6 +642,25 @@ public class MechController : Photon.MonoBehaviour {
 
     public PhotonPlayer GetOwner(){
         return _owner;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
+        if (!GetOwner().IsLocal && stream.isReading){
+            Speed = (float)stream.ReceiveNext();
+            Direction = (float)stream.ReceiveNext();
+            Angle = (float)stream.ReceiveNext();
+
+            IsBoosting = (bool)stream.ReceiveNext();
+            IsJumping = (bool)stream.ReceiveNext();
+            Grounded = CheckIsGrounded();
+        } else{
+            stream.SendNext(Speed);
+            stream.SendNext(Direction);
+            stream.SendNext(Angle);
+
+            stream.SendNext(IsBoosting);
+            stream.SendNext(IsJumping);
+        }
     }
 }
 

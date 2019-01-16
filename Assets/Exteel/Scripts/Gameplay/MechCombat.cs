@@ -172,8 +172,15 @@ public class MechCombat : Combat {
         rangedWeapon.Shoot(direction, targetPvID, targetWeapPos);
     }
 
-    public void Attack(int weapPos){
+    public override void Attack(int weapPos, int[] additionalFields = null){//always called by master
+        photonView.RPC("AttackRpc", PhotonTargets.Others, weapPos, additionalFields);
+    }
 
+    [PunRPC]
+    public void AttackRpc(int weapPos, int[] additionalFields) {//play effect use
+        if(bm.Weapons == null || bm.Weapons[weapPos] == null)return;
+
+        bm.Weapons[weapPos].AttackRpc(additionalFields);
     }
 
     [PunRPC]

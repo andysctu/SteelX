@@ -7,7 +7,7 @@ public class BoosterController : MonoBehaviour {
     [SerializeField] private Animator animator;
 
     private AudioSource audioSource;
-
+    private bool _isBoostFlameOn;
     private void Start() {
         InitAudioSource();
     }
@@ -25,8 +25,10 @@ public class BoosterController : MonoBehaviour {
     }
 
     public void StartBoost() {
-        if(audioSource == null)//this gameObejct is destroyed
+        if(audioSource == null || _isBoostFlameOn)//this gameObejct is destroyed
             return;
+
+        _isBoostFlameOn = true;
 
         audioSource.PlayOneShot(BoostOpen);
         if (BoostLoop != null) audioSource.Play();
@@ -38,10 +40,13 @@ public class BoosterController : MonoBehaviour {
     }
 
     public void StopBoost() {
-        if (audioSource == null) {//this gameObejct is destroyed
+        if (audioSource == null || !_isBoostFlameOn) {//this gameObject is destroyed
             Debug.LogWarning("StopBoost gets called when boosterController is destroyed.");//TODO : debug take out
             return;
         }
+
+        _isBoostFlameOn = false;
+
         if (BoostLoop != null) audioSource.Stop();
         animator.SetTrigger("close");
         foreach (ParticleSystem ps in PSs) {
