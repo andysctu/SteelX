@@ -7,7 +7,6 @@ namespace StateMachine
         protected CharacterController cc;
         protected MechController Mctrl;
         protected MechIK MechIK;
-        protected EffectController EffectController;
 
         private bool _isInit;
 
@@ -17,7 +16,6 @@ namespace StateMachine
             cc = animator.GetComponent<CharacterController>();
             Mctrl = animator.GetComponent<MechController>();
             MechIK = animator.GetComponent<MechIK>();
-            EffectController = animator.transform.root.GetComponentInChildren<EffectController>();
 
             _isInit = true;
         }

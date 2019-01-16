@@ -33,8 +33,8 @@ namespace Weapons
             PoseStateExit
         }
 
-        public override void Init(WeaponData data, int hand, Transform handTransform, Combat cbt, Animator Animator){
-            base.Init(data, hand, handTransform, cbt, Animator);
+        public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator){
+            base.Init(data, hand, handTransform, Cbt, Animator);
 
             InitComponents();
             InitAtkAnimHash();

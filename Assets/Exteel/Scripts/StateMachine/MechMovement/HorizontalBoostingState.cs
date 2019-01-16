@@ -4,26 +4,25 @@ namespace StateMachine.MechMovement
 {
     public class HorizontalBoostingState : MechStateMachineBehaviour
     {
-
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             base.Init(animator);
         }
 
-        override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            EffectController.UpdateBoostingDust();
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+            if (cc == null || !cc.enabled) return;
 
-            Mctrl.EnableBoostFlame(animator.GetBool(AnimatorHashVars.BoostHash));
-
-            if ((Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            Mctrl.EnableBoostFlame(Mctrl.IsBoosting);
 
             UpdateAnimatorParameters(animator);
 
-            if (!Mctrl.Grounded){
-                animator.SetBool(AnimatorHashVars.GroundedHash, false);
+            if (Mctrl.IsJumping) {
+                animator.SetBool(AnimatorHashVars.JumpHash, true);
+                return;
             }
 
-            if (Mctrl.IsJumping){
-                animator.SetBool(AnimatorHashVars.JumpHash, true);
+            if (!Mctrl.Grounded){
+                animator.SetBool(AnimatorHashVars.GroundedHash, false);
+                return;
             }
 
             animator.SetBool(AnimatorHashVars.BoostHash, Mctrl.IsBoosting);

@@ -1,30 +1,29 @@
 ﻿using UnityEngine;
 
-namespace StateMachine.MechMovement
-{
+namespace StateMachine.MechMovement {
     public class GroundedState : MechStateMachineBehaviour {
-        override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
             base.Init(animator);
 
-            if ((Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            if (cc == null || !cc.enabled) return;
 
             animator.SetBool(AnimatorHashVars.GroundedHash, true);
         }
 
-        override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-            Mctrl.EnableBoostFlame(animator.GetBool(AnimatorHashVars.BoostHash));
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+            Mctrl.EnableBoostFlame(Mctrl.IsBoosting);
 
-            if ((Mctrl.GetOwner() != null && !Mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            if (cc == null || !cc.enabled) return;
 
             UpdateAnimatorParameters(animator);
 
-            if (Mctrl.IsJumping && !Mctrl.Grounded) {//TODO : condition : you can't jump if playing melee attack
+            if (Mctrl.IsJumping) {
                 animator.SetBool(AnimatorHashVars.GroundedHash, false);
                 animator.SetBool(AnimatorHashVars.JumpHash, true);
                 return;
             }
 
-            if (!Mctrl.Grounded) {//check not jumping but is falling
+            if (!Mctrl.Grounded) {//falling
                 animator.SetBool(AnimatorHashVars.GroundedHash, false);
                 return;
             }

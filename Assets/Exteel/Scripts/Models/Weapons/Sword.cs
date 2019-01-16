@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using XftWeapon;
 
 namespace Weapons
@@ -14,7 +15,9 @@ namespace Weapons
 
         private int _curCombo;
         private float _curComboEndTime;//AttackEnd is called when time exceeds curComboEndTime
-        private const float ReceiveNextAttackThreshold = 0.2f;//receiving the input after attacking start time + this
+        private const float ReceiveNextAttackThreshold = 0.1f;//receiving the input after attacking start time + this && before start time + last combo length - this
+        private const int DetectShieldMaxDistance = 50; //the ray which checks if hitting shield max distance
+        private const float MinInstantMoveDistance = 5;//the min distance to target
         private float _instantMoveDistanceInAir = 22, _instantMoveDistanceOnGround = 17;
 
         private float[] _attackAnimationLengths;
@@ -61,7 +64,7 @@ namespace Weapons
                 return;
             }
 
-            if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack) {
+            if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || Time.time < TimeOfLastUse + _attackAnimationLengths[_curCombo - 1] - ReceiveNextAttackThreshold)) {
                 if (!_receiveNextSlash || !Cbt.CanMeleeAttack)return;
                 if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
@@ -85,15 +88,19 @@ namespace Weapons
             }
         }
 
+        public override void AttackRpc(int[] additionalFields){
+            if(Mctrl.GetOwner().IsLocal)return;
+
+            PlaySlashEffect(additionalFields[0]);
+        }
+
         protected virtual void AttackStartAction(){
             IsFiring = true;
             TimeOfLastUse = Time.time;
 
-            PlaySlashAnimation(Hand);
-            MeleeAttack(Hand);//todo : check this
-            Mctrl.SetInstantMoving(Mctrl.GetForwardVector(),  (Mctrl.IsJumping) ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, Mctrl.IsJumping ? _attackAnimationLengths[(int)SlashType.AirAttack] * 0.8f : _attackAnimationLengths[_curCombo]);
-
-            if (_slashSounds != null && _slashSounds[_curCombo] != null) WeaponAudioSource.PlayOneShot(_slashSounds[_curCombo]);
+            PlaySlashEffect(_curCombo);
+            DetectTarget();
+            if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, new int[]{_curCombo});
 
             Cbt.CanMeleeAttack = Mctrl.Grounded;
             Mctrl.ResetCurBoostingSpeed();
@@ -108,6 +115,11 @@ namespace Weapons
             IsFiring = false;
 
             Mctrl.LockMechRot(false);
+        }
+
+        protected virtual void PlaySlashEffect(int combo){
+            PlaySlashAnimation(Hand);
+            if (_slashSounds != null && _slashSounds[combo] != null) WeaponAudioSource.PlayOneShot(_slashSounds[combo]);
         }
 
         protected override void ResetMeleeVars(){//this is called when on skill or init
@@ -164,6 +176,80 @@ namespace Weapons
         }
 
         public override void WeaponAnimationEvent(int hand, string s){
+        }
+
+        public virtual void DetectTarget() {//TODO : check this
+            Transform closestTarget = null;
+
+            if ((TargetsInCollider = SlashDetector.getCurrentTargets()).Count != 0) {
+                int damage = data.damage;
+
+                foreach (Transform target in TargetsInCollider) {
+                    if (target == null) continue;
+
+                    //cast a ray to check if hitting shield
+                    bool isHitShield = false, isTerrainBlocksTheWay = false;
+                    Transform t = target;
+
+                    var hitPoints = Physics.RaycastAll(Cbt.transform.position + new Vector3(0, 5, 0),
+                        target.transform.root.position - Cbt.transform.position, DetectShieldMaxDistance, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
+
+                    foreach (RaycastHit hit in hitPoints) {
+                        if (hit.transform.root == target) {
+                            if (hit.collider.transform.tag[0] == 'S') {//todo : improve this
+                                isHitShield = true;
+                                t = hit.collider.transform;
+                            }
+
+                            break;
+                        } else if (hit.transform.gameObject.layer == TerrainLayer) {
+                            //Terrain blocks the way
+                            isTerrainBlocksTheWay = true;
+                            break;
+                        }
+                    }
+
+                    if (isTerrainBlocksTheWay) continue;
+
+                    if (isHitShield) {
+                        ShieldActionReceiver ShieldActionReceiver = t.transform.parent.GetComponent<ShieldActionReceiver>();
+                        int shieldPos = ShieldActionReceiver.GetPos(); //which hand holds the shield?
+                        target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PlayerPv.viewID, WeapPos, shieldPos);
+                    } else {
+                        target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PlayerPv.viewID, WeapPos, -1);
+                    }
+
+                    if (target.GetComponent<Combat>().CurrentHP <= 0) {
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, Cbt.GetCamera());
+                    } else {
+                        if (isHitShield)
+                            target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, Cbt.GetCamera());
+                        else
+                            target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, Cbt.GetCamera());
+                    }
+                    if(closestTarget == null) closestTarget = target;
+
+                    Cbt.IncreaseSP(data.SpIncreaseAmount);
+                }
+            }
+
+            InstantMove(_curCombo, closestTarget);
+        }
+
+        protected virtual void InstantMove(int combo, Transform target){
+            if (target != null) {
+                if (Mctrl.IsJumping) {//as usual
+                    Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), _instantMoveDistanceInAir, _attackAnimationLengths[(int)SlashType.AirAttack] * 0.8f);
+                } else {//move closer to target
+                    if((target.position - Mctrl.transform.position).magnitude > MinInstantMoveDistance)
+                        Mctrl.SetInstantMoving(target.position - Mctrl.transform.position, (target.position - Mctrl.transform.position).magnitude / 2, _attackAnimationLengths[_curCombo]);
+                    else{
+                        Mctrl.SetInstantMoving(target.position - Mctrl.transform.position, 0, _attackAnimationLengths[_curCombo]);
+                    }
+                }
+            } else {//move forward
+                Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), (Mctrl.IsJumping) ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, Mctrl.IsJumping ? _attackAnimationLengths[(int)SlashType.AirAttack] * 0.8f : _attackAnimationLengths[_curCombo]);
+            }
         }
     }
 }

@@ -4,58 +4,44 @@ namespace StateMachine.Attack
 {
     public class SlashState : MechStateMachineBehaviour
     {
-        private bool inAir, detectedGrounded;
-        private float threshold = 1;
+        private float threshold = 1;//todo :check this
+        private bool _isInAir;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             base.Init(animator);
 
-            animator.SetFloat("slashTime", 0);
-            animator.SetBool("CanExit", false);
-
             if (cc == null || !cc.enabled) return;
 
-            inAir = Mctrl.IsJumping;
-            detectedGrounded = false;
-            
+            _isInAir = Mctrl.IsJumping;
+            animator.SetBool("CanExit", false);
+
             animator.SetBool(AnimatorHashVars.SlashLHash, false);
             animator.SetBool(AnimatorHashVars.SlashRHash, false);
             animator.SetBool(AnimatorHashVars.BoostHash, false);
 
-            //Boost Effect
-            if (inAir){
-                //mctrl.Boost(true);
-            } else{
-                //mctrl.Boost(false);
-            }
+            Mctrl.EnableBoostFlame(_isInAir);
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            animator.SetFloat("slashTime", stateInfo.normalizedTime);
+            if (cc == null || !cc.enabled) return;
 
-            if (stateInfo.normalizedTime > threshold && !animator.IsInTransition(0)){
+            if (stateInfo.normalizedTime > threshold && !animator.IsInTransition(3)){
                 animator.SetBool("CanExit", true);
             }
 
-            if (cc == null || !cc.enabled) return;
-
             Mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
 
-            if (stateInfo.normalizedTime > 0.5f && !detectedGrounded){
-                //if (b){
-                    //mctrl.Boost(false);
-                //}
-
-                if (Mctrl.Grounded) {
-                    detectedGrounded = true;
-                    //mctrl.Boost(false);
-                }
+            if (_isInAir &&  stateInfo.normalizedTime > 0.7f){
+                Mctrl.EnableBoostFlame(false);
             }
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            animator.SetFloat("slashTime", 0);
+            if (cc == null || !cc.enabled) return;
+
             animator.SetBool("CanExit", false);
+            Mctrl.LockMechRot(false);
+            if (_isInAir)Mctrl.EnableBoostFlame(false);
         }
     }
 }

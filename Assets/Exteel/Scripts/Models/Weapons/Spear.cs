@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Weapons
 {
@@ -10,6 +11,8 @@ namespace Weapons
         //_prepareToAttack : process next combo when current one end
 
         private float _curComboEndTime;//AttackEnd is called when time exceeds curComboEndTime
+        private const int DetectShieldMaxDistance = 50; //the ray which checks if hitting shield max distance
+        private const float MinInstantMoveDistance = 5;//the min distance to target
         private float _instantMoveDistanceInAir = 25, _instantMoveDistanceOnGround = 19;
 
         private float[] _attackAnimationLengths;
@@ -61,16 +64,20 @@ namespace Weapons
             }
         }
 
+        public override void AttackRpc(int[] additionalFields) {
+            if (Mctrl.GetOwner().IsLocal) return;
+
+            PlaySlashEffect();
+        }
+
         protected virtual void AttackStartAction() {
             IsFiring = true;
             TimeOfLastUse = Time.time;
             _curComboEndTime = Time.time + ((Mctrl.IsJumping) ? _attackAnimationLengths[(int)SmashType.AirAttack] : _attackAnimationLengths[(int)SmashType.NormalAttack]);
 
-            Smash(Hand);
-            MeleeAttack(Hand);//todo : check this
-            Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), (Mctrl.IsJumping) ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, Mctrl.IsJumping ? _attackAnimationLengths[(int)SmashType.AirAttack] * 0.8f : _attackAnimationLengths[(int)SmashType.NormalAttack]);
-
-            if (_smashSound != null) WeaponAudioSource.PlayOneShot(_smashSound);
+            PlaySlashEffect();
+            DetectTarget();//todo : check this
+            if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos);
 
             Cbt.CanMeleeAttack = Mctrl.Grounded;
             Mctrl.ResetCurBoostingSpeed();
@@ -79,6 +86,11 @@ namespace Weapons
         protected virtual void AttackEndAction() {//This is being called once after combo end
             IsFiring = false;
             Mctrl.LockMechRot(false);
+        }
+
+        protected virtual void PlaySlashEffect() {
+            PlaySmashAnimation(Hand);
+            if (_smashSound != null) WeaponAudioSource.PlayOneShot(_smashSound);
         }
 
         protected override void ResetMeleeVars(){
@@ -126,8 +138,82 @@ namespace Weapons
             }
         }
 
-        public void Smash(int hand) {
+        public void PlaySmashAnimation(int hand) {
             MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorHashVars.SmashLHash : AnimatorHashVars.SmashRHash, true);
+        }
+
+        public virtual void DetectTarget() {//TODO : check this
+            Transform closestTarget = null;
+
+            if ((TargetsInCollider = SlashDetector.getCurrentTargets()).Count != 0) {
+                int damage = data.damage;
+
+                foreach (Transform target in TargetsInCollider) {
+                    if (target == null) continue;
+
+                    //cast a ray to check if hitting shield
+                    bool isHitShield = false, isTerrainBlocksTheWay = false;
+                    Transform t = target;
+
+                    var hitPoints = Physics.RaycastAll(Cbt.transform.position + new Vector3(0, 5, 0),
+                        target.transform.root.position - Cbt.transform.position, DetectShieldMaxDistance, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
+
+                    foreach (RaycastHit hit in hitPoints) {
+                        if (hit.transform.root == target) {
+                            if (hit.collider.transform.tag[0] == 'S') {//todo : improve this
+                                isHitShield = true;
+                                t = hit.collider.transform;
+                            }
+
+                            break;
+                        } else if (hit.transform.gameObject.layer == TerrainLayer) {
+                            //Terrain blocks the way
+                            isTerrainBlocksTheWay = true;
+                            break;
+                        }
+                    }
+
+                    if (isTerrainBlocksTheWay) continue;
+
+                    if (isHitShield) {
+                        ShieldActionReceiver ShieldActionReceiver = t.transform.parent.GetComponent<ShieldActionReceiver>();
+                        int shieldPos = ShieldActionReceiver.GetPos(); //which hand holds the shield?
+                        target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PlayerPv.viewID, WeapPos, shieldPos);
+                    } else {
+                        target.GetComponent<PhotonView>().RPC("OnHit", PhotonTargets.All, damage, PlayerPv.viewID, WeapPos, -1);
+                    }
+
+                    if (target.GetComponent<Combat>().CurrentHP <= 0) {
+                        target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, Cbt.GetCamera());
+                    } else {
+                        if (isHitShield)
+                            target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, Cbt.GetCamera());
+                        else
+                            target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, Cbt.GetCamera());
+                    }
+                    if (closestTarget == null) closestTarget = target;
+
+                    Cbt.IncreaseSP(data.SpIncreaseAmount);
+                }
+            }
+
+            InstantMove(closestTarget);
+        }
+
+        protected virtual void InstantMove(Transform target) {
+            if (target != null) {
+                if (Mctrl.IsJumping) {//as usual
+                    Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), _instantMoveDistanceInAir, _attackAnimationLengths[(int)SmashType.AirAttack] * 0.8f);
+                } else {//move closer to target
+                    if ((target.position - Mctrl.transform.position).magnitude > MinInstantMoveDistance)
+                        Mctrl.SetInstantMoving(target.position - Mctrl.transform.position, (target.position - Mctrl.transform.position).magnitude / 2, _attackAnimationLengths[(int)SmashType.NormalAttack]);
+                    else{
+                        Mctrl.SetInstantMoving(target.position - Mctrl.transform.position, 0, _attackAnimationLengths[(int)SmashType.NormalAttack]);
+                    }
+                }
+            } else {//move forward
+                Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), (Mctrl.IsJumping) ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, Mctrl.IsJumping ? _attackAnimationLengths[(int)SmashType.AirAttack] * 0.8f : _attackAnimationLengths[(int)SmashType.NormalAttack]);
+            }
         }
     }
 }

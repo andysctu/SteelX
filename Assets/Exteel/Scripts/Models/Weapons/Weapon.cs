@@ -191,6 +191,10 @@ namespace Weapons
         public virtual void WeaponAnimationEvent(int hand, string s){
         }
 
+        //for other players to play effect
+        public virtual void AttackRpc(int[] additionalFields){
+        }
+
         public virtual void OnDestroy(){
             if (weapon != null) Object.Destroy(weapon);
         }
