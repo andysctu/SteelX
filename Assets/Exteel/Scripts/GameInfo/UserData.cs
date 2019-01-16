@@ -18,7 +18,7 @@ public class UserData : MonoBehaviour {
         PhotonNetwork.sendRateOnSerialize = 30;
 
         if (FindObjectsOfType<UserData>().Length > 1)//already exist
-            Destroy(transform.parent.gameObject);
+            Destroy(transform.gameObject);
 
         SetVolume();
         InitMechs();

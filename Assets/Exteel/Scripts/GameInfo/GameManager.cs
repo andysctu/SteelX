@@ -267,7 +267,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
-        SceneManager.LoadScene("MainScenes");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainScenes");
     }
 
     protected abstract void ShowScorePanel(bool b);
