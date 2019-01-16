@@ -9,8 +9,14 @@
 			get
 			{
 				//if (WeaponId == Weapon.NONE)
-					return WeaponType.NONE;
-				//else switch
+				//	return WeaponType.NONE;
+				//else 
+					switch (WeaponId)
+				{
+					case Weapon.NONE:
+					default:
+						return WeaponType.NONE;
+				}
 			}
 		}
 
@@ -60,26 +66,6 @@
 		/// 
 		/// </summary>
 		public int Description { get; set; }
-		#endregion
-
-		#region Enums
-		public enum Weapon
-		{
-			NONE = 0
-		}
-		public enum WeaponType
-		{
-			NONE = 0,
-			Shields,
-			Rectifiers,	
-			Rifles,		
-			Rockets,	
-			SMGs,		
-			Shotguns,	
-			Spears,		
-			Blades,						  
-			Cannons 
-		}
 		#endregion
 
 		#region Database
