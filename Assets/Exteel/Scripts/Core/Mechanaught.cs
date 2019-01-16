@@ -1,25 +1,57 @@
-﻿namespace Exteel.Core
+﻿using Exteel;
+
+namespace Exteel
 {
-	public class Player
-	{
-		internal Mechanaughts LoadFromServer(System.Guid HashId)
-		{
-			//GetPart(Id);
-			//SetColor(int, datetime expire)
-			//SetDurability(int)
-			throw new System.Exception("Part ID doesnt exist in the database. Please check Arms constructor.");
-		}
-	}
 	public struct Mech
 	{
-		public Mechanaughts.Parts Arms		{ get; set; }
-		public Mechanaughts.Parts Legs		{ get; set; }
-		public Mechanaughts.Parts Core		{ get; set; }
-		public Mechanaughts.Parts Head		{ get; set; }
-		public Mechanaughts.Parts Booster	{ get; set; }
-		//ToDo: Weapons
+		public Parts Arms		{ get; set; }
+		public Parts Legs		{ get; set; }
+		public Parts Core		{ get; set; }
+		public Parts Head		{ get; set; }
+		public Parts Booster	{ get; set; }
+		//ToDo: Weapons, Done? => Run Unit Tests
+		//public Weapon Weapons	{ get; set; }
+		public MechWeapons[] WeaponSet	{ get; set; }
 		//ToDo: Mech Colors
 	}
+	public struct MechWeapons
+	{
+		public Weapon LH	{ get; set; }
+		public Weapon RH	{ get; set; }
+		public bool IsTwoHanded	{ get { return LH == RH & (this == WeaponType.Rockets || this == WeaponType.Rifles); } }
+
+		#region Explicit Operators
+		//public static bool operator == (Weapon lh, Weapon rh)
+		public static bool operator == (MechWeapons equip, WeaponType weap)
+		{
+			return weap == Exteel.Core.Weapons.GetWeapType(equip.LH != Weapon.NONE ? equip.LH : equip.RH);
+		}
+		public static bool operator != (MechWeapons equip, WeaponType weap)
+		{
+			return weap != Exteel.Core.Weapons.GetWeapType(equip.LH != Weapon.NONE ? equip.LH : equip.RH);
+		}
+		//public static bool operator == (MechWeapons lh, MechWeapons rh)
+		//{
+		//	return true;
+		//}
+		//public static bool operator != (MechWeapons lh, MechWeapons rh)
+		//{
+		//	return true;
+		//}
+		public override bool Equals(object obj)
+		{
+			return base.Equals(obj);
+		}
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		#endregion
+	}
+}
+
+namespace Exteel.Core
+{
 	public class Mechanaughts
 	{
 		#region Variables
@@ -45,6 +77,7 @@
 		#endregion
 
 		#region Nested Classes
+		//ToDo: Rank Required is missing from Parts database 
 		public class Arms : Part
 		{
 			#region Variables
@@ -2126,5 +2159,12 @@ new Boosters(
 			public int Description { get; set; }
 		}
 		#endregion
+	}
+}
+
+namespace Exteel.Game
+{
+	public class Mechanaughts : Exteel.Core.Mechanaughts
+	{
 	}
 }

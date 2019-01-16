@@ -1,5 +1,10 @@
-﻿namespace Exteel.Weapons
+﻿namespace Exteel.Core
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	/// ToDo: In-Game weapons should use [2][2] (to track ammo, and other misc data)
+	/// Use bool to check for Weapon[n][IsEquipped && IsTwoHanded]
 	public class Weapons
 	{
 		#region Variables
