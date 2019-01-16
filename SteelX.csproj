@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2017.4.3f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -637,7 +639,6 @@
     <None Include="Assets\Demo Chat\Resources\BitstreamVeraSans\README.TXT" />
     <None Include="Assets\Demo Chat\Resources\BitstreamVeraSans\RELEASENOTES.TXT" />
     <None Include="Assets\Demo Chat\Resources\OpenSans\Apache License.txt" />
-    <None Include="Assets\Editor\PhotonChat\photon-chat-readme.txt" />
     <None Include="Assets\Exteel\Maps\City\Materials\Night Building.shader" />
     <None Include="Assets\Exteel\Maps\City\Read Me.txt" />
     <None Include="Assets\MyUnityAssets\Archanor\Sci-Fi Arsenal\Sci-Fi Arsenal Readme.txt" />
