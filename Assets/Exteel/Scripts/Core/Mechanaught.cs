@@ -55,25 +55,115 @@ namespace Exteel.Core
 	public class Mechanaughts
 	{
 		#region Variables
-		public Arms Arm			{ get; private set; }
-		public Legs Leg			{ get; private set; }
-		public Cores Core		{ get; private set; }
-		public Heads Head		{ get; private set; }
-		public Boosters Booster { get; private set; }
-		public Boosters[,] Weapons { get; private set; }
+		public Arms Arm				{ get; private set; }
+		public Legs Leg				{ get; private set; }
+		public Cores Core			{ get; private set; }
+		public Heads Head			{ get; private set; }
+		public Boosters Booster		{ get; private set; }
+		public Weapons[,] Weapons	{ get; private set; }
 
-		public int Durability	{ get; private set; }
-		public int Weight		{ get; private set; }
-		public int Size			{ get; private set; }
-		//public int CurrentHP	{ get; private set; }
-		//public int MaxHP		{ get; private set; }
-		public int HP			{ get; private set; }
-		public int EN			{ get; private set; }
-		public int SP			{ get; private set; }
-		public int MPU			{ get; private set; }
-		public int MoveSpeed	{ get; private set; }
-		public int EN_Recovery	{ get; private set; }
-		public int MinEN_Required { get; private set; }
+		//ToDo: Add Weapon Durability to Mech's?
+		public int Durability		{ get { return Arm.Durability + Leg.Durability + Core.Durability + Head.Durability + Booster.Durability; } }
+		public int Weight			{ get { return Arm.Weight + Leg.Weight + Core.Weight + Head.Weight + Booster.Weight; } }
+		public int Size				{ get { return Arm.Size + Leg.Size + Core.Size + Head.Size + Booster.Size; } }
+		public int HP				{ get { return Arm.HP + Leg.HP + Core.HP + Head.HP + Booster.HP; } }
+		public int EN				{ get { return Core.EN; } }
+		public int SP				{ get { return Head.SP; } }
+		public int MPU				{ get { return Head.MPU; } }
+		public int MoveSpeed		{ get { return Leg.BasicSpeed; } }
+		public int EN_Recovery		{ get { return Arm.RecoveryEN + Leg.RecoveryEN + Core.RecoveryEN + Head.RecoveryEN + Booster.RecoveryEN; } }
+		public int MinEN_Required	{ get { return Core.MinEN; } }
+
+		#region Arms
+		public int MaxHeat			{ get { return Arm.MaxHeat; } }
+		public int CooldownRate		{ get { return Arm.CooldownRate; } }
+		public int Marksmanship		{ get { return Arm.Marksmanship; } }
+		#endregion
+		#region Legs
+		public int BasicSpeed		{ get { return MoveSpeed; } }
+		public int Capacity			{ get { return Leg.Capacity; } }
+		public int Deceleration		{ get { return Leg.Deceleration; } }
+		#endregion
+		#region Core
+		public int ENOutputRate		{ get { return Core.OutputRate; } }
+		//public int MinENRequired { get; set; }
+		public int EnergyDrain		{ get { return Arm.EnergyDrain + Leg.EnergyDrain + Core.EnergyDrain + Head.EnergyDrain + Booster.EnergyDrain; } }
+		#endregion
+		#region Head
+		public int ScanRange		{ get { return Head.ScanRange; } }
+		#endregion
+		#region Booster
+		public int DashOutput		{ get { return Booster.DashOutput; } }
+		public int DashENDrain		{ get { return Booster.DashDrainEN; } }
+		public int JumpENDrain		{ get { return Booster.JumpDrainEN; } }
+		#endregion
+		#endregion
+
+		#region Constructor
+		public Mechanaughts() 
+		{
+			Arm = new Arms(Parts.AGM001);
+			Leg = new Legs(Parts.LGM001);
+			Core = new Cores(Parts.CGM001);
+			Head = new Heads(Parts.HGM001);
+			Booster = new Boosters(Parts.PGM001);
+		}
+		public Mechanaughts(Mech mech) : this()
+		{
+			Arm = new Arms(mech.Arms);
+			Leg = new Legs(mech.Legs);
+			Core = new Cores(mech.Core);
+			Head = new Heads(mech.Head);
+			Booster = new Boosters(mech.Booster);
+		}
+		public Mechanaughts LoadOut(MechWeapons weap, byte set = 1)
+		{
+			SetWeapons(weap, set);
+			return this;
+		}
+		public void SetWeapons(MechWeapons weap, byte loadout = 1)
+		{
+			Weapons[loadout, 1] = new Weapons(weap.LH);
+			Weapons[loadout, 2] = new Weapons(weap.RH);
+		}
+		#endregion
+
+		#region Sample Code from Alpha
+		//public int HP, EN, SP, MPU;
+		//public int Size, Weight;
+		public int VerticalBoostSpeed { get; set; }
+		private float DashAcceleration { get; set; }
+		private float DashDecelleration { get; set; }
+
+		public float GetJumpENDrain(int totalWeight)
+		{
+			return JumpENDrain + totalWeight / 160f;//TODO : improve this
+		}
+
+		public float GetDashSpeed(int totalWeight)
+		{
+			return DashOutput * 1.8f - totalWeight * 0.004f; //DashOutput * 1.8f : max speed  ;  0.004 weight coefficient
+		}
+
+		public float GetMoveSpeed(int partWeight, int weaponWeight)
+		{
+			int cal_capacity = (Capacity > 195000) ? 195000 : Capacity;
+
+			double x1 = 0.0001064 * cal_capacity + 190.2552f, x2 = -0.0000024659 * cal_capacity + 0.69024f;
+			//Debug.Log("part weight : "+partWeight + " weapon Weight : "+weaponWeight);
+			//Debug.Log("basic speed : "+BasicSpeed + " coeff x1 : "+x1+" , x2 : "+x2);
+			return (float)(BasicSpeed - (partWeight * x2 + weaponWeight) / x1);
+		}
+
+		public float GetDashAcceleration(int totalWeight)
+		{
+			return GetDashSpeed(totalWeight) / 100f - 1;
+		}
+
+		public float GetDashDecelleration(int totalWeight)
+		{
+			return Deceleration / 10000f - (totalWeight - Deceleration) / 20000f;
+		}
 		#endregion
 
 		#region Nested Classes
@@ -98,7 +188,7 @@ namespace Exteel.Core
 			#region Constructor
 			public Arms(Parts arm)
 			{
-				Arms Arm = GetPart(arm);
+				Arms Arm		= GetPart(arm)	  ;
 				PartName 		= Arm.PartName	  ;
 				DisplayName		= Arm.DisplayName ;
 				RankRequired	= Arm.RankRequired;
@@ -2166,5 +2256,8 @@ namespace Exteel.Game
 {
 	public class Mechanaughts : Exteel.Core.Mechanaughts
 	{
+		new public Exteel.Core.Weapons[][] Weapons { get; set; }
+
+		public int MaxHP { get { return base.HP; } }
 	}
 }

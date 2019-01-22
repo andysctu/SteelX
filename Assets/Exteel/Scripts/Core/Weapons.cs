@@ -39,6 +39,7 @@
 		public float Accuracy	{ get; private set; }
 		public float Reload		{ get; private set; }
 		public float Overheat	{ get; private set; }
+		public int BuyPrice		{ get; private set; }
 		/// <summary>
 		/// </summary>
 		/// ToDo: When in hands of player, price is buy multiplied by (durability divided by max durability)
@@ -46,11 +47,9 @@
 		/// If value is null, then option does not exist
 		/// Index[1] : Credits
 		/// Index[2] : Coins
-		public virtual int? SellPrice	{ get { return 0; } }
-		public int BuyPrice	{ get; private set; }
+		public virtual int SellPrice	{ get { return 0; } } //abstract
 		/// <summary>
 		/// Rank required to purchase or equip part
-		/// 
 		/// </summary>
 		public byte RankRequired { get; set; }
 		/// <summary>
@@ -59,7 +58,47 @@
 		public int Description { get; set; }
 		#endregion
 
+		#region Constructor
+		public Weapons(Weapon weap)
+		{
+			//Weapons weapon = GetWeapon(weap);
+			//PartName = weapon.PartName;
+			//DisplayName = weapon.DisplayName;
+			//RankRequired = weapon.RankRequired;
+			//HP = weapon.HP;
+			//Size = weapon.Size;
+			//Weight = weapon.Weight;
+			//EnergyDrain = weapon.EnergyDrain;
+			//MaxHeat = weapon.MaxHeat;
+			//CooldownRate = weapon.CooldownRate;
+			//Marksmanship = weapon.Marksmanship;
+			//WeightSeries = weapon.WeightSeries;
+		}
+		public Weapons(Weapon? name = null, string display = null, byte rank = 0, int hp = 0, int size = 0, int weight = 0, int endrain = 0, int heat = 0, int cooldown = 0, int mark = 0, WeightClass? type = null)
+		{
+			//PartName = name.HasValue ? name.Value : Weapon.NONE;
+			//DisplayName = display ?? "GameMaster";
+			//RankRequired = rank;
+			//HP = hp;
+			//Size = size;
+			//Weight = weight;
+			//EnergyDrain = endrain;
+			//MaxHeat = heat;
+			//CooldownRate = cooldown;
+			//Marksmanship = mark;
+			//WeightSeries = type.HasValue ? type.Value : WeightClass.Standard;
+		}
+		#endregion
+
 		#region Methods
+		internal Weapons GetWeapon(Weapon ID)
+		{
+			foreach (Weapons weap in Database)
+			{
+				if (weap.WeaponId == ID) return weap;
+			}
+			throw new System.Exception("Part ID doesnt exist in the database. Please check Arms constructor.");
+		}
 		public static WeaponType GetWeapType(Weapon weap)
 		{
 			//if (WeaponId == Weapon.NONE)
