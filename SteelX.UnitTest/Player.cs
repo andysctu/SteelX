@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Exteel;
 
 namespace SteelX.UnitTest
 {
@@ -105,6 +106,37 @@ namespace SteelX.UnitTest
 		[TestMethod]
 		public void Mechanaughts_Get_MinEN_Required()
 		{
+		}
+		#endregion
+
+		#region Operateor Stats
+		public void CompareTwoMechForOperatorStatsDifference()
+		{
+			//Whatever player is viewing on screen, create it, and calculate data
+			Exteel.Core.Mechanaughts shopMech = new Exteel.Core.Mechanaughts(new Exteel.Mech());
+			Exteel.Core.Mechanaughts active = new Exteel.Core.Mechanaughts(new Exteel.Mech());//new Player.Player().ActiveMech;
+			string[] stat_differences = new string[shopMech.OperatorStats.Length];
+
+			//int[] displayMech = TransformMechPropertiesToArray();
+
+			//foreach (var item in TransformMechPropertiesToArray())
+			for (int i = 0; i < shopMech.OperatorStats.Length; i++)
+			{
+				//Return the data for the model player is viewing
+				//stat_differences.text = currentModel;
+
+				//if there is a difference in stats from model player is viewing, and the one player has equiped
+				int diff = shopMech.OperatorStats[i] - active.OperatorStats[i];
+				if (System.Math.Abs(diff) > 0) //If difference is positive or negative
+				{
+					//stat_differences[j].text = (newMechPropertiesArray[j] - curMechPropertiesArray[j] > 0 ? "▲" : "▼") + (Mathf.Abs(newMechPropertiesArray[j] - curMechPropertiesArray[j])).ToString();
+					//stat_differences[j].color = newMechPropertiesArray[j] - curMechPropertiesArray[j] > 0 ? RED : BLUE;
+					//stat_differences.text = diff;
+					//stat_differences.color = diff > 0 ? RED : BLUE;
+					stat_differences[i] = string.Format("{0} {1}", diff > 0 ? "▲" : "▼", Math.Abs(diff).ToString());
+					//stat_differences[i].color = diff > 0 ? RED : BLUE;
+				}
+			}
 		}
 		#endregion
 
