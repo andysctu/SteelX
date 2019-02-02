@@ -58,8 +58,10 @@
     <Compile Include="Assets\Exteel\Animations\UI\HUD.cs" />
     <Compile Include="Assets\Exteel\Animations\UI\HUDText.cs" />
     <Compile Include="Assets\Exteel\Animations\UI\UIManager.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Core\GlobalServer.cs" />
     <Compile Include="Assets\Exteel\Scripts\Core\Player.cs" />
     <Compile Include="Assets\Exteel\Scripts\Core\Enums.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Core\UI\OperatorStatsUI.cs" />
     <Compile Include="Assets\Exteel\Scripts\Core\Weapons.cs" />
     <Compile Include="Assets\Exteel\Scripts\GameInfo\CTFManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\GameInfo\DDOL.cs" />
@@ -97,11 +99,6 @@
     <Compile Include="Assets\Exteel\Scripts\Gameplay\DroneCombat.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\DroneController.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\EffectController.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\ElectricBolt.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\EnableLocal.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\Flag.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\FollowTarget.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\GreyZone.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\HandleInputs.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\HealthPool.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\HeatBar.cs" />

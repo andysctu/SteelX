@@ -73,6 +73,33 @@ namespace Exteel.Core
 		public int MoveSpeed		{ get { return Leg.BasicSpeed; } }
 		public int EN_Recovery		{ get { return Arm.RecoveryEN + Leg.RecoveryEN + Core.RecoveryEN + Head.RecoveryEN + Booster.RecoveryEN; } }
 		public int MinEN_Required	{ get { return Core.MinEN; } }
+		public int[] OperatorStats
+		{
+			get
+			{
+				int[] PropertiesArray = new int[System.Enum.GetNames(typeof(OperatorStat)).Length];
+				PropertiesArray[(byte)OperatorStat.HP]				= HP;
+				PropertiesArray[(byte)OperatorStat.EN]				= EN;
+				PropertiesArray[(byte)OperatorStat.SP]				= SP;
+				PropertiesArray[(byte)OperatorStat.MPU]				= MPU;
+				PropertiesArray[(byte)OperatorStat.Size]			= Size;
+				PropertiesArray[(byte)OperatorStat.Weight]			= Weight;
+				//PropertiesArray[6] = (int)mechProperty.GetMoveSpeed(partWeight, weaponWeight);
+				//PropertiesArray[7] = (int)mechProperty.GetDashSpeed(partWeight + weaponWeight);
+				PropertiesArray[(byte)OperatorStat.ENOutputRate]	= ENOutputRate;
+				PropertiesArray[(byte)OperatorStat.MinEN_Required]	= MinEN_Required;//MinENRequired;
+				PropertiesArray[(byte)OperatorStat.DashENDrain]		= DashENDrain;
+				PropertiesArray[(byte)OperatorStat.JumpENDrain]		= JumpENDrain;//GetJumpENDrain(partWeight + weaponWeight);
+				//PropertiesArray[12] = mechProperty.GetDashAcceleration(partWeight + weaponWeight);
+				//PropertiesArray[13] = mechProperty.GetDashDecelleration(partWeight + weaponWeight);
+				PropertiesArray[(byte)OperatorStat.MaxHeat]			= MaxHeat;
+				PropertiesArray[(byte)OperatorStat.CooldownRate]	= CooldownRate;
+				PropertiesArray[(byte)OperatorStat.ScanRange]		= ScanRange;
+				PropertiesArray[(byte)OperatorStat.Marksmanship]	= Marksmanship;
+
+				return PropertiesArray;
+			}
+		}
 
 		#region Arms
 		public int MaxHeat			{ get { return Arm.MaxHeat; } }
@@ -167,6 +194,23 @@ namespace Exteel.Core
 		#endregion
 
 		#region Nested Classes
+		public enum OperatorStat
+		{
+			HP,
+			EN,
+			SP,
+			MPU,
+			Size,
+			Weight,
+			ENOutputRate,
+			MinEN_Required,
+			DashENDrain,
+			JumpENDrain,
+			MaxHeat,
+			CooldownRate,
+			ScanRange,
+			Marksmanship
+		}
 		//ToDo: Rank Required is missing from Parts database 
 		public class Arms : Part
 		{

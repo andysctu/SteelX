@@ -73,53 +73,55 @@ namespace Exteel.Game
 		public void RefreshDisplay()
 		{
 			//Whatever player is viewing on screen, create it, and calculate data
-			Mech shopMech = new Exteel.Mech();
-			//shopMech.Arms = Parts.AGM001;
+			Exteel.Core.Mechanaughts shopMech = new Exteel.Core.Mechanaughts(new Exteel.Mech());
+			Exteel.Core.Mechanaughts active = new Player.Player().ActiveMech;
 
-			int[] displayMech = TransformMechPropertiesToArray();
+			//int[] displayMech = TransformMechPropertiesToArray();
 
 			//foreach (var item in TransformMechPropertiesToArray())
-			for (int i = 0; i < displayMech.Length; i++)
+			for (int i = 0; i < shopMech.OperatorStats.Length; i++)
 			{
 				//Return the data for the model player is viewing
 				//stat_differences.text = currentModel;
 
 				//if there is a difference in stats from model player is viewing, and the one player has equiped
-				int diff = new Exteel.Core.Mechanaughts(shopMech).HP - new Player.Player().ActiveMech.HP;
+				int diff = shopMech.OperatorStats[i] - active.OperatorStats[i];
 				if (System.Math.Abs(diff) > 0) //If difference is positive or negative
 				{
 					//stat_differences[j].text = (newMechPropertiesArray[j] - curMechPropertiesArray[j] > 0 ? "▲" : "▼") + (Mathf.Abs(newMechPropertiesArray[j] - curMechPropertiesArray[j])).ToString();
 					//stat_differences[j].color = newMechPropertiesArray[j] - curMechPropertiesArray[j] > 0 ? RED : BLUE;
 					//stat_differences.text = diff;
 					//stat_differences.color = diff > 0 ? RED : BLUE;
+					stat_differences[i].text = string.Format("{0} {1}", diff > 0 ? "▲" : "▼", System.Math.Abs(diff).ToString());
+					stat_differences[i].color = diff > 0 ? RED : BLUE;
 				}
 			}
 		}
 
-		private int[] TransformMechPropertiesToArray() {//MechProperty mechProperty, int partWeight, int weaponWeight) {
-			Exteel.Core.Mechanaughts mechProperty = new Player.Player().ActiveMech;
-			int[] PropertiesArray = new int[STAT_LABELS];
-			PropertiesArray[0] = mechProperty.HP;
-			PropertiesArray[1] = mechProperty.EN;
-			PropertiesArray[2] = mechProperty.SP;
-			PropertiesArray[3] = mechProperty.MPU;
-			PropertiesArray[4] = mechProperty.Size;
-			PropertiesArray[5] = mechProperty.Weight;
-			//PropertiesArray[6] = (int)mechProperty.GetMoveSpeed(partWeight, weaponWeight);
-			//PropertiesArray[7] = (int)mechProperty.GetDashSpeed(partWeight + weaponWeight);
-			PropertiesArray[8] = mechProperty.ENOutputRate;
-			PropertiesArray[9] = mechProperty.MinEN_Required;//MinENRequired;
-			PropertiesArray[10] = mechProperty.DashENDrain;
-			PropertiesArray[11] = mechProperty.JumpENDrain;//GetJumpENDrain(partWeight + weaponWeight);
-			//PropertiesArray[12] = mechProperty.GetDashAcceleration(partWeight + weaponWeight);
-			//PropertiesArray[13] = mechProperty.GetDashDecelleration(partWeight + weaponWeight);
-			PropertiesArray[14] = mechProperty.MaxHeat;
-			PropertiesArray[15] = mechProperty.CooldownRate;
-			PropertiesArray[16] = mechProperty.ScanRange;
-			PropertiesArray[17] = mechProperty.Marksmanship;
-
-			return PropertiesArray;
-		}
+		//private int[] TransformMechPropertiesToArray() {//MechProperty mechProperty, int partWeight, int weaponWeight) {
+		//	Exteel.Core.Mechanaughts mechProperty = new Player.Player().ActiveMech;
+		//	int[] PropertiesArray = new int[STAT_LABELS];
+		//	PropertiesArray[0] = mechProperty.HP;
+		//	PropertiesArray[1] = mechProperty.EN;
+		//	PropertiesArray[2] = mechProperty.SP;
+		//	PropertiesArray[3] = mechProperty.MPU;
+		//	PropertiesArray[4] = mechProperty.Size;
+		//	PropertiesArray[5] = mechProperty.Weight;
+		//	//PropertiesArray[6] = (int)mechProperty.GetMoveSpeed(partWeight, weaponWeight);
+		//	//PropertiesArray[7] = (int)mechProperty.GetDashSpeed(partWeight + weaponWeight);
+		//	PropertiesArray[8] = mechProperty.ENOutputRate;
+		//	PropertiesArray[9] = mechProperty.MinEN_Required;//MinENRequired;
+		//	PropertiesArray[10] = mechProperty.DashENDrain;
+		//	PropertiesArray[11] = mechProperty.JumpENDrain;//GetJumpENDrain(partWeight + weaponWeight);
+		//	//PropertiesArray[12] = mechProperty.GetDashAcceleration(partWeight + weaponWeight);
+		//	//PropertiesArray[13] = mechProperty.GetDashDecelleration(partWeight + weaponWeight);
+		//	PropertiesArray[14] = mechProperty.MaxHeat;
+		//	PropertiesArray[15] = mechProperty.CooldownRate;
+		//	PropertiesArray[16] = mechProperty.ScanRange;
+		//	PropertiesArray[17] = mechProperty.Marksmanship;
+		//
+		//	return PropertiesArray;
+		//}
 
 		//public void DisplayMechProperties() {
 		//	curMechProperty = Mech.MechProperty;
