@@ -275,6 +275,13 @@
       <Name>Assembly-CSharp</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\Newtonsoft.Json.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.AccessControl.DLL" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Client.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Documents.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Extensions.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Spreadsheets.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
