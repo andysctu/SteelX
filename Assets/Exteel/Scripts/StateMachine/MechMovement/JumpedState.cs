@@ -29,7 +29,7 @@ namespace StateMachine.MechMovement
 
             UpdateAnimatorParameters(animator);
 
-            if (!Mctrl.IsJumping && Mctrl.Grounded){
+            if (Mctrl.Grounded){
                 animator.SetBool(AnimatorHashVars.JumpHash, false);
                 animator.SetBool(AnimatorHashVars.GroundedHash, true);
                 return;

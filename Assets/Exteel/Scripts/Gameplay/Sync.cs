@@ -14,7 +14,7 @@ public class Sync : Photon.MonoBehaviour {
 
     private void Update() {
         if (!PhotonNetwork.isMasterClient && _owner != null && !_owner.IsLocal) {
-            transform.position = Vector3.Lerp(transform.position, _trueLoc, Time.deltaTime * 10); //TODO : pass curPos in HandleInputs
+            transform.position = Vector3.Lerp(transform.position, _trueLoc, Time.deltaTime * 10);
             transform.rotation = Quaternion.Lerp(transform.rotation, _trueRot, Time.deltaTime * 10);
             _mainCam.rotation = _camTrueRot;
         }

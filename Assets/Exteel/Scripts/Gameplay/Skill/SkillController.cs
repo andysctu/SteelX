@@ -43,12 +43,12 @@ public class SkillController : MonoBehaviour {
 
     private void Awake() {
         Debug.Log("skillcontroller awake : "+gameObject.name);
-        InitSkillAnimatorControllers();
-        RegisterOnSkill();//TODO : remake this
-        RegisterOnMechBuilt();
-        RegisterOnWeaponBuilt();
-        RegisterOnWeaponSwitched();
-        InitSkillHUD();
+        //InitSkillAnimatorControllers();
+        //RegisterOnSkill();//TODO : remake this
+        //RegisterOnMechBuilt();
+        //RegisterOnWeaponBuilt();
+        //RegisterOnWeaponSwitched();
+        //InitSkillHUD();
     }
 
     private void RegisterOnMechBuilt() {
@@ -260,7 +260,7 @@ public class SkillController : MonoBehaviour {
         }
     }
 
-    private void InitSkillAnimatorControllers() {
+    private void InitSkillAnimatorControllers() {//conflicts with mcbt override
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
 

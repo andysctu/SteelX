@@ -1,21 +1,15 @@
-﻿using StateMachine;
-using UnityEngine;
+﻿using UnityEngine;
 using Weapons;
 using Weapons.Bullets;
 
 public class Rifle : RangedWeapon {
     private AudioClip _shotSound, _reloadSound;
     private Bullet _bullet;
+    private bool _playedBulletEffect;
 
     protected override void LoadSoundClips() {
         _shotSound = ((RifleData)data).shotSound;
         _reloadSound = ((RifleData)data).reload_sound;
-    }
-
-    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield) {
-        if (data.Slowdown && !isShield) {
-            //target.GetComponent<MechController>().SlowDown();
-        }
     }
 
     protected override void UpdateMechArmState() {
@@ -24,29 +18,25 @@ public class Rifle : RangedWeapon {
 
     public override void HandleAnimation() {
         if (IsFiring) {
-            if (Time.time - startShootTime >= 0.1f) { //0.1f : animation min time
-                if (atkAnimationIsPlaying) {
-                    atkAnimationIsPlaying = false;
-                    MechAnimator.SetBool(AtkAnimHash, false);
-                }
-            } else {
-                if (!atkAnimationIsPlaying) {
-                    MechAnimator.SetBool(AtkAnimHash, true);
-                    atkAnimationIsPlaying = true;
-                }
-            }
-        } else {
-            if (atkAnimationIsPlaying) {
+            if (Time.time - TimeOfLastUse >= 0.2f) { //0.2f : animation min time
                 MechAnimator.SetBool(AtkAnimHash, false);
-                atkAnimationIsPlaying = false;
+                IsFiring = false;
+
+                ReloadEffect();
             }
+
+            //if (IsIkOn) {
+            //    UpdateIk();
+            //}
         }
     }
 
-    protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon) {
+    protected override void DisplayBullet(Vector3 direction, IDamageable target) {
         _bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
+        _bullet.transform.position = EffectEnd.position;
 
-        _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);   
+        _bullet.InitBullet(MechCam, PlayerPv, direction, target);
+        _bullet.Play();
     }
 
     public override void OnSkillAction(bool enter) {
@@ -66,23 +56,14 @@ public class Rifle : RangedWeapon {
         }
     }
 
-    public override void OnStateCallBack(int type, MechStateMachineBehaviour state) {
-        switch ((StateCallBackType)type) {
-            case StateCallBackType.AttackStateEnter:
-            break;
-            case StateCallBackType.AttackStateUpdate:
-            if (_bullet != null && Time.time - startShootTime >= 0.05f) {//Play the effects here to fit the animation 
-                _bullet.transform.position = EffectEnd.position;
-                _bullet.Play();
-                _bullet = null;
-                Muzzle.Play();
-                WeaponAudioSource.PlayOneShot(_shotSound);
-            }
-            break;
-            case StateCallBackType.ReloadStateEnter:
-            WeaponAnimator.SetTrigger("Reload");
-            if(_reloadSound!=null)WeaponAudioSource.PlayOneShot(_reloadSound);
-            break;
-        }
+    private void ReloadEffect(){
+        WeaponAnimator.SetTrigger("Reload");
+        if (_reloadSound != null) WeaponAudioSource.PlayOneShot(_reloadSound);
+    }
+
+    protected override void PlayShootEffect(Vector3 direction, IDamageable target) {
+        base.PlayShootEffect(direction, target);
+
+        WeaponAudioSource.PlayOneShot(_shotSound);
     }
 }

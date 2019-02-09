@@ -4,7 +4,7 @@ namespace StateMachine.Attack
 {
     public class SlashState : MechStateMachineBehaviour
     {
-        private float threshold = 1;//todo :check this
+        private float threshold = 0.95f;//todo :check this
         private bool _isInAir;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
@@ -12,7 +12,7 @@ namespace StateMachine.Attack
 
             if (cc == null || !cc.enabled) return;
 
-            _isInAir = Mctrl.IsJumping;
+            _isInAir = !Mctrl.Grounded;
             animator.SetBool("CanExit", false);
 
             animator.SetBool(AnimatorHashVars.SlashLHash, false);

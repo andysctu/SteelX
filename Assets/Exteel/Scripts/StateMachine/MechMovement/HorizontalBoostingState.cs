@@ -15,13 +15,12 @@ namespace StateMachine.MechMovement
 
             UpdateAnimatorParameters(animator);
 
-            if (Mctrl.IsJumping) {
-                animator.SetBool(AnimatorHashVars.JumpHash, true);
-                return;
-            }
-
             if (!Mctrl.Grounded){
                 animator.SetBool(AnimatorHashVars.GroundedHash, false);
+
+                if (Mctrl.YSpeed > 0){
+                    animator.SetBool(AnimatorHashVars.JumpHash, true);
+                }
                 return;
             }
 

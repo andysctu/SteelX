@@ -1,5 +1,4 @@
-﻿using StateMachine;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Weapons
 {
@@ -15,7 +14,6 @@ namespace Weapons
         protected PhotonView PlayerPv;
         protected HeatBar HeatBar;
         protected Animator MechAnimator, WeaponAnimator;
-        protected AnimatorHashVars AnimatorHashVars;
         protected AudioSource WeaponAudioSource;
 
         //Another weapon
@@ -26,7 +24,7 @@ namespace Weapons
         public string WeaponName;
         public bool AllowBothWeaponUsing, IsFiring = false; //Whether the Mech Atk animation is playing or not
         protected int Hand, WeapPos; //Two-handed weapon's Hand is 0
-        protected KeyCode BUTTON;
+        protected KeyCode MouseButton;
         protected float TimeOfLastUse, Rate;
         protected const int LEFT_HAND = 0, RIGHT_HAND = 1;
         protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
@@ -37,8 +35,6 @@ namespace Weapons
             Ranged,
             Cannon,
             Rocket,
-            Skill,
-            Debuff,
             None
         };
 
@@ -53,7 +49,7 @@ namespace Weapons
             this.WeapPos = pos;
             Mctrl = this.Cbt.GetComponent<MechController>();
 
-            BUTTON = (Hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
+            MouseButton = (Hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
 
             InstantiateWeapon(data);
             InitComponents();
@@ -124,21 +120,7 @@ namespace Weapons
         public virtual void HandleAnimation(){
         }
 
-        public virtual void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-            //This is called in onHit rpc
-        }
-
-        public virtual void PlayOnHitEffect(){
-        }
-
-        public virtual void OnHitAction(Combat shooter, Weapon shooterWeapon){
-            //what to do if this weapon gets hit
-        }
-
         public virtual void OnSkillAction(bool enter){
-        }
-
-        public virtual void OnRateChanged(){
         }
 
         public virtual void OnWeaponSwitchedAction(bool b){
@@ -159,10 +141,6 @@ namespace Weapons
             if (b){
                 OnOverHeatAction(b);
             }
-        }
-
-        public virtual int ProcessDamage(int damage, AttackType type){
-            return damage;
         }
 
         public virtual void IncreaseHeat(int amount){
@@ -188,24 +166,12 @@ namespace Weapons
             weapon.transform.localPosition = Vector3.zero;
         }
 
-        public virtual void WeaponAnimationEvent(int hand, string s){
-        }
-
         //for other players to play effect
-        public virtual void AttackRpc(int[] additionalFields){
+        public virtual void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) {
         }
 
         public virtual void OnDestroy(){
             if (weapon != null) Object.Destroy(weapon);
-        }
-
-        public virtual bool IsShield(){
-            //general meaning of a shield
-            return false;
-        }
-
-        public int GetRawDamage(){
-            return data.damage;
         }
 
         public GameObject GetWeapon(){
@@ -216,8 +182,7 @@ namespace Weapons
             return attackType;
         }
 
-        public virtual void OnStateCallBack(int type, MechStateMachineBehaviour state){
-
+        public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
         }
     }
 }

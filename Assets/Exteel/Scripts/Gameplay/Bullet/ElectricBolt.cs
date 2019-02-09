@@ -31,8 +31,8 @@ public class ElectricBolt : Bullet {
     protected override void LateUpdate() {
         if(!_calledPlay)return;
         _points[point_Begin] = transform.position;
-        if (target != null) {
-            _lineEnd.position = target.position + new Vector3(0, 5f, 0);
+        if (Target != null) {
+            _lineEnd.position = Target.GetTransform().position + new Vector3(0, 5f, 0);
             _points[point_End] = _lineEnd.position;
         } else {
             _points[point_End] = transform.position + cam.transform.forward * 50f;
@@ -50,7 +50,7 @@ public class ElectricBolt : Bullet {
         _calledPlay = true;
     }
 
-    public override void Stop() {
+    public override void StopBulletEffect() {
         _lRend.enabled = false;
         _calledPlay = false;
     }

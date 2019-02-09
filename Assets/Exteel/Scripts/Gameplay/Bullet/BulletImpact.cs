@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Utility;
 
 namespace Weapons.Bullets
 {
@@ -20,18 +21,7 @@ namespace Weapons.Bullets
 
         private void InitComponents(){
             bulletImpact = GetComponent<ParticleSystem>();
-            InitAudioSource();
-        }
-
-        private void InitAudioSource(){
-            AudioSource = gameObject.AddComponent<AudioSource>();
-
-            AudioSource.spatialBlend = 1;
-            AudioSource.dopplerLevel = 0;
-            AudioSource.volume = 1;
-            AudioSource.playOnAwake = false;
-            AudioSource.minDistance = 50;
-            AudioSource.maxDistance = 350;
+            AudioSource = AudioSourceBuilder.Build(gameObject);
         }
 
         public void Play(Vector3 intersection){

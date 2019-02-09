@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace Weapons.Bullets
 {
     public class RocketBullet : Bullet
     {
-        private Rigidbody Rigidbody;
-        private PhotonView bulletPv;
-        private GameObject shooter; //For checking not hitting shooter
-        private LayerMask PlayerLayerMask, TerrainLayerMask;
+        private Rocket _rocket;
+        private Rigidbody _rigidBody;//todo : improve
+        private PhotonView _rocketPv;
+        private PhotonPlayer _shooter;
+        private LayerMask PlayerLayerMask, TerrainLayerMask, ShieldLayerMask;
 
         //bullet info
         private int bulletDmg = 450, shooterWeapPos;
@@ -24,197 +26,151 @@ namespace Weapons.Bullets
         }
 
         private void InitComponents(){
-            bulletPv = GetComponent<PhotonView>();
+            _rocketPv = GetComponent<PhotonView>();
             AttachRigidbody();
         }
 
-        public override void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, Transform target, Weapon shooterWeapon, Weapon targetWeapon){
-            base.InitBullet(cam, shooter_pv, startDirection, target, shooterWeapon, targetWeapon);
-
-            Rocket rocket = shooterWeapon as Rocket;
-            if (rocket != null){
-                SetBulletProperties(rocket.GetRawDamage(), rocket.GetBulletSpeed(), rocket.GetImpactRadius());
-            }
-        }
-
         private void InitVelocity(){
-            //Master update position
-            Rigidbody.velocity = transform.forward * bulletSpeed;
+            _rigidBody.velocity = transform.forward * bulletSpeed;
             transform.LookAt(transform.forward * 9999);
         }
 
         protected void InitGameVariables(){
             TerrainLayerMask = LayerMask.GetMask("Terrain");
             PlayerLayerMask = LayerMask.GetMask("PlayerLayer");
+            ShieldLayerMask = LayerMask.GetMask("Shield");
+        }
+
+        public void SetShooter(PhotonPlayer shooter){
+            _shooter = shooter;
         }
 
         private void Start(){
             bullet_ps.Play();
-
-            if (!PhotonNetwork.isMasterClient) return;
-
-            shooter = shooter_pv.gameObject;
             InitVelocity();
         }
 
-        protected override void LateUpdate(){
-        }
-
-        public void SetBulletProperties(int bulletDmg, float bulletSpeed, float impact_radius){
+        public void SetBulletProperties(Rocket rocket, int bulletDmg, float bulletSpeed, float impact_radius){
+            _rocket = rocket;
             this.bulletDmg = bulletDmg;
             this.bulletSpeed = bulletSpeed;
             this.impact_radius = impact_radius;
         }
 
-        protected override void OnParticleCollision(GameObject other){
-            //Master do the logic & destroy
-            if (!PhotonNetwork.isMasterClient) return;
+        protected override void OnParticleCollision(GameObject target){
+            if (!PhotonNetwork.isMasterClient || isCollided) return;
 
-            if (isCollided || shooter_pv == null || other == shooter) return;
+            bullet_ps.GetCollisionEvents(target, collisionEvents);
+            Vector3 impactPoint = collisionEvents[0].intersection;
 
-            if (GameManager.IsTeamMode){
-                if (((1 << other.layer) & PlayerLayerMask) != 0){
-                    //check if other.layer equals player layer
-                    if (other.transform.root.GetComponent<PhotonView>().owner.GetTeam() == shooter_pv.owner.GetTeam()) return;
+            if (((1 << target.layer) & (PlayerLayerMask | ShieldLayerMask)) != 0) {//check if target is player
+                IDamageable d;
+
+                if ((d = target.GetComponent(typeof(IDamageable)) as IDamageable) != null){
+                    if (!d.IsEnemy(_shooter)){
+                        return;
+                    }else if(((1 << target.layer) & ShieldLayerMask) != 0){//target is shield => only collide with the shield
+                        _rocketPv.RPC("PlayImpact", PhotonTargets.All, bulletDmg, impactPoint, new[]{d.GetPhotonView().viewID}, new[] { d.GetSpecID() });
+                        return;
+                    }
+                } else{
+                    Debug.Log("rocket collides with no IDamageable component target");
+                    return;
                 }
             }
 
             isCollided = true;
 
-            bullet_ps.GetCollisionEvents(other, collisionEvents);
-            Vector3 impact_point = collisionEvents[0].intersection;
+            Collider[] hitPlayerColliders = Physics.OverlapSphere(impactPoint, impact_radius, PlayerLayerMask); // get overlap targets
+            List<IDamageable> playerDamageables = new List<IDamageable>();
 
-            if (PhotonNetwork.isMasterClient && ((1 << other.layer) & TerrainLayerMask) != 0){
-                bulletPv.RPC("PlayImpact", PhotonTargets.All, impact_point);
+            for (int i = 0; i < hitPlayerColliders.Length; i++){
+                IDamageable d = hitPlayerColliders[i].GetComponent(typeof(IDamageable)) as IDamageable;
+                if(d == null || !d.IsEnemy(_shooter))continue;
+
+                //check blocked by shield
+                Debug.DrawLine(impactPoint, impactPoint + d.GetPosition() - impactPoint, Color.red, 2);
+                RaycastHit[] rays = Physics.RaycastAll(impactPoint, d.GetPosition() - impactPoint, (d.GetPosition() - impactPoint).magnitude, ShieldLayerMask);
+                foreach (var r in rays){
+                    IDamageable rD = r.collider.GetComponent(typeof(IDamageable)) as IDamageable;
+                    if(rD != null){
+                        if (rD.GetPhotonView() == d.GetPhotonView()){
+                            d = rD;//set target to shield instead of the player
+                        }
+                    }
+                }
+
+                //check duplicated
+                if (!playerDamageables.Exists(x => x.GetPhotonView() == d.GetPhotonView()))playerDamageables.Add(d);
             }
 
-            Collider[] hitColliders = Physics.OverlapSphere(impact_point, impact_radius, PlayerLayerMask); // get overlap targets
+            int[] playerViewIDs = new int[playerDamageables.Count];
+            int[] playerSpecIDs = new int[playerDamageables.Count];
+            for (int i=0;i<playerDamageables.Count;i++){
+                playerViewIDs[i] = playerDamageables[i].GetPhotonView().viewID;
+                playerSpecIDs[i] = playerDamageables[i].GetSpecID();
+            }
 
-            //sort the distance to increasing order
-            Array.Sort(hitColliders, delegate(Collider A, Collider B){
-                Vector3 A_midpoint, B_midpoint;
+            _rocketPv.RPC("PlayImpact", PhotonTargets.All, bulletDmg, impactPoint, playerViewIDs, playerSpecIDs);
+        }
 
-                A_midpoint = (A.tag != "Shield") ? A.transform.position + MECH_MID_POINT : A.transform.position;
-                B_midpoint = (B.tag != "Shield") ? B.transform.position + MECH_MID_POINT : B.transform.position;
+        [PunRPC]
+        protected void PlayImpact(int damage, Vector3 impactPoint, int[] playerViewIDs, int[] playerSpecIDs){
+            StopBulletEffect();
 
-                return (Vector3.Distance(A_midpoint, impact_point) >= Vector3.Distance(B_midpoint, impact_point)) ? 1 : -1;
-            });
+            GameObject impact = Instantiate(ImpactPrefab.gameObject, impactPoint, Quaternion.identity);
+            BulletImpact BI = impact.GetComponent<BulletImpact>();
+            BI.Play(impactPoint);
+            Destroy(impact, 2);
 
-            List<int> colliderViewIds = new List<int>();
+            if(playerViewIDs == null || playerSpecIDs == null)return;
+            for(int i=0;i<playerViewIDs.Length;i++){
+                PhotonView pv = PhotonView.Find(playerViewIDs[i]);
+                if(pv == null)continue;
 
-            for (int i = 0; i < hitColliders.Length; i++){
-                //check duplicated
-                PhotonView colliderPV = hitColliders[i].transform.root.GetComponent<PhotonView>();
-                if (colliderViewIds.Contains(colliderPV.viewID) || colliderPV.viewID == shooter_pv.viewID){
+                IDamageableManager dm = pv.GetComponent(typeof(IDamageableManager)) as IDamageableManager;
+                IDamageable d;
+                if (dm == null || (d = dm.FindDamageableComponent(playerSpecIDs[i]))== null){
                     continue;
                 }
 
-                //check team & drone
-                if (GameManager.IsTeamMode){
-                    if (other.tag == "Drone" || colliderPV.owner.GetTeam() == shooter_pv.owner.GetTeam()) continue;
-                }
-
-                colliderViewIds.Add(colliderPV.viewID);
-
-                if (hitColliders[i].tag == "Shield"){
-                    ShieldActionReceiver shieldUpdater = hitColliders[i].transform.parent.GetComponent<ShieldActionReceiver>();
-                    int targetWeapPos = shieldUpdater.GetPos();
-
-                    bulletPv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID, targetWeapPos);
-                } else{
-                    bulletPv.RPC("OnHitTarget", PhotonTargets.All, bulletDmg, shooter_pv.viewID, shooterWeapPos, colliderPV.viewID, -1);
-                }
+                d.OnHit(damage, shooterPv, _rocket);
+                d.PlayOnHitEffect();
             }
 
-            if (colliderViewIds.Count == 0){
-                //if no target is hit , then play impact on ground
-                bulletPv.RPC("PlayImpact", PhotonTargets.All, impact_point);
-            }
-        }
-
-        [PunRPC]
-        private void OnHitTarget(int bulletDmg, int shooterPvID, int shooterWeapPos, int targetPvID, int targetWeapPos){
-
-            PhotonView targetPv = PhotonView.Find(targetPvID), shooterPv = PhotonView.Find(shooterPvID);
-            if (targetPv == null){
-                Debug.LogWarning("Can't find pv");
-                return;
-            }
-
-            GameObject targetMech = targetPv.gameObject;
-            Combat shooterCbt = (shooterPv == null) ? null : shooterPv.GetComponent<Combat>();
-            targetCbt = targetMech.GetComponent<Combat>();
-            if (targetCbt == null){
-                Debug.LogError("target cbt is null");
-                return;
-            }
-
-            targetCbt.OnHit(bulletDmg, shooter_pv.viewID, shooterWeapPos, targetWeapPos);
-
-            if (targetWeapPos != -1){
-                targetWeapon = targetCbt.GetWeapon(targetWeapPos);
-                targetWeapon.PlayOnHitEffect();
-
-                if (shooterCbt != null && shooterPv.isMine){
-                    if (targetCbt.CurrentHP - targetCbt.ProcessDmg(bulletDmg, Weapon.AttackType.Rocket, targetWeapon) <= 0){
-                        targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooterCbt.GetCamera());
-                    } else{
-                        targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, shooterCbt.GetCamera());
-                    }
-                }
-            } else{
-                PlayImpact(targetMech.transform.position + MECH_MID_POINT);
-
-                if (shooterCbt != null && shooterPv.isMine){
-                    if (targetCbt.CurrentHP - targetCbt.ProcessDmg(bulletDmg, Weapon.AttackType.Rocket, null) <= 0){
-                        targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooterCbt.GetCamera());
-                    } else{
-                        targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, shooterCbt.GetCamera());
-                        targetCbt.KnockBack(transform.forward, 5f);
-                    }
-                }
-            }
-        }
-
-        [PunRPC]
-        protected override void PlayImpact(Vector3 collisionHitLoc){
-            if (!hasCalledPlayImpact){
-                hasCalledPlayImpact = true;
-                Stop();
-                if (PhotonNetwork.isMasterClient) Invoke("DestroyThis", 5f);
-            }
-
-            GameObject impact = Instantiate(ImpactPrefab.gameObject, collisionHitLoc, Quaternion.identity);
-            BulletImpact BI = impact.GetComponent<BulletImpact>();
-            BI.Play(collisionHitLoc);
-        }
-
-        private void DestroyThis(){
-            PhotonNetwork.Destroy(gameObject);
+            //if (targetCbt.CurrentHP - targetCbt.ProcessDmg(bulletDmg, Weapon.AttackType.Rocket, targetWeapon) <= 0){
+            //    targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, shooterCbt.GetCamera());
+            //} else{
+            //    targetMech.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, shooterCbt.GetCamera());
+            //}
         }
 
         public override void Play(){
-            if (isfollow){
-                if (target == null) return;
-                transform.LookAt(target);
+            if (Isfollow){
+                if (Target == null) return;
+                transform.LookAt(Target.GetPosition());
                 bullet_ps.Play();
             } else{
                 transform.LookAt(startDirection * 9999);
-                Rigidbody.velocity = startDirection * bulletSpeed;
+                _rigidBody.velocity = startDirection * bulletSpeed;
                 bullet_ps.Play();
             }
         }
 
         private void AttachRigidbody(){
-            Rigidbody = gameObject.AddComponent<Rigidbody>();
-            Rigidbody.useGravity = false;
-            Rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            _rigidBody = gameObject.AddComponent<Rigidbody>();
+            _rigidBody.useGravity = false;
+            _rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }
 
-        public override void Stop(){
+        public override void StopBulletEffect(){
             bullet_ps.Stop(true);
-            Destroy(gameObject);
             enabled = false;
+            Destroy(gameObject);
+        }
+
+        public void SetPhotonViewID(int ID){
+            _rocketPv.viewID = ID;
         }
     }
 }

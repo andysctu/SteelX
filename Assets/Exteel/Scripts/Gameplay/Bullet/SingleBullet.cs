@@ -6,7 +6,7 @@ namespace Weapons.Bullets
     {
         private Rigidbody Rigidbody;
 
-        private bool calledStop = false; //make sure not trigger play impact again
+        private bool calledStop; //make sure not trigger play impact multiple times
 
         protected override void Awake(){
             base.Awake();
@@ -25,9 +25,9 @@ namespace Weapons.Bullets
         }
 
         public override void Play(){
-            if (isfollow){
-                if (target == null) return;
-                transform.LookAt(target);
+            if (Isfollow){
+                if (Target == null) return;
+                transform.LookAt(Target.GetPosition());
                 bullet_ps.Play();
             } else{
                 transform.LookAt(startDirection * 9999);
@@ -36,7 +36,7 @@ namespace Weapons.Bullets
             }
         }
 
-        public override void Stop(){
+        public override void StopBulletEffect(){
             calledStop = true;
 
             bullet_ps.Clear();
@@ -46,16 +46,16 @@ namespace Weapons.Bullets
         }
 
         protected override void LateUpdate(){
-            if (isfollow){
-                if (target == null){
-                    Stop();
+            if (Isfollow){
+                if (Target == null){
+                    StopBulletEffect();
                     return;
                 }
 
-                if (Vector3.Distance(transform.position, target.position) <= bulletSpeed * Time.deltaTime){
+                if (Vector3.Distance(transform.position, Target.GetPosition()) <= bulletSpeed * Time.deltaTime){
                     PlayImpact(transform.position);
                 } else{
-                    Rigidbody.velocity = ((isTargetShield) ? (target.position - transform.position) : (target.position + MECH_MID_POINT - transform.position)).normalized * bulletSpeed;
+                    Rigidbody.velocity = (Target.GetPosition() - transform.position).normalized * bulletSpeed;
                 }
             }
         }
@@ -73,19 +73,20 @@ namespace Weapons.Bullets
         protected override void PlayImpact(Vector3 impactPoint){
             if (calledStop) return;
 
-            Stop();
+            StopBulletEffect();
 
-            if (target == null){
+            if (Target == null){
                 bulletImpact.Play(impactPoint);
                 return;
             } else{
-                ShowHitMsg(target);
+                Target.PlayOnHitEffect();
+                //ShowHitMsg(Target);
             }
 
-            if (!isTargetShield){
+            if (!IsTargetShield){
                 bulletImpact.Play(impactPoint);
             } else{
-                if (targetWeapon != null) targetWeapon.PlayOnHitEffect();
+                if(Target != null)Target.PlayOnHitEffect();
             }
         }
     }

@@ -56,10 +56,10 @@ public class HealthPool : Photon.MonoBehaviour {
                 if (!mechCombat.IsHpFull() && syncHealthPoolBar.isAvailable) {
                     if (mechCombat.MAX_HP - mechCombat.CurrentHP >= healAmount) {
                         LastCheckTime = Time.time;
-                        mechCombat.photonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -healAmount);
+                        mechCombat.PhotonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -healAmount);
                     } else {
                         LastCheckTime = Time.time;
-                        mechCombat.photonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -(mechCombat.MAX_HP - mechCombat.CurrentHP));
+                        mechCombat.PhotonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -(mechCombat.MAX_HP - mechCombat.CurrentHP));
                     }
                 } else {
                     LastCheckTime = Time.time;

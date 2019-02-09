@@ -8,6 +8,7 @@ public class CannonData : RangedWeaponData {
 
     [Tooltip("Call reload after shooting MaxBullet times")]
     public int MaxBullet;
+    public float ReloadAnimationLength;
 
     CannonData() {
         WeaponType = typeof(Cannon);

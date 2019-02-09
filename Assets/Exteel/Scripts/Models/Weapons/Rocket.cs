@@ -8,7 +8,7 @@ namespace Weapons
     public class Rocket : RangedWeapon
     {
         private AudioClip _shotSound, _reloadSound;
-        private Bullet _bullet;
+        private RocketBullet _RocketBullet;
 
         private float _bulletSpeed, _impactRadius;
 
@@ -28,101 +28,73 @@ namespace Weapons
             AtkAnimHash = Animator.StringToHash("AtkL");
         }
 
-        public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-            if (isShield){
-                if (targetWeapon != null){
-                    targetWeapon.PlayOnHitEffect();
-                }
-            } else{
-                if (data.Slowdown){
-                    //TODO : implement this
-                }
-            }
-        }
-
         protected override void UpdateMechArmState(){
             MechAnimator.Play("Rocket", 1);
             MechAnimator.Play("Rocket", 2);
         }
 
         public override void HandleAnimation(){
-            if (IsFiring){
-                if (Time.time - startShootTime >= 0.1f){
-                    //0.1f : animation min time
-                    if (atkAnimationIsPlaying){
-                        atkAnimationIsPlaying = false;
-                        MechAnimator.SetBool(AtkAnimHash, false);
-                    }
-                } else{
-                    if (!atkAnimationIsPlaying){
-                        MechAnimator.SetBool(AtkAnimHash, true);
-                        atkAnimationIsPlaying = true;
-                    }
-                }
-            } else{
-                if (atkAnimationIsPlaying){
+            if (IsFiring) {
+                if (Time.time - TimeOfLastUse >= AtkAnimationLength) {
                     MechAnimator.SetBool(AtkAnimHash, false);
-                    atkAnimationIsPlaying = false;
+                    IsFiring = false;
+
+                    ReloadEffect();
                 }
+
+                //if (IsIkOn) {
+                //    UpdateIk();
+                //}
             }
         }
 
-        protected override void FireRaycast(Vector3 start, Vector3 direction, int hand){
-            //TODO : implement rocket that follow targets
-            //does Rocket follow target ?
-            //Transform target = ((hand == 0) ? Crosshair.getCurrentTargetL() : Crosshair.getCurrentTargetR());//target might be shield collider
+        protected override void AttackStartAction() {
+            IsFiring = true;
 
-            Transform target = null;
+            PlayShootEffect(MechCam.transform.forward);
+            if (Cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient) DisplayBullet(MechCam.transform.forward, PhotonNetwork.AllocateViewID());
 
-            if (target != null){
-                PhotonView targetpv = target.transform.root.GetComponent<PhotonView>();
-
-                if (target.tag != "Shield"){
-                    PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetpv.owner, targetpv.viewID, -1);
-                } else{
-                    //check which hand is it
-                    ShieldActionReceiver ShieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
-                    int target_ShieldPos = ShieldActionReceiver.GetPos();
-
-                    PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetpv.owner, targetpv.viewID, target_ShieldPos);
-                }
-            } else{
-                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, -1, -1);
+            if (Cbt.GetOwner().IsLocal) {//crosshair effect
+                if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
             }
+
+            if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
         }
 
-        public override void Shoot(Vector3 direction, int targetPvId, int targetWeapPos){
-            //Play animation imm.
+        public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) {
+            int photonViewId = additionalFields[0];
+
+            if (Cbt.GetOwner().IsLocal){
+                if (_RocketBullet == null){Debug.LogError("local client should not have rocket null");return; }
+                _RocketBullet.SetPhotonViewID(photonViewId);
+                return;
+            }
+
+            TimeOfLastUse = Time.time;
+            IsFiring = true;
+
+            PlayShootEffect(direction);
+            DisplayBullet(direction, additionalFields[0]);
+        }
+
+        protected void PlayShootEffect(Vector3 direction) {
+            MechAnimator.SetBool(AtkAnimHash, true);
             MechAnimator.Play("RocketShootL", 1);
             MechAnimator.Play("RocketShootR", 2);
             MechAnimator.Update(0);
-
             WeaponAnimator.SetTrigger("Atk");
 
-            IsFiring = true;
-            startShootTime = Time.time;
-
-            GameObject target = null;
-            PhotonView targetPv = PhotonView.Find(targetPvId);
-            if (targetPv != null) target = targetPv.gameObject;
-
-            if (target != null){
-                Combat targetCbt = target.GetComponent<Combat>();
-                if (targetCbt == null) return;
-
-                targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
-
-                if (PhotonNetwork.isMasterClient) DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
-
-                Cbt.IncreaseSP(data.SpIncreaseAmount);
-            } else{
-                if (PhotonNetwork.isMasterClient) DisplayBullet(direction, null, null);
-            }
+            Muzzle.Play();
         }
 
-        protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
-            _bullet = PhotonNetwork.Instantiate(BulletPrefab.name, EffectEnd.position, Quaternion.LookRotation(direction, Vector3.up), 0).GetComponent<Bullet>();
-            _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
+        protected void DisplayBullet(Vector3 direction, int photonViewID) {
+            GameObject bulletPrefab = Resources.Load(BulletPrefab.name) as GameObject;
+            _RocketBullet = Object.Instantiate(bulletPrefab, EffectEnd.position, Quaternion.LookRotation(direction, Vector3.up)).GetComponent<RocketBullet>();
+            _RocketBullet.InitBullet(MechCam, PlayerPv, direction, null);
+            _RocketBullet.SetBulletProperties(this, data.damage, _bulletSpeed, _impactRadius);
+            _RocketBullet.SetShooter(Cbt.GetOwner());
+
+            _RocketBullet.SetPhotonViewID(photonViewID);
         }
 
         public override void OnSkillAction(bool enter){
@@ -143,25 +115,9 @@ namespace Weapons
             }
         }
 
-        public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
-            switch ((StateCallBackType) type){
-                case StateCallBackType.AttackStateEnter:
-                    Muzzle.Play();
-                    WeaponAudioSource.PlayOneShot(_shotSound);
-                    break;
-                case StateCallBackType.AttackStateExit:
-                    WeaponAnimator.SetTrigger("Reload");
-                    if (_reloadSound != null) WeaponAudioSource.PlayOneShot(_reloadSound);
-                    break;
-            }
-        }
-
-        public float GetBulletSpeed(){
-            return _bulletSpeed;
-        }
-
-        public float GetImpactRadius(){
-            return _impactRadius;
+        private void ReloadEffect() {
+            WeaponAnimator.SetTrigger("Reload");
+            if (_reloadSound != null) WeaponAudioSource.PlayOneShot(_reloadSound);
         }
     }
 }

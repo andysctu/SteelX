@@ -8,6 +8,7 @@ public class BoosterController : MonoBehaviour {
 
     private AudioSource audioSource;
     private bool _isBoostFlameOn;
+
     private void Start() {
         InitAudioSource();
     }
@@ -40,7 +41,7 @@ public class BoosterController : MonoBehaviour {
     }
 
     public void StopBoost() {
-        if (audioSource == null || !_isBoostFlameOn) {//this gameObject is destroyed
+        if (audioSource == null) {//this gameObject is destroyed
             Debug.LogWarning("StopBoost gets called when boosterController is destroyed.");//TODO : debug take out
             return;
         }

@@ -1,12 +1,11 @@
-﻿using StateMachine;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Weapons
 {
     public class Shield : Weapon
     {
         private Transform _effectEnd;
-        private ShieldActionReceiver _shieldActionReceiver;
+        private ShieldDamageable _shieldDamageable;
         private AudioClip _onHitSound;
         private ParticleSystem _onHitEffect, _overheatEffect;
         private int AtkAnimHash;
@@ -15,7 +14,7 @@ namespace Weapons
             base.Init(data, pos, handTransform, Cbt, Animator);
             InitComponents();
             InitAtkAnimHash();
-            AddShieldActionReceiver();
+            AddShieldDamageable();
             AttachEffects();
             ResetAnimationVars();
         }
@@ -28,9 +27,14 @@ namespace Weapons
             AtkAnimHash = (Hand == 0) ? Animator.StringToHash("AtkL") : Animator.StringToHash("AtkR");
         }
 
-        private void AddShieldActionReceiver(){
-            _shieldActionReceiver = weapon.AddComponent<ShieldActionReceiver>();
-            _shieldActionReceiver.SetPos(WeapPos);
+        private void AddShieldDamageable(){
+            Collider c = weapon.GetComponentInChildren<Collider>();
+            LayerMask _shieldLayerMask = LayerMask.NameToLayer("Shield");
+            c.gameObject.layer = _shieldLayerMask.value;
+            _shieldDamageable = c.gameObject.AddComponent<ShieldDamageable>();
+            _shieldDamageable.Init(this, Cbt, PlayerPv, WeapPos, Hand);
+
+            ((IDamageableManager) Cbt).RegisterDamageableComponent(_shieldDamageable);
         }
 
         private void AttachEffects(){
@@ -64,14 +68,18 @@ namespace Weapons
         }
 
         public override void HandleCombat(usercmd cmd) {
-            if (!Input.GetKey(BUTTON) || IsOverHeat()){
-                IsFiring = false;
+            if (!Input.GetKey(MouseButton) || IsOverHeat()){
+                if (IsFiring){
+                    AttackEndAction();
+                }
                 return;
             }
 
             if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-            IsFiring = true;
+            if (!IsFiring){
+                AttackStartAction();
+            }
         }
 
         public override void HandleAnimation(){
@@ -86,18 +94,39 @@ namespace Weapons
             }
         }
 
+        protected virtual void AttackStartAction(){
+            IsFiring = true;
+
+            if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, Vector3.zero, 0, null, null, new []{0});
+        }
+
+        public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields){
+            if(Cbt.GetOwner().IsLocal)return;
+
+            if(additionalFields == null || additionalFields.Length < 1)return;
+            IsFiring = additionalFields[0] == 0;
+        }
+
+        protected virtual void AttackEndAction() {
+            IsFiring = false;
+
+            if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, Vector3.zero, 0, null, null, new[] {1});
+        }
+
         protected override void LoadSoundClips(){
             _onHitSound = ((ShieldData) data).OnHitSound;
         }
 
-        public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
+        public virtual void OnHit(int damage, PhotonView attacker, Weapon weapon){
+            if (weapon == null){
+                Debug.LogError("attacker passed a null weapon with pv id : " + attacker.viewID);
+                return;
+            }
+
+            Cbt.OnHit(ProcessDamage(damage, weapon.GetWeaponAttackType()), attacker);
         }
 
-        public override void OnHitAction(Combat shooter, Weapon shooterWeapon){
-            IncreaseHeat(shooterWeapon.GetRawDamage() / 10); //TODO : improve this
-        }
-
-        public override void PlayOnHitEffect(){
+        public void PlayOnHitEffect(){
             WeaponAudioSource.PlayOneShot(_onHitSound);
 
             _onHitEffect.Play();
@@ -116,35 +145,32 @@ namespace Weapons
             }
         }
 
-        public override int ProcessDamage(int damage, AttackType attackType){
+        public int ProcessDamage(int damage, AttackType attackType) {
             int newDmg = damage;
             float efficiencyCoeff = (IsOverHeat()) ? 1.5f : 1, efficiency = 1;
 
-            switch (attackType){
+            switch (attackType) {
                 case AttackType.Melee:
-                    efficiency = Mathf.Clamp(((ShieldData) data).defend_melee_efficiency * efficiencyCoeff, 0, 1);
-                    newDmg = (int) (newDmg * efficiency);
-                    break;
-                case AttackType.Ranged:
-                case AttackType.Cannon:
-                case AttackType.Rocket:
-                    efficiency = Mathf.Clamp(((ShieldData) data).defend_ranged_efficiency * efficiencyCoeff, 0, 1);
-                    newDmg = (int) (newDmg * efficiency);
-                    break;
-                case AttackType.None:
-                    break;
+                    efficiency = Mathf.Clamp(((ShieldData)data).defend_melee_efficiency * efficiencyCoeff, 0, 1);
+                    newDmg = (int)(newDmg * efficiency);
+                break;
                 default:
-                    break;
+                    efficiency = Mathf.Clamp(((ShieldData)data).defend_ranged_efficiency * efficiencyCoeff, 0, 1);
+                    newDmg = (int)(newDmg * efficiency);
+                break;
             }
 
             return newDmg;
         }
 
-        public override bool IsShield(){
-            return true;
+        public PhotonPlayer GetOwner(){
+            return Cbt.GetOwner();
         }
 
-        public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
+        public override void OnDestroy(){
+            ((IDamageableManager)Cbt).DeregisterDamageableComponent(_shieldDamageable);
+
+            base.OnDestroy();
         }
     }
 }

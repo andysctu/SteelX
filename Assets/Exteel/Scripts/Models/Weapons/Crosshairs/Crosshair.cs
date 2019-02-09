@@ -61,6 +61,6 @@ namespace Weapons.Crosshairs {
             if (redCrosshair != null) Object.Destroy(redCrosshair);
         }
 
-        public abstract void MarkTarget(Transform target);
+        public abstract void MarkTarget(IDamageable target);
     }
 }

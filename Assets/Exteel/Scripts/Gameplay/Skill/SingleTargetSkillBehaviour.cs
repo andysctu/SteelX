@@ -29,7 +29,7 @@ public class SingleTargetSkillBehaviour : MonoBehaviour, ISkill {
         SingleTargetSkillConfig config = (SingleTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
 
         //Detect target
-        Transform target = Crosshair.DectectTarget(config.SingleTargetSkillParams.crosshairRadius, config.SingleTargetSkillParams.detectRange, 0, false);
+        Transform target = null;//Crosshair.DetectTarget(config.SingleTargetSkillParams.crosshairRadius, config.SingleTargetSkillParams.detectRange, 0, false);
 
         if (target != null) {
             PhotonView target_pv = target.GetComponent<PhotonView>();

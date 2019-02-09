@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Weapons;
 
@@ -98,65 +99,13 @@ public class DroneCombat : Combat {
         CurrentHP = MAX_HP;
     }
 
-    public override int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon){
-        var finalDmg = dmg;
-        if (weapon != null) finalDmg = weapon.ProcessDamage(dmg, attackType);
-
-        return finalDmg;
-    }
-
-    [PunRPC]
-    public override void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
-        if (isDead) { return; }
-
-        PhotonView shooterPv = PhotonView.Find(shooterPvID);
-        if (shooterPv == null) return;
-        GameObject shooterMech = shooterPv.gameObject;
-
-        //Get shooter weapon
-        Combat shooterCbt = (shooterMech == null) ? null : shooterMech.GetComponent<Combat>();
-        if (shooterCbt == null) { Debug.LogWarning("shooter cbt is null."); return; }
-
-        Weapon shooterWeapon = shooterCbt.GetWeapon(shooterWeapPos), targetWeapon = null;
-        if (shooterWeapon == null) { Debug.LogWarning("shooterWeapon is null."); return; }
-
-        Weapon.AttackType attackType = shooterWeapon.GetWeaponAttackType();
-
-        //Get target weapon (this player)
-        if (targetWeapPos != -1) {
-            targetWeapon = Weapons[targetWeapPos];
-            if (targetWeapon == null) { Debug.LogWarning("targetWeapon is null."); return; }
-        }
-
-        bool isShield = (targetWeapon != null && targetWeapon.IsShield());
-        shooterWeapon.OnHitTargetAction(gameObject, targetWeapon, isShield);
-
-        if (targetWeapon != null) targetWeapon.OnHitAction(shooterCbt, shooterWeapon);
-
-        //Calculate Dmg
-        int dmg = ProcessDmg(damage, attackType, targetWeapon);
-
-        //Master handle logic
-        if (PhotonNetwork.isMasterClient) {
-            if (CurrentHP - dmg >= MAX_HP) {
-                CurrentHP = MAX_HP;
-            } else {
-                CurrentHP -= dmg;
-            }
-
-            if (CurrentHP <= 0) {//sync disable player
-                photonView.RPC("DisablePlayer", PhotonTargets.All, shooterPv.owner, shooterWeapon.WeaponName);
-            }
-        }
-
-        //if (photonView.isMine) {//TODO : improve anti hack
-        //    IncreaseSP(damage / 2);
-        //}
-    }
-
     [PunRPC]
     protected override void DisablePlayer(PhotonPlayer shooter, string weapon) {
         DisableDrone();
+    }
+
+    public override PhotonPlayer GetOwner(){
+        return PhotonNetwork.masterClient;
     }
 
     protected override void Update() {
@@ -237,4 +186,7 @@ public class DroneCombat : Combat {
         EnableDrone();
     }
 
+    public override bool IsEnemy(PhotonPlayer compareTo) {//todo : implement drone team
+        return true;
+    }
 }

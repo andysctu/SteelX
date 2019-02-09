@@ -10,9 +10,11 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     private MechCamera _mechCam;
     private CharacterController _characterController;
     private SkillController _skillController;
+    private InputManager _inputManager;
     private Transform _camTransform;
     private Animator _animator;
     private LayerMask _terrainMask;
+    private PhotonView _pv;
 
     //Booster 
     [SerializeField] private Transform boosterBone;
@@ -70,7 +72,7 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     private Transform _pelvis, _spine1;
     private float _rLPelvisDegree, _rLSpineDegree, _rLLerpSpeed = 8, _rLDir, _rotateLegPreSpeed;
 
-    public bool onSkillMoving = false, IsJumping = false;
+    public bool onSkillMoving = false;
     public bool JumpReleased;
 
     private PhotonPlayer _owner;
@@ -89,7 +91,9 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
         _animator = GetComponent<Animator>();
         _mechCombat = GetComponent<MechCombat>();
         _mechCam = GetComponentInChildren<MechCamera>(true);
+        _inputManager = GetComponent<InputManager>();
         _camTransform = _mechCam.transform;
+        _pv = GetComponent<PhotonView>();
         _sounds = currentMech.GetComponent<Sounds>();
 
         _characterController = GetComponent<CharacterController>();
@@ -113,6 +117,7 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
 
     private void Init(){
         _owner = _buildMech.GetOwner();
+        if(_owner.IsLocal) _pv.ObservedComponents.Remove(this);
         _mechCam.Init(_owner);
         GetComponent<Sync>().Init(_owner);
         FindBoosterController();
@@ -191,8 +196,6 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     private void Update() {
         if (!GetOwner().IsLocal && !PhotonNetwork.isMasterClient)return;
 
-        
-
         //TODO : remake this (test use)
         if (_isFootStepVarPositive){
             if (_animator.GetFloat("FootStep") < 0) {
@@ -262,16 +265,12 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     public void GroundedState(usercmd cmd) {
-        Grounded = CheckIsGrounded();
-
-        if (IsJumping){
-            Debug.LogWarning("in grounded , isJumping true");
-        }
-
-        if (IsInstantMoving()){
+        if (IsInstantMoving()) {
             InstantMove(cmd);
             return;
         }
+
+        Grounded = CheckIsGrounded();
 
         if (Grounded) {
             if (cmd.buttons[(int)UserButton.LeftShift] && _mechCombat.IsENAvailable()) {
@@ -284,7 +283,6 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
 
             //Detect jump
             if (cmd.buttons[(int)UserButton.Space]) {
-                IsJumping = true;
                 JumpReleased = false;
                 IsAvailableVerBoost = true;
                 YSpeed = movementVariables.jumpPower;
@@ -363,15 +361,14 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     public void JumpState(usercmd cmd){
-        Grounded = CheckIsGrounded() && YSpeed <= 0;
-
-        if (IsInstantMoving()){
+        if (IsInstantMoving()) {
             InstantMove(cmd);
             return;
         }
 
+        Grounded = CheckIsGrounded() && YSpeed <= 0;
+
         if (Grounded){
-            IsJumping = false;
             IsBoosting = false;
             
             CurMovementState = GroundedState;
@@ -410,29 +407,38 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
         InstantMoveRemainingTime -= cmd.msec;
 
         if (InstantMoveRemainingTime > 0) {
-            YSpeed = 0;
-            XSpeed = 0;
-            ZSpeed = 0;
+            if(InstantMoveRemainingDistance > 0){
+                YSpeed = InstantMoveDir.y * InstantMoveSpeed;
+                XSpeed = InstantMoveDir.x * InstantMoveSpeed;
+                ZSpeed = InstantMoveDir.z * InstantMoveSpeed;
+
+                InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed).magnitude * cmd.msec;
+            } else{
+                YSpeed = 0;
+                XSpeed = 0;
+                ZSpeed = 0;
+            }
         } else {
             if (CheckIsGrounded()) {
-                IsJumping = false;
                 IsBoosting = false;
             }
 
+            YSpeed = 0;
+            XSpeed = 0;
+            ZSpeed = 0;
             return;
         }
 
-        if(InstantMoveRemainingDistance > 0){
-            _characterController.Move(InstantMoveDir * InstantMoveSpeed * cmd.msec);
-            InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed).magnitude * cmd.msec;
-        }
+        //if(InstantMoveRemainingDistance > 0){
+        //    _characterController.Move(InstantMoveDir * InstantMoveSpeed * cmd.msec);
+        //    InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed).magnitude * cmd.msec;
+        //}
 
         //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
         RaycastHit hit;
-        if (!IsJumping && Physics.Raycast(transform.position, -Vector3.up, out hit, _terrainMask)) {
+        if (Grounded && YSpeed <= 0 && Physics.Raycast(transform.position, -Vector3.up, out hit, _terrainMask)) {
             if (Vector3.Distance(hit.point, transform.position) >= _slashTeleportMinDistance && !Physics.CheckSphere(hit.point + new Vector3(0, 2.1f, 0), _characterController.radius, _terrainMask)) {
                 transform.position = hit.point;
-
                 //TODO : map edge case
             }
         }
@@ -493,8 +499,6 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
         InstantMoveRemainingDistance = distance;
         InstantMoveRemainingTime = duration;
         InstantMoveDir = dir.normalized;//Note : may have problem
-
-        if (CheckIsGrounded()) InstantMoveDir = new Vector3(InstantMoveDir.x, 0, InstantMoveDir.z);// make sure not slashing to the sky
     }
 
     private void LateUpdate() {//TODO : improve this
@@ -591,6 +595,8 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     private void BoostFlame(bool boost, bool boostdust) {
+        if(_boosterController == null)return;//lobby mech
+
         if (boost) {
             _boosterController.StartBoost();
             if (boostdust)EffectController.BoostingDustEffect(true);
@@ -611,6 +617,10 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
 
     public void LockMechRot(bool b) {
         _mechCam.LockMechRotation(b);
+    }
+
+    public void LockMechMovement(bool b){
+        //todo : implement this
     }
 
     private void InterruptCurrentMovement(bool b) {
@@ -645,13 +655,12 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
-        if (!GetOwner().IsLocal && stream.isReading){
-            Speed = (float)stream.ReceiveNext();
-            Direction = (float)stream.ReceiveNext();
-            Angle = (float)stream.ReceiveNext();
+        if (stream.isReading){
+            Speed = (float) stream.ReceiveNext();
+            Direction = (float) stream.ReceiveNext();
+            Angle = (float) stream.ReceiveNext();
 
-            IsBoosting = (bool)stream.ReceiveNext();
-            IsJumping = (bool)stream.ReceiveNext();
+            IsBoosting = (bool) stream.ReceiveNext();
             Grounded = CheckIsGrounded();
         } else{
             stream.SendNext(Speed);
@@ -659,39 +668,6 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
             stream.SendNext(Angle);
 
             stream.SendNext(IsBoosting);
-            stream.SendNext(IsJumping);
         }
     }
 }
-
-//if (isSlowDown) {
-//    move.x = move.x * slowDownCoeff;
-//    move.z = move.z * slowDownCoeff;
-//}
-
-/*
- *
- *     public void CallMoving(float speed) {//also called by Cn shoot with speed < 0
-    //if (!pv.isMine)
-    //    return;
-
-    if (speed > 0) {
-        List<Transform> targets = SlashDetector.getCurrentTargets();
-        if (targets.Count == 0 || !MechController.Grounded) {
-            MechController.SetMoving(speed);//complete move
-        } else {
-            //check if there is any target in front & the distance between is higher than a number
-            foreach (Transform t in targets) {
-                if (t == null || (t.tag != "Drone" && t.root.GetComponent<MechCombat>().isDead))
-                    continue;
-
-                if (Vector3.Distance(transform.position, t.position) >= minCallMoveDistance) {
-                    MechController.SetMoving(speed / 2);//not getting too far
-                }
-            }
-        }
-    } else if (speed < 0) {
-        MechController.SetMoving(speed);
-    }
-}
- */

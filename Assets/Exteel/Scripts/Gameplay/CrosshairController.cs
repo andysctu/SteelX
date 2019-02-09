@@ -9,25 +9,23 @@ public class CrosshairController : MonoBehaviour {
     [SerializeField] private GameObject LockedImg;
     [SerializeField] private Sounds Sounds;
     [SerializeField] private SkillController SkillController;
-    [SerializeField] private Transform crosshairParent;
+    [SerializeField] private Transform crosshairParent;//to be attached on panelCanvas
 
-    private Transform PanelCanvas;
+    private Transform _panelCanvas;
     private MechCombat _mechCombat;
-    private PhotonView _playerPv;
 
-    public List<GameObject> Targets = new List<GameObject>();//Update by checkisrendered.cs
-    private Transform _targetL, _targetR;
-
+    private IDamageable _targetL, _targetR;
+    private readonly List<IDamageable> _targets = new List<IDamageable>();
+    //send by client todo : check this
     private PhotonView _lastLockedTargetPv;
-    private Coroutine _lockingTargetCoroutine = null;
+    private Coroutine _lockingTargetCoroutine;
     private float _timeOfLastSend;
-    private bool _isOnLocked = false, _lockedL = false, _lockedR = false;
+    private bool _isOnLocked, _lockedL, _lockedR;
     private const float SendLockMsgDeltaTime = 0.3f, LockMsgDuration = 0.5f;
 
     //Game vars
     private float _screenCoeff;
-    private int _playerLayerMask, _terrainLayerMask;
-    private bool _isTeamMode;
+    private int _playerLayerMask, _terrainLayerMask, _shieldLayerMask;
 
     //Cam infos
     private Camera _cam;
@@ -35,31 +33,37 @@ public class CrosshairController : MonoBehaviour {
 
     private float _crosshairRadiusL, _crosshairRadiusR;
     private float _maxDistanceL, _maxDistanceR, _minDistanceL, _minDistanceR;
-    private int _weaponOffset = 0;//avoid sending lock message too often
-    private bool _isTargetAllyL = false, _isTargetAllyR = false;
+    private int _weaponOffset;
+    private bool _isTargetAllyL, _isTargetAllyR;
 
     //Player state
-    private bool _onSkill = false;
+    private bool _onSkill;
 
-    private Crosshair[] _crosshairs = new Crosshair[4];
+    private readonly Crosshair[] _crosshairs = new Crosshair[4];
 
     private void Awake() {
         InitComponents();
-        if (_playerPv == null || !_playerPv.isMine) { enabled = false; return; }
 
         RegisterOnWeaponBuilt();
+        RegisterOnMechBuilt();
+    }
+
+    private void RegisterOnMechBuilt(){
+        bm.OnMechBuilt += Init;
+    }
+
+    private void Init(){
+        enabled = bm.GetOwner().IsLocal;
+        if (!bm.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) {return; }
+
         RegisterOnWeaponSwitched();
         RegisterOnMechEnabled();
         RegisterOnSkill();
 
-        foreach (var canvas in FindObjectsOfType<Canvas>()){
-            if (canvas.name == "PanelCanvas"){
-                PanelCanvas = canvas.transform;
-                break;
-            }
+        if(bm.GetOwner().IsLocal){
+            FindPanelCanvas();
+            crosshairParent.SetParent(_panelCanvas);
         }
-
-        crosshairParent.SetParent(PanelCanvas);
     }
 
     private void RegisterOnWeaponBuilt() {
@@ -93,29 +97,23 @@ public class CrosshairController : MonoBehaviour {
     }
 
     private void Start() {
-        if (_playerPv == null || !_playerPv.isMine) { return; }
-
         GetGameVars();
     }
 
     private void GetGameVars() {
-        _screenCoeff = (float)Screen.height / Screen.width;
-        _isTeamMode = GameManager.IsTeamMode;
-
-        _terrainLayerMask = LayerMask.GetMask("Terrain");
-        _playerLayerMask = LayerMask.GetMask("PlayerLayer");
+        _screenCoeff = (float)Screen.height / Screen.width;//todo : check this
     }
 
     private void InitComponents() {
-        _playerPv = bm.GetComponent<PhotonView>();
-        if (_playerPv == null || !_playerPv.isMine) return;
-
         _mechCombat = bm.GetComponent<MechCombat>();
         _cam = GetComponent<Camera>();
+        _terrainLayerMask = LayerMask.GetMask("Terrain");
+        _playerLayerMask = LayerMask.GetMask("PlayerLayer");
+        _shieldLayerMask = LayerMask.GetMask("Shield");
     }
 
     public void UpdateCrosshair() {
-        int Marksmanship = bm.MechProperty.Marksmanship;
+        int marksmanship = bm.MechProperty.Marksmanship;
 
         //Update current weapon offset
         _weaponOffset = _mechCombat.GetCurrentWeaponOffset();
@@ -124,16 +122,16 @@ public class CrosshairController : MonoBehaviour {
         for (int i = 0; i < bm.WeaponDatas.Length; i++) {
             bool b = (i == _weaponOffset || i == _weaponOffset + 1);
             if (_crosshairs[i] != null) {
-                _crosshairs[i].SetRadius(bm.WeaponDatas[i].Radius * (1 + Marksmanship / 100.0f));
-                _crosshairs[i].EnableCrosshair(b);
+                _crosshairs[i].SetRadius(bm.WeaponDatas[i].Radius * (1 + marksmanship / 100.0f));
+                if(bm.GetOwner().IsLocal)_crosshairs[i].EnableCrosshair(b);
 
                 if (b) {
                     if (i % 2 == 0) {
-                        _crosshairRadiusL = bm.WeaponDatas[i].Radius * (1 + Marksmanship / 100.0f);
+                        _crosshairRadiusL = bm.WeaponDatas[i].Radius * (1 + marksmanship / 100.0f);
                         _maxDistanceL = bm.WeaponDatas[i].Range;
                         _minDistanceL = bm.WeaponDatas[i].MinRange;
                     } else {
-                        _crosshairRadiusR = bm.WeaponDatas[i].Radius * (1 + Marksmanship / 100.0f);
+                        _crosshairRadiusR = bm.WeaponDatas[i].Radius * (1 + marksmanship / 100.0f);
                         _maxDistanceR = bm.WeaponDatas[i].Range;
                         _minDistanceR = bm.WeaponDatas[i].MinRange;
                     }
@@ -160,95 +158,88 @@ public class CrosshairController : MonoBehaviour {
         _targetR = null;
     }
 
-    public Transform DectectTarget(float crosshairRadius, float range, float minimunRange, bool detectAlly) {
+    public IDamageable DetectTarget(float crosshairRadius, float minRange, float maxRange, bool isTargetAlly) {
         if (crosshairRadius > 0) {
-            for (int i = 0; i < Targets.Count; i++) {
-                if (Targets[i] == null) {
-                    Targets.RemoveAt(i);
+            RaycastHit[] hits = Physics.SphereCastAll(_cam.transform.position, crosshairRadius * 3, _cam.transform.forward, maxRange, _playerLayerMask).OrderBy(h => h.distance).ToArray();//todo : improve this
+
+            for (int i = 0; i < hits.Length; i++){
+                IDamageable target;
+                if ((target = hits[i].collider.GetComponent(typeof(IDamageable)) as IDamageable) == null){
+                    Debug.Log(hits[i].collider.transform.parent.gameObject.name + "does not have IDamageable component and is on player layer");
                     continue;
                 }
 
-                if (Targets[i].layer == 0) continue;//the target is on skill or dead
-
-                PhotonView targetPv = Targets[i].GetComponent<PhotonView>();
-                if (targetPv.viewID == _playerPv.viewID) continue;
-
-                if (_isTeamMode) {
-                    if (!detectAlly) {
-                        if (targetPv.owner.GetTeam() == _playerPv.owner.GetTeam()) continue;
-                    } else {
-                        if (targetPv.owner.GetTeam() != _playerPv.owner.GetTeam()) continue;
-                    }
-                } else {
-                    if (detectAlly) continue;//Not team mode => no ally
+                if (target.GetOwner() == null){
+                    Debug.Log("owner is null");//probably game not init
+                    continue;
                 }
 
-                //check distance
-                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range || Vector3.Distance(Targets[i].transform.position, transform.root.position) < minimunRange) continue;
+                //it's me
+                if(target.GetOwner().IsLocal && target.GetPhotonView().tag != "Drone")continue;
 
-                Vector3 targetLocInCam = _cam.WorldToViewportPoint(Targets[i].transform.position + new Vector3(0, 5, 0));
+                if((isTargetAlly && target.IsEnemy(bm.GetOwner())) || (!isTargetAlly && !target.IsEnemy(bm.GetOwner())))continue;
+
+                //check distance
+                if (Vector3.Distance(hits[i].collider.transform.position, transform.root.position) > maxRange || Vector3.Distance(hits[i].collider.transform.position, transform.root.position) < minRange) continue;
+
+                Vector3 targetLocInCam = _cam.WorldToViewportPoint(hits[i].collider.transform.position + new Vector3(0, 5, 0));
                 Vector3 rayStartPoint = transform.root.position + new Vector3(0, 5, 0); //rayStartpoint should not inside terrain => not detect
                 Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * _screenCoeff + 0.5f);
 
                 if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
                     //check if Terrain block the way
                     RaycastHit hit;
-                    if (Physics.Raycast(rayStartPoint, (Targets[i].transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, Targets[i].transform.position + new Vector3(0, 5, 0)), _terrainLayerMask)) {
-                        if (hit.collider.gameObject.layer == 10) continue;
+                    if (Physics.Raycast(rayStartPoint, (hits[i].collider.transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, hits[i].collider.transform.position + new Vector3(0, 5, 0)), _terrainLayerMask)) {
+                        if (hit.collider.gameObject.layer == _terrainLayerMask) continue;
                     }
 
-                    if (!detectAlly) SendLockedMessage(targetPv);
+                    if (!isTargetAlly) SendLockedMessage(target.GetPhotonView());
 
-                    return Targets[i].transform;
+                    return target;
                 }
             }
         }
         return null;
     }
 
-    public Transform[] DectectMultiTargets(float crosshairRadius, float range, bool detectAlly) {
+    public IDamageable[] DetectMultiTargets(float crosshairRadius, float minRange, float maxRange, bool isTargetAlly) {
         if (crosshairRadius > 0) {
-            List<Transform> targets_in_range = new List<Transform>();
+            RaycastHit[] hits = Physics.SphereCastAll(_cam.transform.position, crosshairRadius * 3, _cam.transform.forward, maxRange, _playerLayerMask).OrderBy(h => h.distance).ToArray();
+            _targets.Clear();
 
-            for (int i = 0; i < Targets.Count; i++) {
-                if (Targets[i] == null) {
-                    Targets.RemoveAt(i);
+            for (int i = 0; i < hits.Length; i++) {
+                IDamageable target;
+                if ((target = hits[i].collider.GetComponent(typeof(IDamageable)) as IDamageable) == null) {
+                    Debug.Log(hits[i].collider + "does not have IDamageable component but is on player layer");
                     continue;
                 }
 
-                if (Targets[i].layer == 0) continue;//On skill or dead
+                //it's me
+                if (target.GetOwner().IsLocal) continue;
 
-                PhotonView targetpv = Targets[i].GetComponent<PhotonView>();
-                if (targetpv.viewID == _playerPv.viewID) continue;
-
-                if (_isTeamMode) {
-                    if (!detectAlly) {
-                        if (targetpv.owner.GetTeam() == _playerPv.owner.GetTeam()) continue;
-                    } else {
-                        if (targetpv.owner.GetTeam() != _playerPv.owner.GetTeam()) continue;
-                    }
-                } else {
-                    if (detectAlly) continue;//if not team mode , ignore eng
-                }
+                if ((isTargetAlly && target.IsEnemy(bm.GetOwner())) || (!isTargetAlly && !target.IsEnemy(bm.GetOwner()))) continue;
 
                 //check distance
-                if (Vector3.Distance(Targets[i].transform.position, transform.root.position) > range) continue;
+                if (Vector3.Distance(hits[i].collider.transform.position, transform.root.position) > maxRange || Vector3.Distance(hits[i].collider.transform.position, transform.root.position) < minRange) continue;
 
-                Vector3 targetLocInCam = _cam.WorldToViewportPoint(Targets[i].transform.position + new Vector3(0, 5, 0));
-                Vector3 rayStartPoint = transform.root.position + new Vector3(0, 10, 0); //rayStartpoint should not inside terrain => not detect
+                Vector3 targetLocInCam = _cam.WorldToViewportPoint(hits[i].collider.transform.position + new Vector3(0, 5, 0));
+                Vector3 rayStartPoint = transform.root.position + new Vector3(0, 5, 0); //rayStartpoint should not inside terrain => not detect
                 Vector2 targetLocOnScreen = new Vector2(targetLocInCam.x, (targetLocInCam.y - 0.5f) * _screenCoeff + 0.5f);
+
                 if (Mathf.Abs(targetLocOnScreen.x - 0.5f) < DistanceCoeff * crosshairRadius && Mathf.Abs(targetLocOnScreen.y - 0.5f) < DistanceCoeff * crosshairRadius) {
                     //check if Terrain block the way
                     RaycastHit hit;
-                    if (Physics.Raycast(rayStartPoint, (Targets[i].transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, Targets[i].transform.position + new Vector3(0, 5, 0)), _terrainLayerMask)) {
-                        if (hit.collider.gameObject.layer == 10) {
-                            continue;
-                        }
+                    if (Physics.Raycast(rayStartPoint, (hits[i].collider.transform.position + new Vector3(0, 5, 0) - rayStartPoint).normalized, out hit, Vector3.Distance(rayStartPoint, hits[i].collider.transform.position + new Vector3(0, 5, 0)), _terrainLayerMask)) {
+                        if (hit.collider.gameObject.layer == _terrainLayerMask) continue;
                     }
-                    targets_in_range.Add(Targets[i].transform);
+
+                    if (!isTargetAlly) SendLockedMessage(target.GetPhotonView());
+
+                    _targets.Add(target);
                 }
             }
-            return targets_in_range.ToArray();
+
+            return _targets.ToArray();
         }
         return null;
     }
@@ -259,7 +250,7 @@ public class CrosshairController : MonoBehaviour {
         if (_crosshairs[_weaponOffset] != null) {
             _crosshairs[_weaponOffset].Update();
 
-            if ((_targetL = DectectTarget(_crosshairRadiusL, _maxDistanceL, _minDistanceL, _isTargetAllyL)) != null) {
+            if ((_targetL = DetectTarget(_crosshairRadiusL, _minDistanceL, _maxDistanceL, _isTargetAllyL)) != null) {
                 _crosshairs[_weaponOffset].OnTarget(true);
                 MarkTarget(_weaponOffset, _targetL);
 
@@ -273,7 +264,7 @@ public class CrosshairController : MonoBehaviour {
         if (_crosshairs[_weaponOffset + 1] != null) {
             _crosshairs[_weaponOffset + 1].Update();
 
-            if ((_targetR = DectectTarget(_crosshairRadiusR, _maxDistanceR, _minDistanceR, _isTargetAllyR)) != null) {
+            if ((_targetR = DetectTarget(_crosshairRadiusR,_minDistanceR, _maxDistanceR, _isTargetAllyR)) != null) {
                 _crosshairs[_weaponOffset + 1].OnTarget(true);
                 MarkTarget(_weaponOffset + 1, _targetR);
 
@@ -285,48 +276,49 @@ public class CrosshairController : MonoBehaviour {
         }
     }
 
-    //TODO : improve detection & generalize the CAM_DISTANCE_TO_MECH
-    public Transform GetCurrentTargetL() {
+    public IDamageable GetCurrentTarget(int hand){
+        return hand == 0 ? GetCurrentTargetL() : GetCurrentTargetR();
+    }
+
+    private IDamageable GetCurrentTargetL() {
         if (_targetL != null && !_isTargetAllyL) {
             //cast a ray to check if hitting shield
-            //Debug.DrawRay (cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH), ((targetL.transform.root.position + new Vector3 (0, 5, 0)) - cam.transform.TransformPoint (0, 0, CAM_DISTANCE_TO_MECH))*100f, Color.red, 3f);
-            RaycastHit[] hitpoints;
-            hitpoints = Physics.RaycastAll(_cam.transform.TransformPoint(0, 0, CamDistanceToMech), (_targetL.transform.root.position + new Vector3(0, 5, 0)) - _cam.transform.TransformPoint(0, 0, CamDistanceToMech), _maxDistanceL, _playerLayerMask).OrderBy(h => h.distance).ToArray();
-            foreach (RaycastHit hit in hitpoints) {
-                PhotonView targetPv = hit.transform.root.GetComponent<PhotonView>();
-                if (_isTeamMode) {
-                    if (targetPv.owner.GetTeam() != _playerPv.owner.GetTeam())
-                        return hit.collider.transform;
-                } else {
-                    if (targetPv.viewID != _playerPv.viewID)
-                        return hit.collider.transform;
+            //Debug.DrawRay (cam.transform.position, _targetL.GetPosition() - cam.transform.position)*100f, Color.red, 3f);
+            RaycastHit[] hitPoints = Physics.RaycastAll(_cam.transform.position, _targetL.GetPosition() - _cam.transform.position, _maxDistanceL, _shieldLayerMask).OrderBy(h => h.distance).ToArray();
+            foreach (RaycastHit hit in hitPoints) {
+                IDamageable t = hit.collider.GetComponent(typeof(IDamageable)) as IDamageable;
+                if (t == null){
+                    Debug.LogError("this object does not have IDamageable but is on shield layer");
+                    continue;
+                }
+
+                if (t.IsEnemy(bm.GetOwner())){
+                    return t;
                 }
             }
         }
         return _targetL;
     }
 
-    public Transform GetCurrentTargetR() {
+    private IDamageable GetCurrentTargetR() {
         if (_targetR != null && !_isTargetAllyR) {
-            RaycastHit[] hitpoints;
-            hitpoints = Physics.RaycastAll(_cam.transform.TransformPoint(0, 0, CamDistanceToMech), (_targetR.transform.root.position + new Vector3(0, 5, 0)) - _cam.transform.TransformPoint(0, 0, CamDistanceToMech), _maxDistanceR, _playerLayerMask).OrderBy(h => h.distance).ToArray();
-            foreach (RaycastHit hit in hitpoints) {
-                if (_isTeamMode) {
-                    PhotonView targetpv = hit.transform.root.GetComponent<PhotonView>();
-                    if (targetpv.owner.GetTeam() != _playerPv.owner.GetTeam()) {
-                        return hit.collider.transform;
-                    }
-                } else {
-                    PhotonView targetpv = hit.transform.root.GetComponent<PhotonView>();
-                    if (targetpv.viewID != _playerPv.viewID) //if not mine
-                        return hit.collider.transform;
+            RaycastHit[] hitPoints = Physics.RaycastAll(_cam.transform.position, _targetR.GetPosition() - _cam.transform.position, _maxDistanceR, _shieldLayerMask).OrderBy(h => h.distance).ToArray();
+            foreach (RaycastHit hit in hitPoints) {
+                IDamageable t = hit.collider.GetComponent(typeof(IDamageable)) as IDamageable;
+                if (t == null) {
+                    Debug.LogError("this object does not have IDamageable but is on shield layer");
+                    continue;
+                }
+
+                if (t.IsEnemy(bm.GetOwner())) {
+                    return t;
                 }
             }
         }
         return _targetR;
     }
 
-    private void MarkTarget(int weapPos, Transform target) {
+    private void MarkTarget(int weapPos, IDamageable target) {
         _crosshairs[weapPos].MarkTarget(target);
     }
 
@@ -345,7 +337,7 @@ public class CrosshairController : MonoBehaviour {
         }
     }
 
-    public void OnShootAction(int WeapPos) {
+    public void OnShootAction(int WeapPos) {//crosshair effect
         if (_crosshairs[WeapPos] != null) {
             _crosshairs[WeapPos].OnShootAction();
         }
@@ -354,10 +346,10 @@ public class CrosshairController : MonoBehaviour {
     public void ShowLocked() {//TODO : move this part to HUD
         if (_isOnLocked) {
             StopCoroutine(_lockingTargetCoroutine);
-            _lockingTargetCoroutine = StartCoroutine("HideLockedAfterTime", LockMsgDuration);
+            _lockingTargetCoroutine = StartCoroutine(HideLockedAfterTime(LockMsgDuration));
         } else {
             _isOnLocked = true;
-            _lockingTargetCoroutine = StartCoroutine("HideLockedAfterTime", LockMsgDuration);
+            _lockingTargetCoroutine = StartCoroutine(HideLockedAfterTime(LockMsgDuration));
             Sounds.PlayOnLocked();
         }
     }
@@ -388,7 +380,7 @@ public class CrosshairController : MonoBehaviour {
     }
 
     public void EnableCrosshair(bool b) {
-        if (!_playerPv.isMine) return;
+        if (!bm.GetOwner().IsLocal) return;
 
         enabled = b;
 
@@ -399,6 +391,15 @@ public class CrosshairController : MonoBehaviour {
         for (int i = 0; i < _crosshairs.Length; i++) {
             if (_crosshairs[i] != null)
                 _crosshairs[i].EnableCrosshair(false);
+        }
+    }
+
+    private void FindPanelCanvas() {
+        foreach (var canvas in FindObjectsOfType<Canvas>()) {
+            if (canvas.name == "PanelCanvas") {
+                _panelCanvas = canvas.transform;
+                break;
+            }
         }
     }
 }

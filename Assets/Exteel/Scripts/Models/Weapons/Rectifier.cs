@@ -33,84 +33,84 @@ public class Rectifier : RangedWeapon
         TransformExtension.SetLocalTransform(_bullet.transform);
     }
 
-    public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-    }
+    //public override void OnHitTargetAction(IDamageable c){
+    //}
 
     protected void UpdateAnimationSpeed(){
     }
 
-    public override void HandleAnimation(){
-        if (IsFiring){
-            if (Time.time - startShootTime >= 1 / Rate){
-                if (atkAnimationIsPlaying){
-                    atkAnimationIsPlaying = false;
-                    MechAnimator.SetBool(AtkAnimHash, false);
-                    WeaponAudioSource.Stop();
-                }
-            } else{
-                if (!atkAnimationIsPlaying){
-                    MechAnimator.SetBool(AtkAnimHash, true);
-                    atkAnimationIsPlaying = true;
-                }
-            }
-        } else{
-            if (atkAnimationIsPlaying){
-                MechAnimator.SetBool(AtkAnimHash, false);
-                atkAnimationIsPlaying = false;
-            }
-        }
-    }
+    //public override void HandleAnimation(){
+    //    if (IsFiring){
+    //        if (Time.time - StartShootTime >= 1 / Rate){
+    //            if (atkAnimationIsPlaying){
+    //                atkAnimationIsPlaying = false;
+    //                MechAnimator.SetBool(AtkAnimHash, false);
+    //                WeaponAudioSource.Stop();
+    //            }
+    //        } else{
+    //            if (!atkAnimationIsPlaying){
+    //                MechAnimator.SetBool(AtkAnimHash, true);
+    //                atkAnimationIsPlaying = true;
+    //            }
+    //        }
+    //    } else{
+    //        if (atkAnimationIsPlaying){
+    //            MechAnimator.SetBool(AtkAnimHash, false);
+    //            atkAnimationIsPlaying = false;
+    //        }
+    //    }
+    //}
 
-    protected override void FireRaycast(Vector3 start, Vector3 direction, int hand){
-        Transform target = ((hand == 0) ? CrosshairController.GetCurrentTargetL() : CrosshairController.GetCurrentTargetR());
+    //protected override void FireRayCast(Vector3 start, Vector3 direction, int hand){
+    //    Transform target = null;//((hand == 0) ? CrosshairController.GetCurrentTargetL() : CrosshairController.GetCurrentTargetR());
 
-        if (target != null){
-            PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();
+    //    if (target != null){
+    //        //PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();
 
-            if (target.tag != "Shield"){
-                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, -1);
-            } else{
-                //check what hand is it
-                ShieldActionReceiver shieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
-                int targetShieldPos = shieldActionReceiver.GetPos();
+    //        //if (target.tag != "Shield"){
+    //        //    PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, -1);
+    //        //} else{
+    //        //    //check what hand is it
+    //        //    ShieldDamageable shieldDamageable = target.parent.GetComponent<ShieldDamageable>();
+    //        //    int targetShieldPos = shieldDamageable.GetPos();
 
-                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, targetShieldPos);
-            }
-        } else{
-            PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, -1, -1);
-        }
-    }
+    //        //    PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, targetShieldPos);
+    //        //}
+    //    } else{
+    //        PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, -1, -1);
+    //    }
+    //}
 
-    public override void Shoot(Vector3 direction, int targetPvId, int targetWeapPos){
-        MechAnimator.SetBool(AtkAnimHash, true);
-        WeaponAnimator.SetTrigger("Atk");
-        Muzzle.Play();
+    //public override void Shoot(Vector3 direction, int targetPvId, int targetWeapPos){
+    //    MechAnimator.SetBool(AtkAnimHash, true);
+    //    WeaponAnimator.SetTrigger("Atk");
+    //    Muzzle.Play();
 
-        IsFiring = true;
-        startShootTime = Time.time;
+    //    IsFiring = true;
+    //    _startShootTime = Time.time;
 
-        GameObject target = null;
-        PhotonView targetPv = PhotonView.Find(targetPvId);
-        if (targetPv != null) target = targetPv.gameObject;
+    //    GameObject target = null;
+    //    PhotonView targetPv = PhotonView.Find(targetPvId);
+    //    if (targetPv != null) target = targetPv.gameObject;
 
-        if (target != null){
-            Combat targetCbt = target.GetComponent<Combat>();
-            targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
+    //    if (target != null){
+    //        Combat targetCbt = target.GetComponent<Combat>();
+    //        targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
 
-            DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
+    //        DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
 
-            Cbt.IncreaseSP(data.SpIncreaseAmount); //TODO : check this
-        } else{
-            DisplayBullet(direction, null, null);
-        }
+    //        Cbt.IncreaseSP(data.SpIncreaseAmount); //TODO : check this
+    //    } else{
+    //        DisplayBullet(direction, null, null);
+    //    }
 
-        WeaponAudioSource.Play();
-    }
+    //    WeaponAudioSource.Play();
+    //}
 
-    protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
-        _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
-        _bullet.Play();
-    }
+    //protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
+    //    _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
+    //    _bullet.Play();
+    //}
 
     public override void OnSkillAction(bool enter){
         base.OnSkillAction(enter);
@@ -131,15 +131,19 @@ public class Rectifier : RangedWeapon
         MechAnimator.Play("ENG", 2);
     }
 
-    public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
-        switch (type){
-            case (int) StateCallBackType.AttackStateEnter:
-                break;
-            case (int) StateCallBackType.AttackStateExit:
-                if (_bullet != null) _bullet.Stop();
-                Muzzle.Stop();
-                WeaponAudioSource.Stop();
-                break;
-        }
+    protected override void DisplayBullet(Vector3 direction, IDamageable target){
+        throw new System.NotImplementedException();
     }
+
+    //public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
+    //    switch (type){
+    //        case (int) StateCallBackType.AttackStateEnter:
+    //            break;
+    //        case (int) StateCallBackType.AttackStateExit:
+    //            if (_bullet != null) _bullet.Stop();
+    //            Muzzle.Stop();
+    //            WeaponAudioSource.Stop();
+    //            break;
+    //    }
+    //}
 }

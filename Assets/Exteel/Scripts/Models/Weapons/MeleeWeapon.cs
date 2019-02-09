@@ -6,7 +6,6 @@ namespace Weapons
     public abstract class MeleeWeapon : Weapon
     {
         protected SlashDetector SlashDetector;
-        protected List<Transform> TargetsInCollider;
         protected ParticleSystem HitEffectPrefab;
 
         public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator){
@@ -14,7 +13,7 @@ namespace Weapons
             InitComponents();
             ResetMeleeVars();
 
-            EnableDetector(Cbt.photonView.isMine);
+            EnableDetector(Cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient);
         }
 
         private void InitComponents(){

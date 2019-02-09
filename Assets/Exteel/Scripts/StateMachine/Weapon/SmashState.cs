@@ -15,7 +15,7 @@ namespace StateMachine.Attack
             animator.SetBool(AnimatorHashVars.SmashRHash, false);
             animator.SetBool(AnimatorHashVars.SmashLHash, false);
             animator.SetBool(AnimatorHashVars.BoostHash, false);
-            _isInAir = Mctrl.IsJumping;
+            _isInAir = !Mctrl.Grounded;
 
             Mctrl.ResetCurBoostingSpeed();
 

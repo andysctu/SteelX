@@ -12,30 +12,19 @@ namespace Weapons
         protected CrosshairController CrosshairController;
 
         //IK
-        protected GameObject CurTarget = null;
+        protected IDamageable CurTarget;
         protected Transform Hips, Clavicle, Spine1;
         protected Vector3 UpperArm;
         protected float IdealRot;
         protected bool IsIkOn = false;
 
         protected int AtkAnimHash;
-        protected bool atkAnimationIsPlaying = false;
-        protected float startShootTime;
-
-        public enum StateCallBackType
-        {
-            AttackStateEnter,
-            AttackStateUpdate,
-            AttackStateExit,
-            ReloadStateEnter,
-            ReloadStateExit,
-            PoseStateEnter,
-            PoseStateExit
-        }
+        protected float AtkAnimationLength;
 
         public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator){
             base.Init(data, hand, handTransform, Cbt, Animator);
 
+            AtkAnimationLength = ((RangedWeaponData) data).AtkAnimationLength;
             InitComponents();
             InitAtkAnimHash();
         }
@@ -60,10 +49,8 @@ namespace Weapons
         protected virtual void InitIkTransforms(){
             if (MechAnimator == null) return;
             Hips = MechAnimator.transform.Find("Bip01/Bip01_Pelvis");
-
-            Clavicle = (Hand == 0) ? MechAnimator.transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_L_Clavicle") : MechAnimator.transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1/Bip01_Spine2/Bip01_Spine3/Bip01_Neck/Bip01_R_Clavicle");
-
-            Spine1 = MechAnimator.transform.Find("Bip01/Bip01_Pelvis/Bip01_Spine/Bip01_Spine1");
+            Clavicle = (Hand == 0) ? MechAnimator.GetBoneTransform(HumanBodyBones.LeftShoulder) : MechAnimator.GetBoneTransform(HumanBodyBones.RightShoulder);
+            Spine1 = MechAnimator.GetBoneTransform(HumanBodyBones.Chest);
         }
 
         protected virtual void InitAtkAnimHash(){
@@ -96,35 +83,28 @@ namespace Weapons
             }
         }
 
-        public override void HandleAnimation(){
-            if (IsFiring){
-                if (Time.time - startShootTime >= 1 / Rate){
-                    if (atkAnimationIsPlaying){
-                        atkAnimationIsPlaying = false;
-                        MechAnimator.SetBool(AtkAnimHash, false);
-                    }
-                } else{
-                    if (!atkAnimationIsPlaying){
-                        MechAnimator.SetBool(AtkAnimHash, true);
-                        atkAnimationIsPlaying = true;
-                    }
-                }
-            } else{
-                if (atkAnimationIsPlaying){
-                    MechAnimator.SetBool(AtkAnimHash, false);
-                    atkAnimationIsPlaying = false;
-                }
-            }
-
-            if (IsIkOn){
-                UpdateIk();
-            }
-        }
-
         protected virtual void AttackStartAction(){
-            FireRaycast(MechCam.transform.TransformPoint(0, 0, CrosshairController.CamDistanceToMech), MechCam.transform.forward, Hand);//todo : check this
+            IDamageable target = CrosshairController.GetCurrentTarget(Hand);
+            CurTarget = target;
+            IsFiring = true;
 
+            if (Cbt.GetOwner().IsLocal) {//crosshair effect
+                if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+            }
 
+            PlayShootEffect(MechCam.transform.forward, target);
+
+            if (target != null) {
+                if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, new int[] { target.GetPhotonView().viewID }, new int[] { target.GetSpecID() });
+
+                Cbt.IncreaseSP(data.SpIncreaseAmount);
+            } else {
+                if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
+            }
+
+            //if (data.Slowdown && !isShield) {
+            //    //target.GetComponent<MechController>().SlowDown();
+            //}
         }
 
         protected virtual void UpdateIk(){
@@ -156,58 +136,40 @@ namespace Weapons
 
         protected abstract void UpdateMechArmState();
 
-        protected virtual void FireRaycast(Vector3 start, Vector3 direction, int hand){
-            Transform target = ((hand == 0) ? CrosshairController.GetCurrentTargetL() : CrosshairController.GetCurrentTargetR());
+        public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) { 
+            if(Cbt.GetOwner().IsLocal)return;
 
-            if (target != null){
-                PhotonView targetPv = target.transform.root.GetComponent<PhotonView>();
+            TimeOfLastUse = Time.time;
+            IsFiring = true;
 
-                if (target.tag != "Shield"){
-                    PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, -1);
-                } else{
-                    //check what hand is it //todo : improve this
-                    ShieldActionReceiver shieldActionReceiver = target.parent.GetComponent<ShieldActionReceiver>();
-                    int targetShieldPos = shieldActionReceiver.GetPos();
-
-                    PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, targetPv.viewID, targetShieldPos);
-                }
+            if (targetPvIDs == null || targetPvIDs.Length < 1){
+                PlayShootEffect(direction, null);
             } else{
-                PlayerPv.RPC("Shoot", PhotonTargets.All, WeapPos, direction, -1, -1);
+                PhotonView targetPv = PhotonView.Find(targetPvIDs[0]);
+                IDamageableManager manager = targetPv.GetComponent(typeof(IDamageableManager)) as IDamageableManager;
+
+                if(manager != null){
+                    PlayShootEffect(direction, manager.FindDamageableComponent(specIDs[0]));
+                } else{
+                    Debug.LogError("Can't find IDamageableManager on : "+targetPv.gameObject.name);
+                    PlayShootEffect(direction, null);
+                }
             }
         }
 
-        public virtual void Shoot(Vector3 direction, int targetPvId, int targetWeapPos){
-            if (PlayerPv.isMine){
-                if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
-            }
-
+        protected virtual void PlayShootEffect(Vector3 direction, IDamageable target) {
             MechAnimator.SetBool(AtkAnimHash, true);
+            MechAnimator.Update(0);
             WeaponAnimator.SetTrigger("Atk");
 
-            IsFiring = true;
-            startShootTime = Time.time;
+            DisplayBullet(MechCam.transform.forward, target);
 
-            GameObject target = null;
-            PhotonView targetPv = PhotonView.Find(targetPvId);
-            if (targetPv != null) target = targetPv.gameObject;
-
-            CurTarget = target;
-
-            if (target != null){
-                Combat targetCbt = target.GetComponent<Combat>();
-                targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
-
-                DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
-
-                Cbt.IncreaseSP(data.SpIncreaseAmount); //TODO : check this
-            } else{
-                DisplayBullet(direction, null, null);
-            }
+            Muzzle.Play();
+            //apply damage
+            if(target != null)target.OnHit(data.damage, PlayerPv, this);
         }
 
-        protected abstract void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon);
-
-        protected virtual void OnAnimatorIKCallBack(){
+        protected virtual void DisplayBullet(Vector3 direction, IDamageable target){
         }
     }
 }

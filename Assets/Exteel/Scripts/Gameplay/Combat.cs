@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Weapons;
 
-public abstract class Combat : Photon.MonoBehaviour {
+public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, IPunObservable {
     protected GameManager gm;
+    public PhotonView PhotonView;
 
     //Combat variable
     public int MAX_HP { get { return max_hp; } protected set { max_hp = value; } }
@@ -27,10 +29,14 @@ public abstract class Combat : Photon.MonoBehaviour {
     public delegate void EnablePlayerAction(bool b);
     public EnablePlayerAction OnMechEnabled;
 
+    private readonly List<IDamageable> _damageableComponents = new List<IDamageable>();
+
     //For Debug
-    public bool forceDead = false;
+    public bool ForceDead;
 
     protected virtual void Awake() {
+        PhotonView = GetPhotonView();
+        RegisterDamageableComponent(this);
     }
 
     protected virtual void Start() {
@@ -48,14 +54,10 @@ public abstract class Combat : Photon.MonoBehaviour {
     }
 
     protected virtual void Update() {
-        if (forceDead) {//Debug use
-            forceDead = false;
-            photonView.RPC("OnHit", PhotonTargets.All, 10000, photonView.viewID);
+        if (ForceDead) {//Debug use
+            ForceDead = false;
+            OnHit(10000, PhotonView);
         }
-    }
-
-    public virtual float GetAnimationLength(string name) {//TODO : improve this.
-        return 1;
     }
 
     public virtual Weapon GetWeapon(int weapPos) {
@@ -66,19 +68,12 @@ public abstract class Combat : Photon.MonoBehaviour {
         return null;
     }
 
-    public abstract int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon);
-
-    public virtual void Attack(int weapPos, int[] additionalFields = null) {
+    //This should always be called by master
+    public virtual void Attack(int weapPos, Vector3 direction, int damage, int[] targetPvID, int[] specIDs, int[] additionalFields = null) {
     }
 
-    [PunRPC]
-    public virtual void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
-    }
-
-    [PunRPC]
-    public virtual void OnHit(int damage, int shooterPvID) {
-        PhotonView shooterPv = PhotonView.Find(shooterPvID);
-        if (shooterPv == null) return;
+    public virtual void OnHit(int damage, PhotonView attacker, Weapon weapon = null) {
+        if(isDead)return;
 
         if (PhotonNetwork.isMasterClient) {
             if (CurrentHP - damage >= MAX_HP) {
@@ -88,11 +83,20 @@ public abstract class Combat : Photon.MonoBehaviour {
             }
 
             if (CurrentHP <= 0) {//sync disable player
-                photonView.RPC("DisablePlayer", PhotonTargets.All, shooterPv.owner, "null");
+                PhotonView.RPC("DisablePlayer", PhotonTargets.All, attacker.owner, "null");
+            }
+        } else{
+            if (CurrentHP - damage >= MAX_HP) {
+                CurrentHP = MAX_HP;
+            } else {
+                CurrentHP -= damage;
             }
         }
 
         IncreaseSP(damage / 2);
+    }
+
+    public virtual void PlayOnHitEffect(){
     }
 
     [PunRPC]
@@ -106,12 +110,12 @@ public abstract class Combat : Photon.MonoBehaviour {
     }
 
     [PunRPC]
-    protected virtual void DisablePlayer(PhotonPlayer shooter, string weapon) {
+    protected virtual void DisablePlayer(PhotonPlayer shooter, string weapon) {//todo : improve this
         OnMechEnabled(false);
     }
 
     public bool IsHpFull() {
-        return (CurrentHP >= MAX_HP);
+        return CurrentHP >= MAX_HP;
     }
 
     public void SetMaxEN(int EN) {
@@ -128,10 +132,61 @@ public abstract class Combat : Photon.MonoBehaviour {
     public virtual void IncreaseSP(int amount) {
     }
 
+    public virtual Transform GetTransform(){
+        return transform;
+    }
+
+    public Vector3 GetPosition(){
+        return transform.position + new Vector3(0,5,0);
+    }
+
+    public abstract PhotonPlayer GetOwner();
+
+    public PhotonView GetPhotonView(){
+        return PhotonView;
+    }
+
+    public virtual bool IsEnemy(PhotonPlayer compareTo){
+        if (GameManager.IsTeamMode){
+            return compareTo.GetTeam() != GetOwner().GetTeam();
+        }else if (GetOwner() != null && GetOwner() == compareTo){
+            return false;
+        }
+
+        return true;
+    }
+
+    public int GetCurrentHP(){
+        return CurrentHP;
+    }
+
+    public int GetSpecID(){
+        return -1;
+    }
+
+    public virtual void RegisterDamageableComponent(IDamageable c){
+        _damageableComponents.Add(c);
+    }
+
+    public virtual void DeregisterDamageableComponent(IDamageable c){
+        _damageableComponents.Remove(c);
+    }
+
+    public virtual IDamageable FindDamageableComponent(int specID){
+        foreach (var c in _damageableComponents){
+            if(c.GetSpecID() == specID)return c;
+        }
+        Debug.LogError("Can't find damageable component with id : " + specID);
+        return this;
+    }
+
     [System.Serializable]
     protected struct EnergyProperties {
         public float jumpENDrain, dashENDrain;
         public float energyOutput;
         public float minENRequired;
+    }
+
+    public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
     }
 }

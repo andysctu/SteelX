@@ -7,7 +7,7 @@ namespace Weapons.Bullets
     {
         [SerializeField] protected GameObject ImpactPrefab;
         protected Camera cam;
-        protected PhotonView shooter_pv;
+        protected PhotonView shooterPv;
 
         protected ParticleSystem bullet_ps;
         protected BulletImpact bulletImpact;
@@ -16,14 +16,13 @@ namespace Weapons.Bullets
         //Targets components
         protected DisplayHitMsg displayHitMsg;
         protected Combat targetCbt;
-        protected Transform target; //If isTargetShield is true , then target == Shield otherwise target == target mech
-        protected Weapon shooterWeapon, targetWeapon;
-        protected bool isTargetShield, isfollow = false;
+        protected IDamageable Target;
+        protected bool IsTargetShield, Isfollow;
 
         //Bullet variables
         public float bulletSpeed = 280;
-        protected Vector3 startDirection, MECH_MID_POINT = new Vector3(0, 5, 0);
-
+        protected Vector3 startDirection;
+        protected int ShieldLayer;
         protected virtual void Awake(){
             InitComponents();
         }
@@ -31,51 +30,41 @@ namespace Weapons.Bullets
         private void InitComponents(){
             bullet_ps = GetComponent<ParticleSystem>();
             bulletImpact = Instantiate(ImpactPrefab).GetComponent<BulletImpact>();
+            ShieldLayer = LayerMask.NameToLayer("Shield");
         }
 
-        public virtual void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, Transform target, Weapon shooterWeapon, Weapon targetWeapon){
+        public virtual void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, IDamageable target){
             this.cam = cam;
-            this.shooter_pv = shooter_pv;
+            this.shooterPv = shooter_pv;
             this.startDirection = startDirection;
-            this.target = target;
-            this.shooterWeapon = shooterWeapon;
-            this.targetWeapon = targetWeapon;
-
-            InitTargetInfos(target, targetWeapon);
+            InitTargetInfos(target);
         }
 
-        protected virtual void InitTargetInfos(Transform target, Weapon targetWeapon){
-            this.targetWeapon = targetWeapon;
+        protected virtual void InitTargetInfos(IDamageable target){
+            Isfollow = (target != null);
+            IsTargetShield = target != null && target.GetTransform().gameObject.layer == ShieldLayer;
+            this.Target = target;
 
-            isTargetShield = (targetWeapon != null && targetWeapon.IsShield());
-            isfollow = (target != null);
-
-            if (target != null){
-                displayHitMsg = target.GetComponent<DisplayHitMsg>();
-                targetCbt = target.GetComponent<Combat>();
-            }
-
-            if (isTargetShield){
-                this.target = targetWeapon.GetWeapon().transform;
-            } else{
-                this.target = target;
+            if (target != null){//todo : remake this
+                displayHitMsg = target.GetTransform().GetComponent<DisplayHitMsg>();
             }
         }
 
-        protected abstract void LateUpdate();
+        protected virtual void LateUpdate(){
+        }
 
         public abstract void Play();
 
-        public abstract void Stop();
+        public abstract void StopBulletEffect();
 
-        protected void ShowHitMsg(Transform target){
-            if (shooter_pv.isMine){
+        protected void ShowHitMsg(Transform target){//todo : remake this
+            if (shooterPv.isMine){
                 if (displayHitMsg == null || targetCbt == null) return;
 
                 if (targetCbt.CurrentHP <= 0)
                     displayHitMsg.Display(DisplayHitMsg.HitMsg.KILL, cam);
                 else{
-                    if (isTargetShield){
+                    if (IsTargetShield){
                         displayHitMsg.Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
                     } else{
                         displayHitMsg.Display(DisplayHitMsg.HitMsg.HIT, cam);
@@ -95,11 +84,14 @@ namespace Weapons.Bullets
         }
 
         protected virtual void PlayImpact(Vector3 impactPoint){
-            if (!isTargetShield){
+            if (!IsTargetShield){
                 bulletImpact.Play(impactPoint);
-            } else{
-                if (isTargetShield && targetWeapon != null){
-                    targetWeapon.PlayOnHitEffect();
+                if (Target != null){
+                    Target.PlayOnHitEffect();
+                }
+            } else{//don't play bullet on hit effect
+                if (IsTargetShield && Target != null){
+                    Target.PlayOnHitEffect();
                 }
             }
         }
