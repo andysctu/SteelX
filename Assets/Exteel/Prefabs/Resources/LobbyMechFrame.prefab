@@ -474,12 +474,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4218703317508890}
   - component: {fileID: 20692150358809080}
-  - component: {fileID: 124461467545335482}
-  - component: {fileID: 92656461443785154}
   - component: {fileID: 81958609402058172}
   - component: {fileID: 114432667119976404}
   - component: {fileID: 114367109304153662}
-  - component: {fileID: 45753811559456608}
   m_Layer: 8
   m_Name: Camera
   m_TagString: MainCamera
@@ -608,7 +605,6 @@ GameObject:
   - component: {fileID: 114375091132633844}
   - component: {fileID: 114203407738334560}
   - component: {fileID: 95097872185110640}
-  - component: {fileID: 114654278327205904}
   - component: {fileID: 114366033382826158}
   m_Layer: 8
   m_Name: LobbyMechFrame
@@ -1891,14 +1887,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!45 &45753811559456608
-Skybox:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1495580292376828}
-  m_Enabled: 0
-  m_CustomSkybox: {fileID: 2100000, guid: d07d2172e76d3fa429e80a14d2ae3616, type: 2}
 --- !u!81 &81958609402058172
 AudioListener:
   m_ObjectHideFlags: 1
@@ -1912,13 +1900,6 @@ Behaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1012563645733274}
-  m_Enabled: 0
---- !u!92 &92656461443785154
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1495580292376828}
   m_Enabled: 0
 --- !u!95 &95097872185110640
 Animator:
@@ -2071,6 +2052,7 @@ MonoBehaviour:
   InstantMoveDir: {x: 0, y: 0, z: 0}
   Speed: 0
   Direction: 0
+  Angle: 0
   CurBoostingSpeed: 0
   VerticalBoostStartYPos: 0
   XSpeed: 0
@@ -2088,7 +2070,6 @@ MonoBehaviour:
   cam_orbitradius: 19
   cam_angleoffset: 33
   onSkillMoving: 0
-  onInstantMoving: 0
   IsJumping: 0
   JumpReleased: 0
 --- !u!114 &114367109304153662
@@ -2183,7 +2164,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1495580292376828}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e209798f836304cfabd478f5db070121, type: 3}
   m_Name: 
@@ -2195,38 +2176,6 @@ MonoBehaviour:
   orbitRadius: 19
   lerpFakePosSpeed: 12
   angleOffset: 33
---- !u!114 &114654278327205904
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1581608227225668}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df68a40448e04045ab0ba8ac864d079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cc: {fileID: 0}
-  Mcbt: {fileID: 0}
-  Mctrl: {fileID: 0}
-  HandleInputs: {fileID: 0}
-  Sounds: {fileID: 0}
-  MechIK: {fileID: 0}
-  EffectController: {fileID: 0}
-  BoostHash: 0
-  GroundedHash: 0
-  JumpHash: 0
-  SpeedHash: 0
-  DirectionHash: 0
-  OnMeleeHash: 0
-  BlockLHash: 0
-  BlockRHash: 0
-  SlashHash: 0
-  FinalSlashHash: 0
-  CnPoseHash: 0
-  CnShootHash: 0
-  CnLoadHash: 0
-  inHangar: 1
 --- !u!114 &114907044580458366
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2304,13 +2253,6 @@ MonoBehaviour:
     poleTarget: {fileID: 0}
     clampWeight: 0.1
     clampSmoothing: 2
---- !u!124 &124461467545335482
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1495580292376828}
-  m_Enabled: 0
 --- !u!124 &124672830127755924
 Behaviour:
   m_ObjectHideFlags: 1
@@ -2762,7 +2704,7 @@ CharacterController:
   m_GameObject: {fileID: 1581608227225668}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Height: 8
   m_Radius: 2

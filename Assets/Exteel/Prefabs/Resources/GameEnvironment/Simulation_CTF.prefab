@@ -123,7 +123,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4082759416942846}
-  - component: {fileID: 114715977311934964}
   - component: {fileID: 114016428178325650}
   - component: {fileID: 114800161280866654}
   m_Layer: 2
@@ -302,8 +301,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4768715117923472}
   - component: {fileID: 114720935888001344}
-  - component: {fileID: 114568908656051710}
-  - component: {fileID: 114756444788075662}
   - component: {fileID: 114744318337573662}
   m_Layer: 2
   m_Name: HealthPool
@@ -785,8 +782,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4869570063221390}
   - component: {fileID: 114551379579855242}
-  - component: {fileID: 114382044270554228}
-  - component: {fileID: 114268962161124308}
   - component: {fileID: 114694391718286056}
   m_Layer: 2
   m_Name: HealthPool (1)
@@ -904,7 +899,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4867842104326764}
-  - component: {fileID: 114477563587637280}
   - component: {fileID: 114015206753391164}
   - component: {fileID: 114086032362017284}
   m_Layer: 2
@@ -1169,7 +1163,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4965422294774002}
-  - component: {fileID: 114106946524922292}
+  - component: {fileID: 114448515904389424}
   m_Layer: 2
   m_Name: BlueBase
   m_TagString: Untagged
@@ -1185,7 +1179,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4856586488733068}
-  - component: {fileID: 114349081681487078}
+  - component: {fileID: 114944288777212692}
   m_Layer: 2
   m_Name: RedBase
   m_TagString: Untagged
@@ -2561,7 +2555,7 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 114477563587637280}
+  - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -2587,7 +2581,7 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 114715977311934964}
+  - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -2719,32 +2713,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ObjectToParentOnCanvas: {fileID: 1356812092211900}
---- !u!114 &114106946524922292
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1892855434640930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 0
-  interactable: 0
-  curTerritoryState: 2
-  bar: {fileID: 0}
-  mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 0}
 --- !u!114 &114111183200593150
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2874,20 +2842,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 0
---- !u!114 &114268962161124308
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1605115231626738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecb4f0ab484c764fb293bc5f34b71dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healAmount: 250
-  healDeltaTime: 2
-  barCanvas: {fileID: 0}
 --- !u!114 &114318053386604610
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2942,32 +2896,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114349081681487078
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1903888278846288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 3
-  interactable: 0
-  curTerritoryState: 1
-  bar: {fileID: 0}
-  mark: {fileID: 0}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 0}
 --- !u!114 &114368928623792904
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3005,22 +2933,6 @@ MonoBehaviour:
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
---- !u!114 &114382044270554228
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1605115231626738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0de76ef86c945804fa3105a219596b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bar_green: {fileID: 21300048, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_grey: {fileID: 21300008, guid: 00429edee359949d9955d2393313fad6, type: 3}
-  bar: {fileID: 114775038158501968}
-  increaseAmount: 0.001
-  isAvailable: 1
 --- !u!114 &114416549776098264
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3063,32 +2975,32 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114477563587637280
+--- !u!114 &114448515904389424
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1687032443662220}
+  m_GameObject: {fileID: 1892855434640930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Territory_ID: 2
+  Territory_ID: 0
   interactable: 1
   curTerritoryState: 0
-  bar: {fileID: 114020491070423488}
-  mark: {fileID: 114923980734854810}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 1356812092211900}
+  bar: {fileID: 0}
+  mark: {fileID: 0}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114541991392973760
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3151,7 +3063,7 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 114382044270554228}
+  - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -3206,22 +3118,6 @@ MonoBehaviour:
   bar_red: {fileID: 21300106, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_blue: {fileID: 21300104, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   mark_red: {fileID: 21300102, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
---- !u!114 &114568908656051710
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1233761211226580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0de76ef86c945804fa3105a219596b62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bar_green: {fileID: 21300048, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_grey: {fileID: 21300008, guid: 00429edee359949d9955d2393313fad6, type: 3}
-  bar: {fileID: 114665816571596092}
-  increaseAmount: 0.001
-  isAvailable: 1
 --- !u!114 &114587668964445560
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3370,32 +3266,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2c5ad3c17fa0c41af62ba45688091d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114715977311934964
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1094311974092840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03b3ea9b65516d4e88482627657153d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Territory_ID: 1
-  interactable: 1
-  curTerritoryState: 0
-  bar: {fileID: 114998108292764006}
-  mark: {fileID: 114661948379682148}
-  bar_blue: {fileID: 21300010, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_blue1: {fileID: 21300016, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red: {fileID: 21300012, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  bar_red1: {fileID: 21300014, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_blue: {fileID: 21300006, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  mark_red: {fileID: 21300004, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
-  base_none: {fileID: 2100000, guid: bbc2fad13c37ad7459ea625a436ac08a, type: 2}
-  base_blue: {fileID: 2100000, guid: bc7992a97f3d3564bab4b1e7371075f2, type: 2}
-  base_red: {fileID: 2100000, guid: b20810378b9ef774580d2fea0d19b997, type: 2}
-  Infos: {fileID: 1509980216646204}
 --- !u!114 &114716660084864214
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3443,7 +3313,7 @@ MonoBehaviour:
   onSerializeRigidBodyOption: 2
   ownershipTransfer: 0
   ObservedComponents:
-  - {fileID: 114568908656051710}
+  - {fileID: 0}
   ObservedComponentsFoldoutOpen: 1
   viewIdField: 0
   instantiationId: -1
@@ -3488,20 +3358,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114756444788075662
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1233761211226580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecb4f0ab484c764fb293bc5f34b71dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healAmount: 250
-  healDeltaTime: 2
-  barCanvas: {fileID: 0}
 --- !u!114 &114775038158501968
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3806,6 +3662,32 @@ MonoBehaviour:
   redTerritory: {fileID: 21300064, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   greyTerritory: {fileID: 21300084, guid: 8dedeb87efaf4477b807a7078caca9d8, type: 3}
   underAttack: {fileID: 0}
+--- !u!114 &114944288777212692
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1903888278846288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cc4a6d0f3261a44eb16a93039a22fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Territory_ID: 1
+  interactable: 1
+  curTerritoryState: 0
+  bar: {fileID: 0}
+  mark: {fileID: 0}
+  bar_blue: {fileID: 0}
+  bar_blue1: {fileID: 0}
+  bar_red: {fileID: 0}
+  bar_red1: {fileID: 0}
+  mark_blue: {fileID: 0}
+  mark_red: {fileID: 0}
+  base_none: {fileID: 0}
+  base_blue: {fileID: 0}
+  base_red: {fileID: 0}
+  Infos: {fileID: 0}
 --- !u!114 &114951247516495448
 MonoBehaviour:
   m_ObjectHideFlags: 1

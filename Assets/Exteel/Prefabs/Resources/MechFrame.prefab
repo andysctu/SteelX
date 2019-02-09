@@ -96,17 +96,16 @@ GameObject:
   m_Component:
   - component: {fileID: 400766}
   - component: {fileID: 14356836}
+  - component: {fileID: 95305905742212722}
   - component: {fileID: 11462782}
   - component: {fileID: 114210010363067028}
   - component: {fileID: 11422958}
   - component: {fileID: 11445986}
   - component: {fileID: 114000012410893822}
-  - component: {fileID: 114718916726667884}
   - component: {fileID: 114666270378404098}
   - component: {fileID: 114715354567852064}
   - component: {fileID: 114927918550711304}
   - component: {fileID: 114369657553542572}
-  - component: {fileID: 95305905742212722}
   m_Layer: 8
   m_Name: MechFrame
   m_TagString: Player
@@ -423,7 +422,6 @@ MonoBehaviour:
   Sounds: {fileID: 114000010976113334}
   SkillController: {fileID: 114715354567852064}
   crosshairParent: {fileID: 22425284}
-  Targets: []
 --- !u!114 &11422958
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -478,6 +476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e7e694366ac431a95bfc3865ba005a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PhotonView: {fileID: 114210010363067028}
   energyProperties:
     jumpENDrain: 0
     dashENDrain: 0
@@ -485,9 +484,10 @@ MonoBehaviour:
     minENRequired: 450
   CanMeleeAttack: 1
   isDead: 0
-  forceDead: 0
+  ForceDead: 0
   EffectController: {fileID: 114512345716719972}
   MainCam: {fileID: 2087740}
+  OnSkill: 0
 --- !u!114 &11462782
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -537,7 +537,6 @@ MonoBehaviour:
   cam_orbitradius: 19
   cam_angleoffset: 33
   onSkillMoving: 0
-  IsJumping: 0
   JumpReleased: 0
 --- !u!114 &11463820
 MonoBehaviour:
@@ -4090,7 +4089,6 @@ MonoBehaviour:
   cam: {fileID: 11415780}
   boxCollider: {fileID: 65958135652732004}
   mctrl: {fileID: 11462782}
-  User: {fileID: 138214}
 --- !u!114 &114065795201682758
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4227,9 +4225,10 @@ MonoBehaviour:
   ownershipTransfer: 0
   ObservedComponents:
   - {fileID: 114000012410893822}
+  - {fileID: 11462782}
   ObservedComponentsFoldoutOpen: 1
-  viewIdField: 0
-  instantiationId: -1
+  viewIdField: 6
+  instantiationId: 6
   currentMasterID: -1
   isRuntimeInstantiated: 0
 --- !u!114 &114328570908798246
@@ -4261,11 +4260,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26d45b9f8bbc63e429b72912c81bed5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SendRate: 0.03
-  AdjustPositionThreshold: 0.1
-  AdjustSpeed: 8
+  ClientSendInputsInterval: 0.03
+  CorrectPositionThreshold: 0.1
+  CorrectingSpeed: 8
   LerpPosSpeed: 10
-  SendConfirmRate: 0.05
+  ServerSendConfirmInterval: 0.05
 --- !u!114 &114437314829428946
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4408,17 +4407,6 @@ MonoBehaviour:
   sorry: {fileID: 8300000, guid: c2e4a950c252b458d829958700dc6140, type: 3}
   photonView: {fileID: 114210010363067028}
   isDrone: 0
---- !u!114 &114718916726667884
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 138214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97063224de75cef43bb01020b1f6d1ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114804190747194500
 MonoBehaviour:
   m_ObjectHideFlags: 1
