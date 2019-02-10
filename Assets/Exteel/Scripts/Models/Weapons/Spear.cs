@@ -11,6 +11,7 @@ namespace Weapons
         private AudioClip _smashSound;
         private bool _prepareToAttack;//process next combo when current one end (exceed combo end time)
 
+        private bool _getMouseButtonUp;
         private float _curComboEndTime;//AttackEnd is called when time exceeds curComboEndTime
         private const float MinInstantMoveDistance = 5;//there are different movements if too close to target or not
         private float _instantMoveDistanceInAir = 25, _instantMoveDistanceOnGround = 19;
@@ -40,10 +41,15 @@ namespace Weapons
                 AttackEndAction();
             }
 
+            if (!_getMouseButtonUp && !cmd.buttons[(int)MouseButton]) {
+                _getMouseButtonUp = true;
+            }
+
             if (!cmd.buttons[(int)MouseButton] || IsOverHeat() || !Cbt.CanMeleeAttack) return;
             if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
             if (Time.time > _curComboEndTime){
+                _getMouseButtonUp = false;
                 _prepareToAttack = true;
                 IsFiring = true;
                 //IncreaseHeat(data.HeatIncreaseAmount); //todo : implement this

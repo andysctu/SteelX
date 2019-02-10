@@ -12,6 +12,7 @@ namespace Weapons
         private XWeaponTrail _weaponTrail;
         private AudioClip[] _slashSounds = new AudioClip[4];
 
+        private bool _getMouseButtonUp;
         private bool _receiveNextSlash, _isAnotherWeaponSword, _prepareToAttack;
         //_receiveNextSlash : Is waiting for the next combo (button)
         //_prepareToAttack : process next combo when current one end (exceed combo end time)
@@ -74,10 +75,16 @@ namespace Weapons
                 AttackEndAction();
             }
 
-            if (!cmd.buttons[(int) MouseButton] || IsOverHeat() || !_receiveNextSlash || !Cbt.CanMeleeAttack) return;
+            if (!_getMouseButtonUp && !cmd.buttons[(int)MouseButton]){
+                _getMouseButtonUp = true;
+            }
+
+            if (!cmd.buttons[(int) MouseButton] || IsOverHeat() || !_receiveNextSlash || !Cbt.CanMeleeAttack || !_getMouseButtonUp) return;
             if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
             if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || Time.time < _curComboEndTime - ReceiveNextAttackThreshold)){
+                _getMouseButtonUp = false;
+
                 //waiting for next combo ?
                 if (_curCombo < 4){
                     if (_curCombo == 3 && !_isAnotherWeaponSword){
