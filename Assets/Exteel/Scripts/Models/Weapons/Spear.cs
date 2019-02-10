@@ -9,22 +9,19 @@ namespace Weapons
         protected IDamageable[] TargetsInCollider;
         private readonly List<IDamageable> _targets = new List<IDamageable>();
         private AudioClip _smashSound;
-        private bool _receiveNextSMash, _prepareToAttack;
-        //_receiveNextSlash : Is waiting for the next combo (button)
-        //_prepareToAttack : process next combo when current one end
+        private bool _prepareToAttack;//process next combo when current one end (exceed combo end time)
 
         private float _curComboEndTime;//AttackEnd is called when time exceeds curComboEndTime
-        private const int DetectBlockedDistance = 20; //the ray which checks if hitting shield max distance
-        private const float MinInstantMoveDistance = 5;//the min distance to target
+        private const float MinInstantMoveDistance = 5;//there are different movements if too close to target or not
         private float _instantMoveDistanceInAir = 25, _instantMoveDistanceOnGround = 19;
 
         private float[] _attackAnimationLengths;
         private enum SmashType { NormalAttack, AirAttack };
 
-        public override void Init(WeaponData data, int pos, Transform handTransform, Combat cbt, Animator animator){
-            base.Init(data, pos, handTransform, cbt, animator);
+        protected override void InitDataRelatedVars(WeaponData data){
+            base.InitDataRelatedVars(data);
 
-            _attackAnimationLengths = (float[])((SpearData) data).AnimationLengths.Clone(); ;
+            _attackAnimationLengths = (float[])((SpearData)data).AnimationLengths.Clone(); ;
         }
 
         protected override void LoadSoundClips(){
@@ -43,17 +40,13 @@ namespace Weapons
                 AttackEndAction();
             }
 
-            if (!(Hand == LEFT_HAND ? cmd.buttons[(int)UserButton.LeftMouse] : cmd.buttons[(int)UserButton.RightMouse]) || IsOverHeat()) {
-                return;
-            }
+            if (!cmd.buttons[(int)MouseButton] || IsOverHeat() || !Cbt.CanMeleeAttack) return;
+            if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-            if (Time.time - TimeOfLastUse >= 1 / Rate){
-                if (!Cbt.CanMeleeAttack)return;
-
-                if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
-
+            if (Time.time > _curComboEndTime){
                 _prepareToAttack = true;
-                //IncreaseHeat(data.HeatIncreaseAmount);
+                IsFiring = true;
+                //IncreaseHeat(data.HeatIncreaseAmount); //todo : implement this
             }
         }
 
@@ -68,7 +61,7 @@ namespace Weapons
                 if ((iDamageableManager = targetPvs[i].GetComponent(typeof(IDamageableManager)) as IDamageableManager) != null) {
                     IDamageable c = iDamageableManager.FindDamageableComponent(specIDs[i]);
                     targets[i] = c;
-                };
+                }
             }
 
             PlaySmashEffect(damage, targets);
@@ -127,11 +120,6 @@ namespace Weapons
 
         public override void OnSkillAction(bool enter){
             base.OnSkillAction(enter);
-
-            if (enter){
-            } else{
-                Cbt.CanMeleeAttack = true;
-            }
         }
 
         public void OnHitTargetAction(IDamageable target){
@@ -153,7 +141,7 @@ namespace Weapons
                     bool isTerrainBlocksTheWay = false;
 
                     var hitPoints = Physics.RaycastAll(Cbt.transform.position + new Vector3(0, 5, 0),
-                        target.GetPosition() - Cbt.transform.position, DetectBlockedDistance, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
+                        target.GetPosition() - Cbt.transform.position, (target.GetPosition() - Cbt.transform.position).magnitude, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
 
                     foreach (RaycastHit hit in hitPoints) {
                         if (hit.transform.gameObject.layer == TerrainLayer) {
@@ -186,7 +174,7 @@ namespace Weapons
         protected virtual void InstantMove(Transform target) {
             if (target != null) {
                 if (!Mctrl.Grounded) {//as usual
-                    Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), _instantMoveDistanceInAir, _attackAnimationLengths[(int)SmashType.AirAttack] * 0.8f);
+                    Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), _instantMoveDistanceInAir, _attackAnimationLengths[(int)SmashType.AirAttack] * 0.8f); //can move in air attack earlier(while animation playing
                 } else {//move closer to target
                     if ((target.position - Mctrl.transform.position).magnitude > MinInstantMoveDistance){
                         Vector3 dir = Mctrl.Grounded ? target.position - Mctrl.transform.position - new Vector3(0, (target.position - Mctrl.transform.position).y, 0) :

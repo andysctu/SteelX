@@ -68,7 +68,7 @@ namespace Weapons
         }
 
         public override void HandleCombat(usercmd cmd) {
-            if (!Input.GetKey(MouseButton) || IsOverHeat()){
+            if (!cmd.buttons[(int)MouseButton] || IsOverHeat()){
                 if (IsFiring){
                     AttackEndAction();
                 }

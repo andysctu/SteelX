@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 namespace Weapons
 {
@@ -8,12 +7,12 @@ namespace Weapons
         protected SlashDetector SlashDetector;
         protected ParticleSystem HitEffectPrefab;
 
-        public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator){
-            base.Init(data, hand, handTransform, Cbt, Animator);
+        public override void Init(WeaponData data, int hand, Transform handTransform, Combat cbt, Animator animator){
+            base.Init(data, hand, handTransform, cbt, animator);
             InitComponents();
             ResetMeleeVars();
 
-            EnableDetector(Cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient);
+            EnableDetector(cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient);
         }
 
         private void InitComponents(){
@@ -28,7 +27,6 @@ namespace Weapons
             MechAnimator.Play("Idle", 1 + Hand);
         }
 
-        //Enable  Detector
         protected virtual void EnableDetector(bool b){
             if (SlashDetector != null) SlashDetector.EnableDetector(b);
         }

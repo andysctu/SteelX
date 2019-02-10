@@ -24,7 +24,7 @@ namespace Weapons
         public string WeaponName;
         public bool AllowBothWeaponUsing, IsFiring = false; //Whether the Mech Atk animation is playing or not
         protected int Hand, WeapPos; //Two-handed weapon's Hand is 0
-        protected KeyCode MouseButton;
+        protected UserButton MouseButton;
         protected float TimeOfLastUse, Rate;
         protected const int LEFT_HAND = 0, RIGHT_HAND = 1;
         protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
@@ -49,7 +49,7 @@ namespace Weapons
             this.WeapPos = pos;
             Mctrl = this.Cbt.GetComponent<MechController>();
 
-            MouseButton = (Hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
+            MouseButton = (Hand == LEFT_HAND) ? UserButton.LeftMouse : UserButton.RightMouse;
 
             InstantiateWeapon(data);
             InitComponents();
