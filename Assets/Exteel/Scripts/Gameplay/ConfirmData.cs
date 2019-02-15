@@ -9,7 +9,7 @@ public struct confirmData
     public float curBoostingSpeed;
 
     public int state;
-    public int ServerTick;
+    public int ClientTick;
     public float en;
 
     public float verBoostStartYPos;
@@ -47,7 +47,7 @@ public static class ConfirmData {
 
             Protocol.Serialize(data.curBoostingSpeed, bytes, ref index);
             Protocol.Serialize(data.state, bytes, ref index);
-            Protocol.Serialize(data.ServerTick, bytes, ref index);
+            Protocol.Serialize(data.ClientTick, bytes, ref index);
             Protocol.Serialize(data.en, bytes, ref index);
 
             Protocol.Serialize(data.verBoostStartYPos, bytes, ref index);
@@ -86,7 +86,7 @@ public static class ConfirmData {
 
             Protocol.Deserialize(out data.curBoostingSpeed, memData, ref index);
             Protocol.Deserialize(out data.state, memData, ref index);
-            Protocol.Deserialize(out data.ServerTick, memData, ref index);
+            Protocol.Deserialize(out data.ClientTick, memData, ref index);
             Protocol.Deserialize(out data.en, memData, ref index);
 
             Protocol.Deserialize(out data.verBoostStartYPos, memData, ref index);

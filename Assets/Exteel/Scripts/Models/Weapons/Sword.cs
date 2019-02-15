@@ -67,11 +67,11 @@ namespace Weapons
             if (Mctrl.Grounded) Cbt.CanMeleeAttack = true;
 
             if (_prepareToAttack){
-                if (cmd.timeStamp > _curComboEndTime){
+                if (Time.time > _curComboEndTime){
                     _prepareToAttack = false;
-                    AttackStartAction(cmd.timeStamp);
+                    AttackStartAction(Time.time);
                 }
-            } else if (IsFiring && cmd.timeStamp > _curComboEndTime){
+            } else if (IsFiring && Time.time > _curComboEndTime){
                 AttackEndAction();
             }
 
@@ -82,7 +82,7 @@ namespace Weapons
             if (!cmd.buttons[(int) MouseButton] || IsOverHeat() || !_receiveNextSlash || !Cbt.CanMeleeAttack || !_getMouseButtonUp) return;
             if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-            if (cmd.timeStamp - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || cmd.timeStamp < _curComboEndTime - ReceiveNextAttackThreshold)){
+            if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || Time.time < _curComboEndTime - ReceiveNextAttackThreshold)){
                 _getMouseButtonUp = false;
 
                 //waiting for next combo ?
@@ -99,7 +99,7 @@ namespace Weapons
                     return;
                 }
 
-                TimeOfLastUse = cmd.timeStamp;
+                TimeOfLastUse = Time.time;
                 IsFiring = true;
                 _prepareToAttack = true;
 

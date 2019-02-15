@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InputManager : MonoBehaviour {
     private GameManager _gameManager;
+    private BuildMech _buildMech;
     private MechController _mechController;
     private MechCombat _mechCombat;
     private MechCamera _mechCamera;
@@ -19,16 +19,13 @@ public class InputManager : MonoBehaviour {
     public float CorrectPositionThreshold = 0.1f, CorrectingSpeed = 8;
     public float LerpPosSpeed = 10;//lerp from transform position to "_curPosition"
 
-    public float ServerSendConfirmInterval = 0.05f;//todo : client can adjust this
+    public float ConfirmInterval = 0.05f;
     private float _preConfirmTime;
-
-    private readonly Queue<usercmd> _cmdsTempStored = new Queue<usercmd>();
+    private confirmData _confirmData;
     private readonly usercmd[] _historyUserCmds = new usercmd[1024];
-    private readonly Vector3[] _historyPositions = new Vector3[1024];
-    private readonly confirmData[] _historyConfirmDatas = new confirmData[1024];
-    private readonly int[] _worldStartTick = new int[1024];
+    private readonly Vector3[] _serverHistoryPositions = new Vector3[1024];
+    private readonly Vector3[] _clientHistoryPositions = new Vector3[1024];
     private int _tick;
-    private int? _latestServerTickInCmd = null;
 
     private bool _init;
     public Vector3 CurPosition { get;private set;}
@@ -41,13 +38,13 @@ public class InputManager : MonoBehaviour {
     }
 
     private void RegisterOnMechBuilt() {
-        if (GetComponent<BuildMech>() != null) {
-            GetComponent<BuildMech>().OnMechBuilt += Init;
+        if ((_buildMech = GetComponent<BuildMech>()) != null) {
+            _buildMech.OnMechBuilt += Init;
         }
     }
 
     private void Init() {
-        PhotonPlayer owner = _mechCombat.GetOwner();
+        PhotonPlayer owner = _buildMech.GetOwner();
         _senderID = owner.ID;
         _sender = owner;
         CurPosition = transform.position;
@@ -89,17 +86,13 @@ public class InputManager : MonoBehaviour {
     private void OnWorldUpdate() {
         if (_sender == null) return;
 
+        //take a snapshot of current state and send
+        _serverHistoryPositions[_gameManager.GetServerTick()] = CurPosition;
+        //TODO : broadcast position
+
         if (PhotonNetwork.isMasterClient && !_sender.IsLocal) {
-            ProcessClientInputQueue();
 
-            if (_latestServerTickInCmd == null || _latestServerTickInCmd == 1) return;
-
-            if (Time.time - _preConfirmTime > ServerSendConfirmInterval) {
-                _preConfirmTime = Time.time;
-
-                RaiseEventOptions options = new RaiseEventOptions { TargetActors = new[] { this._senderID } };
-                PhotonNetwork.RaiseEvent(GameEventCode.PosConfirm, _historyConfirmDatas[(int)Mathf.Repeat(_latestServerTickInCmd.Value - 1, 1024)], false, options);
-            }
+            
         }
     }
 
@@ -112,12 +105,25 @@ public class InputManager : MonoBehaviour {
         tickDiff = Mathf.Clamp(tickDiff, 0, MaxClientSendCmdSize - 1);
         _tick = (usercmds[0].Tick - tickDiff) % 1024;
 
-        //add them to the queue
+        //Process inputs
         for (int i = 0; i <= tickDiff; i++) {
-            _cmdsTempStored.Enqueue(usercmds[tickDiff - i]);
+            ProcessInputs(usercmds[tickDiff - i]);
+            _mechCamera.transform.rotation = Quaternion.Euler(_curUserCmd.rot);
+            _mechCombat.ProcessInputs(_curUserCmd);
 
             _tick = (_tick + 1) % 1024;
         }
+
+        if (Time.time - _preConfirmTime > ConfirmInterval){
+            _preConfirmTime = Time.time;
+
+            _confirmData.ClientTick = _tick;
+            _confirmData.position = CurPosition;
+            ConfirmData.TransformMechDataToStruct(_mechCombat, _mechController, ref _confirmData);
+            PhotonNetwork.RaiseEvent(GameEventCode.PosConfirm, _confirmData, false, new RaiseEventOptions { TargetActors = new[] { _senderID } });
+        }
+
+        transform.position = CurPosition;//for display todo : move to mech controller
     }
 
     private void Update() {
@@ -130,10 +136,7 @@ public class InputManager : MonoBehaviour {
         }
 
         _curUserCmd.Tick = _tick;
-        if (_curUserCmd.ServerTick != _gameManager.GetServerTick()) {
-            _worldStartTick[_gameManager.GetServerTick()] = _tick;
-            _curUserCmd.ServerTick = _gameManager.GetServerTick();
-        }
+        _curUserCmd.ServerTick = _gameManager.GetServerTick();
 
         _historyUserCmds[_tick].buttons = new bool[UserCmd.ButtonsLength];
         UserCmd.CloneUsercmd(_curUserCmd, ref _historyUserCmds[_tick]);
@@ -149,6 +152,7 @@ public class InputManager : MonoBehaviour {
                     _historyUserCmds[index].buttons = new bool[UserCmd.ButtonsLength];
                     _historyUserCmds[index].Tick = index;
                     _historyUserCmds[index].ServerTick = _gameManager.GetServerTick();
+                    _historyUserCmds[index].timeStamp = PhotonNetwork.ServerTimestamp;
                 }
 
                 _cmdsToSend[i] = _historyUserCmds[index];
@@ -162,10 +166,11 @@ public class InputManager : MonoBehaviour {
             _mechCombat.ProcessInputs(_curUserCmd);
 
              _tick = (_tick + 1) % 1024;
+            _clientHistoryPositions[_tick] = CurPosition;
             transform.position = Vector3.Lerp(transform.position, CurPosition, Time.deltaTime * LerpPosSpeed);//todo : move to mech controller
         }
 
-        _historyPositions[(_gameManager.GetServerTick() + 1) % 1024] = CurPosition;
+        _serverHistoryPositions[(_gameManager.GetServerTick() + 1) % 1024] = CurPosition;
     }
 
     private void GetInputs() {
@@ -183,29 +188,6 @@ public class InputManager : MonoBehaviour {
         _curUserCmd.buttons[(int)UserButton.RightMouse] = Input.GetMouseButton(1);
     }
 
-    private void ProcessClientInputQueue() {
-        while (_cmdsTempStored.Count > 0) {
-            _curUserCmd = _cmdsTempStored.Dequeue();
-
-            if (_latestServerTickInCmd != _curUserCmd.ServerTick) {
-                _worldStartTick[_curUserCmd.ServerTick] = _curUserCmd.Tick;
-                _latestServerTickInCmd = _curUserCmd.ServerTick;
-            }
-
-            ProcessInputs(_curUserCmd);
-            _mechCamera.transform.rotation = Quaternion.Euler(_curUserCmd.rot);
-            _mechCombat.ProcessInputs(_curUserCmd);
-
-            _historyPositions[(_curUserCmd.ServerTick + 1) % 1024] = CurPosition;
-
-            ConfirmData.TransformMechDataToStruct(_mechCombat, _mechController, ref _historyConfirmDatas[(_curUserCmd.ServerTick + 1) % 1024]);
-            _historyConfirmDatas[(_curUserCmd.ServerTick + 1) % 1024].ServerTick = (_curUserCmd.ServerTick + 1) % 1024;
-            _historyConfirmDatas[(_curUserCmd.ServerTick + 1) % 1024].position = CurPosition;
-        }
-
-        transform.position = CurPosition;//for display//todo : move to mech controller
-    }
-
     private void ProcessInputs(usercmd userCmd) {
         transform.Rotate(Vector3.up, userCmd.viewAngle - transform.rotation.eulerAngles.y);
 
@@ -213,18 +195,18 @@ public class InputManager : MonoBehaviour {
     }
 
     private void ConfirmPosition(confirmData data) {
-        int serverTick = data.ServerTick;
+        int tick = data.ClientTick;
         Vector3 position = data.position;
 
-        if (Vector3.Distance(_historyPositions[serverTick], position) > CorrectPositionThreshold) {
-            int tmpTick = _worldStartTick[serverTick];
+        if (Vector3.Distance(_clientHistoryPositions[tick], position) > CorrectPositionThreshold) {
+            int tmpTick = tick;
 
             //Vector3 prePos = _curPosition;
 
-            Debug.Log("***Force pos : " + position + " on tick : " + tmpTick + " world :" + serverTick + " err : " + Vector3.Distance(_historyPositions[serverTick], position));
+            Debug.Log("***Force pos : " + position + " on tick : " + tmpTick + " world :" + tick + " err : " + Vector3.Distance(_serverHistoryPositions[tick], position));
 
             //Adjust
-            _historyPositions[serverTick] = position;
+            _clientHistoryPositions[tick] = position;
             CurPosition = position;
 
             switch (data.state) {
@@ -243,7 +225,7 @@ public class InputManager : MonoBehaviour {
 
                 tmpTick = (tmpTick + 1) % 1024;
 
-                _historyPositions[(_historyUserCmds[tmpTick].ServerTick + 1) % 1024] = CurPosition;
+                _clientHistoryPositions[(_historyUserCmds[tmpTick].ServerTick + 1) % 1024] = CurPosition;
             }
 
             //Vector3 afterPos = _curPosition;
