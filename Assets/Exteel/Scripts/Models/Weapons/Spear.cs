@@ -33,11 +33,11 @@ namespace Weapons
             if (Mctrl.Grounded) Cbt.CanMeleeAttack = true;
 
             if (_prepareToAttack) {
-                if (Time.time > _curComboEndTime) {
+                if (cmd.timeStamp > _curComboEndTime) {
                     _prepareToAttack = false;
-                    AttackStartAction();
+                    AttackStartAction(cmd.timeStamp);
                 }
-            } else if (IsFiring && Time.time > _curComboEndTime) {
+            } else if (IsFiring && cmd.timeStamp > _curComboEndTime) {
                 AttackEndAction();
             }
 
@@ -48,7 +48,7 @@ namespace Weapons
             if (!cmd.buttons[(int)MouseButton] || IsOverHeat() || !Cbt.CanMeleeAttack) return;
             if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-            if (Time.time > _curComboEndTime){
+            if (cmd.timeStamp > _curComboEndTime){
                 _getMouseButtonUp = false;
                 _prepareToAttack = true;
                 IsFiring = true;
@@ -73,10 +73,10 @@ namespace Weapons
             PlaySmashEffect(damage, targets);
         }
 
-        protected virtual void AttackStartAction() {
+        protected virtual void AttackStartAction(float startTime) {
             IsFiring = true;
-            TimeOfLastUse = Time.time;
-            _curComboEndTime = Time.time + (!Mctrl.Grounded ? _attackAnimationLengths[(int)SmashType.AirAttack] : _attackAnimationLengths[(int)SmashType.NormalAttack]);
+            TimeOfLastUse = startTime;
+            _curComboEndTime = startTime + (!Mctrl.Grounded ? _attackAnimationLengths[(int)SmashType.AirAttack] : _attackAnimationLengths[(int)SmashType.NormalAttack]);
 
             IDamageable[] targets = DetectTargets();
             PlaySmashEffect(data.damage, targets);

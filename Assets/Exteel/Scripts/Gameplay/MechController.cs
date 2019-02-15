@@ -117,12 +117,12 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
 
     private void Init(){
         _owner = _buildMech.GetOwner();
-        if(_owner.IsLocal) _pv.ObservedComponents.Remove(this);
         _mechCam.Init(_owner);
-        GetComponent<Sync>().Init(_owner);
         FindBoosterController();
         InitControllerVar();
         InitCam(cam_orbitradius, cam_angleoffset);
+        GetComponent<Sync>().Init(_owner);
+        if (_owner.IsLocal && !PhotonNetwork.isMasterClient) _pv.ObservedComponents.Remove(this);
     }
 
     private void RegisterOnMechBuilt() {
@@ -429,11 +429,6 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
             return;
         }
 
-        //if(InstantMoveRemainingDistance > 0){
-        //    _characterController.Move(InstantMoveDir * InstantMoveSpeed * cmd.msec);
-        //    InstantMoveRemainingDistance -= (InstantMoveDir * InstantMoveSpeed).magnitude * cmd.msec;
-        //}
-
         //cast a ray downward to check if not jumping but not grounded => if so , directly teleport to ground
         RaycastHit hit;
         if (Grounded && YSpeed <= 0 && Physics.Raycast(transform.position, -Vector3.up, out hit, _terrainMask)) {
@@ -650,6 +645,11 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
         public float deceleration;
     }
 
+    public Vector3 GetPosition(float time) {
+        return Vector3.zero;
+        //return _inputManager.GetPosition(time);
+    }
+
     public PhotonPlayer GetOwner(){
         return _owner;
     }
@@ -659,15 +659,14 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
             Speed = (float) stream.ReceiveNext();
             Direction = (float) stream.ReceiveNext();
             Angle = (float) stream.ReceiveNext();
-
             IsBoosting = (bool) stream.ReceiveNext();
-            Grounded = CheckIsGrounded();
+            Grounded = (bool)stream.ReceiveNext();
         } else{
             stream.SendNext(Speed);
             stream.SendNext(Direction);
             stream.SendNext(Angle);
-
             stream.SendNext(IsBoosting);
+            stream.SendNext(Grounded);
         }
     }
 }

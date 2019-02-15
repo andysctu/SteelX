@@ -116,9 +116,9 @@ namespace Weapons
             data.SwitchAnimationClips(WeaponAnimator);
         }
 
-        public abstract void HandleCombat(usercmd cmd); //Process Input
         public virtual void HandleAnimation(){
         }
+        public abstract void HandleCombat(usercmd cmd);
 
         public virtual void OnSkillAction(bool enter){
         }

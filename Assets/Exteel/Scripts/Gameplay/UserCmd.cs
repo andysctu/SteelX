@@ -7,6 +7,7 @@ public struct usercmd {
     public float horizontal;
     public float vertical;
     public float viewAngle;//mech angle
+    public int timeStamp;
     public Vector3 rot;//cam rot
     public bool[] buttons;
     public int Tick, ServerTick;
@@ -21,7 +22,7 @@ public static class UserCmd {
         PhotonPeer.RegisterType(typeof(usercmd), (byte)'I', SerializeUserCmd, DeserializeUserCmd);
     }
 
-    private static readonly byte[] memUserCmd = new byte[7 * 4 + 2 + 4*2];
+    private static readonly byte[] memUserCmd = new byte[8 * 4 + 2 + 4*2];
     private static short SerializeUserCmd(StreamBuffer outStream, object customobject) {
         usercmd cmd = (usercmd)customobject;
 
@@ -32,6 +33,7 @@ public static class UserCmd {
             Protocol.Serialize(cmd.horizontal, bytes, ref index);
             Protocol.Serialize(cmd.vertical, bytes, ref index);
             Protocol.Serialize(cmd.viewAngle, bytes, ref index);
+            Protocol.Serialize(cmd.timeStamp, bytes, ref index);
             Protocol.Serialize(cmd.rot.x, bytes, ref index);
             Protocol.Serialize(cmd.rot.y, bytes, ref index);
             Protocol.Serialize(cmd.rot.z, bytes, ref index);
@@ -42,22 +44,23 @@ public static class UserCmd {
             Protocol.Serialize(cmd.Tick, bytes, ref index);
             Protocol.Serialize(cmd.ServerTick, bytes, ref index);
 
-            outStream.Write(bytes, 0, 7 * 4 + 2 + 4 * 2);
+            outStream.Write(bytes, 0, 8 * 4 + 2 + 4 * 2);
         }
 
-        return 7 * 4 + 2 + 4 * 2;
+        return 8 * 4 + 2 + 4 * 2;
     }
 
     private static object DeserializeUserCmd(StreamBuffer inStream, short length) {
         usercmd cmd = new usercmd();
 
         lock (memUserCmd) {
-            inStream.Read(memUserCmd, 0, 7 * 4 + 2 + 4 * 2);
+            inStream.Read(memUserCmd, 0, 8 * 4 + 2 + 4 * 2);
             int index = 0;
             Protocol.Deserialize(out cmd.msec, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.horizontal, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.vertical, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.viewAngle, memUserCmd, ref index);
+            Protocol.Deserialize(out cmd.timeStamp, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.rot.x, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.rot.y, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.rot.z, memUserCmd, ref index);
@@ -109,6 +112,7 @@ public static class UserCmd {
         to.horizontal = from.horizontal;
         to.vertical = from.vertical;
         to.viewAngle = from.viewAngle;
+        to.timeStamp = from.timeStamp;
         to.rot = from.rot;
         Array.Copy(from.buttons, to.buttons, ButtonsLength);
         to.Tick = from.Tick;

@@ -1,3 +1,3 @@
 ﻿public static class GameEventCode{
-    public const int SYNC = 100, MSG = 101, INPUT = 102, POS_CONFIRM = 103;
+    public const int Sync = 100, Msg = 101, Input = 102, PosConfirm = 103;
 }

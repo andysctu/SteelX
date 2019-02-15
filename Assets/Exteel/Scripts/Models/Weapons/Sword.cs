@@ -67,11 +67,11 @@ namespace Weapons
             if (Mctrl.Grounded) Cbt.CanMeleeAttack = true;
 
             if (_prepareToAttack){
-                if (Time.time > _curComboEndTime){
+                if (cmd.timeStamp > _curComboEndTime){
                     _prepareToAttack = false;
-                    AttackStartAction();
+                    AttackStartAction(cmd.timeStamp);
                 }
-            } else if (IsFiring && Time.time > _curComboEndTime){
+            } else if (IsFiring && cmd.timeStamp > _curComboEndTime){
                 AttackEndAction();
             }
 
@@ -82,7 +82,7 @@ namespace Weapons
             if (!cmd.buttons[(int) MouseButton] || IsOverHeat() || !_receiveNextSlash || !Cbt.CanMeleeAttack || !_getMouseButtonUp) return;
             if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
 
-            if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || Time.time < _curComboEndTime - ReceiveNextAttackThreshold)){
+            if (cmd.timeStamp - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || cmd.timeStamp < _curComboEndTime - ReceiveNextAttackThreshold)){
                 _getMouseButtonUp = false;
 
                 //waiting for next combo ?
@@ -99,7 +99,7 @@ namespace Weapons
                     return;
                 }
 
-                TimeOfLastUse = Time.time;
+                TimeOfLastUse = cmd.timeStamp;
                 IsFiring = true;
                 _prepareToAttack = true;
 
@@ -124,9 +124,9 @@ namespace Weapons
             PlaySlashEffect(damage, targets, additionalFields[0]);
         }
 
-        protected virtual void AttackStartAction(){
+        protected virtual void AttackStartAction(float startTime){
             IsFiring = true;
-            TimeOfLastUse = Time.time;
+            TimeOfLastUse = startTime;
 
             IDamageable[] targets = DetectTargets();
 
@@ -141,7 +141,7 @@ namespace Weapons
             //    }
             //}
 
-            InstantMove(_curCombo, targets.Length == 0 ? null : targets[0].GetTransform());
+            InstantMove(Mctrl.GetPosition(startTime), _curCombo, targets.Length == 0 ? null : targets[0].GetTransform());
 
             if (PhotonNetwork.isMasterClient){
                 //transform targets to ids
@@ -161,7 +161,7 @@ namespace Weapons
             Mctrl.ResetCurBoostingSpeed();
             Cbt.IncreaseSP(data.SpIncreaseAmount * targets.Length);
 
-            _curComboEndTime = Time.time + (!Mctrl.Grounded ? _attackAnimationLengths[(int) SlashType.AirAttack] : _attackAnimationLengths[_curCombo]);
+            _curComboEndTime = startTime + (!Mctrl.Grounded ? _attackAnimationLengths[(int) SlashType.AirAttack] : _attackAnimationLengths[_curCombo]);
             _curCombo++;
         }
 
@@ -279,7 +279,7 @@ namespace Weapons
             return _targets.ToArray();
         }
 
-        protected virtual void InstantMove(int combo, Transform closestTarget){
+        protected virtual void InstantMove(Vector3 startPos, int combo, Transform closestTarget){
             if (closestTarget != null){
                 if (!Mctrl.Grounded){
                     //as usual

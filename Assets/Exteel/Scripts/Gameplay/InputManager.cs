@@ -61,7 +61,7 @@ public class InputManager : MonoBehaviour {
         enabled = owner.IsLocal;
         _init = true;
 
-        _gameManager = FindObjectOfType<GameManager>(); //TODO : make sure game manager is exist
+        _gameManager = FindObjectOfType<GameManager>(); //TODO : make sure game manager exist
         _gameManager.OnWorldUpdate += OnWorldUpdate;
     }
 
@@ -77,10 +77,10 @@ public class InputManager : MonoBehaviour {
 
     protected void OnPhotonEvent(byte eventCode, object content, int senderId) {
         switch (eventCode) {
-            case GameEventCode.INPUT:
+            case GameEventCode.Input:
             MasterReceiveInputs((usercmd[])content, senderId);
             break;
-            case GameEventCode.POS_CONFIRM:
+            case GameEventCode.PosConfirm:
             ConfirmPosition((confirmData)content);
             break;
         }
@@ -91,6 +91,15 @@ public class InputManager : MonoBehaviour {
 
         if (PhotonNetwork.isMasterClient && !_sender.IsLocal) {
             ProcessClientInputQueue();
+
+            if (_latestServerTickInCmd == null || _latestServerTickInCmd == 1) return;
+
+            if (Time.time - _preConfirmTime > ServerSendConfirmInterval) {
+                _preConfirmTime = Time.time;
+
+                RaiseEventOptions options = new RaiseEventOptions { TargetActors = new[] { this._senderID } };
+                PhotonNetwork.RaiseEvent(GameEventCode.PosConfirm, _historyConfirmDatas[(int)Mathf.Repeat(_latestServerTickInCmd.Value - 1, 1024)], false, options);
+            }
         }
     }
 
@@ -114,7 +123,7 @@ public class InputManager : MonoBehaviour {
     private void Update() {
         if (!_init) return;
 
-        if (!_gameManager.BlockInput && _gameManager.GameIsBegin) {//TODO : check game begin
+        if (!_gameManager.BlockInput && _gameManager.GameIsBegin) {
             GetInputs();
         } else {//Override inputs
             _curUserCmd = new usercmd() { msec = Time.deltaTime, buttons = new bool[UserCmd.ButtonsLength], rot = _mechCamera.transform.eulerAngles, viewAngle = transform.rotation.eulerAngles.y };
@@ -145,7 +154,7 @@ public class InputManager : MonoBehaviour {
                 _cmdsToSend[i] = _historyUserCmds[index];
             }
 
-            PhotonNetwork.RaiseEvent(GameEventCode.INPUT, _cmdsToSend, false, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient });
+            PhotonNetwork.RaiseEvent(GameEventCode.Input, _cmdsToSend, false, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient });
         }
 
         if (_sender.IsLocal) {
@@ -165,6 +174,7 @@ public class InputManager : MonoBehaviour {
         _curUserCmd.rot = _mechCamera.transform.eulerAngles;
         _curUserCmd.viewAngle = transform.rotation.eulerAngles.y;
         _curUserCmd.msec = Time.deltaTime;
+        _curUserCmd.timeStamp = PhotonNetwork.ServerTimestamp;
 
         _curUserCmd.buttons[(int)UserButton.Space] = Input.GetKey(KeyCode.Space);
         _curUserCmd.buttons[(int)UserButton.LeftShift] = Input.GetKey(KeyCode.LeftShift);
@@ -194,15 +204,6 @@ public class InputManager : MonoBehaviour {
         }
 
         transform.position = CurPosition;//for display//todo : move to mech controller
-
-        if (_latestServerTickInCmd == null || _latestServerTickInCmd == 1) return;
-
-        if (Time.time - _preConfirmTime > ServerSendConfirmInterval) {
-            _preConfirmTime = Time.time;
-
-            RaiseEventOptions options = new RaiseEventOptions { TargetActors = new[] { this._senderID } };
-            PhotonNetwork.RaiseEvent(GameEventCode.POS_CONFIRM, _historyConfirmDatas[(int)Mathf.Repeat(_latestServerTickInCmd.Value - 1,1024)], false, options);
-        }
     }
 
     private void ProcessInputs(usercmd userCmd) {
@@ -250,6 +251,10 @@ public class InputManager : MonoBehaviour {
             //_curPosition = Vector3.Lerp(prePos, afterPos, Time.deltaTime * CorrectingSpeed);
         }
     }
+
+    //public Vector3 GetPosition(float time){
+        //while()
+    //}
 
     private void OnDestroy() {
         PhotonNetwork.OnEventCall -= OnPhotonEvent;

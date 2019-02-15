@@ -40,8 +40,9 @@ public abstract class GameManager : Photon.MonoBehaviour {
     public float SyncServerTickInterval = 2;
     private bool OnSyncTimeRequest = false, isTimeInit = false;
     private int _waitTimes, _sendTimes;
-    private float ServerTickInterval = 0.05f, _preSyncTime;//time between processing player inputs
+    private float ServerTickInterval = 0.04f, _preSyncTime;//time between processing player inputs
     private int _curServerTick;//tick : 0 ... 1023 
+    private float[] _tickTimeHistory = new float[1024];
     private double _curServerTickTime;// TickTime : the PhotonNetwork.time of _curServerTick
 
     //Display time on lobby
@@ -222,7 +223,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             Timer.SetStoredTime((int)propertiesThatChanged["startTime"], (int)propertiesThatChanged["duration"]);
         }
     }
-
+    
     protected virtual void Update() {
         if (!BlockInput) {
             Cursor.lockState = CursorLockMode.Locked;
@@ -239,21 +240,21 @@ public abstract class GameManager : Photon.MonoBehaviour {
         }
 
         if (Offline) return;
-
+        
         //Update tick
         if (PhotonNetwork.time - _curServerTickTime > ServerTickInterval || PhotonNetwork.time - _curServerTickTime < 0){
-            if (OnWorldUpdate != null) OnWorldUpdate();
-
-
             double timeDiff = PhotonNetwork.time > _curServerTickTime ? PhotonNetwork.time - _curServerTickTime : 4294967.295 - (_curServerTickTime - PhotonNetwork.time);//4294967.295 is max PhotonNetwork.time
             _curServerTick = (_curServerTick + (int) (timeDiff / ServerTickInterval)) % 1024;
             _curServerTickTime += (int)(timeDiff / ServerTickInterval) * ServerTickInterval;
+            _tickTimeHistory[_curServerTick] = Time.time;
             if (_curServerTickTime > 4294967.295) _curServerTickTime -= 4294967.295;
 
-            if(TickText != null){
+            if (OnWorldUpdate != null) OnWorldUpdate();
+
+            if (TickText != null){
                 TickText.text = _curServerTick.ToString();
                 TickTimeText.text = _curServerTickTime.ToString();
-            }
+            }   
         }
 
         // Update time

@@ -38,10 +38,10 @@ public class CTFManager : GameManager {
 
     protected override void OnPhotonEvent(byte eventcode, object content, int senderid) {
         switch (eventcode) {
-            case GameEventCode.SYNC:
+            case GameEventCode.Sync:
             SyncEvent(content, senderid);
             break;
-            case GameEventCode.MSG:
+            case GameEventCode.Msg:
             break;
         }
     }
@@ -354,7 +354,7 @@ public class CTFManager : GameManager {
             { "Pos", Pos}
         };
 
-        PhotonNetwork.RaiseEvent(GameEventCode.SYNC, contentHashTable, true, raiseEventOptions);
+        PhotonNetwork.RaiseEvent(GameEventCode.Sync, contentHashTable, true, raiseEventOptions);
 
         //Sync red flag
         PVID = (RedFlagHolder == null) ? -1 : (RedFlag.transform.root).GetComponent<PhotonView>().viewID;
@@ -372,7 +372,7 @@ public class CTFManager : GameManager {
             { "Pos", Pos}
         };
 
-        PhotonNetwork.RaiseEvent(GameEventCode.SYNC, contentHashTable, true, raiseEventOptions);
+        PhotonNetwork.RaiseEvent(GameEventCode.Sync, contentHashTable, true, raiseEventOptions);
     }
 
     [PunRPC]
