@@ -116,7 +116,7 @@ public class InGameChat : Photon.MonoBehaviour {
         }else if (str.Contains("testEvent")) {
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions();
             raiseEventOptions.Receivers = ReceiverGroup.All;
-            PhotonNetwork.RaiseEvent(GameEventCode.SYNC, null, true, raiseEventOptions);
+            PhotonNetwork.RaiseEvent(GameEventCode.Sync, null, true, raiseEventOptions);
         }
         
 

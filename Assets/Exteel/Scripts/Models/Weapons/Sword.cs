@@ -69,7 +69,7 @@ namespace Weapons
             if (_prepareToAttack){
                 if (Time.time > _curComboEndTime){
                     _prepareToAttack = false;
-                    AttackStartAction(Time.time);
+                    AttackStartAction(Mctrl.transform.position);
                 }
             } else if (IsFiring && Time.time > _curComboEndTime){
                 AttackEndAction();
@@ -124,9 +124,9 @@ namespace Weapons
             PlaySlashEffect(damage, targets, additionalFields[0]);
         }
 
-        protected virtual void AttackStartAction(float startTime){
+        protected virtual void AttackStartAction(Vector3 startPos){
             IsFiring = true;
-            TimeOfLastUse = startTime;
+            TimeOfLastUse = Time.time;
 
             IDamageable[] targets = DetectTargets();
 
@@ -141,7 +141,7 @@ namespace Weapons
             //    }
             //}
 
-            InstantMove(Mctrl.GetPosition(startTime), _curCombo, targets.Length == 0 ? null : targets[0].GetTransform());
+            InstantMove(startPos, _curCombo, targets.Length == 0 ? null : targets[0].GetTransform());
 
             if (PhotonNetwork.isMasterClient){
                 //transform targets to ids
@@ -161,7 +161,7 @@ namespace Weapons
             Mctrl.ResetCurBoostingSpeed();
             Cbt.IncreaseSP(data.SpIncreaseAmount * targets.Length);
 
-            _curComboEndTime = startTime + (!Mctrl.Grounded ? _attackAnimationLengths[(int) SlashType.AirAttack] : _attackAnimationLengths[_curCombo]);
+            _curComboEndTime = Time.time + (!Mctrl.Grounded ? _attackAnimationLengths[(int) SlashType.AirAttack] : _attackAnimationLengths[_curCombo]);
             _curCombo++;
         }
 
@@ -286,12 +286,12 @@ namespace Weapons
                     Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), _instantMoveDistanceInAir, _attackAnimationLengths[(int) SlashType.AirAttack] * 0.8f);//can move in air attack earlier(while animation playing
                 } else{
                     //move closer to target
-                    if ((closestTarget.position - Mctrl.transform.position).magnitude > MinInstantMoveDistance){
-                        Vector3 dir = Mctrl.Grounded ? closestTarget.position - Mctrl.transform.position - new Vector3(0, (closestTarget.position - Mctrl.transform.position).y, 0) : closestTarget.position - Mctrl.transform.position;
+                    if ((closestTarget.position - startPos).magnitude > MinInstantMoveDistance){
+                        Vector3 dir = Mctrl.Grounded ? closestTarget.position - startPos - new Vector3(0, (closestTarget.position - startPos).y, 0) : closestTarget.position - startPos;
 
-                        Mctrl.SetInstantMoving(dir, (closestTarget.position - Mctrl.transform.position).magnitude / 2, _attackAnimationLengths[_curCombo]);
+                        Mctrl.SetInstantMoving(dir, 2.5f, _attackAnimationLengths[_curCombo]);
                     } else{
-                        Mctrl.SetInstantMoving(closestTarget.position - Mctrl.transform.position, 0, _attackAnimationLengths[_curCombo]);
+                        Mctrl.SetInstantMoving(closestTarget.position - startPos, 0, _attackAnimationLengths[_curCombo]);
                     }
                 }
             } else{

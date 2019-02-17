@@ -7,10 +7,10 @@ public struct usercmd {
     public float horizontal;
     public float vertical;
     public float viewAngle;//mech angle
-    public int timeStamp;
+    public float timeStamp;
     public Vector3 rot;//cam rot
     public bool[] buttons;
-    public int Tick, ServerTick;
+    public int Tick;
 }
 
 public enum UserButton { LeftShift, Space, LeftMouse, RightMouse, R, Num1, Num2, Num3, Num4};
@@ -22,7 +22,7 @@ public static class UserCmd {
         PhotonPeer.RegisterType(typeof(usercmd), (byte)'I', SerializeUserCmd, DeserializeUserCmd);
     }
 
-    private static readonly byte[] memUserCmd = new byte[8 * 4 + 2 + 4*2];
+    private static readonly byte[] memUserCmd = new byte[8 * 4 + 2 + 4];
     private static short SerializeUserCmd(StreamBuffer outStream, object customobject) {
         usercmd cmd = (usercmd)customobject;
 
@@ -42,19 +42,18 @@ public static class UserCmd {
             Protocol.Serialize(button, bytes, ref index);
 
             Protocol.Serialize(cmd.Tick, bytes, ref index);
-            Protocol.Serialize(cmd.ServerTick, bytes, ref index);
 
-            outStream.Write(bytes, 0, 8 * 4 + 2 + 4 * 2);
+            outStream.Write(bytes, 0, 8 * 4 + 2 + 4);
         }
 
-        return 8 * 4 + 2 + 4 * 2;
+        return 8 * 4 + 2 + 4;
     }
 
     private static object DeserializeUserCmd(StreamBuffer inStream, short length) {
         usercmd cmd = new usercmd();
 
         lock (memUserCmd) {
-            inStream.Read(memUserCmd, 0, 8 * 4 + 2 + 4 * 2);
+            inStream.Read(memUserCmd, 0, 8 * 4 + 2 + 4);
             int index = 0;
             Protocol.Deserialize(out cmd.msec, memUserCmd, ref index);
             Protocol.Deserialize(out cmd.horizontal, memUserCmd, ref index);
@@ -70,7 +69,6 @@ public static class UserCmd {
             cmd.buttons = ConvertShortToBoolArray(button);
 
             Protocol.Deserialize(out cmd.Tick, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.ServerTick, memUserCmd, ref index);
         }
 
         return cmd;
@@ -116,7 +114,6 @@ public static class UserCmd {
         to.rot = from.rot;
         Array.Copy(from.buttons, to.buttons, ButtonsLength);
         to.Tick = from.Tick;
-        to.ServerTick = from.ServerTick;
     }
 }
 

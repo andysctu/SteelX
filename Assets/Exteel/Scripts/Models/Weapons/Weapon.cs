@@ -118,7 +118,8 @@ namespace Weapons
 
         public virtual void HandleAnimation(){
         }
-        public abstract void HandleCombat(usercmd cmd);
+        public virtual void HandleCombat(usercmd cmd) { }
+        public virtual void HandleCombat() { }
 
         public virtual void OnSkillAction(bool enter){
         }

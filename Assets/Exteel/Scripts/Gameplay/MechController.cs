@@ -645,10 +645,9 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
         public float deceleration;
     }
 
-    public Vector3 GetPosition(float time) {
-        return Vector3.zero;
-        //return _inputManager.GetPosition(time);
-    }
+    //public Vector3 GetPosition(float timeStamp) {
+    //    return _inputManager.GetPosition(timeStamp);
+    //}
 
     public PhotonPlayer GetOwner(){
         return _owner;

@@ -42,7 +42,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     private int _waitTimes, _sendTimes;
     private float ServerTickInterval = 0.04f, _preSyncTime;//time between processing player inputs
     private int _curServerTick;//tick : 0 ... 1023 
-    private float[] _tickTimeHistory = new float[1024];
+    private readonly double[] _serverTimeStamps = new double[1024];
     private double _curServerTickTime;// TickTime : the PhotonNetwork.time of _curServerTick
 
     //Display time on lobby
@@ -246,7 +246,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
             double timeDiff = PhotonNetwork.time > _curServerTickTime ? PhotonNetwork.time - _curServerTickTime : 4294967.295 - (_curServerTickTime - PhotonNetwork.time);//4294967.295 is max PhotonNetwork.time
             _curServerTick = (_curServerTick + (int) (timeDiff / ServerTickInterval)) % 1024;
             _curServerTickTime += (int)(timeDiff / ServerTickInterval) * ServerTickInterval;
-            _tickTimeHistory[_curServerTick] = Time.time;
+            _serverTimeStamps[_curServerTick] = PhotonNetwork.time;
             if (_curServerTickTime > 4294967.295) _curServerTickTime -= 4294967.295;
 
             if (OnWorldUpdate != null) OnWorldUpdate();
@@ -553,8 +553,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
         if(_curServerTickTime > 4294967.295)_curServerTickTime -= 4294967.295;
     }
 
-    public double GetServerTickTime(){
-        return _curServerTickTime;
+    public double GetServerTimeStamp(int serverTick){
+        return _serverTimeStamps[serverTick];
     }
 
     public int GetServerTick(){

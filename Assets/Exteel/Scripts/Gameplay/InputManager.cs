@@ -108,10 +108,11 @@ public class InputManager : MonoBehaviour {
         //Process inputs
         for (int i = 0; i <= tickDiff; i++) {
             ProcessInputs(usercmds[tickDiff - i]);
-            _mechCamera.transform.rotation = Quaternion.Euler(_curUserCmd.rot);
-            _mechCombat.ProcessInputs(_curUserCmd);
-
+            _mechCamera.transform.rotation = Quaternion.Euler(usercmds[tickDiff - i].rot);
+            _mechCombat.ProcessInputs(usercmds[tickDiff - i]);
+             
             _tick = (_tick + 1) % 1024;
+            _clientHistoryPositions[_tick] = CurPosition;
         }
 
         if (Time.time - _preConfirmTime > ConfirmInterval){
@@ -123,7 +124,7 @@ public class InputManager : MonoBehaviour {
             PhotonNetwork.RaiseEvent(GameEventCode.PosConfirm, _confirmData, false, new RaiseEventOptions { TargetActors = new[] { _senderID } });
         }
 
-        transform.position = CurPosition;//for display todo : move to mech controller
+        transform.position = Vector3.Lerp(_clientHistoryPositions[_tick - 1 > 0 ? 1023 : _tick-1], CurPosition, 0.2f);//for display todo : move to mech controller
     }
 
     private void Update() {
@@ -136,7 +137,6 @@ public class InputManager : MonoBehaviour {
         }
 
         _curUserCmd.Tick = _tick;
-        _curUserCmd.ServerTick = _gameManager.GetServerTick();
 
         _historyUserCmds[_tick].buttons = new bool[UserCmd.ButtonsLength];
         UserCmd.CloneUsercmd(_curUserCmd, ref _historyUserCmds[_tick]);
@@ -151,7 +151,6 @@ public class InputManager : MonoBehaviour {
                 if (_historyUserCmds[index].buttons == null) {
                     _historyUserCmds[index].buttons = new bool[UserCmd.ButtonsLength];
                     _historyUserCmds[index].Tick = index;
-                    _historyUserCmds[index].ServerTick = _gameManager.GetServerTick();
                     _historyUserCmds[index].timeStamp = PhotonNetwork.ServerTimestamp;
                 }
 
@@ -179,7 +178,7 @@ public class InputManager : MonoBehaviour {
         _curUserCmd.rot = _mechCamera.transform.eulerAngles;
         _curUserCmd.viewAngle = transform.rotation.eulerAngles.y;
         _curUserCmd.msec = Time.deltaTime;
-        _curUserCmd.timeStamp = PhotonNetwork.ServerTimestamp;
+        _curUserCmd.timeStamp = (float)PhotonNetwork.time;
 
         _curUserCmd.buttons[(int)UserButton.Space] = Input.GetKey(KeyCode.Space);
         _curUserCmd.buttons[(int)UserButton.LeftShift] = Input.GetKey(KeyCode.LeftShift);
@@ -225,7 +224,7 @@ public class InputManager : MonoBehaviour {
 
                 tmpTick = (tmpTick + 1) % 1024;
 
-                _clientHistoryPositions[(_historyUserCmds[tmpTick].ServerTick + 1) % 1024] = CurPosition;
+                _clientHistoryPositions[(tmpTick + 1) % 1024] = CurPosition;
             }
 
             //Vector3 afterPos = _curPosition;
@@ -234,9 +233,23 @@ public class InputManager : MonoBehaviour {
         }
     }
 
-    //public Vector3 GetPosition(float time){
-        //while()
-    //}
+    public Vector3 GetPosition(float timeStamp) {
+        int serverTick = _gameManager.GetServerTick();
+        int attempts = 0;
+        while (timeStamp > _gameManager.GetServerTimeStamp(serverTick) || _gameManager.GetServerTimeStamp((serverTick + 1) % 1024) < timeStamp){
+            serverTick = serverTick - 1 < 0 ? 1023 : serverTick - 1;
+            attempts++;
+            if (attempts >= 1024){
+                Debug.LogError("attempts >= 1024");
+                break;
+            }
+        }
+
+        Vector3 pos = _serverHistoryPositions[serverTick] + (float)(timeStamp - _gameManager.GetServerTimeStamp(serverTick)) / _gameManager.SyncServerTickInterval * (_serverHistoryPositions[serverTick] 
+                      + _serverHistoryPositions[(serverTick + 1)%1024]);
+
+        return pos; 
+    }
 
     private void OnDestroy() {
         PhotonNetwork.OnEventCall -= OnPhotonEvent;
