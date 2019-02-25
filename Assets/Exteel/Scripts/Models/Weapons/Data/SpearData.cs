@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using Weapons;
-using Weapons.Crosshairs;
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "WeaponDatas/Spear", order = 0)]
+[CreateAssetMenu(fileName = "New Spear", menuName = "WeaponDatas/Spear", order = 0)]
 public class SpearData : MeleeWeaponData {
     [SerializeField] private AnimationClip Atk;
-    public AudioClip smash_sound = new AudioClip();
-    public AudioClip smash_hit_sound = new AudioClip();
+    public AudioClip SmashSound = new AudioClip();
+    public AudioClip HitSound = new AudioClip();
+    public float[] AnimationLengths = new float[2];//0 : normal , 1 : air
 
     SpearData() {
         WeaponType = typeof(Spear);
@@ -16,8 +16,8 @@ public class SpearData : MeleeWeaponData {
         IsTwoHanded = false;
     }
 
-    public override void SwitchAnimationClips(Animator weaponAniamtor) {
-        AnimatorOverrideController animatorOverrideController = (AnimatorOverrideController)weaponAniamtor.runtimeAnimatorController;
+    public override void SwitchAnimationClips(Animator weaponAnimator) {
+        AnimatorOverrideController animatorOverrideController = (AnimatorOverrideController)weaponAnimator.runtimeAnimatorController;
 
         AnimationClipOverrides clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
         animatorOverrideController.GetOverrides(clipOverrides);
@@ -25,10 +25,6 @@ public class SpearData : MeleeWeaponData {
         clipOverrides["Atk"] = Atk;
 
         animatorOverrideController.ApplyOverrides(clipOverrides);
-    }
-
-    public override Crosshair GetCrosshair() {
-        return null;
     }
 
     public override object GetWeaponObject() {

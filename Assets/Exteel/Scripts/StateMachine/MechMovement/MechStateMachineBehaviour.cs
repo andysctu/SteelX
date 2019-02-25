@@ -1,50 +1,31 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace StateMachine
 {
     public class MechStateMachineBehaviour : StateMachineBehaviour
     {
-        protected AnimatorVars animatorVars;
-        protected AnimationEventController AnimationEventController;
         protected CharacterController cc;
-        protected MechController mctrl;
-        protected MechCombat mcbt;
-        protected Sounds Sounds;
-        protected MechIK mechIK;
-        protected EffectController EffectController;
-        protected HandleInputs HandleInputs;
+        protected MechController Mctrl;
+        protected MechIK MechIK;
 
-        protected int BoostHash;
-        protected int GroundedHash;
-        protected int JumpHash;
-        protected int SpeedHash;
-        protected int DirectionHash;
-
-        private bool _isInit = false;
+        private bool _isInit;
 
         public void Init(Animator animator){
-            animatorVars = animator.GetComponent<AnimatorVars>();
-
             if (_isInit) return;
 
-            cc = animatorVars.cc;
-            mctrl = animatorVars.Mctrl;
-            mcbt = animatorVars.Mcbt;
-            AnimationEventController = animator.GetComponent<AnimationEventController>();
-            Sounds = animatorVars.Sounds;
-            mechIK = animatorVars.MechIK;
-            EffectController = animatorVars.EffectController;
-            HandleInputs = animatorVars.HandleInputs;
-
-            BoostHash = animatorVars.BoostHash;
-            GroundedHash = animatorVars.GroundedHash;
-            JumpHash = animatorVars.JumpHash;
-            DirectionHash = animatorVars.DirectionHash;
-            SpeedHash = animatorVars.SpeedHash;
+            cc = animator.GetComponent<CharacterController>();
+            Mctrl = animator.GetComponent<MechController>();
+            MechIK = animator.GetComponent<MechIK>();
 
             _isInit = true;
+        }
+
+        public void UpdateAnimatorParameters(Animator animator) {
+            if(!_isInit)return;
+
+            animator.SetFloat(AnimatorHashVars.SpeedHash, Mathf.Lerp(animator.GetFloat(AnimatorHashVars.SpeedHash), Mctrl.Speed, Time.deltaTime * 15));
+            animator.SetFloat(AnimatorHashVars.DirectionHash, Mathf.Lerp(animator.GetFloat(AnimatorHashVars.DirectionHash), Mctrl.Direction, Time.deltaTime * 15));
+            animator.SetFloat(AnimatorHashVars.AngleHash, Mathf.Clamp(Mctrl.Angle/90,-1,1));
         }
     }
 }

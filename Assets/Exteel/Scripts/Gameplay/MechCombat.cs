@@ -13,7 +13,8 @@ public class MechCombat : Combat {
     private CrosshairController _crosshairController;
 
     // Combat variables
-    private bool isWeaponOffsetSynced = false, onSkill;
+    public bool OnSkill;
+    private bool isWeaponOffsetSynced = false;
     private int weaponOffset = 0;
     private int scanRange, MechSize;
 
@@ -27,7 +28,7 @@ public class MechCombat : Combat {
 
     //Animator
     private Animator animator;
-    private AnimatorOverrideController animatorOverrideController = null;
+    private AnimatorOverrideController animatorOverrideController;
     private AnimationClipOverrides clipOverrides;
 
     //Movement clips
@@ -36,7 +37,6 @@ public class MechCombat : Combat {
     private PhotonPlayer _owner;
 
     protected override void Awake() {
-        Debug.Log("Mcbt awake : "+gameObject.name);
         base.Awake();
         InitComponents();
         LoadMovementClips();
@@ -103,13 +103,12 @@ public class MechCombat : Combat {
     }
 
     private void RegisterOnSkill() {
-        if (SkillController != null) SkillController.OnSkill += OnSkill;
+        if (SkillController != null) SkillController.OnSkill += OnSkillAction;
     }
 
     protected override void Start() {
         base.Start();
         InitGameObjects();
-        Debug.Log("Mcbt start : "+gameObject.name);
     }
 
     private void LoadMechProperties() {
@@ -149,7 +148,7 @@ public class MechCombat : Combat {
             IsSwitchingWeapon = false;
             SwitchWeaponCoroutine = null;
         }
-        onSkill = false;
+        OnSkill = false;
     }
 
     private void SyncWeaponOffset() {
@@ -167,70 +166,15 @@ public class MechCombat : Combat {
         }
     }
 
-    [PunRPC]//Pass PhotonPlayer is for efficiency (Drone doesn't have PhotonPlayer, so we need to use photonView ID to search the object)
-    private void Shoot(int weapPos, Vector3 direction, int targetPvID, int targetWeapPos) {//targetWeapPos : if hit on this weapon , play onHitEffect
-        RangedWeapon rangedWeapon = bm.Weapons[weapPos] as RangedWeapon;
-        if (rangedWeapon == null) { Debug.LogWarning("Cannot cast from source type to RangedWeapon."); return; }
-        rangedWeapon.Shoot(direction, targetPvID, targetWeapPos);
-    }
-
-    public void Attack(int weapPos){
-
+    public override void Attack(int weapPos, Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields = null){//always called by master
+        PhotonView.RPC("AttackRpc", PhotonTargets.Others, weapPos, direction, damage, targetPvIDs, specIDs, additionalFields);
     }
 
     [PunRPC]
-    public override void OnHit(int damage, int shooterPvID, int shooterWeapPos, int targetWeapPos) {
-        if (isDead) { return; }
+    public void AttackRpc(int weapPos, Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields = null) {//play effect use
+        if(bm.Weapons == null || bm.Weapons[weapPos] == null)return;
 
-        PhotonView shooterPv = PhotonView.Find(shooterPvID);
-        if (shooterPv == null) return;
-        GameObject shooterMech = shooterPv.gameObject;
-
-        //Get shooter weapon
-        Combat shooterCbt = (shooterMech == null) ? null : shooterMech.GetComponent<Combat>();
-        if (shooterCbt == null) { Debug.LogWarning("shooter cbt is null."); return; }
-
-        Weapon shooterWeapon = shooterCbt.GetWeapon(shooterWeapPos), targetWeapon = null;
-        if (shooterWeapon == null) { Debug.LogWarning("shooterWeapon is null."); return; }
-
-        Weapon.AttackType attackType = shooterWeapon.GetWeaponAttackType();
-
-        //Get target weapon (this player)
-        if (targetWeapPos != -1) {
-            targetWeapon = bm.Weapons[targetWeapPos];
-            if (targetWeapon == null) { Debug.LogWarning("targetWeapon is null."); return; }
-        }
-
-        bool isShield = (targetWeapon != null && targetWeapon.IsShield());
-        shooterWeapon.OnHitTargetAction(gameObject, targetWeapon, isShield);
-
-        if (targetWeapon != null) targetWeapon.OnHitAction(shooterCbt, shooterWeapon);
-
-        //Calculate Dmg
-        int dmg = ProcessDmg(damage, attackType, targetWeapon);
-
-        //Master handle logic
-        if (PhotonNetwork.isMasterClient) {
-            if (CurrentHP - dmg >= MAX_HP) {
-                CurrentHP = MAX_HP;
-            } else {
-                CurrentHP -= dmg;
-            }
-
-            if (CurrentHP <= 0) {//sync disable player
-                photonView.RPC("DisablePlayer", PhotonTargets.All, shooterPv.owner, shooterWeapon.WeaponName);
-            }
-        }
-
-        IncreaseSP(damage / 2);
-        //shooterCbt.IncreaseSP(damage / 2);
-    }
-
-    public override int ProcessDmg(int dmg, Weapon.AttackType attackType, Weapon weapon) {
-        var finalDmg = dmg;
-        if (weapon != null) finalDmg = weapon.ProcessDamage(dmg, attackType);
-
-        return finalDmg;
+        bm.Weapons[weapPos].AttackRpc(direction, damage, targetPvIDs, specIDs, additionalFields);
     }
 
     //[PunRPC]
@@ -273,7 +217,7 @@ public class MechCombat : Combat {
     }
 
     private IEnumerator DisablePlayerWhenNotOnSkill() {
-        yield return new WaitWhile(() => onSkill);
+        yield return new WaitWhile(() => OnSkill);
 
         if (_owner.IsLocal) {
             CurrentHP = 0;
@@ -319,8 +263,6 @@ public class MechCombat : Combat {
     }
 
     public void ProcessInputs(usercmd cmd){
-        base.Update();
-
         if (gm == null || gm.IsGameEnding() || !gm.GameIsBegin) return; //TODO : improve these checks
         //if (onSkill || gm.BlockInput || IsSwitchingWeapon) return;
 
@@ -344,11 +286,11 @@ public class MechCombat : Combat {
     }
 
     private void HandleSwitchWeapon(usercmd cmd) {
-        //if (Input.GetKeyDown(cmd.buttons[(int)UserButton.R]) && !IsSwitchingWeapon && !isDead) {//TODO : anti-hack en
-        //    CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
+        if (cmd.buttons[(int)UserButton.R] && !IsSwitchingWeapon && !isDead) {//TODO : anti-hack en
+            CurrentEN -= (CurrentEN >= MAX_EN / 3) ? MAX_EN / 3 : CurrentEN;
 
-        //    photonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
-        //}
+            PhotonView.RPC("CallSwitchWeapons", PhotonTargets.All, null);
+        }
     }
 
     [PunRPC]
@@ -383,16 +325,18 @@ public class MechCombat : Combat {
     }
 
     private void ActivateWeapons() {//Not using SetActive because it causes weapon Animator to bind the wrong rotation if the weapon animation is not finished (SMG reload)
-        for (int i = 0; i < bm.Weapons.Length; i++)
-            if (bm.Weapons[i] != null) bm.Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
+        for (int i = 0; i < bm.Weapons.Length; i++){
+            if (bm.Weapons[i] != null){
+                bm.Weapons[i].ActivateWeapon(i == weaponOffset || i == weaponOffset + 1);
+            }
+        }
     }
 
-    public void UpdateMovementClips() {
+    private void UpdateMovementClips() {
         if (bm.WeaponDatas == null) return;
-        bool isCurrentWeaponTwoHanded = (bm.WeaponDatas[(weaponOffset) % 4] != null && bm.WeaponDatas[(weaponOffset) % 4].IsTwoHanded);
+        bool isCurrentWeaponTwoHanded = (bm.WeaponDatas[weaponOffset % 4] != null && bm.WeaponDatas[(weaponOffset) % 4].IsTwoHanded);
 
         MovementClips movementClips = (isCurrentWeaponTwoHanded) ? TwoHandedMovementClips : defaultMovementClips;
-
         for (int i = 0; i < movementClips.clips.Length; i++) {
             clipOverrides[movementClips.clipnames[i]] = movementClips.clips[i];
         }
@@ -456,8 +400,8 @@ public class MechCombat : Combat {
         return CurrentEN <= 0;
     }
 
-    private void OnSkill(bool b) {
-        onSkill = b;
+    private void OnSkillAction(bool b) {
+        OnSkill = b;
         if (bm.Weapons[weaponOffset] != null) bm.Weapons[weaponOffset].OnSkillAction(b);
         if (bm.Weapons[weaponOffset + 1] != null) bm.Weapons[weaponOffset + 1].OnSkillAction(b);
 
@@ -482,6 +426,10 @@ public class MechCombat : Combat {
         SkillController.IncreaseSP(amount);
     }
 
+    public override PhotonPlayer GetOwner(){
+        return bm.GetOwner();
+    }
+
     public override Camera GetCamera() {
         return MainCam;
     }
@@ -494,25 +442,26 @@ public class MechCombat : Combat {
         return bm.WeaponDatas[weaponPos];
     }
 
-    public override float GetAnimationLength(string name) {//TODO : improve this.
-        return clipOverrides[name].length;
+    //tmp put here , todo : improve these events
+    public void CallShowTrailL(int show) {
+        Sword sword = bm.Weapons[weaponOffset] as Sword;
+        if (sword != null) sword.EnableWeaponTrail(show == 1);
     }
 
-    public override void SetMeleePlaying(bool isPlaying) {
-        isMeleePlaying = isPlaying;
-
-        MechController.onInstantMoving = isPlaying;
+    public void CallShowTrailR(int show) {
+        Sword sword = bm.Weapons[weaponOffset + 1] as Sword;
+        if (sword != null) sword.EnableWeaponTrail(show == 1);
     }
 
-    public bool IsMeleePlaying() {
-        return isMeleePlaying;
-    }
+    public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
+        if (stream.isReading){
+            
+        } else{
 
-    public void OnWeaponStateCallBack<T>(int hand, MechStateMachineBehaviour state, int type) {
-        if (bm.Weapons[weaponOffset + hand] != null && bm.Weapons[weaponOffset + hand] is T) {
-            bm.Weapons[weaponOffset + hand].OnStateCallBack(type, state);
-        } else {
-            Debug.LogWarning("weapon is null or type mismatch");
+        }
+
+        for (int i = 0; i < bm.Weapons.Length; i++) {
+            if (bm.Weapons[i] != null) bm.Weapons[i].OnPhotonSerializeView(stream, info);
         }
     }
 }

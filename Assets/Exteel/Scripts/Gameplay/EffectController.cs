@@ -8,7 +8,6 @@ public class EffectController : MonoBehaviour {
     [SerializeField] private ParticleSystem boostingDust, respawnEffect, damageless;
     [SerializeField] private Sounds Sounds;
     [SerializeField] private Animator Animator;
-    [SerializeField] private AnimatorVars AnimatorVars;
     [SerializeField] private Transform[] Hands;
 
     private MechCombat mcbt;
@@ -67,7 +66,7 @@ public class EffectController : MonoBehaviour {
         switchWeaponEffectR.Play();
     }
 
-    public void BoostingDustEffect(bool b) {//controlled by horizontal boosting state
+    public void BoostingDustEffect(bool b) {
         if (b) {
             if (!isBoostingDustPlaying) {
                 boostingDust.Play();

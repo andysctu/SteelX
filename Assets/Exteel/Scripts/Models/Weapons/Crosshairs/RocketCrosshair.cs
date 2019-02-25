@@ -38,8 +38,8 @@ namespace Weapons.Crosshairs {
             _targetMark.SetActive(onTarget);
         }
 
-        public override void MarkTarget(Transform target) {
-            _targetMark.transform.position = Vector3.Lerp(_targetMark.transform.position, Cam.WorldToScreenPoint(target.transform.position + new Vector3(0, 5, 0)), Time.deltaTime * LerpMarkSpeed);
+        public override void MarkTarget(IDamageable target) {
+            _targetMark.transform.position = Vector3.Lerp(_targetMark.transform.position, Cam.WorldToScreenPoint(target.GetPosition()), Time.deltaTime * LerpMarkSpeed);
             _middleCross.transform.position = _targetMark.transform.position;
         }
 

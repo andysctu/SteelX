@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoginManager : IScene {
+public class LoginManager : SceneManager {
     [SerializeField] private Text ConnectingText;
     [SerializeField] private Button login_button;
     [SerializeField] private InputField[] fields;

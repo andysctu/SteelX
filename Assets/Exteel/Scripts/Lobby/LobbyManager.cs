@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyManager : IScene {
+public class LobbyManager : SceneManager {
     [SerializeField] private GameObject OperatorStatsUI, CreateRoomModel, RoomPanel;
     [SerializeField] private Text RoomName, playerCountText;
     [SerializeField] private Transform RoomsWrapper;

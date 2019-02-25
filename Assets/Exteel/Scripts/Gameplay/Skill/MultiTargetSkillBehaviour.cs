@@ -28,22 +28,23 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
 
     public bool Use(int skill_num) {
         //Detect target
-        MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
-        Transform[] targets_in_range = Crosshair.DectectMultiTargets(config.MultiTargetSkillParams.crosshairRadius, config.MultiTargetSkillParams.detectRange, false);
+        //MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
+        //Transform[] targets_in_range = Crosshair.DetectMultiTargets(config.MultiTargetSkillParams.crosshairRadius, config.MultiTargetSkillParams.detectRange, false);
 
-        if (targets_in_range != null && targets_in_range.Length > 0) {
-            List<int> target_pvIDs = new List<int>();
+        //if (targets_in_range != null && targets_in_range.Length > 0) {
+        //    List<int> target_pvIDs = new List<int>();
 
-            foreach (Transform t in targets_in_range) {
-                PhotonView target_pv = t.GetComponent<PhotonView>();
-                target_pvIDs.Add(target_pv.viewID);
-            }
-            player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), skill_num);
-            return true;
-        } else {
-            //no target => do nothing
-            return false;
-        }
+        //    foreach (Transform t in targets_in_range) {
+        //        PhotonView target_pv = t.GetComponent<PhotonView>();
+        //        target_pvIDs.Add(target_pv.viewID);
+        //    }
+        //    player_pv.RPC("CastMultiTargetSkill", PhotonTargets.All, target_pvIDs.ToArray(), skill_num);
+        //    return true;
+        //} else {
+        //    //no target => do nothing
+        //    return false;
+        //}
+        return false;
     }
 
     [PunRPC]

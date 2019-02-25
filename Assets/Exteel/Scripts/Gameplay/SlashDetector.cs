@@ -5,61 +5,58 @@ public class SlashDetector : MonoBehaviour {
     [SerializeField] private MechCamera cam;
     [SerializeField] private BoxCollider boxCollider;
     [SerializeField] private MechController mctrl;
-    [SerializeField] private GameObject User;
-    private List<Transform> Target = new List<Transform>();
-    private float clamped_cam_angle_x;
-    private float clampAngle = 75;
-    private float mech_Midpoint = 5;
-    private float clamp_angle_coeff = 0.3f;//how much the cam angle affecting the y pos of box collider
-    private float inair_start_z = 14f;
-    private Vector3 inair_c = new Vector3(0, 0, 3.6f), inair_s = new Vector3(10, 18, 36);
-    private Vector3 onground_c = new Vector3(0, 0, 2.5f), onground_s = new Vector3(10, 11, 15);
-    private bool on_original_place = false;
+
+    private readonly List<IDamageable> _targets = new List<IDamageable>();
+    private float _clampedCamAngleX;
+    private float _clampAngle = 75;
+    private float _mechMidpoint = 5;
+    private float _clampAngleCoeff = 0.3f;//how much the cam angle affecting the y pos of box collider
+    private float inAirStartZ = 14f;
+    private Vector3 _inAirCenter = new Vector3(0, 0, 3.6f), _inAirSize = new Vector3(10, 18, 36);
+    private Vector3 _onGroundCenter = new Vector3(0, 0, 2.5f), _onGroundSize = new Vector3(10, 11, 15);
+    private bool _onOriginalPlace = false;
+
+    private IDamageable _triggeredObj;
 
     private void Update() {
         if (!mctrl.Grounded) {
-            on_original_place = false;
-            clamped_cam_angle_x = Mathf.Clamp(cam.GetCamAngle(), -clampAngle, clampAngle);
-            transform.parent.localPosition = new Vector3(transform.parent.localPosition.x, mech_Midpoint, transform.parent.localPosition.z);
+            _onOriginalPlace = false;
+            _clampedCamAngleX = Mathf.Clamp(cam.GetCamAngle(), -_clampAngle, _clampAngle);
+            transform.parent.localPosition = new Vector3(transform.parent.localPosition.x, _mechMidpoint, transform.parent.localPosition.z);
 
             //set collider size
-            SetCenter(new Vector3(inair_c.x, inair_c.y, inair_start_z));
-            SetSize(inair_s);
-            SetlocalRotation(new Vector3(-clamped_cam_angle_x, transform.parent.localRotation.eulerAngles.y, transform.parent.localRotation.eulerAngles.z));
+            SetCenter(new Vector3(_inAirCenter.x, _inAirCenter.y, inAirStartZ));
+            SetSize(_inAirSize);
+            SetLocalRotation(new Vector3(-_clampedCamAngleX, transform.parent.localRotation.eulerAngles.y, transform.parent.localRotation.eulerAngles.z));
         } else {
-            if (!on_original_place) {
-                on_original_place = true;
-                transform.parent.localPosition = new Vector3(transform.parent.localPosition.x, mech_Midpoint, transform.parent.localPosition.z);
+            if (!_onOriginalPlace) {
+                _onOriginalPlace = true;
+                transform.parent.localPosition = new Vector3(transform.parent.localPosition.x, _mechMidpoint, transform.parent.localPosition.z);
 
-                SetCenter(onground_c);
-                SetSize(onground_s);
-                SetlocalRotation(Vector3.zero);
+                SetCenter(_onGroundCenter);
+                SetSize(_onGroundSize);
+                SetLocalRotation(Vector3.zero);
             }
         }
     }
 
     private void OnTriggerEnter(Collider target) {
-        if (target.gameObject != User && target.tag[0] != 'S') {//in player layer but not shield => player
-            if (GameManager.IsTeamMode) {
-                PhotonView pv = target.GetComponent<PhotonView>();
-                if (pv.owner.GetTeam() == PhotonNetwork.player.GetTeam() && pv.owner != PhotonNetwork.player) {return; }
-            } 
-            Target.Add(target.transform);
+        if((_triggeredObj = target.GetComponent(typeof(IDamageable)) as IDamageable) == null)return;
+
+        if (_triggeredObj.IsEnemy(_triggeredObj.GetOwner())) {
+            _targets.Add(_triggeredObj);
         }
     }
 
     private void OnTriggerExit(Collider target) {
-        if (target.gameObject != User && target.tag[0] != 'S') {
-            if (GameManager.IsTeamMode) {
-                PhotonView pv = target.GetComponent<PhotonView>();
-                if (pv.owner.GetTeam() == PhotonNetwork.player.GetTeam() && pv.owner != PhotonNetwork.player)
-                    return;
-            }
-            Target.Remove(target.transform);
+        if ((_triggeredObj = target.GetComponent(typeof(IDamageable)) as IDamageable) == null) return;
+
+        if (_triggeredObj.IsEnemy(_triggeredObj.GetOwner())) {
+            _targets.Remove(_triggeredObj);
         }
     }
 
-    public void SetlocalRotation(Vector3 v) {
+    private void SetLocalRotation(Vector3 v) {
         transform.parent.localRotation = Quaternion.Euler(v);
     }
 
@@ -71,14 +68,14 @@ public class SlashDetector : MonoBehaviour {
         boxCollider.size = v;
     }
 
-    public List<Transform> getCurrentTargets() {
-        return Target;
+    public IDamageable[] GetCurrentTargets() {
+        return _targets.ToArray();
     }
 
     public void EnableDetector(bool b) {
         boxCollider.enabled = b;
         enabled = b;
 
-        Target.Clear();
+        _targets.Clear();
     }
 }

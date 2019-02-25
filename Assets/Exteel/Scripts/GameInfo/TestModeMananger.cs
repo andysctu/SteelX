@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TestModeManager : GameManager {
     private GameObject GameEnvironment;//Blue base, red base , ...
@@ -23,14 +24,19 @@ public class TestModeManager : GameManager {
         PhotonNetwork.autoJoinLobby = true;
         PhotonNetwork.sendRate = 60;
         PhotonNetwork.sendRateOnSerialize = 30;
-
+        
         RegisterOnPhotonEvent();
+
+        
 
         PanelCanvas = GameObject.Find("PanelCanvas").transform;
         MechPrefab = Resources.Load<GameObject>("MechFrame");
         RespawnPanel = PanelCanvas.GetComponentInChildren<RespawnPanel>(true);
         InGameChat = FindObjectOfType<InGameChat>();
         EscPanel = PanelCanvas.Find("EscPanel").GetComponent<EscPanel>();
+
+        TickText = PanelCanvas.Find("Tick").GetComponent<Text>();
+        TickTimeText = PanelCanvas.Find("TickTime").GetComponent<Text>();
     }
 
     protected override void Start(){
@@ -66,6 +72,8 @@ public class TestModeManager : GameManager {
         InstantiatePlayer();
 
         isCreated = true;
+
+        SyncServerTick();
     }
 
     protected override void InitRespawnPoints() {

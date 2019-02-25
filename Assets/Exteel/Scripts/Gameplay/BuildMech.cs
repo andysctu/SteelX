@@ -79,6 +79,7 @@ public class BuildMech : Photon.MonoBehaviour {
         MechCombat = GetComponent<MechCombat>();
         MechIK = CurrentMech.GetComponent<MechIK>();
         SkillController = GetComponent<SkillController>();
+        AnimatorHashVars.HashAnimatorVars();
     }
 
     private void FindHands() {
@@ -159,8 +160,8 @@ public class BuildMech : Photon.MonoBehaviour {
 
         //set weapons if null (in offline)
         if (string.IsNullOrEmpty(parts[5])) parts[5] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[6];
-        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[9];
+        if (string.IsNullOrEmpty(parts[6])) parts[6] = defaultParts[15];
+        if (string.IsNullOrEmpty(parts[7])) parts[7] = defaultParts[10];
         if (string.IsNullOrEmpty(parts[8])) parts[8] = defaultParts[16];
 
         if (skill_IDs == null) {//TODO : remake this
@@ -339,7 +340,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 }
             }
         }
-
+        
         //Find and create corresponding weapon script
         for (int i = 0; i < WeaponDatas.Length; i++) {
             WeaponDatas[i] = (i >= weaponNames.Length || weaponNames[i] == "Empty" || string.IsNullOrEmpty(weaponNames[i])) ? null : WeaponDataManager.FindData(weaponNames[i]);
@@ -350,7 +351,7 @@ public class BuildMech : Photon.MonoBehaviour {
                 continue;
             }
 
-            Weapons[i] = (Weapon)(WeaponDatas[i].GetWeaponObject());
+            Weapons[i] = (Weapon)WeaponDatas[i].GetWeaponObject();
         }
 
         //Init weapon scripts
@@ -508,17 +509,4 @@ public class BuildMech : Photon.MonoBehaviour {
     public PhotonPlayer GetOwner(){
         return _owner;
     }
-
-    //private void OnPhotonInstantiate(PhotonMessageInfo info) {
-    //    //TODO : move it to other place
-    //    //Transfer owner ship
-    //    if (PhotonNetwork.isMasterClient) {
-    //        foreach (var Var in GetComponentsInChildren<PhotonView>()) {
-    //            if(Var == GetComponent<PhotonView>())continue;
-    //            Var.TransferOwnership(PhotonNetwork.masterClient);
-    //        }
-    //    }
-
-    //    info.sender.TagObject = gameObject;
-    //}
 }

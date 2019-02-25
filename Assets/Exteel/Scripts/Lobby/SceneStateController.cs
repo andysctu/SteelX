@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Collections;
 
 public class SceneStateController : MonoBehaviour {
-    private Dictionary<string, IScene> _Scenes;
+    private Dictionary<string, SceneManager> _Scenes;
     public static string ActiveScene = "";
-    private IScene curActiveScene = null;
+    public Transform Canvas;
+    private SceneManager curActiveScene = null;
 
     private void Awake() {
         if (FindObjectsOfType<SceneStateController>().Length > 1) {
@@ -15,7 +16,7 @@ public class SceneStateController : MonoBehaviour {
         }
 
         SetDefaultScene();
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void SetDefaultScene() {
@@ -35,9 +36,10 @@ public class SceneStateController : MonoBehaviour {
 
     //Find all IScene and register into dictionary
     private void RegisterScenes() {        
-        _Scenes = new Dictionary<string, IScene>();
-        IScene[] scenes = (IScene[])Resources.FindObjectsOfTypeAll(typeof(IScene));
-        foreach (IScene s in scenes) {
+        _Scenes = new Dictionary<string, SceneManager>();
+        SceneManager[] scenes = FindObjectsOfType<SceneManager>();
+        foreach (SceneManager s in scenes) {
+            Debug.Log(s.GetSceneName());
             _Scenes.Add(s.GetSceneName(), s);
         }
     }
@@ -63,7 +65,6 @@ public class SceneStateController : MonoBehaviour {
         SetCurrentScene(sceneName);
 
         StartCoroutine(LoadSceneProcess(sceneName));
-        
     }
 
     IEnumerator LoadSceneProcess(string sceneName) {
@@ -77,9 +78,9 @@ public class SceneStateController : MonoBehaviour {
     }
 
     private string FindActiveScene() {
-        IScene[] scenes = FindObjectsOfType<IScene>();
-        foreach (IScene s in scenes) {
-            if (s.gameObject.activeSelf) {
+        SceneManager[] scenes = FindObjectsOfType<SceneManager>();
+        foreach (SceneManager s in scenes) {
+            if (s.IsActive()) {
                 return s.GetSceneName();
             }
         }

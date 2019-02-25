@@ -1,105 +1,40 @@
 ﻿using UnityEngine;
-using Weapons;
 
 namespace StateMachine.Attack
 {
     public class SlashState : MechStateMachineBehaviour
     {
-        private bool inAir = false, detectedGrounded;
-        private int hand;
-        private float threshold = 1;
+        private bool _isInAir;
 
-        override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             base.Init(animator);
 
-            animator.SetFloat("slashTime", 0);
-            animator.SetBool("CanExit", false);
-
-            hand = (stateInfo.IsTag("L")) ? 0 : 1;
-            mcbt.OnWeaponStateCallBack<Sword>(hand, this, (int) MeleeWeapon.StateCallBackType.AttackStateEnter); //threshold is set in this
-
             if (cc == null || !cc.enabled) return;
 
-            inAir = mctrl.IsJumping;
-            detectedGrounded = false;
+            _isInAir = !Mctrl.Grounded;
 
-            animator.SetBool(animatorVars.OnMeleeHash, true);
-            animator.SetBool(animatorVars.SlashHash, false);
-            animator.SetBool(BoostHash, false);
+            animator.SetBool(AnimatorHashVars.SlashLHash, false);
+            animator.SetBool(AnimatorHashVars.SlashRHash, false);
+            animator.SetBool(AnimatorHashVars.BoostHash, false);
 
-            //Boost Effect
-            if (inAir){
-                //mctrl.Boost(true);
-            } else{
-                //mctrl.Boost(false);
-            }
+            Mctrl.EnableBoostFlame(_isInAir);
         }
 
-        override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            animator.SetFloat("slashTime", stateInfo.normalizedTime);
-
-            if (stateInfo.normalizedTime > threshold && !animator.IsInTransition(0)){
-                animator.SetBool("CanExit", true);
-            }
-
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (cc == null || !cc.enabled) return;
 
-            bool b = (inAir && !mcbt.IsMeleePlaying());
-            if (b){
-                //mctrl.JumpMoveInAir();
-            }
+            Mctrl.LockMechRot(!animator.IsInTransition(3));//todo : check this
 
-            mctrl.CallLockMechRot(!animator.IsInTransition(0));
-
-            if (stateInfo.normalizedTime > 0.5f && !detectedGrounded){
-                if (b){
-                    //mctrl.Boost(false);
-                }
-
-                mcbt.CanMeleeAttack = !animator.GetBool(JumpHash);
-                if (mctrl.Grounded) {
-                    detectedGrounded = true;
-                    animator.SetBool(JumpHash, false);
-                    animator.SetBool(GroundedHash, true);
-                    //mctrl.Boost(false);
-                }
+            if (_isInAir &&  stateInfo.normalizedTime > 0.7f){
+                Mctrl.EnableBoostFlame(false);
             }
         }
 
-        override public void OnStateMachineExit(Animator animator, int stateMachinePathHash){
-            mcbt.OnWeaponStateCallBack<Sword>(hand, this, (int) MeleeWeapon.StateCallBackType.AttackStateMachineExit);
-
-            if (cc == null || !cc.enabled) return;
-            mcbt.CanMeleeAttack = true;
-            mcbt.SetMeleePlaying(false);
-
-            animator.SetBool(animatorVars.OnMeleeHash, false);
-            animator.SetBool(animatorVars.SlashHash, false);
-            animator.SetBool(animatorVars.FinalSlashHash, false);
-        }
-
-        override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            animator.SetFloat("slashTime", 0);
-            animator.SetBool("CanExit", false);
-            mcbt.OnWeaponStateCallBack<Sword>(hand, this, (int) MeleeWeapon.StateCallBackType.AttackStateExit);
-
+        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (cc == null || !cc.enabled) return;
 
-            //mctrl.SetCanVerticalBoost(false);
-
-            if (inAir){
-                //exiting from jump melee attack
-                animator.SetBool(animatorVars.OnMeleeHash, false);
-                animator.SetBool(animatorVars.SlashHash, false);
-            }
-        }
-
-        public void SetThreshold(float threshold){
-            this.threshold = threshold;
-        }
-
-        public bool IsInAir(){
-            return inAir;
+            Mctrl.LockMechRot(false);
+            if (_isInAir)Mctrl.EnableBoostFlame(false);
         }
     }
 }

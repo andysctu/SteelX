@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public abstract class GameManager : Photon.MonoBehaviour {
     protected Transform PanelCanvas;
@@ -11,7 +11,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
     protected Camera[] PlayerMainCameras;
 
     protected Vector3[] RespawnPoints;
-    protected int CurRespawnPoint;//The current respawn point choosed , may be invalid
+    protected int CurRespawnPoint;//The current respawn point chosen , may be invalid
 
     protected Timer Timer = new Timer();
     protected InGameChat InGameChat;
@@ -37,8 +37,12 @@ public abstract class GameManager : Photon.MonoBehaviour {
     private int NumOfPlayerfinishedloading = 0;
 
     //sync time
-    private bool OnSyncTimeRequest = false, is_Time_init = false;
-    private int waitTimes = 0, sendTimes = 0;
+    public float SyncServerTickInterval = 2;
+    private bool OnSyncTimeRequest = false, isTimeInit = false;
+    private int _waitTimes, _sendTimes;
+    private float ServerTickInterval = 0.05f, _preSyncTime;//time between processing player inputs
+    private int _curServerTick;//tick : 0 ... 1023 
+    private double _curServerTickTime;// TickTime : the PhotonNetwork.time of _curServerTick
 
     //Display time on lobby
     private float lastUpdateRoomTime = 0;
@@ -47,6 +51,9 @@ public abstract class GameManager : Photon.MonoBehaviour {
     //debug
     public bool Offline = false;
     public bool endGameImmediately = false;//debug use
+
+    protected Text TickText, TickTimeText;
+    public event System.Action OnWorldUpdate;
 
     protected virtual void Awake() {
         Application.targetFrameRate = UserData.preferredFrameRate;//TODO : player can choose target frame rate
@@ -60,6 +67,8 @@ public abstract class GameManager : Photon.MonoBehaviour {
         BuildGameScene();
 
         LoadGameInfo();
+
+        SyncServerTick();
     }
 
     private void InitComponents() {
@@ -146,14 +155,14 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     private IEnumerator LateStart() {
         //Send sync request
-        if (!IsMasterInitGame && sendTimes < 15) {//sometime master connects very slow
-            sendTimes++;
-            InGameChat.AddLine("Sending sync game request..." + sendTimes);
+        if (!IsMasterInitGame && _sendTimes < 15) {//sometime master connects very slow
+            _sendTimes++;
+            InGameChat.AddLine("Sending sync game request..." + _sendTimes);
             yield return new WaitForSeconds(1f);
             SendSyncInitGameRequest();
             yield return StartCoroutine(LateStart());
         } else {
-            if (sendTimes >= 15 && !IsMasterInitGame) {
+            if (_sendTimes >= 15 && !IsMasterInitGame) {
                 InGameChat.AddLine("Failed to sync game properties. Is master disconnected ? ", Color.red);
                 Debug.Log("master not connected");
 
@@ -182,11 +191,11 @@ public abstract class GameManager : Photon.MonoBehaviour {
     }
 
     protected virtual bool CheckIfGameSync() {
-        if (!is_Time_init) {
+        if (!isTimeInit) {
             if (!OnSyncTimeRequest) StartCoroutine(SyncTimeRequest(1f));
         }
 
-        return is_Time_init;
+        return isTimeInit;
     }
 
     public abstract void RegisterPlayer(PhotonPlayer player);
@@ -205,7 +214,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     private void SyncTime() {
         Timer.MasterSyncTime();
-        is_Time_init = true;
+        isTimeInit = true;
     }
 
     public void OnPhotonCustomRoomPropertiesChanged(ExitGames.Client.Photon.Hashtable propertiesThatChanged) {
@@ -231,8 +240,24 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
         if (Offline) return;
 
+        //Update tick
+        if (PhotonNetwork.time - _curServerTickTime > ServerTickInterval || PhotonNetwork.time - _curServerTickTime < 0){
+            if (OnWorldUpdate != null) OnWorldUpdate();
+
+
+            double timeDiff = PhotonNetwork.time > _curServerTickTime ? PhotonNetwork.time - _curServerTickTime : 4294967.295 - (_curServerTickTime - PhotonNetwork.time);//4294967.295 is max PhotonNetwork.time
+            _curServerTick = (_curServerTick + (int) (timeDiff / ServerTickInterval)) % 1024;
+            _curServerTickTime += (int)(timeDiff / ServerTickInterval) * ServerTickInterval;
+            if (_curServerTickTime > 4294967.295) _curServerTickTime -= 4294967.295;
+
+            if(TickText != null){
+                TickText.text = _curServerTick.ToString();
+                TickTimeText.text = _curServerTickTime.ToString();
+            }
+        }
+
         // Update time
-        if (is_Time_init && GameIsBegin) {
+        if (isTimeInit && GameIsBegin) {
             Timer.UpdateTime();
         }
 
@@ -267,7 +292,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
         SceneStateController.SetSceneToLoadOnLoaded(LobbyManager._sceneName);
-        SceneManager.LoadScene("MainScenes");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainScenes");
     }
 
     protected abstract void ShowScorePanel(bool b);
@@ -276,17 +301,17 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     private void FixedUpdate() {
         if (!GameIsBegin) {
-            if (is_Time_init && Timer.CheckIfGameBegin()) {
+            if (isTimeInit && Timer.CheckIfGameBegin()) {
                 SetGameBegin();
                 OnGameStart();
                 Debug.Log("Set game begin");
             }
 
-            if (PhotonNetwork.isMasterClient && !calledGameBegin) {
+            if (PhotonNetwork.isMasterClient && !calledGameBegin) {//todo : improve this
                 if (!canStart) {
-                    if (waitTimes <= 5) {// check if all player finish loading every 2 sec
+                    if (_waitTimes <= 5) {// check if all player finish loading every 2 sec
                         if (Time.time - lastCheckCanStartTime >= 2f) {
-                            waitTimes++;
+                            _waitTimes++;
                             lastCheckCanStartTime = Time.time;
                         }
                     } else {//wait too long
@@ -295,7 +320,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
                         calledGameBegin = true;
                     }
                 } else {//all player finish loading
-                    if (is_Time_init) {
+                    if (isTimeInit) {
                         print("start time diff :" + (Timer.GetCurrentTimeDiff() + 2));
                         photonView.RPC("CallGameBeginDiff", PhotonTargets.AllBuffered, Timer.GetCurrentTimeDiff() + 2);
                         calledGameBegin = true;
@@ -320,7 +345,7 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     private IEnumerator SyncTimeRequest(float time) {
         OnSyncTimeRequest = true;
-        is_Time_init = Timer.SyncTime();
+        isTimeInit = Timer.SyncTime();
         yield return new WaitForSeconds(time);
         OnSyncTimeRequest = false;
     }
@@ -491,5 +516,47 @@ public abstract class GameManager : Photon.MonoBehaviour {
 
     public void DisplayMsgOnGameChat(string str) {
         InGameChat.AddLine(str);
+    }
+
+    protected void SyncServerTick(){
+        if(PhotonNetwork.isMasterClient)return;
+
+        StartCoroutine(SyncServerTickCoroutine());
+    }
+
+    private IEnumerator SyncServerTickCoroutine(){
+        while (true){
+            if (Time.time - _preSyncTime > SyncServerTickInterval){
+                _preSyncTime = Time.time;
+                photonView.RPC("SyncServerTick", PhotonTargets.MasterClient, PhotonNetwork.player);
+            }
+
+            yield return new WaitForFixedUpdate();
+        }
+    } 
+
+    [PunRPC]
+    protected void SyncServerTick(PhotonPlayer sender){
+        photonView.RPC("ClientUpdateServerTick", sender, _curServerTickTime, _curServerTick, ServerTickInterval);
+    }
+
+    [PunRPC]
+    protected void ClientUpdateServerTick(double masterServerTickTime, int masterServerTick, float ServerTickInterval, PhotonMessageInfo info) {
+        this.ServerTickInterval = ServerTickInterval;
+        _curServerTickTime = masterServerTickTime;
+        
+        //roundtrip time
+        double timeDiff = PhotonNetwork.time > info.timestamp ? PhotonNetwork.time - info.timestamp : 4294967.295 - (info.timestamp - PhotonNetwork.time);//4294967.295 is max PhotonNetwork.time
+        _curServerTick = (masterServerTick + (int) (timeDiff / ServerTickInterval))%1024;
+        _curServerTickTime += (int)(timeDiff / ServerTickInterval) * ServerTickInterval;
+        if(_curServerTickTime > 4294967.295)_curServerTickTime -= 4294967.295;
+    }
+
+    public double GetServerTickTime(){
+        return _curServerTickTime;
+    }
+
+    public int GetServerTick(){
+        return _curServerTick;
     }
 }

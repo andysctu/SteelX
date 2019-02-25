@@ -70,7 +70,7 @@ public class PlayerInZone : MonoBehaviour {
 
             if (!player.isDead) {
                 tempPlayerCount++;
-                if (player.photonView.owner.GetTeam() == PunTeams.Team.red) {
+                if (player.PhotonView.owner.GetTeam() == PunTeams.Team.red) {
                     tempRTcount++;
                 } else {
                     tempBTcount++;

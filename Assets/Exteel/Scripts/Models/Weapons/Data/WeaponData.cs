@@ -19,7 +19,8 @@ public abstract class WeaponData : ScriptableObject {
     public bool Slowdown, IsTwoHanded, IsTargetAlly = false;
     public int SpIncreaseAmount = 0;
 
-    public abstract void SwitchAnimationClips(Animator weaponAniamtor);
+    public virtual void SwitchAnimationClips(Animator weaponAniamtor){
+    }
 
     public AnimationClip[] skillAnimations;
 
@@ -44,7 +45,9 @@ public abstract class WeaponData : ScriptableObject {
 
     public abstract object GetWeaponObject();
 
-    public abstract Crosshair GetCrosshair();
+    public virtual Crosshair GetCrosshair(){
+        return null;
+    }
     
     public System.Type GetWeaponType() {
         return WeaponType;

@@ -19,16 +19,16 @@ namespace Weapons.Bullets
         }
 
         protected override void LateUpdate(){
-            if (isfollow){
-                if (target == null){
-                    Stop();
+            if (Isfollow){
+                if (Target == null){
+                    StopBulletEffect();
                     return;
                 }
             }
 
             //Emit particles
             if (totalSpawnedBulletNum >= maxBulletNum){
-                if (numParticlesAlive == 0) Stop();
+                if (numParticlesAlive == 0) StopBulletEffect();
             } else{
                 if (Time.time - timeOfLastSpawn > interval){
                     transform.LookAt(cam.transform.forward * 9999);
@@ -37,20 +37,20 @@ namespace Weapons.Bullets
                     bullet_ps.Emit(1);
 
                     //Show hit when the bullet is spawned
-                    if (isfollow) ShowHitMsg(target);
+                    //if (isfollow) ShowHitMsg(Target);
                 }
             }
 
             numParticlesAlive = bullet_ps.GetParticles(particles);
 
             //Set velocity for each particle , and play impact if hit
-            if (isfollow){
+            if (Isfollow){
                 for (int i = 0; i < numParticlesAlive; i++){
-                    if (Vector3.Distance(particles[i].position, target.position) <= bulletSpeed * Time.deltaTime){
+                    if (Vector3.Distance(particles[i].position, Target.GetPosition()) <= bulletSpeed * Time.deltaTime){
                         PlayImpact(particles[i].position);
                         particles[i].remainingLifetime = 0;
                     } else{
-                        particles[i].velocity = ((isTargetShield) ? (target.position - particles[i].position) : (target.position + MECH_MID_POINT - particles[i].position)).normalized * bulletSpeed;
+                        particles[i].velocity = (Target.GetPosition() - particles[i].position).normalized * bulletSpeed;
                     }
                 }
             }
@@ -64,7 +64,7 @@ namespace Weapons.Bullets
             enabled = true;
         }
 
-        public override void Stop(){
+        public override void StopBulletEffect(){
             enabled = false;
             Destroy(gameObject, 2);
         }

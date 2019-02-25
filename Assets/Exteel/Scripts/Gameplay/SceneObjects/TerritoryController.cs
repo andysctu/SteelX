@@ -39,12 +39,12 @@ public class TerritoryController : MonoBehaviour {
     }
 
     private void Start() {
-        if (!interactable) {
-            return;
-        }
+        //if (!interactable) {
+        //    return;
+        //}
 
-        DisplayInfo.SetHeight(20);
-        DisplayInfo.SetName("Territory " + Territory_ID + " Infos");
+        //DisplayInfo.SetHeight(20);
+        //DisplayInfo.SetName("Territory " + Territory_ID + " Infos");
     }
 
     private void InitComponents() {
@@ -67,25 +67,25 @@ public class TerritoryController : MonoBehaviour {
     }
 
     private void Update() {
-        bar.fillAmount = Mathf.Lerp(bar.fillAmount, trueAmount, Time.deltaTime * 10f);
-        TerritoryMapElement.SetFillAmount(bar.fillAmount);
+        //bar.fillAmount = Mathf.Lerp(bar.fillAmount, trueAmount, Time.deltaTime * 10f);
+        //TerritoryMapElement.SetFillAmount(bar.fillAmount);
 
-        if (curTerritoryState == PunTeams.Team.none && switchBarColor) {//TODO : remake this part
-            if (curBarState == 0) {
-                bar.sprite = bar_blue1;
-                bar.color = new Color32(255, 255, 255, 255);
+        //if (curTerritoryState == PunTeams.Team.none && switchBarColor) {//TODO : remake this part
+        //    if (curBarState == 0) {
+        //        bar.sprite = bar_blue1;
+        //        bar.color = new Color32(255, 255, 255, 255);
 
-                TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE_LIGHT);
+        //        TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE_LIGHT);
 
-                switchBarColor = false;
-            } else {
-                bar.sprite = bar_red1;
-                bar.color = new Color32(255, 255, 255, 255);
-                switchBarColor = false;
+        //        switchBarColor = false;
+        //    } else {
+        //        bar.sprite = bar_red1;
+        //        bar.color = new Color32(255, 255, 255, 255);
+        //        switchBarColor = false;
 
-                TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.RED_LIGHT);
-            }
-        }
+        //        TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.RED_LIGHT);
+        //    }
+        //}
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
@@ -131,44 +131,44 @@ public class TerritoryController : MonoBehaviour {
 
     [PunRPC]
     public void ChangeTerritory(int num) {
-        curTerritoryState = (PunTeams.Team)num;
-        if (num == (int)PunTeams.Team.blue) {
-            baseMesh.material = base_blue;
-            bar.sprite = bar_blue;
-            mark.enabled = true;
-            mark.sprite = mark_blue;
+        //curTerritoryState = (PunTeams.Team)num;
+        //if (num == (int)PunTeams.Team.blue) {
+        //    baseMesh.material = base_blue;
+        //    bar.sprite = bar_blue;
+        //    mark.enabled = true;
+        //    mark.sprite = mark_blue;
 
-            TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE);
-        } else if (num == (int)PunTeams.Team.red) {
-            baseMesh.material = base_red;
-            bar.sprite = bar_red;
-            mark.enabled = true;
-            mark.sprite = mark_red;
+        //    TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.BLUE);
+        //} else if (num == (int)PunTeams.Team.red) {
+        //    baseMesh.material = base_red;
+        //    bar.sprite = bar_red;
+        //    mark.enabled = true;
+        //    mark.sprite = mark_red;
 
-            TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.RED);
-        } else {
-            baseMesh.material = base_none;
-            mark.sprite = null;
-            mark.enabled = false;
-            switchBarColor = true;
+        //    TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.RED);
+        //} else {
+        //    baseMesh.material = base_none;
+        //    mark.sprite = null;
+        //    mark.enabled = false;
+        //    switchBarColor = true;
 
-            TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.NONE);
-        }
-        TerritoryRadarElement.SwitchSprite((PunTeams.Team)num);
+        //    TerritoryMapElement.SwitchBarColor(TerritoryMapElement.State.NONE);
+        //}
+        //TerritoryRadarElement.SwitchSprite((PunTeams.Team)num);
 
-        if (MapPanelController == null) {
-            Debug.LogWarning("MapPanelControllers is null");
-            return;
-        }
+        //if (MapPanelController == null) {
+        //    Debug.LogWarning("MapPanelControllers is null");
+        //    return;
+        //}
 
-        //notify the map to change mark
-        //MapPanelController.ChangeMark(Territory_ID, num);     
+        ////notify the map to change mark
+        ////MapPanelController.ChangeMark(Territory_ID, num);     
 
-        //for new player to load
-        if (PhotonNetwork.isMasterClient) {
-            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-            h.Add("T_" + Territory_ID, num);
-            PhotonNetwork.room.SetCustomProperties(h);
-        }
+        ////for new player to load
+        //if (PhotonNetwork.isMasterClient) {
+        //    ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        //    h.Add("T_" + Territory_ID, num);
+        //    PhotonNetwork.room.SetCustomProperties(h);
+        //}
     }
 }

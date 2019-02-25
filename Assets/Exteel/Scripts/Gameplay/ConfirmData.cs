@@ -9,7 +9,7 @@ public struct confirmData
     public float curBoostingSpeed;
 
     public int state;
-    public int Tick;
+    public int Tick,ServerTick;
     public float en;
 
     public float verBoostStartYPos;
@@ -30,7 +30,7 @@ public static class ConfirmData {
         PhotonPeer.RegisterType(typeof(confirmData), (byte)'c', SerializeData, DeserializeData);
     }
 
-    private static readonly byte[] memData = new byte[12 * 3 + 4 * 5 + 2 * 4 + 2];//vector3 3 * 12 , float 5 * 4 , int 2 * 4 , short 2
+    private static readonly byte[] memData = new byte[12 * 3 + 4 * 5 + 3 * 4 + 2];//vector3 3 * 12 , float 5 * 4 , int 3 * 4 , short 2
     private static short SerializeData(StreamBuffer outStream, object customobject) {
         confirmData data = (confirmData)customobject;
 
@@ -48,6 +48,7 @@ public static class ConfirmData {
             Protocol.Serialize(data.curBoostingSpeed, bytes, ref index);
             Protocol.Serialize(data.state, bytes, ref index);
             Protocol.Serialize(data.Tick, bytes, ref index);
+            Protocol.Serialize(data.ServerTick, bytes, ref index);
             Protocol.Serialize(data.en, bytes, ref index);
 
             Protocol.Serialize(data.verBoostStartYPos, bytes, ref index);
@@ -59,20 +60,21 @@ public static class ConfirmData {
             Protocol.Serialize(data.instantMoveDir.y, bytes, ref index);
             Protocol.Serialize(data.instantMoveDir.z, bytes, ref index);
 
+            if(data.bools == null)data.bools = new bool[ConformDataBoolsLength];
             byte bools = ConvertBoolArrayToByte(data.bools);
             Protocol.Serialize(bools, bytes, ref index);
 
-            outStream.Write(bytes, 0, 12 * 3 + 4 * 5 + 2 * 4 + 2);
+            outStream.Write(bytes, 0, 12 * 3 + 4 * 5 + 3 * 4 + 2);
         }
 
-        return 12 * 3 + 4 * 5 + 2 * 4 + 2;
+        return 12 * 3 + 4 * 5 + 3 * 4 + 2;
     }
 
     private static object DeserializeData(StreamBuffer inStream, short length) {
         confirmData data = new confirmData();
 
         lock (memData) {
-            inStream.Read(memData, 0, 12 * 3 + 4 * 5 + 2 * 4 + 2);
+            inStream.Read(memData, 0, 12 * 3 + 4 * 5 + 3 * 4 + 2);
             int index = 0;
 
             Protocol.Deserialize(out data.position.x, memData, ref index);
@@ -86,6 +88,7 @@ public static class ConfirmData {
             Protocol.Deserialize(out data.curBoostingSpeed, memData, ref index);
             Protocol.Deserialize(out data.state, memData, ref index);
             Protocol.Deserialize(out data.Tick, memData, ref index);
+            Protocol.Deserialize(out data.ServerTick, memData, ref index);
             Protocol.Deserialize(out data.en, memData, ref index);
 
             Protocol.Deserialize(out data.verBoostStartYPos, memData, ref index);

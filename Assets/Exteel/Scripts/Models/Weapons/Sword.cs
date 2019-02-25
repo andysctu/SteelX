@@ -1,5 +1,5 @@
-﻿using StateMachine;
-using StateMachine.Attack;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using XftWeapon;
 
@@ -7,20 +7,43 @@ namespace Weapons
 {
     public class Sword : MeleeWeapon
     {
+        protected IDamageable[] TargetsInCollider;
+        protected readonly List<IDamageable> _targets = new List<IDamageable>();
         private XWeaponTrail _weaponTrail;
         private AudioClip[] _slashSounds = new AudioClip[4];
 
-        private bool _receiveNextSlash, _isAnotherWeaponSword, _prepareToAttack, _isAttacking;
+        private bool _getMouseButtonUp;
+        private bool _receiveNextSlash, _isAnotherWeaponSword, _prepareToAttack;
+        //_receiveNextSlash : Is waiting for the next combo (button)
+        //_prepareToAttack : process next combo when current one end (exceed combo end time)
+
         private int _curCombo;
-        private float _attackStartTime;
+        private float _curComboEndTime; //AttackEnd is called when time exceeds curComboEndTime
+        private const float ReceiveNextAttackThreshold = 0.1f; //receiving the input after attacking start time + this ,and before comboEndTime - this
+        private const float MinInstantMoveDistance = 5; //there are different movements if too close to target or not
+        private float _instantMoveDistanceInAir = 22, _instantMoveDistanceOnGround = 17;
 
-        private float _attackLength = 0.8f, _finalAttackLength = 1.3f, _multiSwordAttackLength = 0.8f, _airAttackLength = 0.6f;//TODO : remake this part
+        private float[] _attackAnimationLengths;
 
-        public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator){
-            base.Init(data, pos, handTransform, Cbt, Animator);
+        private enum SlashType
+        {
+            FirstAttack,
+            SecondAttack,
+            ThirdAttack,
+            MultiAttack,
+            AirAttack
+        };
+
+        public override void Init(WeaponData data, int pos, Transform handTransform, Combat cbt, Animator animator){
+            base.Init(data, pos, handTransform, cbt, animator);
+
             InitComponents();
-
             CheckIsAnotherWeaponSword();
+        }
+
+        protected override void InitDataRelatedVars(WeaponData data){
+            base.InitDataRelatedVars(data);
+            _attackAnimationLengths = (float[]) ((SwordData) data).AttackAnimationLengths.Clone();
         }
 
         private void InitComponents(){
@@ -32,7 +55,7 @@ namespace Weapons
         }
 
         protected override void LoadSoundClips(){
-            _slashSounds = ((SwordData) data).slash_sound;
+            _slashSounds = ((SwordData) data).SlashSounds;
         }
 
         private void FindTrail(GameObject weapon){
@@ -41,103 +64,135 @@ namespace Weapons
         }
 
         public override void HandleCombat(usercmd cmd){
-            if (Mctrl.Grounded)Cbt.CanMeleeAttack = true;
+            if (Mctrl.Grounded) Cbt.CanMeleeAttack = true;
 
-            if (_prepareToAttack){// combo attack
-                if (Time.time > _attackStartTime){
+            if (_prepareToAttack){
+                if (Time.time > _curComboEndTime){
                     _prepareToAttack = false;
                     AttackStartAction();
                 }
-            }else if (Time.time > _attackStartTime + _attackLength && _isAttacking) {//todo check this
-                _isAttacking = false;
+            } else if (IsFiring && Time.time > _curComboEndTime){
                 AttackEndAction();
             }
 
-            if (!(Hand == LEFT_HAND ? cmd.buttons[(int)UserButton.LeftMouse] : cmd.buttons[(int)UserButton.RightMouse]) || IsOverHeat()){
-                return;
+            if (!_getMouseButtonUp && !cmd.buttons[(int)MouseButton]){
+                _getMouseButtonUp = true;
             }
 
-            if (Time.time - TimeOfLastUse >= 1 / Rate && !_prepareToAttack) {
-                if (!_receiveNextSlash || !Cbt.CanMeleeAttack){
+            if (!cmd.buttons[(int) MouseButton] || IsOverHeat() || !_receiveNextSlash || !Cbt.CanMeleeAttack || !_getMouseButtonUp) return;
+            if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
+
+            if (Time.time - TimeOfLastUse >= ReceiveNextAttackThreshold && !_prepareToAttack && (!IsFiring || Time.time < _curComboEndTime - ReceiveNextAttackThreshold)){
+                _getMouseButtonUp = false;
+
+                //waiting for next combo ?
+                if (_curCombo < 4){
+                    if (_curCombo == 3 && !_isAnotherWeaponSword){
+                        //combo 3 is only available for two swords
+                        _receiveNextSlash = false;
+                        return;
+                    } else{
+                        _receiveNextSlash = true;
+                    }
+                } else{
+                    _receiveNextSlash = false;
                     return;
                 }
 
-                if (_curCombo == 3 && !_isAnotherWeaponSword) return;
-                if (AnotherWeapon != null && !AnotherWeapon.AllowBothWeaponUsing && AnotherWeapon.IsFiring) return;
-
-                Cbt.CanMeleeAttack = false;
-                _receiveNextSlash = false;
                 TimeOfLastUse = Time.time;
+                IsFiring = true;
+                _prepareToAttack = true;
 
-                if (_curCombo >= 1) { // combo attack
-                    _prepareToAttack = true;
-                    _attackStartTime += _attackLength * 0.8f;//todo : check this
-                } else {//first attack
-                    _attackStartTime = Time.time;
-                    AttackStartAction();
-                }
-                _isAttacking = true;
-
-                //IncreaseHeat(data.HeatIncreaseAmount);
+                //IncreaseHeat(data.HeatIncreaseAmount);//TODO : check master sync this 
             }
+        }
+
+        public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields){
+            if (Mctrl.GetOwner().IsLocal) return;
+
+            PhotonView[] targetPvs = new PhotonView[targetPvIDs.Length];
+            IDamageable[] targets = new IDamageable[targetPvIDs.Length];
+
+            for (int i = 0; i < targetPvs.Length; i++){
+                IDamageableManager iDamageableManager;
+                if ((iDamageableManager = targetPvs[i].GetComponent(typeof(IDamageableManager)) as IDamageableManager) != null){
+                    IDamageable c = iDamageableManager.FindDamageableComponent(specIDs[i]);
+                    targets[i] = c;
+                }
+            }
+
+            PlaySlashEffect(damage, targets, additionalFields[0]);
         }
 
         protected virtual void AttackStartAction(){
-            AnimationEventController.Slash(Hand, _curCombo);
-
-            Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), (Mctrl.IsJumping) ? 22 : 15, (Mctrl.IsJumping) ? 0.45f : 0.75f);
-
-            //Play slash sound
-            if (_slashSounds != null && _slashSounds[_curCombo] != null) AudioSource.PlayClipAtPoint(_slashSounds[_curCombo], weapon.transform.position);
-
-            //TODO : master check this
             IsFiring = true;
+            TimeOfLastUse = Time.time;
 
-            //If not final slash
-            if (_curCombo != 4) _receiveNextSlash = true;
+            IDamageable[] targets = DetectTargets();
 
-            MeleeAttack(Hand);//todo : check this
+            //play effect locally
+            PlaySlashEffect(data.damage, targets, _curCombo);
 
-            Cbt.CanMeleeAttack = !Mctrl.IsJumping;
-            Cbt.SetMeleePlaying(true);
+            //Apply slowing down todo : implement this
+            //if (data.Slowdown) {
+            //    MechController mctrl = target.GetComponent<MechController>();
+            //    if (mctrl != null) {
+            //        mctrl.SlowDown();
+            //    }
+            //}
+
+            InstantMove(_curCombo, targets.Length == 0 ? null : targets[0].GetTransform());
+
+            if (PhotonNetwork.isMasterClient){
+                //transform targets to ids
+                int[] targetPvIDs = new int[targets.Length];
+                int[] specIDs = new int[targets.Length];
+
+                for (int i = 0; i < targets.Length; i++){
+                    targetPvIDs[i] = targets[i].GetPhotonView().viewID;
+                    specIDs[i] = targets[i].GetSpecID();
+                }
+
+                //rpc other to play effect
+                Cbt.Attack(WeapPos, Mctrl.GetForwardVector(), data.damage, targetPvIDs, specIDs, new int[]{_curCombo});
+            }
+
+            Cbt.CanMeleeAttack = Mctrl.Grounded;
             Mctrl.ResetCurBoostingSpeed();
+            Cbt.IncreaseSP(data.SpIncreaseAmount * targets.Length);
 
+            _curComboEndTime = Time.time + (!Mctrl.Grounded ? _attackAnimationLengths[(int) SlashType.AirAttack] : _attackAnimationLengths[_curCombo]);
             _curCombo++;
         }
 
-        protected virtual void AttackEndAction() {
-            //state machine
-            if(Mctrl.Grounded){
-                IsFiring = false;
-                _receiveNextSlash = true;
-                _curCombo = 0;
-            }
+        protected virtual void AttackEndAction(){
+            //This is being called once after combo end
+            _curCombo = 0;
+            _receiveNextSlash = true;
+            IsFiring = false;
 
-            //normal state
-            if (!Mctrl.Grounded) {
-                IsFiring = false;
-                _receiveNextSlash = true;
-                _curCombo = 0;
-                Cbt.SetMeleePlaying(false);
-            } else {
-                Cbt.CanMeleeAttack = true;
-            }
-
-            Mctrl.CallLockMechRot(false);
+            Mctrl.LockMechRot(false);
         }
 
-        public override void HandleAnimation(){
+        protected virtual void PlaySlashEffect(int damage, IDamageable[] targets, int combo){
+            PlaySlashAnimation(Hand);
+            if (_slashSounds != null && _slashSounds[combo] != null) WeaponAudioSource.PlayOneShot(_slashSounds[combo]);
+
+            //apply hits
+            foreach (var target in targets){
+                target.OnHit(data.damage, PlayerPv, this);
+                OnHitTargetAction(target);
+            }
         }
 
         protected override void ResetMeleeVars(){
             //this is called when on skill or init
             base.ResetMeleeVars();
             _curCombo = 0;
-
             _receiveNextSlash = true;
 
-            Cbt.SetMeleePlaying(false);
-            MechAnimator.SetBool("Slash", false);
+            MechAnimator.SetBool("SlashL", false);
+            MechAnimator.SetBool("SlashR", false);
         }
 
         public void EnableWeaponTrail(bool b){
@@ -154,6 +209,9 @@ namespace Weapons
             base.OnSkillAction(enter);
 
             if (enter){
+                _curCombo = 0;
+                IsFiring = false;
+                _prepareToAttack = false;
                 _receiveNextSlash = false;
             } else{
                 _receiveNextSlash = true;
@@ -161,23 +219,85 @@ namespace Weapons
             }
         }
 
-        public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
+        public void OnHitTargetAction(IDamageable target){
+            //todo : check this
+            ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.GetTransform());
+            p.transform.position = target.GetPosition();
 
-            if (isShield){
-                if (targetWeapon != null){
-                    targetWeapon.PlayOnHitEffect();
+            /*
+            //display effect todo : implement this
+            if (target.GetCurrentHP() <= 0) {
+            //target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.KILL, Cbt.GetCamera());
+            } else {
+            //if (isHitShield)
+            //    target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.DEFENSE, Cbt.GetCamera());
+            //else
+            //target.GetComponent<DisplayHitMsg>().Display(DisplayHitMsg.HitMsg.HIT, Cbt.GetCamera());
+            }*/
+        }
+
+        public void PlaySlashAnimation(int hand){
+            MechAnimator.SetBool(hand == LEFT_HAND ? AnimatorHashVars.SlashLHash : AnimatorHashVars.SlashRHash, true);
+        }
+
+        public virtual IDamageable[] DetectTargets(){
+            _targets.Clear();
+
+            if ((TargetsInCollider = SlashDetector.GetCurrentTargets()).Length != 0){
+                foreach (IDamageable target in TargetsInCollider){
+                    if (target == null) continue;
+
+                    bool isTerrainBlocksTheWay = false;
+
+                    var hitPoints = Physics.RaycastAll(Cbt.transform.position + new Vector3(0, 5, 0), target.GetPosition() - Cbt.transform.position, (target.GetPosition() - Cbt.transform.position).magnitude, PlayerAndTerrainMask).OrderBy(h => h.distance).ToArray();
+
+                    foreach (RaycastHit hit in hitPoints){
+                        if (hit.transform.gameObject.layer == TerrainLayer){
+                            //Terrain blocks the way
+                            isTerrainBlocksTheWay = true;
+                            break;
+                        }
+                    }
+
+                    if (isTerrainBlocksTheWay) continue;
+
+                    //check duplicated
+                    bool duplicated = false;
+                    foreach (var t in _targets){
+                        if (t.GetPhotonView() == target.GetPhotonView()){
+                            duplicated = true;
+                            break;
+                        }
+                    }
+
+                    if (duplicated) continue;
+
+                    _targets.Add(target);
                 }
-            } else{
-                //Apply slowing down effect
-                if (data.Slowdown){
-                    MechController mctrl = target.GetComponent<MechController>();
-                    if (mctrl != null){
-                        mctrl.SlowDown();
+            }
+
+            return _targets.ToArray();
+        }
+
+        protected virtual void InstantMove(int combo, Transform closestTarget){
+            if (closestTarget != null){
+                if (!Mctrl.Grounded){
+                    //as usual
+                    Mctrl.SetInstantMoving(Mctrl.GetForwardVector(), _instantMoveDistanceInAir, _attackAnimationLengths[(int) SlashType.AirAttack] * 0.8f);//can move in air attack earlier(while animation playing
+                } else{
+                    //move closer to target
+                    if ((closestTarget.position - Mctrl.transform.position).magnitude > MinInstantMoveDistance){
+                        Vector3 dir = Mctrl.Grounded ? closestTarget.position - Mctrl.transform.position - new Vector3(0, (closestTarget.position - Mctrl.transform.position).y, 0) : closestTarget.position - Mctrl.transform.position;
+
+                        Mctrl.SetInstantMoving(dir, (closestTarget.position - Mctrl.transform.position).magnitude / 2, _attackAnimationLengths[_curCombo]);
+                    } else{
+                        Mctrl.SetInstantMoving(closestTarget.position - Mctrl.transform.position, 0, _attackAnimationLengths[_curCombo]);
                     }
                 }
-
-                ParticleSystem p = Object.Instantiate(HitEffectPrefab, target.transform);
-                TransformExtension.SetLocalTransform(p.transform, new Vector3(0, 5, 0));
+            } else{
+                //move forward
+                Vector3 dir = Mctrl.Grounded ? Mctrl.GetForwardVector() - new Vector3(0, Mctrl.GetForwardVector().y, 0) : Mctrl.GetForwardVector();
+                Mctrl.SetInstantMoving(dir, !Mctrl.Grounded ? _instantMoveDistanceInAir : _instantMoveDistanceOnGround, !Mctrl.Grounded ? _attackAnimationLengths[(int) SlashType.AirAttack] * 0.8f : _attackAnimationLengths[_curCombo]);
             }
         }
     }

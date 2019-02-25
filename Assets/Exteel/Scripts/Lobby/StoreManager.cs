@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 //Data uid , eid
 
-public class StoreManager : IScene {
+public class StoreManager : SceneManager {
 
 	[SerializeField] GameObject[] Tabs;
 	[SerializeField] GameObject UIPart;
@@ -150,7 +150,7 @@ public class StoreManager : IScene {
 		}*/
 
 		// Return to lobby
-		SceneManager.LoadScene ("Lobby");
+		UnityEngine.SceneManagement.SceneManager.LoadScene ("Lobby");
 	}
 
 	public void Equip(string part, int weap) {

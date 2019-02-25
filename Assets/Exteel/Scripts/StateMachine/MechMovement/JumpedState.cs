@@ -4,59 +4,46 @@ namespace StateMachine.MechMovement
 {
     public class JumpedState : MechStateMachineBehaviour
     {
-        public bool isFirstjump = false;
+        public bool isFirstJump = false;//the first animation of jump . set in animator
 
         private bool _playedOnLandingAction;
 
-        override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+        public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             base.Init(animator);
-            if (!cc.enabled) return;
+
+            if (cc == null || !cc.enabled) return;
 
             _playedOnLandingAction = false;
 
-            if (isFirstjump){
-                mctrl.OnJumpAction();
+            if (isFirstJump){
+                Mctrl.OnJumpAction();
             }
 
-            if (mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
-
-            //mctrl.Boost(false);
-            animator.SetBool(GroundedHash, mctrl.Grounded);
-            animator.SetBool(BoostHash, mctrl.IsBoosting); //avoid shift+space directly vertically boost
-
-            if (!animator.GetBool(JumpHash)){
-                //dir falling
-                animator.SetBool(JumpHash, mctrl.IsJumping);
-            }
+            Mctrl.EnableBoostFlame(false);
+            animator.SetBool(AnimatorHashVars.GroundedHash, Mctrl.Grounded);
+            animator.SetBool(AnimatorHashVars.BoostHash, Mctrl.IsBoosting); //avoid shift+space directly vertically boost
         }
 
-        override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             if (!cc.enabled) return;
-            mctrl.EnableBoostFlame(animator.GetBool("Boost"));
 
-            animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
-            animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+            UpdateAnimatorParameters(animator);
 
-            if (mctrl.Grounded){
-                animator.SetBool(JumpHash, false);
-                animator.SetBool(GroundedHash, true);
+            if (Mctrl.Grounded){
+                animator.SetBool(AnimatorHashVars.JumpHash, false);
+                animator.SetBool(AnimatorHashVars.GroundedHash, true);
                 return;
             }
 
-            animator.SetBool(JumpHash, true);
-
-            if (!isFirstjump && animator.GetBool("Grounded")){
-                //TODO : consider move this part to groundedstate
+            if (!isFirstJump && Mctrl.Grounded){
                 if (!_playedOnLandingAction){
                     _playedOnLandingAction = true;
-                    mctrl.OnLandingAction();
+                    Mctrl.OnLandingAction();
                 }
             }
 
-            if (mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) return;
-
-            if (mctrl.IsBoosting){
-                animator.SetBool(BoostHash, true);
+            if (Mctrl.IsBoosting){
+                animator.SetBool(AnimatorHashVars.BoostHash, true);
             }
         }
     }

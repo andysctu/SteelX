@@ -210,30 +210,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d8fe9690009824cb075922e3038c5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 138214, guid: dace0f8d137bc4c339fcea3950b1731e, type: 2}
-  PlayerStat: {fileID: 158918, guid: 4321b3f070bb849c6bca02b8dc508745, type: 2}
-  Scoreboard: {fileID: 0}
-  RespawnPanel: {fileID: 0}
-  Timer: {fileID: 0}
-  Panel_RedTeam: {fileID: 0}
-  Panel_BlueTeam: {fileID: 0}
-  RedScore: {fileID: 0}
-  BlueScore: {fileID: 0}
-  RedScoreText: {fileID: 0}
-  BlueScoreText: {fileID: 0}
-  MechFrame: {fileID: 0}
-  GameMsgDisplayer: {fileID: 114738329472991926}
-  TimeLeft: 0
-  SpawnPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  MaxTimeInSeconds: 300
-  MaxKills: 2
-  CurrentMaxKills: 0
   GameIsBegin: 0
-  callEndGame: 0
+  calledGameBegin: 0
   Offline: 1
-  EndGameImmediately: 0
+  endGameImmediately: 0
 --- !u!114 &114883176186689198
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -295,7 +275,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

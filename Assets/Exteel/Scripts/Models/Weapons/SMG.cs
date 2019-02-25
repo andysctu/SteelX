@@ -1,5 +1,4 @@
-﻿using StateMachine;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Weapons
 {
@@ -15,7 +14,7 @@ namespace Weapons
 
         public override void Init(WeaponData data, int pos, Transform handTransform, Combat Cbt, Animator Animator){
             base.Init(data, pos, handTransform, Cbt, Animator);
-
+            _animationLength = ((RangedWeaponData) data).AtkAnimationLength;
             UpdateAnimationSpeed();
             UpdateMuzzleEffect();
         }
@@ -46,7 +45,7 @@ namespace Weapons
 
         //Adjust the animation to fit the rate
         protected void UpdateAnimationSpeed(){
-            _animationLength = Cbt.GetAnimationLength((Hand == 0) ? "Atk_SMG_Run_LH_F_02" : "Atk_SMG_Run_RH_F_02");
+            //_animationLength = Cbt.GetAnimationLength((Hand == 0) ? "Atk_SMG_Run_LH_F_02" : "Atk_SMG_Run_RH_F_02");
             _totalAtkAnimationLength = _animationLength * _bulletNum;
             _speedCoeff = _totalAtkAnimationLength / (1 / Rate);
             MechAnimator.SetFloat((Hand == 0) ? "SpeedLCoeff" : "SpeedRCoeff", _speedCoeff);
@@ -57,26 +56,53 @@ namespace Weapons
             //Debug.Log("Update ik");
             if (CurTarget != null){
                 //Face the target
-                Debug.DrawRay(Cbt.transform.position, Spine1.up * 10, Color.red, 1);
+                //Debug.DrawRay(Cbt.transform.position, Spine1.up * 10, Color.red, 1);
 
-                Debug.DrawRay(Cbt.transform.position, CurTarget.transform.position - Cbt.transform.position, Color.red, 1);
+                //Debug.DrawRay(Cbt.transform.position, CurTarget.transform.position - Cbt.transform.position, Color.red, 1);
 
                 //Debug.Log("Angle between : "+ Vector3.Angle(Spine1.up, CurTarget.transform.position - Cbt.transform.position));
             }
         }
 
-        protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
+        public override void HandleAnimation() {
+            if (IsFiring) {
+                if (Time.time - TimeOfLastUse > AtkAnimationLength * _bulletNum/_speedCoeff) {
+                    IsFiring = false;
+                    IsIkOn = false;
+
+                    MechAnimator.SetBool(AtkAnimHash, false);
+
+                    //Reload
+                    ReloadEffect();
+                } else{
+                    if (Time.time - _lastPlayShotSoundTime >= _animationLength / _speedCoeff) {
+                        _lastPlayShotSoundTime = Time.time;
+                        WeaponAudioSource.PlayOneShot(_shotSound);
+                        WeaponAnimator.SetTrigger("Atk");
+                        if (PlayerPv.isMine) {
+                            if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+                        }
+                    }
+                    IsIkOn = true;
+                }
+
+                if (IsIkOn) {
+                    UpdateIk();
+                }
+            }
+        }
+
+        protected override void DisplayBullet(Vector3 direction, IDamageable target) {
             GameObject bullet = Object.Instantiate(BulletPrefab, EffectEnd);
             TransformExtension.SetLocalTransform(bullet.transform, Vector3.zero, Quaternion.identity, new Vector3(1, 1, 1));
 
             UpdateBulletEffect(bullet.GetComponent<ParticleSystem>());
 
             _bulletTrace = bullet.GetComponent<MultiBullets>();
-            _bulletTrace.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
-            _bulletTrace.SetParticleSystem(_bulletNum, _animationLength);
+            _bulletTrace.InitBullet(MechCam, PlayerPv, direction, target);
+            _bulletTrace.SetParticleSystem(_bulletNum, _animationLength);//todo :check this
 
             _bulletTrace.Play();
-            Muzzle.Play();
         }
 
         private void UpdateBulletEffect(ParticleSystem bulletPs){
@@ -86,11 +112,6 @@ namespace Weapons
 
             var emission = bulletPs.emission;
             emission.rateOverTime = 1 / (_animationLength / _speedCoeff);
-        }
-
-        public override void OnRateChanged(){
-            UpdateAnimationSpeed();
-            UpdateMuzzleEffect();
         }
 
         public override void OnSkillAction(bool enter){
@@ -108,34 +129,14 @@ namespace Weapons
         }
 
         private void StopBulletTrace(){
-            if (_bulletTrace != null) _bulletTrace.Stop();
+            if (_bulletTrace != null) _bulletTrace.StopBulletEffect();
             Muzzle.Stop();
-            AudioSource.Stop();
+            WeaponAudioSource.Stop();
         }
 
-        public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
-            switch ((StateCallBackType) type){
-                case StateCallBackType.AttackStateEnter:
-                    IsIkOn = true;
-                    break;
-                case StateCallBackType.AttackStateUpdate:
-                    if (Time.time - _lastPlayShotSoundTime >= _animationLength / _speedCoeff){
-                        _lastPlayShotSoundTime = Time.time;
-                        AudioSource.PlayOneShot(_shotSound);
-                        WeaponAnimator.SetTrigger("Atk");
-                        if (PlayerPv.isMine) {
-                            if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
-                        }
-                    }
-                    break;
-                case StateCallBackType.AttackStateExit:
-                    IsIkOn = false;
-                    break;
-                case StateCallBackType.ReloadStateEnter:
-                    WeaponAnimator.SetTrigger("Reload");
-                    AudioSource.PlayOneShot(_reloadSound);
-                    break;
-            }
+        private void ReloadEffect(){
+            WeaponAnimator.SetTrigger("Reload");
+            WeaponAudioSource.PlayOneShot(_reloadSound);
         }
     }
 }

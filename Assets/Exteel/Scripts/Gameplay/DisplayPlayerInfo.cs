@@ -10,7 +10,7 @@ public class DisplayPlayerInfo : DisplayInfo{
 
     protected override void Awake() {
         InitComponents();
-        pv = Combat.photonView;
+        pv = Combat.PhotonView;
         if (pv.isMine && tag != "Drone") {
             return;
         } else {

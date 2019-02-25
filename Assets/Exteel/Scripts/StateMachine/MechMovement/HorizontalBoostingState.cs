@@ -4,30 +4,27 @@ namespace StateMachine.MechMovement
 {
     public class HorizontalBoostingState : MechStateMachineBehaviour
     {
-
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
             base.Init(animator);
         }
 
-        override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-            EffectController.UpdateBoostingDust();
+        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+            if (cc == null || !cc.enabled) return;
 
-            mctrl.EnableBoostFlame(animator.GetBool("Boost"));
+            Mctrl.EnableBoostFlame(Mctrl.IsBoosting);
 
-            if ((mctrl.GetOwner() != null && !mctrl.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) || !cc.enabled) return;
+            UpdateAnimatorParameters(animator);
 
-            animator.SetFloat(SpeedHash, Mathf.Lerp(animator.GetFloat(SpeedHash), mctrl.Speed, Time.deltaTime * 15));
-            animator.SetFloat(DirectionHash, Mathf.Lerp(animator.GetFloat(DirectionHash), mctrl.Direction, Time.deltaTime * 15));
+            if (!Mctrl.Grounded){
+                animator.SetBool(AnimatorHashVars.GroundedHash, false);
 
-            if (!mctrl.Grounded){
-                animator.SetBool(GroundedHash, false);
+                if (Mctrl.YSpeed > 0){
+                    animator.SetBool(AnimatorHashVars.JumpHash, true);
+                }
+                return;
             }
 
-            if (mctrl.IsJumping){
-                animator.SetBool(JumpHash, true);
-            }
-
-            animator.SetBool(BoostHash, mctrl.IsBoosting);
+            animator.SetBool(AnimatorHashVars.BoostHash, Mctrl.IsBoosting);
         }
     }
 }

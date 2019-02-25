@@ -1,5 +1,4 @@
-﻿using StateMachine;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Weapons
 {
@@ -15,9 +14,7 @@ namespace Weapons
         protected PhotonView PlayerPv;
         protected HeatBar HeatBar;
         protected Animator MechAnimator, WeaponAnimator;
-        protected AnimationEventController AnimationEventController;
-        protected AnimatorVars AnimatorVars;
-        protected AudioSource AudioSource;
+        protected AudioSource WeaponAudioSource;
 
         //Another weapon
         protected Weapon AnotherWeapon;
@@ -27,7 +24,7 @@ namespace Weapons
         public string WeaponName;
         public bool AllowBothWeaponUsing, IsFiring = false; //Whether the Mech Atk animation is playing or not
         protected int Hand, WeapPos; //Two-handed weapon's Hand is 0
-        protected KeyCode BUTTON;
+        protected UserButton MouseButton;
         protected float TimeOfLastUse, Rate;
         protected const int LEFT_HAND = 0, RIGHT_HAND = 1;
         protected int TerrainLayer = 10, TerrainLayerMask, PlayerLayerMask, PlayerAndTerrainMask;
@@ -38,8 +35,6 @@ namespace Weapons
             Ranged,
             Cannon,
             Rocket,
-            Skill,
-            Debuff,
             None
         };
 
@@ -54,7 +49,7 @@ namespace Weapons
             this.WeapPos = pos;
             Mctrl = this.Cbt.GetComponent<MechController>();
 
-            BUTTON = (Hand == LEFT_HAND) ? KeyCode.Mouse0 : KeyCode.Mouse1;
+            MouseButton = (Hand == LEFT_HAND) ? UserButton.LeftMouse : UserButton.RightMouse;
 
             InstantiateWeapon(data);
             InitComponents();
@@ -83,8 +78,6 @@ namespace Weapons
         private void InitComponents(){
             PlayerPv = Cbt.GetComponent<PhotonView>();
             HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
-            AnimationEventController = MechAnimator.GetComponent<AnimationEventController>();
-            AnimatorVars = Cbt.GetComponentInChildren<AnimatorVars>();
             AddAudioSource(weapon);
         }
 
@@ -101,15 +94,15 @@ namespace Weapons
         }
 
         protected virtual void AddAudioSource(GameObject weapon){
-            AudioSource = weapon.AddComponent<AudioSource>();
+            WeaponAudioSource = weapon.AddComponent<AudioSource>();
 
             //Init AudioSource
-            AudioSource.spatialBlend = 1;
-            AudioSource.dopplerLevel = 0;
-            AudioSource.volume = 0.8f;
-            AudioSource.playOnAwake = false;
-            AudioSource.minDistance = 20;
-            AudioSource.maxDistance = 250;
+            WeaponAudioSource.spatialBlend = 1;
+            WeaponAudioSource.dopplerLevel = 0;
+            WeaponAudioSource.volume = 0.8f;
+            WeaponAudioSource.playOnAwake = false;
+            WeaponAudioSource.minDistance = 20;
+            WeaponAudioSource.maxDistance = 250;
         }
 
         protected abstract void LoadSoundClips();
@@ -124,23 +117,10 @@ namespace Weapons
         }
 
         public abstract void HandleCombat(usercmd cmd); //Process Input
-        public abstract void HandleAnimation();
-
-        public virtual void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-            //This is called in onHit rpc
-        }
-
-        public virtual void PlayOnHitEffect(){
-        }
-
-        public virtual void OnHitAction(Combat shooter, Weapon shooterWeapon){
-            //what to do if this weapon gets hit
+        public virtual void HandleAnimation(){
         }
 
         public virtual void OnSkillAction(bool enter){
-        }
-
-        public virtual void OnRateChanged(){
         }
 
         public virtual void OnWeaponSwitchedAction(bool b){
@@ -161,10 +141,6 @@ namespace Weapons
             if (b){
                 OnOverHeatAction(b);
             }
-        }
-
-        public virtual int ProcessDamage(int damage, AttackType type){
-            return damage;
         }
 
         public virtual void IncreaseHeat(int amount){
@@ -190,17 +166,12 @@ namespace Weapons
             weapon.transform.localPosition = Vector3.zero;
         }
 
+        //for other players to play effect
+        public virtual void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) {
+        }
+
         public virtual void OnDestroy(){
             if (weapon != null) Object.Destroy(weapon);
-        }
-
-        public virtual bool IsShield(){
-            //general meaning of a shield
-            return false;
-        }
-
-        public int GetRawDamage(){
-            return data.damage;
         }
 
         public GameObject GetWeapon(){
@@ -211,8 +182,7 @@ namespace Weapons
             return attackType;
         }
 
-        public virtual void OnStateCallBack(int type, MechStateMachineBehaviour state){
-
+        public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using StateMachine;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Weapons
 {
@@ -7,12 +6,12 @@ namespace Weapons
 
     public class Cannon : RangedWeapon
     {
-        private MechController Mctrl;
         private AudioClip _shotSound, _reloadSound;
         private Bullet _bullet;
         private int _bulletNum = 3;
 
-        private bool _onPose = false, _onShoot = false, _onReload = false, _isCanceled = false;
+        private float _reloadStartTime, _reloadAnimationLength;
+        private bool _onPose, _onShoot, _onReload, _isCanceled;
 
         public override void Init(WeaponData data, int hand, Transform handTransform, Combat Cbt, Animator Animator){
             base.Init(data, hand, handTransform, Cbt, Animator);
@@ -20,6 +19,12 @@ namespace Weapons
 
             ResetAnimationVars();
             ResetBulletNum();
+        }
+
+        protected override void InitDataRelatedVars(WeaponData data){
+            base.InitDataRelatedVars(data);
+
+            _reloadAnimationLength = ((CannonData)data).ReloadAnimationLength;
         }
 
         private void InitComponents(){
@@ -30,21 +35,17 @@ namespace Weapons
             base.OnSkillAction(enter);
             if (enter){
                 ResetAnimationVars();
-                ResetBulletNum();
             }
         }
 
         private void ResetAnimationVars(){
-            //TODO : check this
             _onShoot = false;
             _onPose = false;
             _onReload = false;
 
-            if (Cbt.photonView.isMine){
-                MechAnimator.SetBool("CnPose", false);
-                MechAnimator.SetBool("CnLoad", false);
-                MechAnimator.SetBool("CnShoot", false);
-            }
+            MechAnimator.SetBool("CnPose", false);
+            MechAnimator.SetBool("CnLoad", false);
+            MechAnimator.SetBool("CnShoot", false);
         }
 
         private void ResetBulletNum(){
@@ -56,15 +57,12 @@ namespace Weapons
             _reloadSound = ((CannonData) data).reload_sound;
         }
 
-        public override void OnHitTargetAction(GameObject target, Weapon targetWeapon, bool isShield){
-            if (!isShield && data.Slowdown){
-                //TODO : implement this
-            }
-        }
-
         public override void OnWeaponSwitchedAction(bool isThisActivated){
             if (!isThisActivated){
                 ResetAnimationVars();
+
+                Muzzle.Stop();
+                WeaponAudioSource.Stop();
             }
         }
 
@@ -74,10 +72,25 @@ namespace Weapons
         }
 
         public override void HandleCombat(usercmd cmd) {
+            if (IsFiring){
+                if (Time.time - TimeOfLastUse > AtkAnimationLength){
+                    AttackEndAction();
+                }
+            }else if (_onReload){
+                if (Time.time - _reloadStartTime > _reloadAnimationLength){
+                    _onReload = false;
+                }
+            }
+
+            if (_bulletNum < 1) {
+                _reloadStartTime = Time.time;
+                _onReload = true;
+                _bulletNum = ((CannonData) data).MaxBullet;
+            }
+
             if (Input.GetKeyDown(KeyCode.Mouse1) || IsOverHeat()){
                 _isCanceled = true;
-                MechAnimator.SetBool(AnimatorVars.CnPoseHash, false);
-                return;
+                OnPoseAction(false);
             }
 
             if (_isCanceled){
@@ -88,98 +101,107 @@ namespace Weapons
                 }
             }
 
-            if (Input.GetKey(KeyCode.Mouse0) && !_onPose && !_onShoot && _bulletNum >= 1 && Mctrl.Grounded){
-                AnimationEventController.CnPose();
-                MechAnimator.SetBool(AnimatorVars.CnPoseHash, true);
-            }
-
-            if (Time.time - TimeOfLastUse >= 1 / Rate && _onPose){
-                if (Input.GetKey(KeyCode.Mouse0) || !MechAnimator.GetBool(AnimatorVars.CnPoseHash) || !Mctrl.Grounded) return;
-
-                IsFiring = true;
-
-                FireRaycast(MechCam.transform.TransformPoint(0, 0, CrosshairController.CamDistanceToMech), MechCam.transform.forward, Hand);
-
+            if (Time.time - TimeOfLastUse >= 1 / Rate && _onPose && !_onReload){
+                if (Input.GetKey(KeyCode.Mouse0) || !Mctrl.Grounded) return;
+                AttackStartAction();
                 TimeOfLastUse = Time.time;
             }
+
+            bool b = Input.GetKey(KeyCode.Mouse0) && !_onReload && _bulletNum >= 1 && Mctrl.Grounded;
+            if(_onPose != b)OnPoseAction(b);
         }
 
-        public override void Shoot(Vector3 direction, int targetPvId, int targetWeapPos){
-            WeaponAnimator.SetTrigger("Atk");
-
-            MechAnimator.SetBool("CnShoot", true);
-
-            _bulletNum--;
-
-            if (PlayerPv.isMine && _bulletNum <= 0){
-                MechAnimator.SetBool("CnLoad", true);
+        public override void HandleAnimation(){
+            if (MechAnimator.GetBool(AnimatorHashVars.CnPoseHash) != _onPose){
+                MechAnimator.SetBool(AnimatorHashVars.CnPoseHash, _onPose);
             }
 
-            IsFiring = true;
-
-            GameObject target = null;
-            PhotonView targetPv = PhotonView.Find(targetPvId);
-            if (targetPv != null) target = targetPv.gameObject;
-
-            if (target != null){
-                Combat targetCbt = target.GetComponent<Combat>();
-                targetCbt.OnHit(data.damage, PlayerPv.viewID, WeapPos, targetWeapPos);
-
-                DisplayBullet(direction, target, (targetWeapPos == -1) ? null : targetCbt.GetWeapon(targetWeapPos));
-
-                Cbt.IncreaseSP(data.SpIncreaseAmount); //TODO : check this
-            } else{
-                DisplayBullet(direction, null, null);
+            if (MechAnimator.GetBool(AnimatorHashVars.CnLoadHash) != _onReload) {
+                ReloadEffect();
+                MechAnimator.SetBool(AnimatorHashVars.CnLoadHash, _onReload);
             }
 
-            IncreaseHeat(data.HeatIncreaseAmount);
+            if (MechAnimator.GetBool(AnimatorHashVars.CnShootHash) != _onShoot) {
+                MechAnimator.SetBool(AnimatorHashVars.CnShootHash, _onShoot);
+            }
         }
 
-        protected override void DisplayBullet(Vector3 direction, GameObject target, Weapon targetWeapon){
+        protected virtual void ReloadEffect(){
+            WeaponAnimator.SetTrigger("Reload");
+
+            if (_reloadSound != null) {
+                WeaponAudioSource.clip = _reloadSound;
+                WeaponAudioSource.PlayDelayed(0.2f); //To match the reload animation
+            }
+        }
+
+        protected virtual void OnPoseAction(bool enter){
+            _onPose = enter;
+
+            Mctrl.LockMechMovement(enter);
+            if (enter){
+                Mctrl.ResetCurBoostingSpeed();
+                //mechIK.SetIK (true, 1, 0);
+            }
+        }
+
+        //public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) {
+        //    base.AttackRpc(direction, damage, targetPvIDs, specIDs, additionalFields);
+            
+        //}
+
+        protected override void AttackStartAction(){
+            base.AttackStartAction();
+            _onShoot = true;
+            Mctrl.SetInstantMoving(- Mctrl.GetForwardVector(), 16, 0.4f);
+            MechAnimator.SetBool(AnimatorHashVars.CnShootHash, true);
+            if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
+
+            _bulletNum --;
+        }
+
+        protected virtual void AttackEndAction(){
+            IsFiring = false;
+
+            MechAnimator.SetBool(AnimatorHashVars.CnShootHash, false);
+        }
+
+        protected override void PlayShootEffect(Vector3 direction, IDamageable target) {
+            base.PlayShootEffect(direction, target);
+
+            WeaponAudioSource.PlayOneShot(_shotSound);
+        }
+
+        protected override void DisplayBullet(Vector3 direction, IDamageable target) {
             _bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
-            _bullet.InitBullet(MechCam, PlayerPv, direction, (target == null) ? null : target.transform, this, targetWeapon);
             _bullet.transform.position = EffectEnd.position;
 
+            _bullet.InitBullet(MechCam, PlayerPv, direction, target);
             _bullet.Play();
-            Muzzle.Play();
-            AudioSource.PlayOneShot(_shotSound);
         }
 
-        public override void OnStateCallBack(int type, MechStateMachineBehaviour state){
-            switch ((StateCallBackType) type){
-                case StateCallBackType.AttackStateEnter:
-                    _onShoot = true;
+        public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
+            if (stream.isReading){
+                if(Cbt.GetOwner().IsLocal)return;
 
-                    Cbt.KnockBack(-Cbt.transform.forward, 8);
-                    break;
-                case StateCallBackType.AttackStateExit:
-                    _onShoot = false;
-                    MechAnimator.SetBool("CnShoot", false);
-                    break;
-                case StateCallBackType.ReloadStateEnter:
-                    _onReload = true;
-                    WeaponAnimator.SetTrigger("Reload");
-                    if (_reloadSound != null){
-                        AudioSource.clip = _reloadSound;
-                        AudioSource.PlayDelayed(0.2f); //To match the reload animation
-                    }
+                if (stream.PeekNext() is bool == false) {
+                    return;
+                }
+                _onPose = (bool)stream.ReceiveNext();
 
-                    break;
-                case StateCallBackType.ReloadStateExit:
-                    _onReload = false;
-                    MechAnimator.SetBool("CnLoad", false);
-                    _bulletNum = ((CannonData) data).MaxBullet;
-                    break;
-                case StateCallBackType.PoseStateEnter:
-                    _onPose = true;
-                    Mctrl.ResetCurBoostingSpeed();
-                    //mechIK.SetIK (true, 1, 0);
-                    break;
-                case StateCallBackType.PoseStateExit:
-                    _onPose = false;
-                    MechAnimator.SetBool("CnPose", false);
-                    //mechIK.SetIK (false, 1, 0);
-                    break;
+                if (stream.PeekNext() is bool == false) {
+                    return;
+                }
+                _onReload = (bool)stream.ReceiveNext();
+
+                if (stream.PeekNext() is bool == false) {
+                    return;
+                }
+                _onShoot = (bool)stream.ReceiveNext();
+            } else{
+                stream.SendNext(_onPose);
+                stream.SendNext(_onReload);
+                stream.SendNext(_onShoot);
             }
         }
     }

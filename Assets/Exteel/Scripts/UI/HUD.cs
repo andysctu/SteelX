@@ -13,7 +13,7 @@ public class HUD : MonoBehaviour {
 
     private void Start() {
         Combat = GetComponent<Combat>();
-        pv = Combat.photonView;
+        pv = Combat.PhotonView;
 
         if (!pv.isMine) {
             enabled = false;

@@ -105,7 +105,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224086832299976202}
-  - component: {fileID: 114211984713496714}
+  - component: {fileID: 114384086090784198}
   m_Layer: 5
   m_Name: DMMsgDisplayer
   m_TagString: Untagged
@@ -500,19 +500,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 'Ping : '
---- !u!114 &114211984713496714
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1122889659093276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4362c3df04e9a6842853372d9fe6c49d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WaitOtherPlayer: {fileID: 114323087947497466}
-  Ping: {fileID: 114154992662555806}
 --- !u!114 &114233709392950170
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -573,6 +560,19 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114384086090784198
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1122889659093276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b31e608de87941b4c918c0e0e2395789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WaitOtherPlayer: {fileID: 114323087947497466}
+  Ping: {fileID: 114154992662555806}
 --- !u!114 &114487485829726520
 MonoBehaviour:
   m_ObjectHideFlags: 1

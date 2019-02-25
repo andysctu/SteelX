@@ -20,7 +20,7 @@ public class TerritoryRadarElement : RadarElement {
     }
 
     private void DisplayTerritoryID() {
-        IDtextMesh.text = parentTerritoryController.Territory_ID.ToString();
+        //IDtextMesh.text = parentTerritoryController.Territory_ID.ToString();
     }
 
     public void UnderAttack() {
