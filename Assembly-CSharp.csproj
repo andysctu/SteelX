@@ -78,8 +78,7 @@
     <Compile Include="Assets\Exteel\Scripts\GameInfo\Timer.cs" />
     <Compile Include="Assets\Exteel\Scripts\GameInfo\UserData.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\AnimationClipOverrides.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\AnimationEventController.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\AnimatorVars.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Gameplay\AnimatorHashVars.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\BlockInputSet.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\BoosterController.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\BuildMech.cs" />
@@ -90,7 +89,6 @@
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Bullet\MultiBullets.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Bullet\RocketBullet.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Bullet\SingleBullet.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\CheckIsRendered.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Combat.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\ConfirmData.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\CrosshairController.cs" />
@@ -100,8 +98,10 @@
     <Compile Include="Assets\Exteel\Scripts\Gameplay\DroneCombat.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\DroneController.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\EffectController.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\HandleInputs.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\HeatBar.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Gameplay\IDamageable.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Gameplay\IDamageableManager.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Gameplay\InputManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\MechCamera.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\MechCombat.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\MechController.cs" />
@@ -112,7 +112,7 @@
     <Compile Include="Assets\Exteel\Scripts\Gameplay\SceneObjects\PlayerInZone.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\SceneObjects\SyncHealthPoolBar.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\SceneObjects\TerritoryController.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Gameplay\ShieldActionReceiver.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Gameplay\ShieldDamageable.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Skill\AOESkillBehaviour.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Skill\AOESkillConfig.cs" />
     <Compile Include="Assets\Exteel\Scripts\Gameplay\Skill\MultiTargetSkillBehaviour.cs" />
@@ -131,11 +131,11 @@
     <Compile Include="Assets\Exteel\Scripts\Lobby\GameLobbyManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\GameSceneManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\HangarManager.cs" />
-    <Compile Include="Assets\Exteel\Scripts\Lobby\IScene.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\LobbyChat.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\LobbyManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\LoginManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\MusicManager.cs" />
+    <Compile Include="Assets\Exteel\Scripts\Lobby\SceneManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\SceneStateController.cs" />
     <Compile Include="Assets\Exteel\Scripts\Lobby\StoreManager.cs" />
     <Compile Include="Assets\Exteel\Scripts\MechBuilder\MechCreator.cs" />
@@ -188,9 +188,6 @@
     <Compile Include="Assets\Exteel\Scripts\StateMachine\MechMovement\VerticalBoostingState.cs" />
     <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\CnPoseState.cs" />
     <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\CnState.cs" />
-    <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\RCLState.cs" />
-    <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\ReloadState.cs" />
-    <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\ShootingState.cs" />
     <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\SlashState.cs" />
     <Compile Include="Assets\Exteel\Scripts\StateMachine\Weapon\SmashState.cs" />
     <Compile Include="Assets\Exteel\Scripts\Thumbnails\Thumbnails.cs" />
