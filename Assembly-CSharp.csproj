@@ -45,10 +45,10 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>D:/Unity/Editor/Data/Managed\UnityEngine.dll</HintPath>
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>D:/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +56,9 @@
       <Project>{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Exteel\Scripts\Core\MonoBehavior\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Exteel\Scripts\Core\Enums.cs" />
