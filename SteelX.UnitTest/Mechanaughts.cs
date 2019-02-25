@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Exteel;
+using Exteel.Core;
 
 namespace SteelX.UnitTest
 {
@@ -67,6 +69,8 @@ namespace SteelX.UnitTest
 		[TestMethod]
 		public void Mechanaughts_Part_Get_WeightSeries()
 		{
+			Exteel.Core.Mechanaughts.Arms arm = new Exteel.Core.Mechanaughts.Arms(Parts.AEH009);
+			Assert.AreEqual(WeightClass.Standard, arm.WeightSeries);
 		}
 		[TestMethod]
 		public void Mechanaughts_Part_Get_Price_Credits()
