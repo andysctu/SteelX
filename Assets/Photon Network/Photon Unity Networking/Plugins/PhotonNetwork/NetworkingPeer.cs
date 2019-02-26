@@ -274,10 +274,9 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
 
     public bool IsInitialConnect = false;
 
-
     public bool insideLobby = false;
-    public TypedLobby lobby { get; set; }
 
+	public TypedLobby lobby { get; set; }
 
     private bool requestLobbyStatistics
     {
@@ -286,9 +285,9 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
 
     protected internal List<TypedLobbyInfo> LobbyStatistics = new List<TypedLobbyInfo>();
 
-
     public Dictionary<string, RoomInfo> mGameList = new Dictionary<string, RoomInfo>();
-    public RoomInfo[] mGameListCopy = new RoomInfo[0];
+
+	public RoomInfo[] mGameListCopy = new RoomInfo[0];
 
     private string playername = "";
 
@@ -324,7 +323,6 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
     // isLocalClientInside becomes true when op join result is positive on GameServer
     private bool mPlayernameHasToBeUpdated;
 
-
     public Room CurrentRoom
     {
         get
@@ -358,11 +356,8 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
 
     protected internal EnterRoomParams enterRoomParamsCache;
 
-
     /// <summary>Internally used to trigger OpAuthenticate when encryption was established after a connect.</summary>
     private bool didAuthenticate;
-
-
 
     /// <summary>Contains the list of names of friends to look up their state on the server.</summary>
     private string[] friendListRequested;
@@ -393,13 +388,11 @@ internal class NetworkingPeer : LoadBalancingPeer, IPhotonPeerListener
     /// <summary>The cloud region this client connects to. Set by ConnectToRegionMaster().</summary>
     public CloudRegionCode CloudRegion { get; protected internal set; }
 
-
-
     public Dictionary<int, PhotonPlayer> mActors = new Dictionary<int, PhotonPlayer>();
 
     public PhotonPlayer[] mOtherPlayerListCopy = new PhotonPlayer[0];
-    public PhotonPlayer[] mPlayerListCopy = new PhotonPlayer[0];
 
+	public PhotonPlayer[] mPlayerListCopy = new PhotonPlayer[0];
 
     public int mMasterClientId
     {
