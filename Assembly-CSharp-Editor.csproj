@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{9128E328-9DC0-C029-C904-8DED122D3225}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -44,185 +45,243 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>D:/Unity/Editor/Data/Managed\UnityEngine.dll</HintPath>
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>D:/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Editor\CrossPlatformInput\CrossPlatformInputInitialize.cs" />
-     <Compile Include="Assets\Editor\PhotonChat\AccountService.cs" />
-     <Compile Include="Assets\Editor\PhotonChat\ChatEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\CullAreaEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonConverter.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonEditorUtils.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonGUI.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonViewHandler.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonViewInspector.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PhotonViewPrefabApply.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\PunSceneSettings.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\ReorderableListResources.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\ServerSettingsInspector.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonAnimatorViewEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonRigidbody2DViewEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonRigidbodyViewEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonTransformViewEditor.cs" />
-     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\PhotonPlayer\Editor\PlayerRoomIndexingInspector.cs" />
-     <Compile Include="Assets\Photon Unity Networking\UtilityScripts\PhotonPlayer\Editor\PunTeamsInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\_DEMOS\BendGoalInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\AimIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\AimPoserInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\BipedIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\BipedIKSolversInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\CCDIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\ConstraintsInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\FABRIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\FABRIKRootInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\FingerRigInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\FullBodyBipedIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\GroundingInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKEffectorInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKExecutionOrderInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverAimInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverFABRIKRootInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverFullBodyBipedInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverFullBodyInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverHeuristicInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverLegInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverLimbInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverLookAtInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\IKSolverTrigonometricInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\InteractionTargetInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\InteractionTriggerInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\LegIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\LimbIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\LookAtIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\RotationLimitAngleInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\RotationLimitHingeInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\RotationLimitInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\RotationLimitPolygonalInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\RotationLimitSplineInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\TrigonometricIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\FinalIK\VRIKInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\Shared Demo Scripts\CameraControllerInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\Shared Scripts\BipedReferencesInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\Shared Scripts\CommentsInspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\Shared Scripts\Inspector.cs" />
-     <Compile Include="Assets\RootMotion\Editor\Shared Scripts\LargeHeaderDrawer.cs" />
-     <Compile Include="Assets\RootMotion\Editor\Shared Scripts\SerializedContent.cs" />
-     <Compile Include="Assets\XWeaponTrail\Editor\XWeaponTrailEditor.cs" />
- <Reference Include="UnityEngine.UI">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.UI">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Networking">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.Networking">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.TestRunner">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/Editor/UnityEditor.TestRunner.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.TestRunner">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
- </Reference>
- <Reference Include="nunit.framework">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Timeline">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/Timeline/RuntimeEditor/UnityEngine.Timeline.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.Timeline">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/Timeline/Editor/UnityEditor.Timeline.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.TreeEditor">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.UIAutomation">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.UIAutomation">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UIAutomation/Editor/UnityEditor.UIAutomation.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.GoogleAudioSpatializer">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnityGoogleAudioSpatializer/Editor/UnityEditor.GoogleAudioSpatializer.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.GoogleAudioSpatializer">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnityGoogleAudioSpatializer/RuntimeEditor/UnityEngine.GoogleAudioSpatializer.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.HoloLens">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/Editor/UnityEditor.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.HoloLens">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.SpatialTracking">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/Editor/UnityEditor.SpatialTracking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.SpatialTracking">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.VR">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/Editor/UnityEditor.VR.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.Graphs">
- <HintPath>D:/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.WebGL.Extensions">
- <HintPath>D:/Unity/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.WindowsStandalone.Extensions">
- <HintPath>D:/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.OSXStandalone.Extensions">
- <HintPath>D:/Unity/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="Newtonsoft.Json">
- <HintPath>D:/andySteelX/SteelX/Assets/Editor/PhotonChat/Newtonsoft.Json.dll</HintPath>
- </Reference>
- <Reference Include="Newtonsoft.Json">
- <HintPath>D:/andySteelX/SteelX/Assets/Photon Unity Networking/Editor/PhotonNetwork/Newtonsoft.Json.dll</HintPath>
- </Reference>
- <Reference Include="Photon3Unity3D">
- <HintPath>D:/andySteelX/SteelX/Assets/Plugins/Photon3Unity3D.dll</HintPath>
- </Reference>
- <Reference Include="websocket-sharp">
- <HintPath>D:/andySteelX/SteelX/Assets/Plugins/WebSocket/websocket-sharp.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Advertisements">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.3/UnityEngine.Advertisements.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.Advertisements">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.3/Editor/UnityEditor.Advertisements.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Analytics">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.13/UnityEngine.Analytics.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.Analytics">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.13/Editor/UnityEditor.Analytics.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Purchasing">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.purchasing@0.0.19/UnityEngine.Purchasing.dll</HintPath>
- </Reference>
- <Reference Include="UnityEditor.Purchasing">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.purchasing@0.0.19/Editor/UnityEditor.Purchasing.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.StandardEvents">
- <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
- </Reference>
+    <Compile Include="Assets\Editor\CrossPlatformInput\CrossPlatformInputInitialize.cs" />
+    <Compile Include="Assets\Editor\PhotonChat\AccountService.cs" />
+    <Compile Include="Assets\Editor\PhotonChat\ChatEditor.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\AimIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\AimPoserInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\BipedIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\BipedIKSolversInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\CCDIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\ConstraintsInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\FABRIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\FABRIKRootInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\FingerRigInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\FullBodyBipedIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\GroundingInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKEffectorInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKExecutionOrderInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverAimInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverFABRIKRootInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverFullBodyBipedInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverFullBodyInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverHeuristicInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverLegInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverLimbInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverLookAtInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\IKSolverTrigonometricInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\InteractionTargetInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\InteractionTriggerInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\LegIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\LimbIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\LookAtIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\RotationLimitAngleInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\RotationLimitHingeInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\RotationLimitInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\RotationLimitPolygonalInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\RotationLimitSplineInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\TrigonometricIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\VRIKInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\FinalIK\_DEMOS\BendGoalInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\Shared Demo Scripts\CameraControllerInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\Shared Scripts\BipedReferencesInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\Shared Scripts\CommentsInspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\Shared Scripts\Inspector.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\Shared Scripts\LargeHeaderDrawer.cs" />
+    <Compile Include="Assets\MyUnityAssets\RootMotion\Editor\Shared Scripts\SerializedContent.cs" />
+    <Compile Include="Assets\MyUnityAssets\XWeaponTrail\Editor\XWeaponTrailEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\CullAreaEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonConverter.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonEditorUtils.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonGUI.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonViewHandler.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonViewInspector.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PhotonViewPrefabApply.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\PunSceneSettings.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\ReorderableListResources.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\ServerSettingsInspector.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonAnimatorViewEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonRigidbody2DViewEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonRigidbodyViewEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonTransformViewEditor.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\UtilityScripts\PhotonPlayer\Editor\PlayerRoomIndexingInspector.cs" />
+    <Compile Include="Assets\Photon Network\Photon Unity Networking\UtilityScripts\PhotonPlayer\Editor\PunTeamsInspector.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\BaseEditor.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\BaseMachine.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\BaseMachineEditor.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\CustomAssetUtility.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\GUIHelper.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\MechPartSheetAssetPostProcessor.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\MechPartSheetEditor.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\ScriptGenerator.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\ScriptPrescription.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\Util\Cloner.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\Util\CsvParser.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\Util\Singleton.cs" />
+    <Compile Include="Assets\QuickSheet\Editor\Util\Util.cs" />
+    <Compile Include="Assets\QuickSheet\ExcelPlugin\Editor\BaseExcelEditor.cs" />
+    <Compile Include="Assets\QuickSheet\ExcelPlugin\Editor\ExcelMachine.cs" />
+    <Compile Include="Assets\QuickSheet\ExcelPlugin\Editor\ExcelMachineEditor.cs" />
+    <Compile Include="Assets\QuickSheet\ExcelPlugin\Editor\ExcelQuery.cs" />
+    <Compile Include="Assets\QuickSheet\ExcelPlugin\Editor\ExcelSettings.cs" />
+    <Compile Include="Assets\QuickSheet\ExcelPlugin\Editor\ExcelSettingsEditor.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\BaseGoogleEditor.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\Evaluator.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\ExpressionVisitor.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\GDataDBQueryProvider.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\OrderTranslator.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\Query.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\QueryProvider.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\QueryTranslator.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\TypeSystem.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\Impl\WhereTranslator.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB.Linq\ITableExtensions.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\DatabaseClient.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\IDatabase.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\IDatabaseClient.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Impl\Database.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Impl\GDataDBRequestFactory.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Impl\Row.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Impl\Serializer.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Impl\Table.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\IRow.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\ITable.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Order.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GDataDB\GDataDB\Query.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GoogleDataSettings.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GoogleDataSettingsEditor.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GoogleMachine.cs" />
+    <Compile Include="Assets\QuickSheet\GDataPlugin\Editor\GoogleMachineEditor.cs" />
+    <Reference Include="UnityEngine.UI">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Networking">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.TestRunner">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/Editor/UnityEditor.TestRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TestRunner">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/UnityEngine.TestRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TestRunner/net35/unity-custom/nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Timeline">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Timeline/RuntimeEditor/UnityEngine.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Timeline">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Timeline/Editor/UnityEditor.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.TreeEditor">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIAutomation">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UIAutomation/UnityEngine.UIAutomation.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UIAutomation">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UIAutomation/Editor/UnityEditor.UIAutomation.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.GoogleAudioSpatializer">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityGoogleAudioSpatializer/Editor/UnityEditor.GoogleAudioSpatializer.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GoogleAudioSpatializer">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityGoogleAudioSpatializer/RuntimeEditor/UnityEngine.GoogleAudioSpatializer.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.HoloLens">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/Editor/UnityEditor.HoloLens.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HoloLens">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.SpatialTracking">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/Editor/UnityEditor.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.VR">
+      <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityVR/Editor/UnityEditor.VR.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Graphs">
+      <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WebGL.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.WindowsStandalone.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.OSXStandalone.Extensions">
+      <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Editor\PhotonChat\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Photon Unity Networking\Editor\PhotonNetwork\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Photon3Unity3D">
+      <HintPath>Assets\Plugins\Photon3Unity3D.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>Assets\Plugins\WebSocket\websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Advertisements">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.3/UnityEngine.Advertisements.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Advertisements">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.3/Editor/UnityEditor.Advertisements.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Analytics">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.13/UnityEngine.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Analytics">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.13/Editor/UnityEditor.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Purchasing">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.purchasing@0.0.19/UnityEngine.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Purchasing">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.purchasing@0.0.19/Editor/UnityEditor.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StandardEvents">
+      <HintPath>C:/Users/Chonz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+      <Project>{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{0AC6FE88-37D6-697C-A823-936D40F10B76}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
+      <Project>{0AC6FE88-37D6-697C-A823-936D40F10B76}</Project>
+      <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Photon Network\Photon Unity Networking\Editor\PhotonNetwork\Newtonsoft.Json.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.AccessControl.DLL" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Client.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Documents.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Extensions.dll" />
+    <Content Include="Assets\QuickSheet\GDataPlugin\Editor\Google\Google.GData.Spreadsheets.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -232,5 +291,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  
 </Project>

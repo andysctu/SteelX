@@ -57,6 +57,12 @@
     <Compile Include="Weapons.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Assembly-CSharp.csproj">
+      <Project>{0AC6FE88-37D6-697C-A823-936D40F10B76}</Project>
+      <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

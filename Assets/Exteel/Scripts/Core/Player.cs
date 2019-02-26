@@ -11,14 +11,19 @@
 		//Mech Mech //Active Mech
 		//Pilot Pilot //Active Pilot
 		//int[] Stats/Experience Points //Feed From Server, may not need it in class
+		public Mechanaughts ActiveMech { get; set; }
 
-		internal Mechanaughts LoadFromServer(System.Guid HashId)
-		{
-			//GetPart(Id);
-			//SetColor(int, datetime expire)
-			//SetDurability(int)
-			throw new System.Exception("Part ID doesnt exist in the database. Please check Arms constructor.");
-		}
+		//ToDo: Move to Global Class
+		//internal Mechanaughts LoadFromServer(System.Guid HashId)
+		//{
+		//	//GetPart(Id);
+		//	//SetColor(int, datetime expire)
+		//	//SetDurability(int)
+		//	throw new System.Exception("Part ID doesnt exist in the database. Please check Arms constructor.");
+		//}
+
+		#region Nested Classes
+		#endregion
 	}
 }
 
