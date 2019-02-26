@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX", "SteelX.csproj", "{7F301B70-A41F-B6D2-423B-F85962F66BB5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX.Plugins", "SteelX.Plugins.csproj", "{1B981990-1DDA-603D-6852-90BF93477FED}"
@@ -10,14 +8,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX.Editor", "SteelX.Editor.csproj", "{9F09C186-E2C0-A880-1D55-93FA4C52C720}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelX.UnitTest", "SteelX.UnitTest\SteelX.UnitTest.csproj", "{CC299590-AF12-4A25-B265-907D9570BDAF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{0AC6FE88-37D6-697C-A823-936D40F10B76}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9128E328-9DC0-C029-C904-8DED122D3225}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{B78AC207-765F-EA66-1BD0-277AD9E5A7ED}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,22 +31,6 @@ Global
 		{CC299590-AF12-4A25-B265-907D9570BDAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC299590-AF12-4A25-B265-907D9570BDAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC299590-AF12-4A25-B265-907D9570BDAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0AC6FE88-37D6-697C-A823-936D40F10B76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0AC6FE88-37D6-697C-A823-936D40F10B76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0AC6FE88-37D6-697C-A823-936D40F10B76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0AC6FE88-37D6-697C-A823-936D40F10B76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9128E328-9DC0-C029-C904-8DED122D3225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9128E328-9DC0-C029-C904-8DED122D3225}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9128E328-9DC0-C029-C904-8DED122D3225}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9128E328-9DC0-C029-C904-8DED122D3225}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B78AC207-765F-EA66-1BD0-277AD9E5A7ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B78AC207-765F-EA66-1BD0-277AD9E5A7ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B78AC207-765F-EA66-1BD0-277AD9E5A7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B78AC207-765F-EA66-1BD0-277AD9E5A7ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53C4F3E8-9E7F-7566-2A53-7E99C0266AE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
