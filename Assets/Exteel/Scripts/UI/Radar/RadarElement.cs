@@ -11,16 +11,16 @@ public class RadarElement : MonoBehaviour {
     }
 
     protected virtual void Start() {
-        GameManager gm = FindObjectOfType<GameManager>();        
-        StartCoroutine(GetThePlayer(gm));
+        //GameManager gm = FindObjectOfType<GameManager>();        
+        //StartCoroutine(GetThePlayer(gm));
     }
 
     private IEnumerator GetThePlayer(GameManager gm) {
         int request_times = 0;
-        while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 10) {
-            request_times++;
-            yield return new WaitForSeconds(0.5f);
-        }
+        //while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 10) {
+        //    request_times++;
+        //    yield return new WaitForSeconds(0.5f);
+        //}
 
         if (request_times >= 10) {
             Debug.LogError("Can't get the player");

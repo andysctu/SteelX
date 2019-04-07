@@ -11,7 +11,7 @@ public class CTFMsgDisplayer : MonoBehaviour{
     private AudioSource AudioSource;
     private Text MsgText;
     private Image MsgImage;    
-    private PunTeams.Team thisPlayer_team = PunTeams.Team.none;
+    //private PunTeams.Team thisPlayer_team = PunTeams.Team.none;
 
     private const float DisplayDuration = 3 ;    
     private Coroutine DisplayCoroutine;
@@ -39,11 +39,11 @@ public class CTFMsgDisplayer : MonoBehaviour{
     }
 
     private void GetThisPlayerTeam() {
-        if (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) {
-            thisPlayer_team = PunTeams.Team.red;
-        } else {
-            thisPlayer_team = PunTeams.Team.blue;
-        }
+        //if (PhotonNetwork.player.GetTeam() == PunTeams.Team.red) {
+        //    thisPlayer_team = PunTeams.Team.red;
+        //} else {
+        //    thisPlayer_team = PunTeams.Team.blue;
+        //}
     }
 
     private void LoadAudioClips() {
@@ -55,7 +55,7 @@ public class CTFMsgDisplayer : MonoBehaviour{
     }
 
     private void UpdatePingText() {
-        ping = PhotonNetwork.GetPing();
+        //ping = PhotonNetwork.GetPing();
         Ping.text = "Ping : " + ping;
 
         if (ping < 100) {
@@ -85,66 +85,66 @@ public class CTFMsgDisplayer : MonoBehaviour{
         ObjectiveAnimator.SetBool("start",true);
     }
 
-    public void ShowGameOver(PunTeams.Team winTeam) { 
-        if(winTeam == thisPlayer_team) {
-            //Display win
+    //public void ShowGameOver(PunTeams.Team winTeam) { 
+    //    if(winTeam == thisPlayer_team) {
+    //        //Display win
+	//
+    //    }else if(winTeam == PunTeams.Team.none) {
+    //        //Display draw
+	//
+    //    } else {
+    //        //Display Lose
+	//
+    //    }
+    //}
 
-        }else if(winTeam == PunTeams.Team.none) {
-            //Display draw
+    //public void PlayerGetFlag(PhotonPlayer player) {
+    //    if(player.GetTeam() == thisPlayer_team) {
+    //        DisplayMsg(player.NickName + " captured the enemy's flag.");
+    //    } else {
+    //        DisplayMsg("Our team flag was snatched.", Color.red);
+    //    }
+    //}
 
-        } else {
-            //Display Lose
+    //public void PlayerReturnFlag(PhotonPlayer player) {
+    //    if (player.GetTeam() == thisPlayer_team) {
+    //        DisplayMsg(player.NickName + " retrived our flag.");
+    //    }
+    //}
 
-        }
-    }
+    //public void PlayerDroppedFlag(PhotonPlayer player) {
+    //    if (player.GetTeam() == thisPlayer_team) {
+    //        DisplayMsg(player.NickName + " lost the enemy's flag.", Color.red);
+    //    }
+    //}
 
-    public void PlayerGetFlag(PhotonPlayer player) {
-        if(player.GetTeam() == thisPlayer_team) {
-            DisplayMsg(player.NickName + " captured the enemy's flag.");
-        } else {
-            DisplayMsg("Our team flag was snatched.", Color.red);
-        }
-    }
+    //public void PlayerGetScore(PhotonPlayer player) {
+    //    if(player.GetTeam() == thisPlayer_team) {
+    //        DisplayMsg(player.NickName + " succeeded in capturing the enemy's flag.");
+	//
+    //        DisplayMsg("We scored 1 point because of our success in capturing the enemy's flag.");
+    //    } else {
+    //        DisplayMsg("The enemy successfully took our team's flag and obtained 1 point.", Color.red);
+    //    }
+	//
+    //    //The flag respawns after 10 seconds.
+    //}
 
-    public void PlayerReturnFlag(PhotonPlayer player) {
-        if (player.GetTeam() == thisPlayer_team) {
-            DisplayMsg(player.NickName + " retrived our flag.");
-        }
-    }
+    //public void OnNeutralizingAerogate(PunTeams.Team team) {
+    //    if (team != thisPlayer_team) {
+    //        DisplayMsg("We are attempting to neutralizing the enemy's Aerogate.", Color.red);
+    //    } else {
+	//
+    //    }
+    //}
 
-    public void PlayerDroppedFlag(PhotonPlayer player) {
-        if (player.GetTeam() == thisPlayer_team) {
-            DisplayMsg(player.NickName + " lost the enemy's flag.", Color.red);
-        }
-    }
-
-    public void PlayerGetScore(PhotonPlayer player) {
-        if(player.GetTeam() == thisPlayer_team) {
-            DisplayMsg(player.NickName + " succeeded in capturing the enemy's flag.");
-
-            DisplayMsg("We scored 1 point because of our success in capturing the enemy's flag.");
-        } else {
-            DisplayMsg("The enemy successfully took our team's flag and obtained 1 point.", Color.red);
-        }
-
-        //The flag respawns after 10 seconds.
-    }
-
-    public void OnNeutralizingAerogate(PunTeams.Team team) {
-        if (team != thisPlayer_team) {
-            DisplayMsg("We are attempting to neutralizing the enemy's Aerogate.", Color.red);
-        } else {
-
-        }
-    }
-
-    public void OnNeutralizedAerogate(PunTeams.Team pre_team) {
-        if (pre_team == thisPlayer_team) {
-            DisplayMsg("Our Aerogate has been neutralized.", Color.red);
-        } else {
-            DisplayMsg("We have occupied the enemy's Aerogate");
-        }
-    }
+    //public void OnNeutralizedAerogate(PunTeams.Team pre_team) {
+    //    if (pre_team == thisPlayer_team) {
+    //        DisplayMsg("Our Aerogate has been neutralized.", Color.red);
+    //    } else {
+    //        DisplayMsg("We have occupied the enemy's Aerogate");
+    //    }
+    //}
 
     public void OnDefendAerogate() {
         DisplayMsg("We have successfully defended the Aerogate!");

@@ -32,7 +32,7 @@ namespace Weapons
             LayerMask _shieldLayerMask = LayerMask.NameToLayer("Shield");
             c.gameObject.layer = _shieldLayerMask.value;
             _shieldDamageable = c.gameObject.AddComponent<ShieldDamageable>();
-            _shieldDamageable.Init(this, Cbt, PlayerPv, WeapPos, Hand);
+            //_shieldDamageable.Init(this, Cbt, PlayerPv, WeapPos, Hand);
 
             ((IDamageableManager) Cbt).RegisterDamageableComponent(_shieldDamageable);
         }
@@ -97,11 +97,11 @@ namespace Weapons
         protected virtual void AttackStartAction(){
             IsFiring = true;
 
-            if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, Vector3.zero, 0, null, null, new []{0});
+            //if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, Vector3.zero, 0, null, null, new []{0});
         }
 
         public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields){
-            if(Cbt.GetOwner().IsLocal)return;
+            //if(Cbt.GetOwner().IsLocal)return;
 
             if(additionalFields == null || additionalFields.Length < 1)return;
             IsFiring = additionalFields[0] == 0;
@@ -110,21 +110,21 @@ namespace Weapons
         protected virtual void AttackEndAction() {
             IsFiring = false;
 
-            if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, Vector3.zero, 0, null, null, new[] {1});
+            //if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, Vector3.zero, 0, null, null, new[] {1});
         }
 
         protected override void LoadSoundClips(){
             _onHitSound = ((ShieldData) data).OnHitSound;
         }
 
-        public virtual void OnHit(int damage, PhotonView attacker, Weapon weapon){
-            if (weapon == null){
-                Debug.LogError("attacker passed a null weapon with pv id : " + attacker.viewID);
-                return;
-            }
-
-            Cbt.OnHit(ProcessDamage(damage, weapon.GetWeaponAttackType()), attacker);
-        }
+        //public virtual void OnHit(int damage, PhotonView attacker, Weapon weapon){
+        //    if (weapon == null){
+        //        Debug.LogError("attacker passed a null weapon with pv id : " + attacker.viewID);
+        //        return;
+        //    }
+		//
+        //    Cbt.OnHit(ProcessDamage(damage, weapon.GetWeaponAttackType()), attacker);
+        //}
 
         public void PlayOnHitEffect(){
             WeaponAudioSource.PlayOneShot(_onHitSound);
@@ -163,9 +163,9 @@ namespace Weapons
             return newDmg;
         }
 
-        public PhotonPlayer GetOwner(){
-            return Cbt.GetOwner();
-        }
+        //public PhotonPlayer GetOwner(){
+        //    return Cbt.GetOwner();
+        //}
 
         public override void OnDestroy(){
             ((IDamageableManager)Cbt).DeregisterDamageableComponent(_shieldDamageable);

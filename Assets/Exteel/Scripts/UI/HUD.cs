@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class HUD : MonoBehaviour {
     private Combat Combat;
-    private PhotonView pv;
+    //private PhotonView pv;
     private Slider HPBar, ENBar;
     private Image ENBar_fill;
     private bool ENNotEnoughEffectIsPlaying = false;
@@ -13,12 +13,12 @@ public class HUD : MonoBehaviour {
 
     private void Start() {
         Combat = GetComponent<Combat>();
-        pv = Combat.PhotonView;
+        //pv = Combat.PhotonView;
 
-        if (!pv.isMine) {
-            enabled = false;
-            return;
-        }
+        //if (!pv.isMine) {
+        //    enabled = false;
+        //    return;
+        //}
         InitComponents();
     }
 

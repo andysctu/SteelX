@@ -99,14 +99,14 @@ public class DroneCombat : Combat {
         CurrentHP = MAX_HP;
     }
 
-    [PunRPC]
-    protected override void DisablePlayer(PhotonPlayer shooter, string weapon) {
-        DisableDrone();
-    }
-
-    public override PhotonPlayer GetOwner(){
-        return PhotonNetwork.masterClient;
-    }
+    //[PunRPC]
+    //protected override void DisablePlayer(PhotonPlayer shooter, string weapon) {
+    //    DisableDrone();
+    //}
+	//
+    //public override PhotonPlayer GetOwner(){
+    //    return PhotonNetwork.masterClient;
+    //}
 
     protected override void Update() {
         base.Update();
@@ -186,7 +186,7 @@ public class DroneCombat : Combat {
         EnableDrone();
     }
 
-    public override bool IsEnemy(PhotonPlayer compareTo) {//todo : implement drone team
-        return true;
-    }
+    //public override bool IsEnemy(PhotonPlayer compareTo) {//todo : implement drone team
+    //    return true;
+    //}
 }

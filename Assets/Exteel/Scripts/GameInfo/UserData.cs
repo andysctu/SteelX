@@ -8,14 +8,14 @@ public class UserData : MonoBehaviour {
 
     //Assigned when login
     public static string version = "0.0";
-    public static CloudRegionCode region = CloudRegionCode.us;
+    //public static CloudRegionCode region = CloudRegionCode.us;
 
     public static float cameraRotationSpeed = 5;//mouse sensitivity in game    
     public static float generalVolume = 1f;
 
     private void Awake() {
-        PhotonNetwork.sendRate = 60;
-        PhotonNetwork.sendRateOnSerialize = 30;
+        //PhotonNetwork.sendRate = 60;
+        //PhotonNetwork.sendRateOnSerialize = 30;
 
         if (FindObjectsOfType<UserData>().Length > 1)//already exist
             Destroy(transform.gameObject);

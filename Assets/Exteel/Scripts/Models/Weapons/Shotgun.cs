@@ -36,7 +36,7 @@ public class Shotgun : RangedWeapon {
         _bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
         _bullet.transform.position = EffectEnd.position;
 
-        _bullet.InitBullet(MechCam, PlayerPv, direction, target);
+        //_bullet.InitBullet(MechCam, PlayerPv, direction, target);
         _bullet.Play();
     }
 

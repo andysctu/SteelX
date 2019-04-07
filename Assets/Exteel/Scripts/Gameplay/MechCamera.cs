@@ -20,13 +20,13 @@ public class MechCamera : MonoBehaviour {
     public bool lockPlayerRot = false, lockCamRotation = false;
     public float orbitRadius = 19, lerpFakePosSpeed = 12, angleOffset = 33;
 
-    public void Init(PhotonPlayer owner){
-        EnableCamera(owner.IsLocal);
-
-        if (owner.IsLocal){
-            RegisterOnSkill();
-        }
-    }
+    //public void Init(PhotonPlayer owner){
+    //    EnableCamera(owner.IsLocal);
+	//
+    //    if (owner.IsLocal){
+    //        RegisterOnSkill();
+    //    }
+    //}
 
     private void EnableCamera(bool b) {
         enabled = b;
@@ -40,7 +40,7 @@ public class MechCamera : MonoBehaviour {
     }
 
     private void Start() {
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
         m_OriginalRotation = transform.localRotation;
         orbitAngle = Vector3.SignedAngle(transform.parent.forward + transform.parent.up, transform.position - transform.parent.position - Vector3.up * 5, -transform.parent.right);
         player = transform.root;

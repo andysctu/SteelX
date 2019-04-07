@@ -17,7 +17,7 @@ public class CrosshairController : MonoBehaviour {
     private IDamageable _targetL, _targetR;
     private readonly List<IDamageable> _targets = new List<IDamageable>();
     //send by client todo : check this
-    private PhotonView _lastLockedTargetPv;
+    //private PhotonView _lastLockedTargetPv;
     private Coroutine _lockingTargetCoroutine;
     private float _timeOfLastSend;
     private bool _isOnLocked, _lockedL, _lockedR;
@@ -53,17 +53,17 @@ public class CrosshairController : MonoBehaviour {
     }
 
     private void Init(){
-        enabled = bm.GetOwner().IsLocal;
-        if (!bm.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) {return; }
-
-        RegisterOnWeaponSwitched();
-        RegisterOnMechEnabled();
-        RegisterOnSkill();
-
-        if(bm.GetOwner().IsLocal){
-            FindPanelCanvas();
-            crosshairParent.SetParent(_panelCanvas);
-        }
+        //enabled = bm.GetOwner().IsLocal;
+        //if (!bm.GetOwner().IsLocal && !PhotonNetwork.isMasterClient) {return; }
+		//
+        //RegisterOnWeaponSwitched();
+        //RegisterOnMechEnabled();
+        //RegisterOnSkill();
+		//
+        //if(bm.GetOwner().IsLocal){
+        //    FindPanelCanvas();
+        //    crosshairParent.SetParent(_panelCanvas);
+        //}
     }
 
     private void RegisterOnWeaponBuilt() {
@@ -123,7 +123,7 @@ public class CrosshairController : MonoBehaviour {
             bool b = (i == _weaponOffset || i == _weaponOffset + 1);
             if (_crosshairs[i] != null) {
                 _crosshairs[i].SetRadius(bm.WeaponDatas[i].Radius * (1 + marksmanship / 100.0f));
-                if(bm.GetOwner().IsLocal)_crosshairs[i].EnableCrosshair(b);
+                //if(bm.GetOwner().IsLocal)_crosshairs[i].EnableCrosshair(b);
 
                 if (b) {
                     if (i % 2 == 0) {
@@ -169,15 +169,15 @@ public class CrosshairController : MonoBehaviour {
                     continue;
                 }
 
-                if (target.GetOwner() == null){
-                    Debug.Log("owner is null");//probably game not init
-                    continue;
-                }
+                //if (target.GetOwner() == null){
+                //    Debug.Log("owner is null");//probably game not init
+                //    continue;
+                //}
 
                 //it's me
-                if(target.GetOwner().IsLocal && target.GetPhotonView().tag != "Drone")continue;
+                //if(target.GetOwner().IsLocal && target.GetPhotonView().tag != "Drone")continue;
 
-                if((isTargetAlly && target.IsEnemy(bm.GetOwner())) || (!isTargetAlly && !target.IsEnemy(bm.GetOwner())))continue;
+                //if((isTargetAlly && target.IsEnemy(bm.GetOwner())) || (!isTargetAlly && !target.IsEnemy(bm.GetOwner())))continue;
 
                 //check distance
                 if (Vector3.Distance(hits[i].collider.transform.position, transform.root.position) > maxRange || Vector3.Distance(hits[i].collider.transform.position, transform.root.position) < minRange) continue;
@@ -193,7 +193,7 @@ public class CrosshairController : MonoBehaviour {
                         if (hit.collider.gameObject.layer == _terrainLayerMask) continue;
                     }
 
-                    if (!isTargetAlly) SendLockedMessage(target.GetPhotonView());
+                    //if (!isTargetAlly) SendLockedMessage(target.GetPhotonView());
 
                     return target;
                 }
@@ -215,9 +215,9 @@ public class CrosshairController : MonoBehaviour {
                 }
 
                 //it's me
-                if (target.GetOwner().IsLocal) continue;
+                //if (target.GetOwner().IsLocal) continue;
 
-                if ((isTargetAlly && target.IsEnemy(bm.GetOwner())) || (!isTargetAlly && !target.IsEnemy(bm.GetOwner()))) continue;
+                //if ((isTargetAlly && target.IsEnemy(bm.GetOwner())) || (!isTargetAlly && !target.IsEnemy(bm.GetOwner()))) continue;
 
                 //check distance
                 if (Vector3.Distance(hits[i].collider.transform.position, transform.root.position) > maxRange || Vector3.Distance(hits[i].collider.transform.position, transform.root.position) < minRange) continue;
@@ -233,7 +233,7 @@ public class CrosshairController : MonoBehaviour {
                         if (hit.collider.gameObject.layer == _terrainLayerMask) continue;
                     }
 
-                    if (!isTargetAlly) SendLockedMessage(target.GetPhotonView());
+                    //if (!isTargetAlly) SendLockedMessage(target.GetPhotonView());
 
                     _targets.Add(target);
                 }
@@ -292,9 +292,9 @@ public class CrosshairController : MonoBehaviour {
                     continue;
                 }
 
-                if (t.IsEnemy(bm.GetOwner())){
-                    return t;
-                }
+                //if (t.IsEnemy(bm.GetOwner())){
+                //    return t;
+                //}
             }
         }
         return _targetL;
@@ -310,9 +310,9 @@ public class CrosshairController : MonoBehaviour {
                     continue;
                 }
 
-                if (t.IsEnemy(bm.GetOwner())) {
-                    return t;
-                }
+                //if (t.IsEnemy(bm.GetOwner())) {
+                //    return t;
+                //}
             }
         }
         return _targetR;
@@ -322,20 +322,20 @@ public class CrosshairController : MonoBehaviour {
         _crosshairs[weapPos].MarkTarget(target);
     }
 
-    private void SendLockedMessage(PhotonView targetPv) {
-        if (targetPv == null || targetPv.tag == "Drone") return;
-
-        if (targetPv == _lastLockedTargetPv) {
-            if (Time.time - _timeOfLastSend >= SendLockMsgDeltaTime) {
-                targetPv.RPC("OnLocked", PhotonTargets.All);
-                _timeOfLastSend = Time.time;
-            }
-        } else {
-            targetPv.RPC("OnLocked", PhotonTargets.All);
-            _timeOfLastSend = Time.time;
-            _lastLockedTargetPv = targetPv;
-        }
-    }
+    //private void SendLockedMessage(PhotonView targetPv) {
+    //    if (targetPv == null || targetPv.tag == "Drone") return;
+	//
+    //    if (targetPv == _lastLockedTargetPv) {
+    //        if (Time.time - _timeOfLastSend >= SendLockMsgDeltaTime) {
+    //            targetPv.RPC("OnLocked", PhotonTargets.All);
+    //            _timeOfLastSend = Time.time;
+    //        }
+    //    } else {
+    //        targetPv.RPC("OnLocked", PhotonTargets.All);
+    //        _timeOfLastSend = Time.time;
+    //        _lastLockedTargetPv = targetPv;
+    //    }
+    //}
 
     public void OnShootAction(int WeapPos) {//crosshair effect
         if (_crosshairs[WeapPos] != null) {
@@ -380,7 +380,7 @@ public class CrosshairController : MonoBehaviour {
     }
 
     public void EnableCrosshair(bool b) {
-        if (!bm.GetOwner().IsLocal) return;
+        //if (!bm.GetOwner().IsLocal) return;
 
         enabled = b;
 

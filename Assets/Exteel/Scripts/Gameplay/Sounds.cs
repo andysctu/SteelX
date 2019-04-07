@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 public class Sounds : MonoBehaviour {
-    [SerializeField] private PhotonView pv;
+    //[SerializeField] private PhotonView pv;
     [SerializeField] private AudioClip Lock, OnLocked;
     [SerializeField] private AudioClip SwitchWeapon;
     [SerializeField] AudioClip WalkSound;

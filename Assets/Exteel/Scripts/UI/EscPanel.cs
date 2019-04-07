@@ -22,7 +22,7 @@ public class EscPanel : MonoBehaviour {
     }
 
     private void FindGameManager() {
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
     }
 
     private void InitButtons() {

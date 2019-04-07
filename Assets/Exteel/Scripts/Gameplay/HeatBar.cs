@@ -6,7 +6,7 @@ public class HeatBar : MonoBehaviour {
     [SerializeField] private Image barL_fill, barR_fill;
     [SerializeField] private BuildMech bm;
     [SerializeField] private MechCombat mcbt;
-    [SerializeField] private PhotonView pv;//mech combat's pv
+    //[SerializeField] private PhotonView pv;//mech combat's pv
 
     private WeaponData[] weaponScripts;
     private float[] curValue = new float[4] ;
@@ -43,7 +43,7 @@ public class HeatBar : MonoBehaviour {
     }
 
     private void Start() {
-        gameObject.SetActive(pv.isMine);
+        //gameObject.SetActive(pv.isMine);
     }
 
     private void FixedUpdate() {
@@ -134,7 +134,7 @@ public class HeatBar : MonoBehaviour {
     }
 
     private void ActivateHeatBar(bool b) {
-        if(!pv.isMine)return;
+        //if(!pv.isMine)return;
 
         gameObject.SetActive(b);
     }

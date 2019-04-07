@@ -12,7 +12,7 @@ public class PlayerInZone : MonoBehaviour {
     private List<MechCombat> playersToRemove = new List<MechCombat>();
 
     public void SetPlayer(GameObject player) {
-        player_viewID = player.GetComponent<PhotonView>().viewID;
+        //player_viewID = player.GetComponent<PhotonView>().viewID;
     }
 
     private void FixedUpdate() {
@@ -29,16 +29,16 @@ public class PlayerInZone : MonoBehaviour {
     private void OnTriggerEnter(Collider collider) {
         if (collider.tag == "Drone") return;
 
-        PhotonView pv = collider.transform.root.GetComponent<PhotonView>();//TODO : improve this
-        if (pv.viewID == player_viewID) {
-            isThePlayerInside = true;
-        }
-        playerCount++;
-        if (pv.owner.GetTeam() == PunTeams.Team.red) {
-            redTeamPlayerCount++;
-        } else {
-            blueTeamPlayerCount++;
-        }
+        //PhotonView pv = collider.transform.root.GetComponent<PhotonView>();//TODO : improve this
+        //if (pv.viewID == player_viewID) {
+        //    isThePlayerInside = true;
+        //}
+        //playerCount++;
+        //if (pv.owner.GetTeam() == PunTeams.Team.red) {
+        //    redTeamPlayerCount++;
+        //} else {
+        //    blueTeamPlayerCount++;
+        //}
 
         players.Add(collider.transform.root.GetComponent<MechCombat>());
     }
@@ -46,16 +46,16 @@ public class PlayerInZone : MonoBehaviour {
     private void OnTriggerExit(Collider collider) {
         if (collider.tag == "Drone") return;
 
-        PhotonView pv = collider.transform.root.GetComponent<PhotonView>();
-        if (pv.viewID == player_viewID) {
-            isThePlayerInside = false;
-        }
+        //PhotonView pv = collider.transform.root.GetComponent<PhotonView>();
+        //if (pv.viewID == player_viewID) {
+        //    isThePlayerInside = false;
+        //}
         playerCount--;
-        if (pv.owner.GetTeam() == PunTeams.Team.red) {
-            redTeamPlayerCount--;
-        } else {
-            blueTeamPlayerCount--;
-        }
+        //if (pv.owner.GetTeam() == PunTeams.Team.red) {
+        //    redTeamPlayerCount--;
+        //} else {
+        //    blueTeamPlayerCount--;
+        //}
 
         players.Remove(collider.transform.root.GetComponent<MechCombat>());
     }
@@ -70,11 +70,11 @@ public class PlayerInZone : MonoBehaviour {
 
             if (!player.isDead) {
                 tempPlayerCount++;
-                if (player.PhotonView.owner.GetTeam() == PunTeams.Team.red) {
-                    tempRTcount++;
-                } else {
-                    tempBTcount++;
-                }
+                //if (player.PhotonView.owner.GetTeam() == PunTeams.Team.red) {
+                //    tempRTcount++;
+                //} else {
+                //    tempBTcount++;
+                //}
             }
         }
 

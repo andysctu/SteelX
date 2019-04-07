@@ -8,7 +8,7 @@ public class InputManager : MonoBehaviour {
     private MechCamera _mechCamera;
 
     private int _senderID; //The actorID of player sending inputs
-    private PhotonPlayer _sender;
+    //private PhotonPlayer _sender;
 
     private const int MaxClientSendCmdSize = 15;
     private usercmd[] _cmdsToSend;//a series of commands (including history commands) every update
@@ -44,22 +44,22 @@ public class InputManager : MonoBehaviour {
     }
 
     private void Init() {
-        PhotonPlayer owner = _buildMech.GetOwner();
-        _senderID = owner.ID;
-        _sender = owner;
-        CurPosition = transform.position;
+        //PhotonPlayer owner = _buildMech.GetOwner();
+        //_senderID = owner.ID;
+        //_sender = owner;
+        //CurPosition = transform.position;
 
-        if (PhotonNetwork.isMasterClient || owner.IsLocal) {
-            RegisterInputEvent();
-            UserCmd.RegisterType();
-            ConfirmData.RegisterType();
-        }
+        //if (PhotonNetwork.isMasterClient || owner.IsLocal) {
+        //    RegisterInputEvent();
+        //    UserCmd.RegisterType();
+        //    ConfirmData.RegisterType();
+        //}
 
-        enabled = owner.IsLocal;
-        _init = true;
+        //enabled = owner.IsLocal;
+        //_init = true;
 
-        _gameManager = FindObjectOfType<GameManager>(); //TODO : make sure game manager exist
-        _gameManager.OnWorldUpdate += OnWorldUpdate;
+        //_gameManager = FindObjectOfType<GameManager>(); //TODO : make sure game manager exist
+        //_gameManager.OnWorldUpdate += OnWorldUpdate;
     }
 
     private void InitComponents() {
@@ -69,7 +69,7 @@ public class InputManager : MonoBehaviour {
     }
 
     private void RegisterInputEvent() {
-        PhotonNetwork.OnEventCall += this.OnPhotonEvent;
+        //PhotonNetwork.OnEventCall += this.OnPhotonEvent;
     }
 
     protected void OnPhotonEvent(byte eventCode, object content, int senderId) {
@@ -84,16 +84,14 @@ public class InputManager : MonoBehaviour {
     }
 
     private void OnWorldUpdate() {
-        if (_sender == null) return;
+        //if (_sender == null) return;
 
         //take a snapshot of current state and send
         _serverHistoryPositions[_gameManager.GetServerTick()] = CurPosition;
         //TODO : broadcast position
 
-        if (PhotonNetwork.isMasterClient && !_sender.IsLocal) {
-
-            
-        }
+        //if (PhotonNetwork.isMasterClient && !_sender.IsLocal) {        
+        //}
     }
 
     private void MasterReceiveInputs(usercmd[] usercmds, int senderID) {
@@ -121,7 +119,7 @@ public class InputManager : MonoBehaviour {
             _confirmData.ClientTick = _tick;
             _confirmData.position = CurPosition;
             ConfirmData.TransformMechDataToStruct(_mechCombat, _mechController, ref _confirmData);
-            PhotonNetwork.RaiseEvent(GameEventCode.PosConfirm, _confirmData, false, new RaiseEventOptions { TargetActors = new[] { _senderID } });
+            //PhotonNetwork.RaiseEvent(GameEventCode.PosConfirm, _confirmData, false, new RaiseEventOptions { TargetActors = new[] { _senderID } });
         }
 
         transform.position = Vector3.Lerp(_clientHistoryPositions[_tick - 1 > 0 ? 1023 : _tick-1], CurPosition, 0.2f);//for display todo : move to mech controller
@@ -142,32 +140,32 @@ public class InputManager : MonoBehaviour {
         UserCmd.CloneUsercmd(_curUserCmd, ref _historyUserCmds[_tick]);
 
         //Client send inputs to master
-        if (!PhotonNetwork.isMasterClient && Time.time - _preClientSendTime > ClientSendInputsInterval) {
-            _preClientSendTime = Time.time;
+        //if (!PhotonNetwork.isMasterClient && Time.time - _preClientSendTime > ClientSendInputsInterval) {
+        //    _preClientSendTime = Time.time;
+		//
+        //    for (int i = 0; i < MaxClientSendCmdSize; i++) {
+        //        int index = _tick - i < 0 ? 1024 - i + _tick : _tick - i;
+		//
+        //        if (_historyUserCmds[index].buttons == null) {
+        //            _historyUserCmds[index].buttons = new bool[UserCmd.ButtonsLength];
+        //            _historyUserCmds[index].Tick = index;
+        //            _historyUserCmds[index].timeStamp = PhotonNetwork.ServerTimestamp;
+        //        }
+		//
+        //        _cmdsToSend[i] = _historyUserCmds[index];
+        //    }
+		//
+        //    PhotonNetwork.RaiseEvent(GameEventCode.Input, _cmdsToSend, false, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient });
+        //}
 
-            for (int i = 0; i < MaxClientSendCmdSize; i++) {
-                int index = _tick - i < 0 ? 1024 - i + _tick : _tick - i;
-
-                if (_historyUserCmds[index].buttons == null) {
-                    _historyUserCmds[index].buttons = new bool[UserCmd.ButtonsLength];
-                    _historyUserCmds[index].Tick = index;
-                    _historyUserCmds[index].timeStamp = PhotonNetwork.ServerTimestamp;
-                }
-
-                _cmdsToSend[i] = _historyUserCmds[index];
-            }
-
-            PhotonNetwork.RaiseEvent(GameEventCode.Input, _cmdsToSend, false, new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient });
-        }
-
-        if (_sender.IsLocal) {
-            ProcessInputs(_curUserCmd);
-            _mechCombat.ProcessInputs(_curUserCmd);
-
-             _tick = (_tick + 1) % 1024;
-            _clientHistoryPositions[_tick] = CurPosition;
-            transform.position = Vector3.Lerp(transform.position, CurPosition, Time.deltaTime * LerpPosSpeed);//todo : move to mech controller
-        }
+        //if (_sender.IsLocal) {
+        //    ProcessInputs(_curUserCmd);
+        //    _mechCombat.ProcessInputs(_curUserCmd);
+		//
+        //     _tick = (_tick + 1) % 1024;
+        //    _clientHistoryPositions[_tick] = CurPosition;
+        //    transform.position = Vector3.Lerp(transform.position, CurPosition, Time.deltaTime * LerpPosSpeed);//todo : move to mech controller
+        //}
 
         _serverHistoryPositions[(_gameManager.GetServerTick() + 1) % 1024] = CurPosition;
     }
@@ -178,7 +176,7 @@ public class InputManager : MonoBehaviour {
         _curUserCmd.rot = _mechCamera.transform.eulerAngles;
         _curUserCmd.viewAngle = transform.rotation.eulerAngles.y;
         _curUserCmd.msec = Time.deltaTime;
-        _curUserCmd.timeStamp = (float)PhotonNetwork.time;
+        //_curUserCmd.timeStamp = (float)PhotonNetwork.time;
 
         _curUserCmd.buttons[(int)UserButton.Space] = Input.GetKey(KeyCode.Space);
         _curUserCmd.buttons[(int)UserButton.LeftShift] = Input.GetKey(KeyCode.LeftShift);
@@ -252,7 +250,7 @@ public class InputManager : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        PhotonNetwork.OnEventCall -= OnPhotonEvent;
+        //PhotonNetwork.OnEventCall -= OnPhotonEvent;
         if (_gameManager != null) _gameManager.OnWorldUpdate -= OnWorldUpdate;
     }
 }

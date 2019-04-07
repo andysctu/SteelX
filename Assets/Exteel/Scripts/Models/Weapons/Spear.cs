@@ -57,18 +57,18 @@ namespace Weapons
         }
 
         public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) {
-            if (Mctrl.GetOwner().IsLocal) return;
+            //if (Mctrl.GetOwner().IsLocal) return;
 
-            PhotonView[] targetPvs = new PhotonView[targetPvIDs.Length];
+            //PhotonView[] targetPvs = new PhotonView[targetPvIDs.Length];
             IDamageable[] targets = new IDamageable[targetPvIDs.Length];
 
-            for (int i = 0; i < targetPvs.Length; i++) {
-                IDamageableManager iDamageableManager;
-                if ((iDamageableManager = targetPvs[i].GetComponent(typeof(IDamageableManager)) as IDamageableManager) != null) {
-                    IDamageable c = iDamageableManager.FindDamageableComponent(specIDs[i]);
-                    targets[i] = c;
-                }
-            }
+            //for (int i = 0; i < targetPvs.Length; i++) {
+            //    IDamageableManager iDamageableManager;
+            //    if ((iDamageableManager = targetPvs[i].GetComponent(typeof(IDamageableManager)) as IDamageableManager) != null) {
+            //        IDamageable c = iDamageableManager.FindDamageableComponent(specIDs[i]);
+            //        targets[i] = c;
+            //    }
+            //}
 
             PlaySmashEffect(damage, targets);
         }
@@ -83,18 +83,18 @@ namespace Weapons
 
             InstantMove(targets.Length == 0 ? null : targets[0].GetTransform());
 
-            if (PhotonNetwork.isMasterClient){
-                //transform targets to ids
-                int[] targetPvIDs = new int[targets.Length];
-                int[] specIDs = new int[targets.Length];
-
-                for (int i = 0; i < targets.Length; i++) {
-                    targetPvIDs[i] = targets[i].GetPhotonView().viewID;
-                    specIDs[i] = targets[i].GetSpecID();
-                }
-
-                Cbt.Attack(WeapPos, Mctrl.GetForwardVector(), data.damage, targetPvIDs, specIDs);
-            }
+            //if (PhotonNetwork.isMasterClient){
+            //    //transform targets to ids
+            //    int[] targetPvIDs = new int[targets.Length];
+            //    int[] specIDs = new int[targets.Length];
+			//
+            //    for (int i = 0; i < targets.Length; i++) {
+            //        targetPvIDs[i] = targets[i].GetPhotonView().viewID;
+            //        specIDs[i] = targets[i].GetSpecID();
+            //    }
+			//
+            //    Cbt.Attack(WeapPos, Mctrl.GetForwardVector(), data.damage, targetPvIDs, specIDs);
+            //}
 
             Cbt.CanMeleeAttack = Mctrl.Grounded;
             Mctrl.ResetCurBoostingSpeed();
@@ -112,7 +112,7 @@ namespace Weapons
 
             //apply hits
             foreach (var target in targets) {
-                target.OnHit(data.damage, PlayerPv, this);
+                //target.OnHit(data.damage, PlayerPv, this);
                 OnHitTargetAction(target);
             }
         }
@@ -162,10 +162,10 @@ namespace Weapons
                     //check duplicated
                     bool duplicated = false;
                     foreach (var t in _targets) {
-                        if (t.GetPhotonView() == target.GetPhotonView()) {
-                            duplicated = true;
-                            break;
-                        }
+                        //if (t.GetPhotonView() == target.GetPhotonView()) {
+                        //    duplicated = true;
+                        //    break;
+                        //}
                     }
 
                     if (duplicated) continue;

@@ -5,18 +5,18 @@ public class DisplayPlayerInfo : DisplayInfo{
     private Text Text;
     private Image bar;
     private Combat Combat;
-    private PhotonView pv;
+    //private PhotonView pv;
     private string thisPlayerName;
 
     protected override void Awake() {
         InitComponents();
-        pv = Combat.PhotonView;
-        if (pv.isMine && tag != "Drone") {
-            return;
-        } else {
-            base.Awake();
-            RegisterOnMechEnabled();
-        }         
+        //pv = Combat.PhotonView;
+        //if (pv.isMine && tag != "Drone") {
+        //    return;
+        //} else {
+        //    base.Awake();
+        //    RegisterOnMechEnabled();
+        //}         
     }
 
     private void InitComponents() {
@@ -46,28 +46,28 @@ public class DisplayPlayerInfo : DisplayInfo{
 
     protected override void Start() {       
         //Do not show my name & hp bar
-        if(pv.isMine && tag != "Drone") {
-            gameObject.SetActive(false);
-            return;
-        } else {
-            gameObject.SetActive(true);
-        }
+        //if(pv.isMine && tag != "Drone") {
+        //    gameObject.SetActive(false);
+        //    return;
+        //} else {
+        //    gameObject.SetActive(true);
+        //}
         base.Start();
 
         //Init name
-        thisPlayerName = (tag == "Drone") ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
+        //thisPlayerName = (tag == "Drone") ? "Drone" + Random.Range(0, 999) : pv.owner.NickName;
         Text.text = thisPlayerName;
 
         //set the info name
         SetName(thisPlayerName + "_Infos");
 
-        if (tag != "Drone" && GameManager.IsTeamMode && PhotonNetwork.player.GetTeam() == pv.owner.GetTeam()) {
-            bar.color = Color.white;
-            Text.color = Color.white;
-        } else {
-            bar.color = Color.red; //enemy
-            Text.color = Color.red;
-        }        
+        //if (tag != "Drone" && GameManager.IsTeamMode && PhotonNetwork.player.GetTeam() == pv.owner.GetTeam()) {
+        //    bar.color = Color.white;
+        //    Text.color = Color.white;
+        //} else {
+        //    bar.color = Color.red; //enemy
+        //    Text.color = Color.red;
+        //}        
     }
 
     private void Update() {

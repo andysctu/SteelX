@@ -4,7 +4,7 @@ using Weapons;
 public class ShieldDamageable : MonoBehaviour, IDamageable {
     private Shield _shield;
     private Combat _cbt;
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
     private GameObject _boxCollider;
     private readonly Vector3 MECH_MID_POINT = new Vector3(0, 5, 0);
     private float rotOffset = 10;//make
@@ -12,15 +12,15 @@ public class ShieldDamageable : MonoBehaviour, IDamageable {
     private bool _isOpen;
     private int _specID;
 
-    public void Init(Shield shield, Combat cbt, PhotonView photonView, int specID, int hand){
-        _shield = shield;
-        _cbt = cbt;
-        _hand = hand;
-        _photonView = photonView;
-        _specID = specID;
-
-        InitComponents();
-    }
+    //public void Init(Shield shield, Combat cbt, PhotonView photonView, int specID, int hand){
+    //    _shield = shield;
+    //    _cbt = cbt;
+    //    _hand = hand;
+    //    _photonView = photonView;
+    //    _specID = specID;
+	//
+    //    InitComponents();
+    //}
 
     private void InitComponents() {
         _boxCollider = GetComponentInChildren<BoxCollider>().gameObject;
@@ -41,9 +41,9 @@ public class ShieldDamageable : MonoBehaviour, IDamageable {
         _isOpen = b;
     }
 
-    public void OnHit(int damage, PhotonView attacker, Weapon weapon){
-        _shield.OnHit(damage, attacker, weapon);
-    }
+    //public void OnHit(int damage, PhotonView attacker, Weapon weapon){
+    //    _shield.OnHit(damage, attacker, weapon);
+    //}
 
     public void PlayOnHitEffect(){
         _shield.PlayOnHitEffect();
@@ -57,21 +57,21 @@ public class ShieldDamageable : MonoBehaviour, IDamageable {
         return transform.position;
     }
 
-    public PhotonPlayer GetOwner(){
-        return _shield == null ? null : _shield.GetOwner();
-    }
+    //public PhotonPlayer GetOwner(){
+    //    return _shield == null ? null : _shield.GetOwner();
+    //}
 
-    public PhotonView GetPhotonView(){
-        return _photonView;
-    }
+    //public PhotonView GetPhotonView(){
+    //    return _photonView;
+    //}
 
-    public bool IsEnemy(PhotonPlayer compareTo){
-        if (GameManager.IsTeamMode) {
-            return compareTo.GetTeam() != GetOwner().GetTeam();
-        }
-
-        return true;
-    }
+    //public bool IsEnemy(PhotonPlayer compareTo){
+    //    if (GameManager.IsTeamMode) {
+    //        return compareTo.GetTeam() != GetOwner().GetTeam();
+    //    }
+	//
+    //    return true;
+    //}
 
     public int GetSpecID(){
         return _specID;

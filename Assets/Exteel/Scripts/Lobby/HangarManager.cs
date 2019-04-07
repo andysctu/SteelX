@@ -218,8 +218,8 @@ public class HangarManager : SceneManager {
 
             //TODO : for fun . remove this ;
             if (part.displayName == "GameMaster") {
-                if (PhotonNetwork.player.NickName != "chonz")
-                    return;
+                //if (PhotonNetwork.player.NickName != "chonz")
+                //    return;
             }
 
             string mechPartToReplace = "";
@@ -327,7 +327,7 @@ public class HangarManager : SceneManager {
         Mech m = UserData.myData.Mech[Num];
         bm.Mech_Num = Num;
         Debug.Log("weapon R : " + m.Weapon1R + " , " + m.Weapon1L);
-        bm.buildMech(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+        //bm.buildMech(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
         bm.DisplayWeapons(0);
         bm.UpdateAnimatorState();
 

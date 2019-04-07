@@ -27,17 +27,17 @@ public class TerritoryRadarElement : RadarElement {
 
     }
 
-    public void SwitchSprite(PunTeams.Team team) {
-        switch (team) {
-            case PunTeams.Team.blue:
-                SpriteRenderer.sprite = blueTerritory;
-            break;
-            case PunTeams.Team.red:
-                SpriteRenderer.sprite = redTerritory;
-            break;
-            case PunTeams.Team.none:
-                SpriteRenderer.sprite = greyTerritory;
-            break;
-        }
-    }
+    //public void SwitchSprite(PunTeams.Team team) {
+    //    switch (team) {
+    //        case PunTeams.Team.blue:
+    //            SpriteRenderer.sprite = blueTerritory;
+    //        break;
+    //        case PunTeams.Team.red:
+    //            SpriteRenderer.sprite = redTerritory;
+    //        break;
+    //        case PunTeams.Team.none:
+    //            SpriteRenderer.sprite = greyTerritory;
+    //        break;
+    //    }
+    //}
 }

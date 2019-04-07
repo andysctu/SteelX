@@ -12,7 +12,7 @@ namespace Weapons
             InitComponents();
             ResetMeleeVars();
 
-            EnableDetector(cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient);
+            //EnableDetector(cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient);
         }
 
         private void InitComponents(){

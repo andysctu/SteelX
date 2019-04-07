@@ -29,7 +29,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     private Transform target, Effect_End;
     private Transform[] targets;
     private List<Transform> booster_bulletStartTranforms;
-    private PhotonView player_pv;
+    //private PhotonView player_pv;
     private Camera cam;
     private MechCombat mechCombat;
     private BuildMech bm;
@@ -44,7 +44,7 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     private void InitComponent() {
         bm = transform.root.GetComponent<BuildMech>();
         cam = (usingSkillCam) ? transform.root.GetComponent<SkillController>().GetSkillCamera() : transform.root.GetComponent<SkillController>().GetCamera();
-        player_pv = transform.root.GetComponent<PhotonView>();
+        //player_pv = transform.root.GetComponent<PhotonView>();
         mechCombat = transform.root.GetComponent<MechCombat>();
         Transform CurrentMech = transform.root.Find("CurrentMech");
         Sounds = CurrentMech.GetComponent<Sounds>();
@@ -193,8 +193,8 @@ public class Skill_Bullet_Controller : MonoBehaviour, RequireSkillInfo {
     }
 
     private void ShowHitMsg(Transform target, MultiBullets bulletTrace = null) {
-        if (!player_pv.isMine)
-            return;
+        //if (!player_pv.isMine)
+        //    return;
 
         if (!showHitOnBulletCollision) {
             if (displayKill) {

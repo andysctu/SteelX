@@ -6,14 +6,14 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
     private MechCombat mcbt;
     private SkillController SkillController;
     private Sounds Sounds;
-    private PhotonView player_pv;
+    //private PhotonView player_pv;
 
     private void Start() {
         InitComponent();
     }
 
     private void InitComponent() {
-        player_pv = GetComponent<PhotonView>();
+        //player_pv = GetComponent<PhotonView>();
         SkillController = GetComponent<SkillController>();
         mcbt = GetComponent<MechCombat>();
 
@@ -26,7 +26,7 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
 
         int[] target_pvIDs = DectectTargetInSphere(transform.position, config.radius);
 
-        player_pv.RPC("CastAOESkill", PhotonTargets.All, target_pvIDs, skill_num);
+        //player_pv.RPC("CastAOESkill", PhotonTargets.All, target_pvIDs, skill_num);
 
         return true;
     }
@@ -38,20 +38,20 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
         List<int> target_pvIDs = new List<int>();
 
         foreach (Collider hit in hits) {
-            PhotonView targetPV = hit.transform.root.GetComponent<PhotonView>();
+            //PhotonView targetPV = hit.transform.root.GetComponent<PhotonView>();
 
             if (hit.transform.root == transform.root)
                 continue;
 
             if (GameManager.IsTeamMode) {
-                if (player_pv.owner.GetTeam() != targetPV.owner.GetTeam()) {
-                    if (hit.tag != "Shield") { //shield is on player layer
-                        target_pvIDs.Add(targetPV.viewID);
-                    }
-                }
+                //if (player_pv.owner.GetTeam() != targetPV.owner.GetTeam()) {
+                //    if (hit.tag != "Shield") { //shield is on player layer
+                //        target_pvIDs.Add(targetPV.viewID);
+                //    }
+                //}
             } else {
                 if (hit.tag != "Shield") {
-                    target_pvIDs.Add(hit.transform.root.GetComponent<PhotonView>().viewID);
+                    //target_pvIDs.Add(hit.transform.root.GetComponent<PhotonView>().viewID);
                 }
             }
         }
@@ -59,23 +59,23 @@ public class AOESkillBehaviour : MonoBehaviour, ISkill {
         return target_pvIDs.ToArray();
     }
 
-    [PunRPC]
+    //[PunRPC]
     private void CastAOESkill(int[] target_pvIDs, int skill_num) {
         AOESkillConfig config = (AOESkillConfig)(SkillController.GetSkillConfig(skill_num));
 
         List<Transform> targets = new List<Transform>();
 
         foreach (int target_pvID in target_pvIDs) {
-            PhotonView target_pv = PhotonView.Find(target_pvID);
+            //PhotonView target_pv = PhotonView.Find(target_pvID);
 
-            if (target_pv == null) continue;
+            //if (target_pv == null) continue;
+			//
+            //if (target_pv.isMine) {
+            //    target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+            //}
 
-            if (target_pv.isMine) {
-                target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
-            }
-
-            Transform target = target_pv.transform;
-            targets.Add(target);
+            //Transform target = target_pv.transform;
+            //targets.Add(target);
         }
         SetEffectsTarget(targets.ToArray(), skill_num);
 

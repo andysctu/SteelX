@@ -155,7 +155,7 @@ namespace Weapons
             _onShoot = true;
             Mctrl.SetInstantMoving(- Mctrl.GetForwardVector(), 16, 0.4f);
             MechAnimator.SetBool(AnimatorHashVars.CnShootHash, true);
-            if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
+            //if(PhotonNetwork.isMasterClient)Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
 
             _bulletNum --;
         }
@@ -176,33 +176,33 @@ namespace Weapons
             _bullet = Object.Instantiate(BulletPrefab).GetComponent<Bullet>();
             _bullet.transform.position = EffectEnd.position;
 
-            _bullet.InitBullet(MechCam, PlayerPv, direction, target);
+            //_bullet.InitBullet(MechCam, PlayerPv, direction, target);
             _bullet.Play();
         }
 
-        public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
-            if (stream.isReading){
-                if(Cbt.GetOwner().IsLocal)return;
-
-                if (stream.PeekNext() is bool == false) {
-                    return;
-                }
-                _onPose = (bool)stream.ReceiveNext();
-
-                if (stream.PeekNext() is bool == false) {
-                    return;
-                }
-                _onReload = (bool)stream.ReceiveNext();
-
-                if (stream.PeekNext() is bool == false) {
-                    return;
-                }
-                _onShoot = (bool)stream.ReceiveNext();
-            } else{
-                stream.SendNext(_onPose);
-                stream.SendNext(_onReload);
-                stream.SendNext(_onShoot);
-            }
-        }
+        //public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
+        //    if (stream.isReading){
+        //        if(Cbt.GetOwner().IsLocal)return;
+		//
+        //        if (stream.PeekNext() is bool == false) {
+        //            return;
+        //        }
+        //        _onPose = (bool)stream.ReceiveNext();
+		//
+        //        if (stream.PeekNext() is bool == false) {
+        //            return;
+        //        }
+        //        _onReload = (bool)stream.ReceiveNext();
+		//
+        //        if (stream.PeekNext() is bool == false) {
+        //            return;
+        //        }
+        //        _onShoot = (bool)stream.ReceiveNext();
+        //    } else{
+        //        stream.SendNext(_onPose);
+        //        stream.SendNext(_onReload);
+        //        stream.SendNext(_onShoot);
+        //    }
+        //}
     }
 }

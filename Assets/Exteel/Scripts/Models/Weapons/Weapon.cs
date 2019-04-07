@@ -11,7 +11,7 @@ namespace Weapons
         protected Transform WeaponTransform;
         protected Combat Cbt;
         protected MechController Mctrl;
-        protected PhotonView PlayerPv;
+        //protected PhotonView PlayerPv;
         protected HeatBar HeatBar;
         protected Animator MechAnimator, WeaponAnimator;
         protected AudioSource WeaponAudioSource;
@@ -76,7 +76,7 @@ namespace Weapons
         }
 
         private void InitComponents(){
-            PlayerPv = Cbt.GetComponent<PhotonView>();
+            //PlayerPv = Cbt.GetComponent<PhotonView>();
             HeatBar = Cbt.GetComponentInChildren<HeatBar>(true);
             AddAudioSource(weapon);
         }
@@ -183,7 +183,7 @@ namespace Weapons
             return attackType;
         }
 
-        public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
-        }
+        //public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
+        //}
     }
 }

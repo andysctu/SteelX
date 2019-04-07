@@ -7,7 +7,7 @@ namespace Weapons.Bullets
     {
         [SerializeField] protected GameObject ImpactPrefab;
         protected Camera cam;
-        protected PhotonView shooterPv;
+        //protected PhotonView shooterPv;
 
         protected ParticleSystem bullet_ps;
         protected BulletImpact bulletImpact;
@@ -33,12 +33,12 @@ namespace Weapons.Bullets
             ShieldLayer = LayerMask.NameToLayer("Shield");
         }
 
-        public virtual void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, IDamageable target){
-            this.cam = cam;
-            this.shooterPv = shooter_pv;
-            this.startDirection = startDirection;
-            InitTargetInfos(target);
-        }
+        //public virtual void InitBullet(Camera cam, PhotonView shooter_pv, Vector3 startDirection, IDamageable target){
+        //    this.cam = cam;
+        //    this.shooterPv = shooter_pv;
+        //    this.startDirection = startDirection;
+        //    InitTargetInfos(target);
+        //}
 
         protected virtual void InitTargetInfos(IDamageable target){
             Isfollow = (target != null);
@@ -58,19 +58,19 @@ namespace Weapons.Bullets
         public abstract void StopBulletEffect();
 
         protected void ShowHitMsg(Transform target){//todo : remake this
-            if (shooterPv.isMine){
-                if (displayHitMsg == null || targetCbt == null) return;
-
-                if (targetCbt.CurrentHP <= 0)
-                    displayHitMsg.Display(DisplayHitMsg.HitMsg.KILL, cam);
-                else{
-                    if (IsTargetShield){
-                        displayHitMsg.Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
-                    } else{
-                        displayHitMsg.Display(DisplayHitMsg.HitMsg.HIT, cam);
-                    }
-                }
-            }
+            //if (shooterPv.isMine){
+            //    if (displayHitMsg == null || targetCbt == null) return;
+			//
+            //    if (targetCbt.CurrentHP <= 0)
+            //        displayHitMsg.Display(DisplayHitMsg.HitMsg.KILL, cam);
+            //    else{
+            //        if (IsTargetShield){
+            //            displayHitMsg.Display(DisplayHitMsg.HitMsg.DEFENSE, cam);
+            //        } else{
+            //            displayHitMsg.Display(DisplayHitMsg.HitMsg.HIT, cam);
+            //        }
+            //    }
+            //}
         }
 
         protected virtual void OnParticleCollision(GameObject other){

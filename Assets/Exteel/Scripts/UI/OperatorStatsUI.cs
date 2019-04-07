@@ -35,7 +35,7 @@ public class OperatorStatsUI : MonoBehaviour {
     }
 
     private void OnEnable() {
-        playerName.text = PhotonNetwork.player.NickName;
+        //playerName.text = PhotonNetwork.player.NickName;
     }
 
     public void DisplayMechProperties() {

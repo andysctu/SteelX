@@ -43,17 +43,17 @@ public class SlashDetector : MonoBehaviour {
     private void OnTriggerEnter(Collider target) {
         if((_triggeredObj = target.GetComponent(typeof(IDamageable)) as IDamageable) == null)return;
 
-        if (_triggeredObj.IsEnemy(_triggeredObj.GetOwner())) {
-            _targets.Add(_triggeredObj);
-        }
+        //if (_triggeredObj.IsEnemy(_triggeredObj.GetOwner())) {
+        //    _targets.Add(_triggeredObj);
+        //}
     }
 
     private void OnTriggerExit(Collider target) {
         if ((_triggeredObj = target.GetComponent(typeof(IDamageable)) as IDamageable) == null) return;
 
-        if (_triggeredObj.IsEnemy(_triggeredObj.GetOwner())) {
-            _targets.Remove(_triggeredObj);
-        }
+        //if (_triggeredObj.IsEnemy(_triggeredObj.GetOwner())) {
+        //    _targets.Remove(_triggeredObj);
+        //}
     }
 
     private void SetLocalRotation(Vector3 v) {

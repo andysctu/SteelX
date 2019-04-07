@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HealthPool : Photon.MonoBehaviour {
+public class HealthPool : MonoBehaviour {
     [SerializeField] private int healAmount = 250;
     [SerializeField] private float healDeltaTime = 2;
     [SerializeField] private GameObject barCanvas;
@@ -16,8 +16,8 @@ public class HealthPool : Photon.MonoBehaviour {
     }
 
     private void Start() {
-        GameManager gm = FindObjectOfType<GameManager>();
-        StartCoroutine(GetThePlayer(gm));
+        //GameManager gm = FindObjectOfType<GameManager>();
+        //StartCoroutine(GetThePlayer(gm));
 
         DisplayInfo.SetHeight(20);
         DisplayInfo.SetName("HealthPool Infos");
@@ -26,17 +26,17 @@ public class HealthPool : Photon.MonoBehaviour {
     private IEnumerator GetThePlayer(GameManager gm) {
         GameObject ThePlayer;
         int request_times = 0;
-        while((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
-            request_times ++;
-            yield return new WaitForSeconds(0.5f);
-        }
+        //while((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
+        //    request_times ++;
+        //    yield return new WaitForSeconds(0.5f);
+        //}
 
         if(request_times >= 15) {
             Debug.LogError("Can't get the player");
             yield break;
         }
 
-        InitPlayerRelatedComponents(ThePlayer);
+        //InitPlayerRelatedComponents(ThePlayer);
         yield break;
     }
 
@@ -56,10 +56,10 @@ public class HealthPool : Photon.MonoBehaviour {
                 if (!mechCombat.IsHpFull() && syncHealthPoolBar.isAvailable) {
                     if (mechCombat.MAX_HP - mechCombat.CurrentHP >= healAmount) {
                         LastCheckTime = Time.time;
-                        mechCombat.PhotonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -healAmount);
+                        //mechCombat.PhotonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -healAmount);
                     } else {
                         LastCheckTime = Time.time;
-                        mechCombat.PhotonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -(mechCombat.MAX_HP - mechCombat.CurrentHP));
+                        //mechCombat.PhotonView.RPC("OnHit", PhotonTargets.All, PhotonNetwork.player, -(mechCombat.MAX_HP - mechCombat.CurrentHP));
                     }
                 } else {
                     LastCheckTime = Time.time;

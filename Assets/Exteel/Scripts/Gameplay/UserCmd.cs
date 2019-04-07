@@ -1,5 +1,5 @@
 ﻿using System;
-using ExitGames.Client.Photon;
+//using ExitGames.Client.Photon;
 using UnityEngine;
 
 public struct usercmd {
@@ -19,60 +19,60 @@ public static class UserCmd {
     public const int ButtonsLength = 5;
 
     public static void RegisterType() {
-        PhotonPeer.RegisterType(typeof(usercmd), (byte)'I', SerializeUserCmd, DeserializeUserCmd);
+        //PhotonPeer.RegisterType(typeof(usercmd), (byte)'I', SerializeUserCmd, DeserializeUserCmd);
     }
 
     private static readonly byte[] memUserCmd = new byte[8 * 4 + 2 + 4];
-    private static short SerializeUserCmd(StreamBuffer outStream, object customobject) {
-        usercmd cmd = (usercmd)customobject;
+    //private static short SerializeUserCmd(StreamBuffer outStream, object customobject) {
+    //    usercmd cmd = (usercmd)customobject;
+	//
+    //    int index = 0;
+    //    lock (memUserCmd) {
+    //        byte[] bytes = memUserCmd;
+    //        Protocol.Serialize(cmd.msec, bytes, ref index);
+    //        Protocol.Serialize(cmd.horizontal, bytes, ref index);
+    //        Protocol.Serialize(cmd.vertical, bytes, ref index);
+    //        Protocol.Serialize(cmd.viewAngle, bytes, ref index);
+    //        Protocol.Serialize(cmd.timeStamp, bytes, ref index);
+    //        Protocol.Serialize(cmd.rot.x, bytes, ref index);
+    //        Protocol.Serialize(cmd.rot.y, bytes, ref index);
+    //        Protocol.Serialize(cmd.rot.z, bytes, ref index);
+	//
+    //        short button = ConvertBoolArrayToShort(cmd.buttons);
+    //        Protocol.Serialize(button, bytes, ref index);
+	//
+    //        Protocol.Serialize(cmd.Tick, bytes, ref index);
+	//
+    //        outStream.Write(bytes, 0, 8 * 4 + 2 + 4);
+    //    }
+	//
+    //    return 8 * 4 + 2 + 4;
+    //}
 
-        int index = 0;
-        lock (memUserCmd) {
-            byte[] bytes = memUserCmd;
-            Protocol.Serialize(cmd.msec, bytes, ref index);
-            Protocol.Serialize(cmd.horizontal, bytes, ref index);
-            Protocol.Serialize(cmd.vertical, bytes, ref index);
-            Protocol.Serialize(cmd.viewAngle, bytes, ref index);
-            Protocol.Serialize(cmd.timeStamp, bytes, ref index);
-            Protocol.Serialize(cmd.rot.x, bytes, ref index);
-            Protocol.Serialize(cmd.rot.y, bytes, ref index);
-            Protocol.Serialize(cmd.rot.z, bytes, ref index);
-
-            short button = ConvertBoolArrayToShort(cmd.buttons);
-            Protocol.Serialize(button, bytes, ref index);
-
-            Protocol.Serialize(cmd.Tick, bytes, ref index);
-
-            outStream.Write(bytes, 0, 8 * 4 + 2 + 4);
-        }
-
-        return 8 * 4 + 2 + 4;
-    }
-
-    private static object DeserializeUserCmd(StreamBuffer inStream, short length) {
-        usercmd cmd = new usercmd();
-
-        lock (memUserCmd) {
-            inStream.Read(memUserCmd, 0, 8 * 4 + 2 + 4);
-            int index = 0;
-            Protocol.Deserialize(out cmd.msec, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.horizontal, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.vertical, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.viewAngle, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.timeStamp, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.rot.x, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.rot.y, memUserCmd, ref index);
-            Protocol.Deserialize(out cmd.rot.z, memUserCmd, ref index);
-
-            short button;
-            Protocol.Deserialize(out button, memUserCmd, ref index);
-            cmd.buttons = ConvertShortToBoolArray(button);
-
-            Protocol.Deserialize(out cmd.Tick, memUserCmd, ref index);
-        }
-
-        return cmd;
-    }
+    //private static object DeserializeUserCmd(StreamBuffer inStream, short length) {
+    //    usercmd cmd = new usercmd();
+	//
+    //    lock (memUserCmd) {
+    //        inStream.Read(memUserCmd, 0, 8 * 4 + 2 + 4);
+    //        int index = 0;
+    //        Protocol.Deserialize(out cmd.msec, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.horizontal, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.vertical, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.viewAngle, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.timeStamp, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.rot.x, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.rot.y, memUserCmd, ref index);
+    //        Protocol.Deserialize(out cmd.rot.z, memUserCmd, ref index);
+	//
+    //        short button;
+    //        Protocol.Deserialize(out button, memUserCmd, ref index);
+    //        cmd.buttons = ConvertShortToBoolArray(button);
+	//
+    //        Protocol.Deserialize(out cmd.Tick, memUserCmd, ref index);
+    //    }
+	//
+    //    return cmd;
+    //}
 
     private static short ConvertBoolArrayToShort(bool[] source) {
         short result = 0;

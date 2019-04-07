@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Weapons;
 
-public class BuildMech : Photon.MonoBehaviour {
+public class BuildMech : MonoBehaviour {
     //Components
     [SerializeField] private Transform RootBone;
     private MechCombat MechCombat;
@@ -36,7 +36,7 @@ public class BuildMech : Photon.MonoBehaviour {
     public int Mech_Num = 0;
     public bool onPanel = false;
 
-    private PhotonPlayer _owner;
+    //private PhotonPlayer _owner;
 
     public delegate void BuildWeaponAction();
     public event BuildWeaponAction OnMechBuilt;
@@ -59,7 +59,7 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void FindGameManager() {
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
     }
 
     private void LoadMovementClips() {
@@ -96,7 +96,7 @@ public class BuildMech : Photon.MonoBehaviour {
         CheckIsDataGetSaved();
 
         // If this is not me, don't build this mech. Someone else will RPC build it
-        if (!buildLocally && !photonView.isMine && tag != "Drone") return;
+        //if (!buildLocally && !photonView.isMine && tag != "Drone") return;
 
         InitMechData();
         InitAnimatorControllers();
@@ -105,7 +105,7 @@ public class BuildMech : Photon.MonoBehaviour {
             if (!onPanel) OperatorStatsUI = FindObjectOfType<OperatorStatsUI>();
             buildMech(UserData.myData.Mech[0]);
         } else { // Register my name on all clients
-            photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player);
+            //photonView.RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player);
         }
     }
 
@@ -129,28 +129,28 @@ public class BuildMech : Photon.MonoBehaviour {
         animatorOverrideController.GetOverrides(clipOverrides);//write clips into clipOverrides
     }
 
-    [PunRPC]
-    private void SetName(PhotonPlayer player) {//TODO : consider not putting here
-        gameObject.name = player.NickName;
-        gm.RegisterPlayer(player);
-    }
+    //[PunRPC]
+    //private void SetName(PhotonPlayer player) {//TODO : consider not putting here
+    //    gameObject.name = player.NickName;
+    //    gm.RegisterPlayer(player);
+    //}
 
-    public void Build(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
-        photonView.RPC("buildMech", PhotonTargets.AllBuffered, owner, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
-    }
+    //public void Build(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skillIDs) {
+    //    photonView.RPC("buildMech", PhotonTargets.AllBuffered, owner, c, a, l, h, b, w1l, w1r, w2l, w2r, skillIDs);
+    //}
 
     private void buildMech(Mech m) {
-        buildMech(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
+        //buildMech(PhotonNetwork.player, m.Core, m.Arms, m.Legs, m.Head, m.Booster, m.Weapon1L, m.Weapon1R, m.Weapon2L, m.Weapon2R, m.skillIDs);
     }
 
-    [PunRPC]
-    public void buildMech(PhotonPlayer owner, string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {
-        _owner = owner;
-
-        if (_owner.IsLocal && !PhotonNetwork.isMasterClient){
-            photonView.ObservedComponents.Clear();
-            photonView.synchronization = ViewSynchronization.Off;
-        }
+    //[PunRPC]
+    public void buildMech(/*PhotonPlayer owner,*/ string c, string a, string l, string h, string b, string w1l, string w1r, string w2l, string w2r, int[] skill_IDs) {
+        //_owner = owner;
+		//
+        //if (_owner.IsLocal && !PhotonNetwork.isMasterClient){
+        //    photonView.ObservedComponents.Clear();
+        //    photonView.synchronization = ViewSynchronization.Off;
+        //}
 
         string[] parts = new string[9] { c, a, l, h, b, w1l, w1r, w2l, w2r };
 
@@ -503,10 +503,10 @@ public class BuildMech : Photon.MonoBehaviour {
     }
 
     private void CheckIsDataGetSaved() {
-        isDataGetSaved = (SceneManagerHelper.ActiveSceneName != StoreManager._sceneName);
+        //isDataGetSaved = (SceneManagerHelper.ActiveSceneName != StoreManager._sceneName);
     }
 
-    public PhotonPlayer GetOwner(){
-        return _owner;
-    }
+    //public PhotonPlayer GetOwner(){
+    //    return _owner;
+    //}
 }

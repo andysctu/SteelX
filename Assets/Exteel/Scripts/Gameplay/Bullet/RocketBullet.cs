@@ -9,8 +9,8 @@ namespace Weapons.Bullets
     {
         private Rocket _rocket;
         private Rigidbody _rigidBody;//todo : improve
-        private PhotonView _rocketPv;
-        private PhotonPlayer _shooter;
+        //private PhotonView _rocketPv;
+        //private PhotonPlayer _shooter;
         private LayerMask PlayerLayerMask, TerrainLayerMask, ShieldLayerMask;
 
         //bullet info
@@ -26,7 +26,7 @@ namespace Weapons.Bullets
         }
 
         private void InitComponents(){
-            _rocketPv = GetComponent<PhotonView>();
+            //_rocketPv = GetComponent<PhotonView>();
             AttachRigidbody();
         }
 
@@ -41,9 +41,9 @@ namespace Weapons.Bullets
             ShieldLayerMask = LayerMask.GetMask("Shield");
         }
 
-        public void SetShooter(PhotonPlayer shooter){
-            _shooter = shooter;
-        }
+        //public void SetShooter(PhotonPlayer shooter){
+        //    _shooter = shooter;
+        //}
 
         private void Start(){
             bullet_ps.Play();
@@ -58,7 +58,7 @@ namespace Weapons.Bullets
         }
 
         protected override void OnParticleCollision(GameObject target){
-            if (!PhotonNetwork.isMasterClient || isCollided) return;
+            //if (!PhotonNetwork.isMasterClient || isCollided) return;
 
             bullet_ps.GetCollisionEvents(target, collisionEvents);
             Vector3 impactPoint = collisionEvents[0].intersection;
@@ -67,12 +67,12 @@ namespace Weapons.Bullets
                 IDamageable d;
 
                 if ((d = target.GetComponent(typeof(IDamageable)) as IDamageable) != null){
-                    if (!d.IsEnemy(_shooter)){
-                        return;
-                    }else if(((1 << target.layer) & ShieldLayerMask) != 0){//target is shield => only collide with the shield
-                        _rocketPv.RPC("PlayImpact", PhotonTargets.All, bulletDmg, impactPoint, new[]{d.GetPhotonView().viewID}, new[] { d.GetSpecID() });
-                        return;
-                    }
+                    //if (!d.IsEnemy(_shooter)){
+                    //    return;
+                    //}else if(((1 << target.layer) & ShieldLayerMask) != 0){//target is shield => only collide with the shield
+                    //    _rocketPv.RPC("PlayImpact", PhotonTargets.All, bulletDmg, impactPoint, new[]{d.GetPhotonView().viewID}, new[] { d.GetSpecID() });
+                    //    return;
+                    //}
                 } else{
                     Debug.Log("rocket collides with no IDamageable component target");
                     return;
@@ -86,7 +86,7 @@ namespace Weapons.Bullets
 
             for (int i = 0; i < hitPlayerColliders.Length; i++){
                 IDamageable d = hitPlayerColliders[i].GetComponent(typeof(IDamageable)) as IDamageable;
-                if(d == null || !d.IsEnemy(_shooter))continue;
+                //if(d == null || !d.IsEnemy(_shooter))continue;
 
                 //check blocked by shield
                 Debug.DrawLine(impactPoint, impactPoint + d.GetPosition() - impactPoint, Color.red, 2);
@@ -94,27 +94,27 @@ namespace Weapons.Bullets
                 foreach (var r in rays){
                     IDamageable rD = r.collider.GetComponent(typeof(IDamageable)) as IDamageable;
                     if(rD != null){
-                        if (rD.GetPhotonView() == d.GetPhotonView()){
-                            d = rD;//set target to shield instead of the player
-                        }
+                        //if (rD.GetPhotonView() == d.GetPhotonView()){
+                        //    d = rD;//set target to shield instead of the player
+                        //}
                     }
                 }
 
                 //check duplicated
-                if (!playerDamageables.Exists(x => x.GetPhotonView() == d.GetPhotonView()))playerDamageables.Add(d);
+                //if (!playerDamageables.Exists(x => x.GetPhotonView() == d.GetPhotonView()))playerDamageables.Add(d);
             }
 
             int[] playerViewIDs = new int[playerDamageables.Count];
             int[] playerSpecIDs = new int[playerDamageables.Count];
             for (int i=0;i<playerDamageables.Count;i++){
-                playerViewIDs[i] = playerDamageables[i].GetPhotonView().viewID;
+                //playerViewIDs[i] = playerDamageables[i].GetPhotonView().viewID;
                 playerSpecIDs[i] = playerDamageables[i].GetSpecID();
             }
 
-            _rocketPv.RPC("PlayImpact", PhotonTargets.All, bulletDmg, impactPoint, playerViewIDs, playerSpecIDs);
+            //_rocketPv.RPC("PlayImpact", PhotonTargets.All, bulletDmg, impactPoint, playerViewIDs, playerSpecIDs);
         }
 
-        [PunRPC]
+        //[PunRPC]
         protected void PlayImpact(int damage, Vector3 impactPoint, int[] playerViewIDs, int[] playerSpecIDs){
             StopBulletEffect();
 
@@ -125,17 +125,17 @@ namespace Weapons.Bullets
 
             if(playerViewIDs == null || playerSpecIDs == null)return;
             for(int i=0;i<playerViewIDs.Length;i++){
-                PhotonView pv = PhotonView.Find(playerViewIDs[i]);
-                if(pv == null)continue;
+                //PhotonView pv = PhotonView.Find(playerViewIDs[i]);
+                //if(pv == null)continue;
 
-                IDamageableManager dm = pv.GetComponent(typeof(IDamageableManager)) as IDamageableManager;
+                //IDamageableManager dm = pv.GetComponent(typeof(IDamageableManager)) as IDamageableManager;
                 IDamageable d;
-                if (dm == null || (d = dm.FindDamageableComponent(playerSpecIDs[i]))== null){
-                    continue;
-                }
-
-                d.OnHit(damage, shooterPv, _rocket);
-                d.PlayOnHitEffect();
+                //if (dm == null || (d = dm.FindDamageableComponent(playerSpecIDs[i]))== null){
+                //    continue;
+                //}
+				//
+                //d.OnHit(damage, shooterPv, _rocket);
+                //d.PlayOnHitEffect();
             }
 
             //if (targetCbt.CurrentHP - targetCbt.ProcessDmg(bulletDmg, Weapon.AttackType.Rocket, targetWeapon) <= 0){
@@ -170,7 +170,7 @@ namespace Weapons.Bullets
         }
 
         public void SetPhotonViewID(int ID){
-            _rocketPv.viewID = ID;
+            //_rocketPv.viewID = ID;
         }
     }
 }

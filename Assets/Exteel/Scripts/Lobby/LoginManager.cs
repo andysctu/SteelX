@@ -65,10 +65,10 @@ public class LoginManager : SceneManager {
 
         // for debug
         UserData.myData.Mech = new Mech[4];
-        UserData.region = FindRegionCode(region);
+        //UserData.region = FindRegionCode(region);
         UserData.version = gameVersion;
         for (int i = 0; i < 4; i++)UserData.myData.Mech[i].PopulateParts();        
-        PhotonNetwork.playerName = (string.IsNullOrEmpty(fields[0].text)) ? "Guest" + Random.Range(0, 9999) : fields[0].text;        
+        //PhotonNetwork.playerName = (string.IsNullOrEmpty(fields[0].text)) ? "Guest" + Random.Range(0, 9999) : fields[0].text;        
 
         ConnectToServerSelected();
         StartCoroutine(LoadLobbyWhenConnected());
@@ -79,15 +79,15 @@ public class LoginManager : SceneManager {
         login_button.interactable = false;
         ConnectingText.gameObject.SetActive(true);
         //check if connected
-        while (!PhotonNetwork.connected && attempt_times < 20) {
-            attempt_times++;
-            string dots = "";
-            for (int j = 0; j <= attempt_times % 3; j++)//UI effect
-                dots += ".";
-            ConnectingText.color = Color.yellow;
-            ConnectingText.text = "Connecting" + dots;
-            yield return new WaitForSeconds(0.3f);
-        }
+        //while (!PhotonNetwork.connected && attempt_times < 20) {
+        //    attempt_times++;
+        //    string dots = "";
+        //    for (int j = 0; j <= attempt_times % 3; j++)//UI effect
+        //        dots += ".";
+        //    ConnectingText.color = Color.yellow;
+        //    ConnectingText.text = "Connecting" + dots;
+        //    yield return new WaitForSeconds(0.3f);
+        //}
 
         if (attempt_times >= 20) {
             ConnectingText.color = Color.red;
@@ -126,27 +126,27 @@ public class LoginManager : SceneManager {
     }
 
     private void ConnectToServerSelected() {
-        PhotonNetwork.ConnectToRegion(FindRegionCode(region), gameVersion);
+        //PhotonNetwork.ConnectToRegion(FindRegionCode(region), gameVersion);
     }
 
-    private CloudRegionCode FindRegionCode(string region) {
-        switch (region) {
-            case "US":
-            return CloudRegionCode.us;
-            case "EU":
-            return CloudRegionCode.eu;
-            case "KR":
-            return CloudRegionCode.kr;
-            case "SA":
-            return CloudRegionCode.sa;
-            case "JP":
-            return CloudRegionCode.jp;
-            case "Asia":
-            return CloudRegionCode.asia;
-            default:
-            return CloudRegionCode.jp;
-        }
-    }
+    //private CloudRegionCode FindRegionCode(string region) {
+    //    switch (region) {
+    //        case "US":
+    //        return CloudRegionCode.us;
+    //        case "EU":
+    //        return CloudRegionCode.eu;
+    //        case "KR":
+    //        return CloudRegionCode.kr;
+    //        case "SA":
+    //        return CloudRegionCode.sa;
+    //        case "JP":
+    //        return CloudRegionCode.jp;
+    //        case "Asia":
+    //        return CloudRegionCode.asia;
+    //        default:
+    //        return CloudRegionCode.jp;
+    //    }
+    //}
 
     private void ResetInputFields() {
         foreach (InputField i in fields)
@@ -165,7 +165,7 @@ public class LoginManager : SceneManager {
     }
 
     public void OnFailedToConnectToPhoton(object parameters) {
-        Debug.Log("OnFailedToConnectToPhoton. StatusCode: " + parameters + " ServerAddress: " + PhotonNetwork.ServerAddress);
+        //Debug.Log("OnFailedToConnectToPhoton. StatusCode: " + parameters + " ServerAddress: " + PhotonNetwork.ServerAddress);
     }
 
     private void OnConnectedToMaster() {

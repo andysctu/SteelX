@@ -9,7 +9,7 @@ public class GameMsgDisplayer : MonoBehaviour {
     private int ping;
 
     private void FixedUpdate() {
-        ping = PhotonNetwork.GetPing();
+        //ping = PhotonNetwork.GetPing();
         Ping.text = "Ping : " + ping;
 
         if (ping < 100) {

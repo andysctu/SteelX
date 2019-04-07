@@ -13,7 +13,7 @@ public class SkillController : MonoBehaviour {
     [SerializeField] private SkillConfig[] skills = new SkillConfig[4];
     [SerializeField] private Sounds Sounds;
     [SerializeField] private AudioClip sorry;
-    [SerializeField] private PhotonView photonView;
+    //[SerializeField] private PhotonView photonView;
 
     private AnimatorOverrideController animatorOverrideController = null, skillcamAnimator_OC = null;
     private AnimationClipOverrides clipOverrides, skillcam_clipOverrides;
@@ -110,8 +110,8 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitSkillHUD() {
-        if (!photonView.isMine || tag == "Drone")
-            return;
+        //if (!photonView.isMine || tag == "Drone")
+        //    return;
         //Transform PanelCanvas = GameObject.Find("PanelCanvas").transform;//TODO : remake this
         //SkillHUD = PanelCanvas.Find("SkillPanel").GetComponent<SkillHUD>();
 
@@ -123,12 +123,12 @@ public class SkillController : MonoBehaviour {
     }
 
     private void InitComponents() {
-        photonView = GetComponent<PhotonView>();
+        //photonView = GetComponent<PhotonView>();
     }
 
     private void InitHUD() {
-        if (!photonView.isMine)
-            return;
+        //if (!photonView.isMine)
+        //    return;
         InitSPBar();
     }
 
@@ -492,13 +492,13 @@ public class SkillController : MonoBehaviour {
     }
 
     private void SwitchToSkillCam(bool b) {
-        if (!photonView.isMine) return;
+        //if (!photonView.isMine) return;
         skillCam.gameObject.SetActive(b);
         mainCam.enabled = !b;
     }
 
     private void PlaySkillCamAnimation(int skill_num) {//-1 : target animation
-        if (!photonView.isMine) return;
+        //if (!photonView.isMine) return;
 
         //Rotate to correct angle
         skillCam.transform.localRotation = Quaternion.identity;

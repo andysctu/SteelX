@@ -6,7 +6,7 @@ public class LobbyManager : SceneManager {
     [SerializeField] private Text RoomName, playerCountText;
     [SerializeField] private Transform RoomsWrapper;
     [SerializeField] private AudioClip lobbyMusic;
-    [SerializeField] private ChatNewGui ChatNewGui;
+    //[SerializeField] private ChatNewGui ChatNewGui;
     private MusicManager MusicManager;
     private GameObject[] rooms;
     private string selectedRoom = "";
@@ -22,9 +22,9 @@ public class LobbyManager : SceneManager {
     public override void StartScene() {
         base.StartScene();
         CheckIfPlayerConnected();
-        PhotonNetwork.autoJoinLobby = true;
+        //PhotonNetwork.autoJoinLobby = true;
         OperatorStatsUI.gameObject.SetActive(true);
-        ChatNewGui.Init();
+        //ChatNewGui.Init();
 
         if (MusicManager == null)
             MusicManager = FindObjectOfType<MusicManager>();
@@ -32,22 +32,22 @@ public class LobbyManager : SceneManager {
     }
 
     private void CheckIfPlayerConnected() {
-        if (!PhotonNetwork.connected) {
-            // the following line checks if this client was just created (and not yet online). if so, we connect
-            if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated) {
-                PhotonNetwork.ConnectToRegion(UserData.region, UserData.version);
-            }
-
-            if (string.IsNullOrEmpty(PhotonNetwork.playerName)) {
-                PhotonNetwork.playerName = "Guest" + Random.Range(1, 9999);
-            }
-        }
+        //if (!PhotonNetwork.connected) {
+        //    // the following line checks if this client was just created (and not yet online). if so, we connect
+        //    if (PhotonNetwork.connectionStateDetailed == ClientState.PeerCreated) {
+        //        PhotonNetwork.ConnectToRegion(UserData.region, UserData.version);
+        //    }
+		//
+        //    if (string.IsNullOrEmpty(PhotonNetwork.playerName)) {
+        //        PhotonNetwork.playerName = "Guest" + Random.Range(1, 9999);
+        //    }
+        //}
     }
 
     private void FixedUpdate() {
         if (Time.time - lastCheckPlayerCountTime >= checkPlayerCountDeltaTime) {//update player count
             lastCheckPlayerCountTime = Time.time;
-            playerCountText.text = PhotonNetwork.countOfPlayers.ToString();
+            //playerCountText.text = PhotonNetwork.countOfPlayers.ToString();
         }
 
         if(Time.time - lastRefreshTime > autoRefreshInterval) {
@@ -58,19 +58,19 @@ public class LobbyManager : SceneManager {
 
     public void CreateRoom() {
         //Default settings
-        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-        h.Add("Map", "Simulation");
-        h.Add("GameMode", "DeathMatch");
-        h.Add("MaxKills", 1);//TODO : remove this
-        h.Add("MaxTime", 5);
-        h.Add("Status", (int)GameManager.RoomStatus.Waiting);
-        h.Add("time", "05:00");
+        //ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        //h.Add("Map", "Simulation");
+        //h.Add("GameMode", "DeathMatch");
+        //h.Add("MaxKills", 1);//TODO : remove this
+        //h.Add("MaxTime", 5);
+        //h.Add("Status", (int)GameManager.RoomStatus.Waiting);
+        //h.Add("time", "05:00");
 
-        RoomOptions ro = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
-        ro.CustomRoomProperties = h;
-        string[] str = { "Map", "GameMode", "Status", "time"};
-        ro.CustomRoomPropertiesForLobby = str;
-        PhotonNetwork.CreateRoom(RoomName.text, ro, TypedLobby.Default);
+        //RoomOptions ro = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
+        //ro.CustomRoomProperties = h;
+        //string[] str = { "Map", "GameMode", "Status", "time"};
+        //ro.CustomRoomPropertiesForLobby = str;
+        //PhotonNetwork.CreateRoom(RoomName.text, ro, TypedLobby.Default);
         HideCreateRoomModel();
     }
 
@@ -79,45 +79,45 @@ public class LobbyManager : SceneManager {
 
         if (rooms != null) for (int i = 0; i < rooms.Length; i++) Destroy(rooms[i]);
 
-        RoomInfo[] roomsInfo = PhotonNetwork.GetRoomList();
-        Debug.Log("roomsInfo.length :" + roomsInfo.Length);
-        rooms = new GameObject[roomsInfo.Length];
-        for (int i = 0; i < roomsInfo.Length; i++) {
-            GameObject roomPanel = Instantiate(RoomPanel);
-            Text[] info = roomPanel.GetComponentsInChildren<Text>();
-            Debug.Log("Room : " + roomsInfo[i].Name);
-            info[3].text = roomsInfo[i].PlayerCount + "/" + roomsInfo[i].MaxPlayers;
-
-            if(roomsInfo[i].CustomProperties["Status"] != null) {
-                int status = int.Parse(roomsInfo[i].CustomProperties["Status"].ToString());
-
-                info[2].text = (status == (int)GameManager.RoomStatus.Waiting) ? "Waiting" : "In Battle";
-
-                //Display time
-                if(status == (int)GameManager.RoomStatus.InBattle && roomsInfo[i].CustomProperties["time"] != null) {                    
-                    info[2].text += "(" + roomsInfo[i].CustomProperties["time"].ToString() + ")";
-                }
-
-            } else//Just in case different version
-                info[2].text = "";
-
-            info[1].text = roomsInfo[i].CustomProperties["GameMode"].ToString();
-            info[0].text = roomsInfo[i].Name;
-
-            roomPanel.transform.SetParent(RoomsWrapper);
-            RectTransform rt = roomPanel.GetComponent<RectTransform>();
-            rt.localPosition = new Vector3(0, 0, 0);
-            rt.localScale = new Vector3(1, 1, 1);
-            int index = i;
-
-            if (roomsInfo[i].IsOpen) {
-                roomPanel.GetComponent<Button>().onClick.AddListener(() => { selectedRoom = roomsInfo[index].Name; });
-            } else {
-                roomPanel.GetComponent<Button>().interactable = false;
-            }
-
-            rooms[i] = roomPanel;
-        }
+        //RoomInfo[] roomsInfo = PhotonNetwork.GetRoomList();
+        //Debug.Log("roomsInfo.length :" + roomsInfo.Length);
+        //rooms = new GameObject[roomsInfo.Length];
+        //for (int i = 0; i < roomsInfo.Length; i++) {
+        //    GameObject roomPanel = Instantiate(RoomPanel);
+        //    Text[] info = roomPanel.GetComponentsInChildren<Text>();
+        //    Debug.Log("Room : " + roomsInfo[i].Name);
+        //    info[3].text = roomsInfo[i].PlayerCount + "/" + roomsInfo[i].MaxPlayers;
+		//
+        //    if(roomsInfo[i].CustomProperties["Status"] != null) {
+        //        int status = int.Parse(roomsInfo[i].CustomProperties["Status"].ToString());
+		//
+        //        info[2].text = (status == (int)GameManager.RoomStatus.Waiting) ? "Waiting" : "In Battle";
+		//
+        //        //Display time
+        //        if(status == (int)GameManager.RoomStatus.InBattle && roomsInfo[i].CustomProperties["time"] != null) {                    
+        //            info[2].text += "(" + roomsInfo[i].CustomProperties["time"].ToString() + ")";
+        //        }
+		//
+        //    } else//Just in case different version
+        //        info[2].text = "";
+		//
+        //    info[1].text = roomsInfo[i].CustomProperties["GameMode"].ToString();
+        //    info[0].text = roomsInfo[i].Name;
+		//
+        //    roomPanel.transform.SetParent(RoomsWrapper);
+        //    RectTransform rt = roomPanel.GetComponent<RectTransform>();
+        //    rt.localPosition = new Vector3(0, 0, 0);
+        //    rt.localScale = new Vector3(1, 1, 1);
+        //    int index = i;
+		//
+        //    if (roomsInfo[i].IsOpen) {
+        //        roomPanel.GetComponent<Button>().onClick.AddListener(() => { selectedRoom = roomsInfo[index].Name; });
+        //    } else {
+        //        roomPanel.GetComponent<Button>().interactable = false;
+        //    }
+		//
+        //    rooms[i] = roomPanel;
+        //}
     }
 
     public void ShowCreateRoomModal() {
@@ -133,7 +133,7 @@ public class LobbyManager : SceneManager {
     public void JoinRoom() {
         if (!string.IsNullOrEmpty(selectedRoom)) {
             Debug.Log("Joining Room " + selectedRoom);
-            PhotonNetwork.JoinRoom(selectedRoom);
+            //PhotonNetwork.JoinRoom(selectedRoom);
         }
     }
 
@@ -146,14 +146,14 @@ public class LobbyManager : SceneManager {
     }
 
     public void ExitToLogin() {
-        PhotonNetwork.Disconnect();
+        //PhotonNetwork.Disconnect();
         SceneStateController.LoadScene(LoginManager._sceneName);
     }
 
     public override void EndScene() {
         base.EndScene();
         OperatorStatsUI.gameObject.SetActive(false);
-        ChatNewGui.DisconnectClient();
+        //ChatNewGui.DisconnectClient();
     }
 
     public void OnJoinedRoom() {

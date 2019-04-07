@@ -88,18 +88,18 @@ namespace Weapons
             CurTarget = target;
             IsFiring = true;
 
-            if (Cbt.GetOwner().IsLocal) {//crosshair effect
-                if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
-            }
+            //if (Cbt.GetOwner().IsLocal) {//crosshair effect
+            //    if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+            //}
 
             PlayShootEffect(MechCam.transform.forward, target);
 
             if (target != null) {
-                if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, new int[] { target.GetPhotonView().viewID }, new int[] { target.GetSpecID() });
+                //if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, new int[] { target.GetPhotonView().viewID }, new int[] { target.GetSpecID() });
 
                 Cbt.IncreaseSP(data.SpIncreaseAmount);
             } else {
-                if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
+                //if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
             }
 
             //if (data.Slowdown && !isShield) {
@@ -137,7 +137,7 @@ namespace Weapons
         protected abstract void UpdateMechArmState();
 
         public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) { 
-            if(Cbt.GetOwner().IsLocal)return;
+            //if(Cbt.GetOwner().IsLocal)return;
 
             TimeOfLastUse = Time.time;
             IsFiring = true;
@@ -145,15 +145,15 @@ namespace Weapons
             if (targetPvIDs == null || targetPvIDs.Length < 1){
                 PlayShootEffect(direction, null);
             } else{
-                PhotonView targetPv = PhotonView.Find(targetPvIDs[0]);
-                IDamageableManager manager = targetPv.GetComponent(typeof(IDamageableManager)) as IDamageableManager;
+                //PhotonView targetPv = PhotonView.Find(targetPvIDs[0]);
+                //IDamageableManager manager = targetPv.GetComponent(typeof(IDamageableManager)) as IDamageableManager;
 
-                if(manager != null){
-                    PlayShootEffect(direction, manager.FindDamageableComponent(specIDs[0]));
-                } else{
-                    Debug.LogError("Can't find IDamageableManager on : "+targetPv.gameObject.name);
-                    PlayShootEffect(direction, null);
-                }
+                //if(manager != null){
+                //    PlayShootEffect(direction, manager.FindDamageableComponent(specIDs[0]));
+                //} else{
+                //    Debug.LogError("Can't find IDamageableManager on : "+targetPv.gameObject.name);
+                //    PlayShootEffect(direction, null);
+                //}
             }
         }
 
@@ -166,7 +166,7 @@ namespace Weapons
 
             Muzzle.Play();
             //apply damage
-            if(target != null)target.OnHit(data.damage, PlayerPv, this);
+            //if(target != null)target.OnHit(data.damage, PlayerPv, this);
         }
 
         protected virtual void DisplayBullet(Vector3 direction, IDamageable target){

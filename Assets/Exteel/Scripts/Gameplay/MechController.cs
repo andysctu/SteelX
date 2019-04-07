@@ -3,7 +3,8 @@ using UnityEngine;
 using Utility;
 
 // MechController controls the position of the player
-public class MechController : Photon.MonoBehaviour, IPunObservable {
+public class MechController : MonoBehaviour//, IPunObservable
+{
     [SerializeField] public MovementVariables movementVariables = new MovementVariables();
     private BuildMech _buildMech;
     private MechCombat _mechCombat;
@@ -14,7 +15,7 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     private Transform _camTransform;
     private Animator _animator;
     private LayerMask _terrainMask;
-    private PhotonView _pv;
+    //private PhotonView _pv;
 
     //Booster 
     [SerializeField] private Transform boosterBone;
@@ -75,7 +76,7 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     public bool onSkillMoving = false;
     public bool JumpReleased;
 
-    private PhotonPlayer _owner;
+    //private PhotonPlayer _owner;
 
     private void Awake() {
         InitComponents();
@@ -93,7 +94,7 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
         _mechCam = GetComponentInChildren<MechCamera>(true);
         _inputManager = GetComponent<InputManager>();
         _camTransform = _mechCam.transform;
-        _pv = GetComponent<PhotonView>();
+        //_pv = GetComponent<PhotonView>();
         _sounds = currentMech.GetComponent<Sounds>();
 
         _characterController = GetComponent<CharacterController>();
@@ -116,13 +117,13 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     private void Init(){
-        _owner = _buildMech.GetOwner();
-        _mechCam.Init(_owner);
-        FindBoosterController();
-        InitControllerVar();
-        InitCam(cam_orbitradius, cam_angleoffset);
-        GetComponent<Sync>().Init(_owner);
-        if (_owner.IsLocal && !PhotonNetwork.isMasterClient) _pv.ObservedComponents.Remove(this);
+        //_owner = _buildMech.GetOwner();
+        //_mechCam.Init(_owner);
+        //FindBoosterController();
+        //InitControllerVar();
+        //InitCam(cam_orbitradius, cam_angleoffset);
+        //GetComponent<Sync>().Init(_owner);
+        //if (_owner.IsLocal && !PhotonNetwork.isMasterClient) _pv.ObservedComponents.Remove(this);
     }
 
     private void RegisterOnMechBuilt() {
@@ -187,14 +188,14 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     private void InitCam(float radius, float offset) {
-        if (!_owner.IsLocal) {
-            _mechCam.orbitRadius = radius;
-            _mechCam.angleOffset = offset;
-        }
+        //if (!_owner.IsLocal) {
+        //    _mechCam.orbitRadius = radius;
+        //    _mechCam.angleOffset = offset;
+        //}
     }
 
     private void Update() {
-        if (!GetOwner().IsLocal && !PhotonNetwork.isMasterClient)return;
+        //if (!GetOwner().IsLocal && !PhotonNetwork.isMasterClient)return;
 
         //TODO : remake this (test use)
         if (_isFootStepVarPositive){
@@ -243,21 +244,21 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     }
 
     private void FixedUpdate() {
-        if (PhotonNetwork.isMasterClient || (_owner!=null && _owner.IsLocal)) {//TODO : jump boost -en rate different
-            //if (IsBoosting) {
-            //    _mechCombat.DecrementEN(Time.fixedDeltaTime);
-            //} else {
-            //    _mechCombat.IncrementEN(Time.fixedDeltaTime);
-            //}
-        }
-
-        if ((_owner != null && _owner.IsLocal)) {
-            if (_animator.GetBool(AnimatorHashVars.BoostHash)) {
-                DynamicCam();
-            } else {
-                ResetCam();
-            }
-        }
+        //if (PhotonNetwork.isMasterClient || (_owner!=null && _owner.IsLocal)) {//TODO : jump boost -en rate different
+        //    //if (IsBoosting) {
+        //    //    _mechCombat.DecrementEN(Time.fixedDeltaTime);
+        //    //} else {
+        //    //    _mechCombat.IncrementEN(Time.fixedDeltaTime);
+        //    //}
+        //}
+		//
+        //if ((_owner != null && _owner.IsLocal)) {
+        //    if (_animator.GetBool(AnimatorHashVars.BoostHash)) {
+        //        DynamicCam();
+        //    } else {
+        //        ResetCam();
+        //    }
+        //}
     }
 
     public void SetMovementState(MovementState state){
@@ -649,23 +650,23 @@ public class MechController : Photon.MonoBehaviour, IPunObservable {
     //    return _inputManager.GetPosition(timeStamp);
     //}
 
-    public PhotonPlayer GetOwner(){
-        return _owner;
-    }
+    //public PhotonPlayer GetOwner(){
+    //    return _owner;
+    //}
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
-        if (stream.isReading){
-            Speed = (float) stream.ReceiveNext();
-            Direction = (float) stream.ReceiveNext();
-            Angle = (float) stream.ReceiveNext();
-            IsBoosting = (bool) stream.ReceiveNext();
-            Grounded = (bool)stream.ReceiveNext();
-        } else{
-            stream.SendNext(Speed);
-            stream.SendNext(Direction);
-            stream.SendNext(Angle);
-            stream.SendNext(IsBoosting);
-            stream.SendNext(Grounded);
-        }
-    }
+    //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
+    //    if (stream.isReading){
+    //        Speed = (float) stream.ReceiveNext();
+    //        Direction = (float) stream.ReceiveNext();
+    //        Angle = (float) stream.ReceiveNext();
+    //        IsBoosting = (bool) stream.ReceiveNext();
+    //        Grounded = (bool)stream.ReceiveNext();
+    //    } else{
+    //        stream.SendNext(Speed);
+    //        stream.SendNext(Direction);
+    //        stream.SendNext(Angle);
+    //        stream.SendNext(IsBoosting);
+    //        stream.SendNext(Grounded);
+    //    }
+    //}
 }

@@ -11,7 +11,7 @@ public class DMPanelManager : MonoBehaviour {
     private Dictionary<string, Score> playerScores;
 
     private void Start() {
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
 
         AssignMapRenderTexture();
     }
@@ -24,37 +24,37 @@ public class DMPanelManager : MonoBehaviour {
         MapRawImage.rectTransform.sizeDelta = new Vector2(MapPanelController.Width, MapPanelController.Height);
     }
 
-    public void RegisterPlayer(PhotonPlayer player) {
-        if (playerScores == null) {
-            playerScores = new Dictionary<string, Score>();
-        }
-
-        GameObject ps = Instantiate(PlayerStat, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-        ps.transform.Find("Pilot Name").GetComponent<Text>().text = player.NickName;
-        ps.transform.Find("Kills").GetComponent<Text>().text = "0";
-        ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
-
-        Score score = new Score();
-        string kills, deaths;
-        kills = (player.CustomProperties["Kills"] == null) ? "0" : player.CustomProperties["Kills"].ToString();
-        deaths = (player.CustomProperties["Deaths"] == null) ? "0" : player.CustomProperties["Deaths"].ToString();
-        ps.transform.Find("Kills").GetComponent<Text>().text = kills;
-        ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
-
-        score.Kills = int.Parse(kills);
-        score.Deaths = int.Parse(deaths);
-        
-        playerScores.Add(player.NickName, score);
-
-        //Parent player stat to scorepanel
-        ps.transform.SetParent(Panel.transform);
-
-        ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-        ps.transform.localPosition = Vector3.zero;
-        ps.transform.localRotation = Quaternion.identity;
-
-        playerScorePanels.Add(player.NickName, ps);
-    }
+    //public void RegisterPlayer(PhotonPlayer player) {
+    //    if (playerScores == null) {
+    //        playerScores = new Dictionary<string, Score>();
+    //    }
+	//
+    //    GameObject ps = Instantiate(PlayerStat, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+    //    ps.transform.Find("Pilot Name").GetComponent<Text>().text = player.NickName;
+    //    ps.transform.Find("Kills").GetComponent<Text>().text = "0";
+    //    ps.transform.Find("Deaths").GetComponent<Text>().text = "0";
+	//
+    //    Score score = new Score();
+    //    string kills, deaths;
+    //    kills = (player.CustomProperties["Kills"] == null) ? "0" : player.CustomProperties["Kills"].ToString();
+    //    deaths = (player.CustomProperties["Deaths"] == null) ? "0" : player.CustomProperties["Deaths"].ToString();
+    //    ps.transform.Find("Kills").GetComponent<Text>().text = kills;
+    //    ps.transform.Find("Deaths").GetComponent<Text>().text = deaths;
+	//
+    //    score.Kills = int.Parse(kills);
+    //    score.Deaths = int.Parse(deaths);
+    //    
+    //    playerScores.Add(player.NickName, score);
+	//
+    //    //Parent player stat to scorepanel
+    //    ps.transform.SetParent(Panel.transform);
+	//
+    //    ps.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+    //    ps.transform.localPosition = Vector3.zero;
+    //    ps.transform.localRotation = Quaternion.identity;
+	//
+    //    playerScorePanels.Add(player.NickName, ps);
+    //}
 
     public void RegisterKill(string shooter_name, int newKills) {
         Score newShooterScore = new Score();
@@ -86,23 +86,23 @@ public class DMPanelManager : MonoBehaviour {
         ScorePanel.SetActive(b);
     }
 
-    public void PlayerDisconnected(PhotonPlayer player) {
-        RemovePlayerDataFromScorePanel(player);
-    }
+    //public void PlayerDisconnected(PhotonPlayer player) {
+    //    RemovePlayerDataFromScorePanel(player);
+    //}
 
-    private void RemovePlayerDataFromScorePanel(PhotonPlayer player) {
-        playerScorePanels.Remove(player.NickName);
-        playerScores.Remove(player.NickName);
-
-        //Remove datas from scoreboard
-        Text[] Ts = ScorePanel.GetComponentsInChildren<Text>();
-        foreach (Text text in Ts) {
-            if (text.text == player.NickName) {
-                Destroy(text.transform.parent.gameObject);
-                break;
-            }
-        }
-    }
+    //private void RemovePlayerDataFromScorePanel(PhotonPlayer player) {
+    //    playerScorePanels.Remove(player.NickName);
+    //    playerScores.Remove(player.NickName);
+	//
+    //    //Remove datas from scoreboard
+    //    Text[] Ts = ScorePanel.GetComponentsInChildren<Text>();
+    //    foreach (Text text in Ts) {
+    //        if (text.text == player.NickName) {
+    //            Destroy(text.transform.parent.gameObject);
+    //            break;
+    //        }
+    //    }
+    //}
 
     /*
 if (PhotonNetwork.isMasterClient) {

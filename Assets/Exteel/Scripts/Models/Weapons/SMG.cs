@@ -79,9 +79,9 @@ namespace Weapons
                         _lastPlayShotSoundTime = Time.time;
                         WeaponAudioSource.PlayOneShot(_shotSound);
                         WeaponAnimator.SetTrigger("Atk");
-                        if (PlayerPv.isMine) {
-                            if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
-                        }
+                        //if (PlayerPv.isMine) {
+                        //    if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+                        //}
                     }
                     IsIkOn = true;
                 }
@@ -99,7 +99,7 @@ namespace Weapons
             UpdateBulletEffect(bullet.GetComponent<ParticleSystem>());
 
             _bulletTrace = bullet.GetComponent<MultiBullets>();
-            _bulletTrace.InitBullet(MechCam, PlayerPv, direction, target);
+            //_bulletTrace.InitBullet(MechCam, PlayerPv, direction, target);
             _bulletTrace.SetParticleSystem(_bulletNum, _animationLength);//todo :check this
 
             _bulletTrace.Play();

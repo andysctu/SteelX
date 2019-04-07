@@ -52,23 +52,23 @@ namespace Weapons
             IsFiring = true;
 
             PlayShootEffect(MechCam.transform.forward);
-            if (Cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient) DisplayBullet(MechCam.transform.forward, PhotonNetwork.AllocateViewID());
+            //if (Cbt.GetOwner().IsLocal || PhotonNetwork.isMasterClient) DisplayBullet(MechCam.transform.forward, PhotonNetwork.AllocateViewID());
 
-            if (Cbt.GetOwner().IsLocal) {//crosshair effect
-                if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
-            }
+            //if (Cbt.GetOwner().IsLocal) {//crosshair effect
+            //    if (CrosshairController != null) CrosshairController.OnShootAction(WeapPos);
+            //}
 
-            if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
+            //if (PhotonNetwork.isMasterClient) Cbt.Attack(WeapPos, MechCam.transform.forward, data.damage, null, null);
         }
 
         public override void AttackRpc(Vector3 direction, int damage, int[] targetPvIDs, int[] specIDs, int[] additionalFields) {
             int photonViewId = additionalFields[0];
 
-            if (Cbt.GetOwner().IsLocal){
-                if (_RocketBullet == null){Debug.LogError("local client should not have rocket null");return; }
-                _RocketBullet.SetPhotonViewID(photonViewId);
-                return;
-            }
+            //if (Cbt.GetOwner().IsLocal){
+            //    if (_RocketBullet == null){Debug.LogError("local client should not have rocket null");return; }
+            //    _RocketBullet.SetPhotonViewID(photonViewId);
+            //    return;
+            //}
 
             TimeOfLastUse = Time.time;
             IsFiring = true;
@@ -90,9 +90,9 @@ namespace Weapons
         protected void DisplayBullet(Vector3 direction, int photonViewID) {
             GameObject bulletPrefab = Resources.Load(BulletPrefab.name) as GameObject;
             _RocketBullet = Object.Instantiate(bulletPrefab, EffectEnd.position, Quaternion.LookRotation(direction, Vector3.up)).GetComponent<RocketBullet>();
-            _RocketBullet.InitBullet(MechCam, PlayerPv, direction, null);
+            //_RocketBullet.InitBullet(MechCam, PlayerPv, direction, null);
             _RocketBullet.SetBulletProperties(this, data.damage, _bulletSpeed, _impactRadius);
-            _RocketBullet.SetShooter(Cbt.GetOwner());
+            //_RocketBullet.SetShooter(Cbt.GetOwner());
 
             _RocketBullet.SetPhotonViewID(photonViewID);
         }

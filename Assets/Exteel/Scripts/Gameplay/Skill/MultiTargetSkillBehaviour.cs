@@ -7,7 +7,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     private Camera cam;
     private Sounds Sounds;
     private CrosshairController Crosshair;
-    private PhotonView player_pv;
+    //private PhotonView player_pv;
     private MultiTargetSkillConfig config;
     private Transform[] targets;
 
@@ -16,7 +16,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
     }
 
     private void InitComponent() {
-        player_pv = GetComponent<PhotonView>();
+        //player_pv = GetComponent<PhotonView>();
         SkillController = GetComponent<SkillController>();
         Crosshair = SkillController.GetCamera().GetComponent<CrosshairController>();
         mcbt = GetComponent<MechCombat>();
@@ -47,7 +47,7 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
         return false;
     }
 
-    [PunRPC]
+    //[PunRPC]
     private void CastMultiTargetSkill(int[] target_pvIDs, int skill_num) {
         if (target_pvIDs != null) {
             MultiTargetSkillConfig config = (MultiTargetSkillConfig)(SkillController.GetSkillConfig(skill_num));
@@ -56,12 +56,12 @@ public class MultiTargetSkillBehaviour : MonoBehaviour, ISkill {
             List<Transform> targets = new List<Transform>();
 
             foreach (int target_pvID in target_pvIDs) {
-                PhotonView target_pv = PhotonView.Find(target_pvID);
-                if (target_pv == null) { Debug.Log("Can't find target photonView"); continue; }
+                //PhotonView target_pv = PhotonView.Find(target_pvID);
+                //if (target_pv == null) { Debug.Log("Can't find target photonView"); continue; }
 
-                targets.Add(target_pv.transform);
+                //targets.Add(target_pv.transform);
 
-                if (player_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
+                //if (player_pv.isMine) target_pv.RPC("OnHit", PhotonTargets.All, config.GeneralSkillParams.damage, player_pv.viewID, SkillController.GetSkillName(skill_num), false);
             }
 
             SetEffectsTarget(targets.ToArray(), skill_num);

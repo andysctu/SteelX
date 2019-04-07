@@ -2,9 +2,10 @@
 using UnityEngine;
 using Weapons;
 
-public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, IPunObservable {
+public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager//, IPunObservable
+{
     protected GameManager gm;
-    public PhotonView PhotonView;
+    //public PhotonView PhotonView;
 
     //Combat variable
     public int MAX_HP { get { return max_hp; } protected set { max_hp = value; } }
@@ -35,7 +36,7 @@ public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, I
     public bool ForceDead;
 
     protected virtual void Awake() {
-        PhotonView = GetPhotonView();
+        //PhotonView = GetPhotonView();
         RegisterDamageableComponent(this);
     }
 
@@ -45,7 +46,7 @@ public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, I
     }
 
     protected void FindGameManager() {
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
     }
 
     protected void InitGameVariables() {
@@ -56,7 +57,7 @@ public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, I
     protected virtual void Update() {
         if (ForceDead) {//Debug use
             ForceDead = false;
-            OnHit(10000, PhotonView);
+            //OnHit(10000, PhotonView);
         }
     }
 
@@ -72,47 +73,47 @@ public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, I
     public virtual void Attack(int weapPos, Vector3 direction, int damage, int[] targetPvID, int[] specIDs, int[] additionalFields = null) {
     }
 
-    public virtual void OnHit(int damage, PhotonView attacker, Weapon weapon = null) {
-        if(isDead)return;
-
-        if (PhotonNetwork.isMasterClient) {
-            if (CurrentHP - damage >= MAX_HP) {
-                CurrentHP = MAX_HP;
-            } else {
-                CurrentHP -= damage;
-            }
-
-            if (CurrentHP <= 0) {//sync disable player
-                PhotonView.RPC("DisablePlayer", PhotonTargets.All, attacker.owner, "null");
-            }
-        } else{
-            if (CurrentHP - damage >= MAX_HP) {
-                CurrentHP = MAX_HP;
-            } else {
-                CurrentHP -= damage;
-            }
-        }
-
-        IncreaseSP(damage / 2);
-    }
+    //public virtual void OnHit(int damage, PhotonView attacker, Weapon weapon = null) {
+    //    if(isDead)return;
+	//
+    //    if (PhotonNetwork.isMasterClient) {
+    //        if (CurrentHP - damage >= MAX_HP) {
+    //            CurrentHP = MAX_HP;
+    //        } else {
+    //            CurrentHP -= damage;
+    //        }
+	//	
+    //        if (CurrentHP <= 0) {//sync disable player
+    //            PhotonView.RPC("DisablePlayer", PhotonTargets.All, attacker.owner, "null");
+    //        }
+    //    } else{
+    //        if (CurrentHP - damage >= MAX_HP) {
+    //            CurrentHP = MAX_HP;
+    //        } else {
+    //            CurrentHP -= damage;
+    //        }
+    //    }
+	//
+    //    IncreaseSP(damage / 2);
+    //}
 
     public virtual void PlayOnHitEffect(){
     }
 
-    [PunRPC]
+    //[PunRPC]
     public virtual void KnockBack(Vector3 dir, float length) {//TODO : improve this
         GetComponent<CharacterController>().Move(dir * length);
     }
 
-    [PunRPC]
+    //[PunRPC]
     protected virtual void EnablePlayer() {
         OnMechEnabled(true);
     }
 
-    [PunRPC]
-    protected virtual void DisablePlayer(PhotonPlayer shooter, string weapon) {//todo : improve this
-        OnMechEnabled(false);
-    }
+    //[PunRPC]
+    //protected virtual void DisablePlayer(PhotonPlayer shooter, string weapon) {//todo : improve this
+    //    OnMechEnabled(false);
+    //}
 
     public bool IsHpFull() {
         return CurrentHP >= MAX_HP;
@@ -140,21 +141,21 @@ public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, I
         return transform.position + new Vector3(0,5,0);
     }
 
-    public abstract PhotonPlayer GetOwner();
+    //public abstract PhotonPlayer GetOwner();
 
-    public PhotonView GetPhotonView(){
-        return PhotonView;
-    }
+    //public PhotonView GetPhotonView(){
+    //    return PhotonView;
+    //}
 
-    public virtual bool IsEnemy(PhotonPlayer compareTo){
-        if (GameManager.IsTeamMode){
-            return compareTo.GetTeam() != GetOwner().GetTeam();
-        }else if (GetOwner() != null && GetOwner() == compareTo){
-            return false;
-        }
-
-        return true;
-    }
+    //public virtual bool IsEnemy(PhotonPlayer compareTo){
+    //    if (GameManager.IsTeamMode){
+    //        return compareTo.GetTeam() != GetOwner().GetTeam();
+    //    }else if (GetOwner() != null && GetOwner() == compareTo){
+    //        return false;
+    //    }
+	//
+    //    return true;
+    //}
 
     public int GetCurrentHP(){
         return CurrentHP;
@@ -187,6 +188,6 @@ public abstract class Combat : MonoBehaviour, IDamageable, IDamageableManager, I
         public float minENRequired;
     }
 
-    public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
-    }
+    //public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){
+    //}
 }

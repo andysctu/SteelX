@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Radar : MonoBehaviour {
     private GameObject RadarImage;
     private Camera radarCam;
-    private PhotonView pv;
+    //private PhotonView pv;
     private Transform radarCam_transform;
     private float radius;
     private List<RadarElement> radarElements = new List<RadarElement>();
@@ -17,23 +17,23 @@ public class Radar : MonoBehaviour {
     private int RawImageSize = 310;
 
     private void Awake() {
-        pv = transform.root.GetComponent<PhotonView>();
-        if (!pv.isMine){
-            gameObject.SetActive(false);
-            return;
-        }
+        //pv = transform.root.GetComponent<PhotonView>();
+        //if (!pv.isMine){
+        //    gameObject.SetActive(false);
+        //    return;
+        //}
 
         radarCam = GetComponentInChildren<Camera>();
 
-        radarCam.enabled = pv.isMine;
-        enabled = pv.isMine;
+        //radarCam.enabled = pv.isMine;
+        //enabled = pv.isMine;
 
         radarCam_transform = radarCam.transform;
         radius = radarCam.orthographicSize;
     }
 
     private void Start() {
-        if (!pv.isMine) return;
+        //if (!pv.isMine) return;
 
         AssignRadarTextureToCanvas();
     }

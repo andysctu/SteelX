@@ -17,14 +17,14 @@ public class MapPanelController : MonoBehaviour {
     }
 
     private void InitButtons() {
-        GameManager gm = FindObjectOfType<GameManager>();
+        //GameManager gm = FindObjectOfType<GameManager>();
         RespawnPointButtons = new Button[RespawnPointsOnMap.Length];
         for (int i = 0; i < RespawnPointButtons.Length; i++) {
             if (RespawnPointsOnMap[i] == null)continue;
             RespawnPointButtons[i] = RespawnPointsOnMap[i].GetComponent<Button>();
 
             int index = i;
-            RespawnPointButtons[i].onClick.AddListener(() => gm.SetRespawnPoint(index));
+            //RespawnPointButtons[i].onClick.AddListener(() => gm.SetRespawnPoint(index));
         }
     }
 

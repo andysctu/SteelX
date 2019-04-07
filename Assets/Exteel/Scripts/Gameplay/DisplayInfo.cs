@@ -18,8 +18,8 @@ public class DisplayInfo : MonoBehaviour{
     }
 
     protected virtual void Start() {
-        GameManager gm = FindObjectOfType<GameManager>();
-        StartCoroutine(GetThePlayer(gm));
+        //GameManager gm = FindObjectOfType<GameManager>();
+        //StartCoroutine(GetThePlayer(gm));
 
         //Parent the object to canvas
         ParentInfoToPanelCanvas();
@@ -28,18 +28,18 @@ public class DisplayInfo : MonoBehaviour{
     private IEnumerator GetThePlayer(GameManager gm) {
         int request_times = 0;
         GameObject ThePlayer;
-        while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
-            request_times++;
-            yield return new WaitForSeconds(0.5f);
-        }
+        //while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
+        //    request_times++;
+        //    yield return new WaitForSeconds(0.5f);
+        //}
 
         if (request_times >= 15) {
             Debug.LogError("Can't get the player");
             yield break;
         }
 
-        thePlayerCameras = gm.GetThePlayerMainCameras();
-        InitPlayerRelatedComponents(ThePlayer);
+        //thePlayerCameras = gm.GetThePlayerMainCameras();
+        //InitPlayerRelatedComponents(ThePlayer);
         ObjectToParentOnCanvas.SetActive(true);
         yield break;
     }

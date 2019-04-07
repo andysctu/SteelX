@@ -21,8 +21,8 @@ public class GameSceneManager : SceneManager {
         //CTFManager.Offline = true;
         //Debug.Log("Add CTFManager");
 
-        TestModeManager TestModeManager = gameObject.AddComponent<TestModeManager>();
-        gm = TestModeManager as GameManager;
+        //TestModeManager TestModeManager = gameObject.AddComponent<TestModeManager>();
+        //gm = TestModeManager as GameManager;
     }
 
     public override void StartScene() {
@@ -31,22 +31,22 @@ public class GameSceneManager : SceneManager {
 
         MusicManager.ManageMusic(null);//Shut down game lobby music
 
-        switch (PhotonNetwork.room.CustomProperties["GameMode"].ToString()) {
-        case "DeathMatch":
-            gm = gameObject.AddComponent<DMManager>();
-        break;
-        case "TeamDeathMode":
-            Debug.LogError("Not Implemented");
-        break;
-        case "CaptureTheFlag":
-            gm = gameObject.AddComponent<CTFManager>();
-            gameMusic = Resources.Load<AudioClip>("GFM/Game_Music/CTFsoundtrack");
-            gm.RegisterTimerEvent(180, () => MusicManager.ManageMusic(gameMusic));//180 : music length
-        break;
-        default:
-            Debug.LogError("No such mode : "+ PhotonNetwork.room.CustomProperties["GameMode"].ToString());
-        break;
-        }
+        //switch (PhotonNetwork.room.CustomProperties["GameMode"].ToString()) {
+        //case "DeathMatch":
+        //    gm = gameObject.AddComponent<DMManager>();
+        //break;
+        //case "TeamDeathMode":
+        //    Debug.LogError("Not Implemented");
+        //break;
+        //case "CaptureTheFlag":
+        //    gm = gameObject.AddComponent<CTFManager>();
+        //    gameMusic = Resources.Load<AudioClip>("GFM/Game_Music/CTFsoundtrack");
+        //    gm.RegisterTimerEvent(180, () => MusicManager.ManageMusic(gameMusic));//180 : music length
+        //break;
+        //default:
+        //    Debug.LogError("No such mode : "+ PhotonNetwork.room.CustomProperties["GameMode"].ToString());
+        //break;
+        //}
     }
 
     public override void EndScene() {

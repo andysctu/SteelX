@@ -5,7 +5,7 @@ using System.Collections;
 public class TerritoryController : MonoBehaviour {
     public int Territory_ID = 0;    
     public bool interactable = true;//base : false 
-    public PunTeams.Team curTerritoryState = PunTeams.Team.none;
+    //public PunTeams.Team curTerritoryState = PunTeams.Team.none;
     private GameManager gm;
     private MapPanelController MapPanelController;
     private TerritoryRadarElement TerritoryRadarElement;
@@ -13,10 +13,10 @@ public class TerritoryController : MonoBehaviour {
 
     private PlayerInZone PlayerInZone;
     private MeshRenderer baseMesh;
-    private PhotonView pv;
+    //private PhotonView pv;
     private DisplayInfo DisplayInfo;
 
-    private int curBarState = (int)PunTeams.Team.none;
+    //private int curBarState = (int)PunTeams.Team.none;
     private bool switchBarColor = true; // true : need to change color due to barstate change
     private float coeff = 0.005f;
     private float trueAmount = 0;
@@ -48,13 +48,13 @@ public class TerritoryController : MonoBehaviour {
     }
 
     private void InitComponents() {
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
         baseMesh = GetComponentInChildren<MeshRenderer>();
         DisplayInfo = GetComponent<DisplayInfo>();
         TerritoryRadarElement = GetComponentInChildren<TerritoryRadarElement>();
         TerritoryMapElement = GetComponentInChildren<TerritoryMapElement>();
         PlayerInZone = GetComponentInChildren<PlayerInZone>();
-        pv = GetComponent<PhotonView>();
+        //pv = GetComponent<PhotonView>();
         if(mark!=null)mark.enabled = false;
     }
 
@@ -88,48 +88,48 @@ public class TerritoryController : MonoBehaviour {
         //}
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
-        if (!interactable) {
-            return;
-        }
+    //public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
+    //    if (!interactable) {
+    //        return;
+    //    }
+	//
+    //    if (stream.isWriting) {
+    //        if (PhotonNetwork.isMasterClient) {
+	//
+    //            if(!gm.GameIsBegin)
+    //                return;
+	//
+    //            if (PlayerInZone.whichTeamDominate() != (int)PunTeams.Team.none) {
+    //                if (curBarState == PlayerInZone.whichTeamDominate()) {
+    //                    if (bar.fillAmount + PlayerInZone.PlayerCountDiff() * coeff >= 1) {
+    //                        bar.fillAmount = 1;
+    //                        if (curBarState != (int)curTerritoryState) {
+    //                            pv.RPC("ChangeTerritory", PhotonTargets.All, curBarState);
+    //                        }
+    //                    } else {
+    //                        bar.fillAmount += PlayerInZone.PlayerCountDiff() * coeff;
+    //                    }
+    //                } else {
+    //                    if (bar.fillAmount - PlayerInZone.PlayerCountDiff() * coeff <= 0) {
+    //                        bar.fillAmount = 0;
+    //                        curBarState = PlayerInZone.whichTeamDominate();
+    //                        pv.RPC("ChangeTerritory", PhotonTargets.All, (int)PunTeams.Team.none);//change to grey zone
+    //                    } else {
+    //                        bar.fillAmount -= PlayerInZone.PlayerCountDiff() * coeff;
+    //                    }
+    //                }
+    //            }
+    //            trueAmount = bar.fillAmount;
+    //            stream.SendNext(bar.fillAmount);
+    //            stream.SendNext(curBarState);
+    //        }
+    //    } else {
+    //        trueAmount = (float)stream.ReceiveNext();
+    //        curBarState = (int)stream.ReceiveNext();
+    //    }
+    //}
 
-        if (stream.isWriting) {
-            if (PhotonNetwork.isMasterClient) {
-
-                if(!gm.GameIsBegin)
-                    return;
-
-                if (PlayerInZone.whichTeamDominate() != (int)PunTeams.Team.none) {
-                    if (curBarState == PlayerInZone.whichTeamDominate()) {
-                        if (bar.fillAmount + PlayerInZone.PlayerCountDiff() * coeff >= 1) {
-                            bar.fillAmount = 1;
-                            if (curBarState != (int)curTerritoryState) {
-                                pv.RPC("ChangeTerritory", PhotonTargets.All, curBarState);
-                            }
-                        } else {
-                            bar.fillAmount += PlayerInZone.PlayerCountDiff() * coeff;
-                        }
-                    } else {
-                        if (bar.fillAmount - PlayerInZone.PlayerCountDiff() * coeff <= 0) {
-                            bar.fillAmount = 0;
-                            curBarState = PlayerInZone.whichTeamDominate();
-                            pv.RPC("ChangeTerritory", PhotonTargets.All, (int)PunTeams.Team.none);//change to grey zone
-                        } else {
-                            bar.fillAmount -= PlayerInZone.PlayerCountDiff() * coeff;
-                        }
-                    }
-                }
-                trueAmount = bar.fillAmount;
-                stream.SendNext(bar.fillAmount);
-                stream.SendNext(curBarState);
-            }
-        } else {
-            trueAmount = (float)stream.ReceiveNext();
-            curBarState = (int)stream.ReceiveNext();
-        }
-    }
-
-    [PunRPC]
+    //[PunRPC]
     public void ChangeTerritory(int num) {
         //curTerritoryState = (PunTeams.Team)num;
         //if (num == (int)PunTeams.Team.blue) {

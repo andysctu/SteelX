@@ -9,7 +9,7 @@ public class MapElement : MonoBehaviour {
     protected GameManager gm;
 
     protected virtual void Start() {        
-        gm = FindObjectOfType<GameManager>();
+        //gm = FindObjectOfType<GameManager>();
         GameObject Map = gm.GetMap();
 
         MapPanelController = Map.GetComponentInChildren<MapPanelController>();
@@ -26,10 +26,10 @@ public class MapElement : MonoBehaviour {
 
     private IEnumerator GetThePlayer(GameManager gm) {
         int request_times = 0;
-        while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
-            request_times++;
-            yield return new WaitForSeconds(0.5f);
-        }
+        //while ((ThePlayer = gm.GetThePlayerMech()) == null && request_times < 15) {
+        //    request_times++;
+        //    yield return new WaitForSeconds(0.5f);
+        //}
 
         if (request_times >= 15) {
             Debug.LogError("Can't get the player");
