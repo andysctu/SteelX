@@ -335,4 +335,18 @@
 		Standard,
 		Heavy
 	}	
+
+	public enum Skills
+	{
+
+	}
+
+	public enum Scenes
+	{
+		Login,
+		Lobby,
+		Shop,
+		Settings,
+		Inventory
+	}
 }

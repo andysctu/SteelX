@@ -13,6 +13,7 @@ namespace Exteel
 		//public Weapon Weapons	{ get; set; }
 		public MechWeapons[] WeaponSet	{ get; set; }
 		//ToDo: Mech Colors
+		public Skills[] Skills	{ get; set; }
 	}
 	public struct MechWeapons
 	{
@@ -61,6 +62,7 @@ namespace Exteel.Core
 		public Heads Head			{ get; private set; }
 		public Boosters Booster		{ get; private set; }
 		public Weapons[,] Weapons	{ get; private set; }
+		public Skill[] Skills		{ get; private set; }
 
 		//ToDo: Add Weapon Durability to Mech's?
 		public int Durability		{ get { return Arm.Durability + Leg.Durability + Core.Durability + Head.Durability + Booster.Durability; } }
