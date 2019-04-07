@@ -65,7 +65,7 @@ namespace Exteel.Game
 		}
 
 		private void OnEnable() {
-			playerName.text = PhotonNetwork.player.NickName;
+			//playerName.text = PhotonNetwork.player.NickName;
 		}
 		#endregion
 
